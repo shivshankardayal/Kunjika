@@ -53,7 +53,7 @@
             </form>
           </div>
           <div class="tab-pane fade" id="create">
-            <form class="form-horizontal" id="tab" method="post" action="/register">
+            <form class="form-horizontal" id="tab" method="post" action="/signup">
               <fieldset>
                 <div id="legend">
                   <legend class="">
@@ -128,7 +128,8 @@
         password : {
           required : true,
           minlength : 8,
-          maxlength : 32
+          maxlength : 32,
+          equalTo: '#confirm'
         },
         confirm : {
           required : true,
@@ -137,12 +138,14 @@
         },
         fname : {
           minlength : 2,
-          maxlength : 32
+          maxlength : 32,
+          required: true
         },
         lname : {
           minlength : 2,
-          maxlength : 32
-        },
+          maxlength : 32,
+          required:true
+        }
       },
       highlight : function(element) {
         $(element).closest('.control-group').removeClass('success').addClass('error');

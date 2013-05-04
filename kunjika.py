@@ -6,7 +6,6 @@ from register import RegistrationForm, LoginForm
 from flask_pymongo import PyMongo
 from pymongo import *
 from flaskext.bcrypt import Bcrypt
-from flask_login import LoginManager
 
 kunjika = Flask(__name__)
 
@@ -15,25 +14,17 @@ kunjika.debug = True
 
 mongo = PyMongo(kunjika)
 connection = Connection(kunjika.config['DB_HOST'], kunjika.config['DB_PORT'])
-db = connection.test
+db = connection.kunjika
 
 bcrypt = Bcrypt(kunjika)
 
-lm = LoginManager()
-lm.setup_app(kunjika)
-
-max_id = 1
-
 @kunjika.route('/')
-def index():
-    return redirect(url_for('questions'))
-
 @kunjika.route('/questions')
 #@kunjika.route('/questions/<qid>')
 def questions(qid=None):
     return render_template('questions.html', title='Questions')
 
-@kunjika.route('/tags<tag>')
+@kunjika.route('/tags/<tag>')
 def tags(tag=None):
     return render_template('tags.html')
 
@@ -57,13 +48,13 @@ def ask():
 def login():
     registrationForm = RegistrationForm(request.form)
     loginForm = LoginForm(request.form)
-    
+
     if loginForm.validate_on_submit() and request.method == 'POST':
         return redirect(url_for('questions'))
     else:
         render_template('login.html', form = registrationForm, loginForm=loginForm, title='Sign In',
                         providers = kunjika.config['OPENID_PROVIDERS'])
-    
+
     return render_template('login.html', form = registrationForm, loginForm=loginForm, title='Sign In',
                            providers = kunjika.config['OPENID_PROVIDERS'])
 
@@ -71,27 +62,26 @@ def login():
 def register():
     loginForm = LoginForm(request.form)
     registrationForm = RegistrationForm(request.form)
-    
+
     if registrationForm.validate_on_submit() and request.method =='POST':
         passwd_hash = bcrypt.generate_password_hash(registrationForm.password.data)
-        document = db.users.find({"id":1})
-        if document.count() != 1:
-            global max_id
-            max_id += 1
-            db.users.insert({"id": max_id, 'email': registrationForm.email1.data, 'password': passwd_hash,
-                            'fname': registrationForm.fname.data, 'lname' :registrationForm.lname.data})
-            
-        document = db.users.find({'email': registrationForm.email1.data})
-        
+        document = db.users.find({"uid":0})
         if document.count() == 0:
-            global max_id
-            max_id  += 1
-            db.users.insert({"id": max_id, 'email': registrationForm.email1.data, 'password': passwd_hash,
+            #global max_id
+            #max_id += 1
+            db.users.insert({'email': registrationForm.email1.data, 'password': passwd_hash, 'role': 'admin',
                             'fname': registrationForm.fname.data, 'lname' :registrationForm.lname.data})
+            return redirect(url_for('questions'))
+
+        document = db.users.find({'email': registrationForm.email1.data})
+
+        if document.count() == 0:
+            db.users.insert({"uid": getNextSequence(registrationForm.email1.data), 'email': registrationForm.email1.data, 'password': passwd_hash,
+                            'fname': registrationForm.fname.data, 'lname' :registrationForm.lname.data, 'role': 'user'})
         else:
             return render_template('login.html', form = registrationForm, loginForm=loginForm,
                                    title='Sign In', providers = kunjika.config['OPENID_PROVIDERS'])
-            
+
         return redirect(url_for('questions'))
     else:
             return render_template('login.html', form = registrationForm, loginForm=loginForm,
@@ -99,11 +89,11 @@ def register():
 
 @kunjika.route('/check_email', methods=['POST'])
 def check_email():
-    
+
     email = request.form['email']
-    
+
     document = db.users.find({"email": email})
-    
+
     if document.count() == 1:
         return '0'
     else:
