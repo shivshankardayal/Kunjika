@@ -15,7 +15,7 @@ OPENID_PROVIDERS = [
 #Database section
 
 DB_HOST = 'localhost'
-DB_PORT = 27017
+DB_PORT = '8091'
 
 #reCaptcha seaction
 

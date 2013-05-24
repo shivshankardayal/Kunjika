@@ -2,24 +2,23 @@ from flask import Flask
 from flask import render_template
 from flask import abort, redirect, url_for, flash
 from flask import request
+import json
 from register import RegistrationForm, LoginForm
-from flask_pymongo import PyMongo
 from pymongo import *
 from flaskext.bcrypt import Bcrypt
+from couchbase.couchbaseclient import VBucketAwareCouchbaseClient as CbClient
 
 kunjika = Flask(__name__)
 
 kunjika.config.from_object('config')
 kunjika.debug = True
 
-mongo = PyMongo(kunjika)
-connection = Connection(kunjika.config['DB_HOST'], kunjika.config['DB_PORT'])
-db = connection.kunjika
+cb = CbClient("http://localhost:8091/pools/default","default", "")
 
 bcrypt = Bcrypt(kunjika)
 
 @kunjika.route('/')
-@kunjika.route('/questions')
+@kunjika.route('/questions', methods=['GET', 'POST'])
 #@kunjika.route('/questions/<qid>')
 def questions(qid=None):
     return render_template('questions.html', title='Questions')
@@ -50,7 +49,21 @@ def login():
     loginForm = LoginForm(request.form)
 
     if loginForm.validate_on_submit() and request.method == 'POST':
-        return redirect(url_for('questions'))
+        try:
+            document = cb.get(loginForm.email.data)[2]
+            document = json.loads(document)
+            print document['password']
+            print bcrypt.generate_password_hash(loginForm.password.data)
+            if (document['email'] == loginForm.email.data) and bcrypt.check_password_hash(document['password'], loginForm.password.data):
+                return redirect(url_for('questions'))
+            else:
+                render_template('login.html', form = registrationForm, loginForm=loginForm, title='Sign In',
+                                providers = kunjika.config['OPENID_PROVIDERS'])
+
+        except:
+            render_template('login.html', form = registrationForm, loginForm=loginForm, title='Sign In',
+                            providers = kunjika.config['OPENID_PROVIDERS'])
+            
     else:
         render_template('login.html', form = registrationForm, loginForm=loginForm, title='Sign In',
                         providers = kunjika.config['OPENID_PROVIDERS'])
@@ -65,39 +78,52 @@ def register():
 
     if registrationForm.validate_on_submit() and request.method =='POST':
         passwd_hash = bcrypt.generate_password_hash(registrationForm.password.data)
-        document = db.users.find({"uid":0})
-        if document.count() == 0:
-            #global max_id
-            #max_id += 1
-            db.users.insert({'email': registrationForm.email1.data, 'password': passwd_hash, 'role': 'admin',
-                            'fname': registrationForm.fname.data, 'lname' :registrationForm.lname.data})
-            return redirect(url_for('questions'))
 
-        document = db.users.find({'email': registrationForm.email1.data})
+        role = None
+        data = {}
 
-        if document.count() == 0:
-            db.users.insert({'email': registrationForm.email1.data, 'password': passwd_hash,
-                            'fname': registrationForm.fname.data, 'lname' :registrationForm.lname.data, 'role': 'user'})
-        else:
-            return render_template('register.html', form = registrationForm, loginForm=loginForm,
+        try:
+            role = cb.get('role')
+        except:
+            if role == 'admin':
+                data['email'] = registrationForm.email1.data
+                data['password'] = passwd_hash
+                data['role'] = 'admin'
+                data['fname'] = registrationForm.fname.data
+                data['lname'] = registrationForm.lname.data
+
+                cb.add(data['email'], 0, 0, json.dumps(data))
+
+                return redirect(url_for('questions'))
+        try:
+            document = None
+            document = cb.get(registrationForm.email1.data)
+        except:
+            if document == None:
+                data['email'] = registrationForm.email1.data
+                data['password'] = passwd_hash
+                data['fname'] = registrationForm.fname.data
+                data['lname'] = registrationForm.lname.data
+
+                cb.add(data['email'], 0, 0, json.dumps(data)) 
+                return redirect(url_for('questions'))
+
+        return render_template('register.html', form = registrationForm, loginForm=loginForm,
                                    title='Sign In', providers = kunjika.config['OPENID_PROVIDERS'])
 
-        return redirect(url_for('questions'))
-    else:
-            return render_template('register.html', form = registrationForm, loginForm=loginForm,
-                                   title='Sign In', providers = kunjika.config['OPENID_PROVIDERS'])
 
 @kunjika.route('/check_email', methods=['POST'])
 def check_email():
 
     email = request.form['email']
 
-    document = db.users.find({"email": email})
-
-    if document.count() == 1:
-        return '0'
-    else:
+    try:
+        document = cb.get(email)
+    except:
         return '1'
+
+    if document != None:
+        return '0'
 
 if __name__ == '__main__':
     kunjika.run()
