@@ -40,8 +40,8 @@
 
 
       /* Customize the navbar links to be fill the entire space of the .navbar */
-     ,navbar .container {
-       width: 940px;
+     .navbar .container {
+       width: 1000px;
      }
       .navbar .navbar-inner {
         padding: 0;
@@ -87,6 +87,12 @@ text-decoration: none;
   .nav > li > a {
     display: block;
 }
+  .nav > li > a#ask, .nav > li > a.ask:hover {
+    color: rgb(0, 119, 204);
+}
+  .nav > li > a#login, .nav > li > a.login:hover {
+    color: rgb(81, 163, 81);
+}
 .nav {
     list-style: none outside none;
 }
@@ -127,7 +133,7 @@ label.valid {
   }
   label.error {
     font-weight: bold;
-    color: red;
+    color: #400;
     padding: 2px 8px;
     margin-top: 2px;
   }
