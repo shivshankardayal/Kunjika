@@ -1,0 +1,4 @@
+.git/
+.ropeproject/
+build/
+*.pyc

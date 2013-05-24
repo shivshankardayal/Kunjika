@@ -1,0 +1,291 @@
+flasker                   - Flasker
+kit                       - Flask, Celery, SQLAlchemy integration framework.
+Flask-Mail                - Flask extension for sending email
+FlaskEx                   - UNKNOWN
+flask-peewee              - Peewee integration for flask
+Flask-WTF                 - Simple integration of Flask and WTForms
+Flask-Cache               - Adds cache support to your Flask application
+Flask-Admin               - Simple and extensible admin interface framework for Flask
+Flask-Exceptional         - Adds Exceptional support to Flask applications
+Flask                     - A microframework based on Werkzeug, Jinja2 and good intentions
+  INSTALLED: 0.9 (latest)
+Flask-Actions             - custom actions for flask to help manage your application
+Flask-DebugToolbar        - A port of the Django debug toolbar to Flask
+Flask-SeaSurf             - An updated CSRF extension for Flask.
+Flask-MongoAlchemy        - Add Flask support for MongoDB using MongoAlchemy.
+Flask-MustacheJS          - Mustache integration in Flask, with Jinja and client-side libraries.
+Buro                      - A very simple Python-powered open-source web framework inspired by Flask, but following different design decisions
+Flask-Security            - Simple security for Flask apps
+Flask-Restless            - A Flask extension for easy ReSTful API generation
+tyron                     - Gevent redis/pubsub event notifier written in flask and gevent
+Flask-WebCache            - A Flask extension that adds HTTP based caching to Flask apps
+Flask-Heroku-Cacheify     - Automatic Flask cache configuration on Heroku.
+Flask-RESTful             - Simple framework for creating REST APIs
+Flask-GoogleLogin         - Extends Flask-Login to use Google's OAuth2 authorization
+Flask-Script              - Scripting support for Flask
+Flask-SQLAlchemy          - Adds SQLAlchemy support to your Flask application
+flask_mixer               - Flask-Mixer -- Flask sqlalchemy model object generation
+mixer                     - Mixer -- Is a fixtures replacement. Supported Django, Flask, SqlAlchemy and custom python objects.
+coaster                   - Coaster for Flask
+Flask-WhooshAlchemy       - Whoosh extension to Flask/SQLAlchemy
+Frozen-Flask              - Freezes a Flask application into a set of static files.
+mimerender                - RESTful HTTP Content Negotiation for Flask, Bottle, web.py and webapp2 (Google App Engine)
+Flask-AutoIndex           - The mod_autoindex for Flask
+Flask-Lastuser            - Flask extension for Lastuser
+Flask-Assets              - Asset management for Flask, to compress and merge CSS and Javascript files.
+Flask-Pypi-Proxy          - A Pypi proxy
+Flask-Bcrypt              - Brcrypt hashing for Flask.
+Flask-Squll               - flask+sqlalchemy integration minus legacy for older versions of flask(<0.9)/sqlalchemy(<0.7)
+Flask-And-Redis           - Simple as dead support of Redis database for Flask apps.
+Flask-Classy              - Class based views for Flask
+Flask-Sijax               - An extension for the Flask microframework that adds Sijax support.
+jac                       - A Jinja extension (compatible with Flask and other frameworks) to compile and/or compress your assets.
+Flask-Bootstrap           - An extension that includes Twitter's Bootstrap in your project, without any boilerplate code.
+Flask-Testing             - Unit testing for Flask
+quorum                    - Quorum Extensions for Flask
+Flask-Markdown            - Small extension to make using markdown easy
+Flask-Social              - Simple OAuth provider integration for Flask-Security
+Flask-Mustache            - Mustache for Flask
+Flask-Principal           - Identity management for flask
+clay-flask                - Clay is a framework for building RESTful backend services using best practices.
+Flask-Funnel              - Asset management for Flask.
+Flask-Snooze              - Backend agnostic REST API provider for Flask
+Flask-Marcos              - ERP apps Flask container
+Flask-PyMongo             - PyMongo support for Flask applications
+Flask-WePay               - WePay API support
+Flask-Holster             - Rigid MVC content negotiation for Flask
+Flask-CouchDBKit          - Flask extension that provides integration with CouchDBKit.
+Flask-Tools               - Command line interface for managing Flask projects.
+Flask-Dropbox             - Dropbox Python SDK support for Flask applications.
+Erlenmeyer                - Automatically generate Flask servers from Core Data.
+flask_util_js             - flask's util in javascript. such as url_for etc.
+flask_collect             - Flask-Collect -- Collect static files in Flask application
+Flask-AlchemyView         - Simple ModelView for auto-generating Flask Views based on SQLAlchemy models
+flask-mongoengine         - Flask support for MongoDB and with WTF model forms
+Flask-Genshi              - An extension to Flask for easy Genshi templating.
+Flask-FlatPages           - Provides flat static pages to a Flask application
+simple_openid             - Simple OpenID. One-line setup for OpenID login for Flask.
+Flask-SuperAdmin          - The best admin interface framework for Python. With scaffolding for MongoEngine, Django and SQLAlchemy.
+Flask-KVSession           - Transparent server-side session support for flask
+Flask-OpenID              - OpenID support for Flask
+Flask-Evolution           - Simple migrations for Flask/SQLAlchemy projects
+flask-heroku              - Heroku environment variable configurations for Flask
+Flask-DebugToolbar-LineProfilerPanel - Panel for the Flask Debug toolbar to capture and view line-by-line profiling stats
+Reding                    - Rating on Redis - REST API on Flask
+Flask-Celery              - Celery integration for Flask
+Flask-Creole              - Creole parser filters for Flask
+Flask-Foundation          - An extension that includes the Foundation css framework in your project, without any boilerplate code.
+Flask-Gravatar            - Small extension for Flask to make using Gravatar easy
+Flask-Track-Usage         - Basic metrics tracking for the Flask framework.
+flask-geokit              - Geocoding toolkit
+Flask-MongoKit            - A Flask extension simplifies to use MongoKit
+Flask-Rauth               - Adds OAuth 1.0/a, 2.0, and Ofly consumer support for Flask.
+Flask-Twip                - twitter API proxy extension for Flask microframework
+Flask-Augment             - Python decorators implementing contracts for flask framework
+Flask-SSLify              - Force SSL on your Flask app.
+Flask-Split               - A/B testing for your Flask application
+Flask-Jasmine             - Execution of Jasmine JavaScript tests within Flask
+Flask-S3                  - Seamlessly serve the static files of your Flask app from Amazon S3
+yell                      - User notification library with pluggable backends. Compatible with popular frameworks such as Django, Flask, Celery.
+Flask-Versioned           - Add version info to file paths.
+Flask-Babel               - Adds i18n/l10n support to Flask applications
+Flask-Redtask             - Redqueue integration for flask
+Flask-Auth                - Auth extension for Flask.
+flask-oauthprovider       - A full featured and secure OAuth provider base
+Flask-Github              - Adds support for authorizing users with Github to Flask
+flask-skel                - Basic Flask paster skeleton template
+flask-whooshee            - Flask - SQLAlchemy - Whoosh integration
+Flask-LazyViews           - Registering url routes for Flask app and blueprints in lazy way.
+Flask-MySQL               - Flask simple mysql client
+Flask-Slither             - A small library between MongoDB and JSON API endpoints
+Flask-MoreSQL             - Call PostgreSQL stored procedures from Flask
+Flask-Should-DSL          - A flask extension for testing with should-dsl
+Flask-Themes              - Provides infrastructure for theming Flask applications
+Flask-OAuth               - Adds OAuth support to Flask
+Flask-Mailgun             - Adds Mailgun support to Flask applications
+flaskle                   - bottle-like utility decorators for flask
+Flask-Silk                - Adds silk icons to your Flask application or blueprint, or extension.
+Flask-CouchDB             - Provides utilities for using CouchDB with Flask
+Flask-Login               - User session management for Flask
+Flask-Administration      - UNKNOWN
+madame                    - RESTful API for MongoDB built on Flask
+Flask-ErrorMail           - Flask extension for sending administrators e-mails with stacktraces when internal server errors occur.
+Flask-StatHat             - StatHat extension for Flask
+flask-lazyapi             - A Simple, Restful MongoDB Server built on Flask and Flask-Classy
+Flask-Dashed              - Adds a way to easily build admin apps
+Flask-Pigeon              - Flask messages extension.
+Flask-OpenERP             - OpenERP Connector for Flask
+Flask-GoogleAuth          - Super simple OpenID and Google Federated Auth for Flask apps.
+flask-gae_tests           - Flask Extension with base test cases to simplify testing Flask applications on App Engine.
+Flask-Views               - Class based views for Flask
+Flask-Fanstatic           - Flask integration for the Fanstatic resource publishing system.
+Flask-Macro4              - flask/jinja2 templating tools
+Flask-Mitten              - Adds security functions to Flask applications for preventing some of the basic threats.
+Flask-WeasyPrint          - Make PDF in your Flask app with WeasyPrint.
+Flask-Coffee              - Fill your flask with coffee.
+flask-coffee2js           - A small Flask extension that adds CoffeScript support to Flask.
+Flask-Themes2             - Provides infrastructure for theming Flask applications (and supports Flask>=0.6!)
+tinysmtp                  - Basically Flask-Mail without the Flask part
+flask-beans               - A simple API for counting beans with Flask and Redis.
+simpleapi                 - A simple API-framework to provide an easy to use, consistent and portable client/server-architecture (for django, flask and a lot more).
+Flask-MimeRender          - RESTful resource variant rendering using MIME Media-Types, for the Flask Micro Web Framework
+Flask-YAMLConfig          - YAML configurator for Flask app.
+apy                       - Pythonic API development with flask
+flask-mongo-sessions      - Server-side sessions for Flask with MongoDB
+Flask-MetaRoute           - Extra routing capabilities for Flask
+Flask-Uploads             - Flexible and efficient upload handling for Flask
+Flask-Scss                - Adds support for scss files to Flask applications
+Flask-RSTPages            - Adds support for reStructuredText to a Flask application
+Flask-XML-RPC             - Adds support for creating XML-RPC APIs to Flask
+Flask-LDAP                - Flask extension for LDAP auth and profile user
+Flask-Hopak               - Admin interface for Flask that uses Hopak models
+Flask-JSONPages           - Provides static pages to a Flask application based on JSON
+Flask-HTAuth              - Easy to integrate basic HTTP authentication for Flask apps
+Mlask                     - manage.py for Flask
+Flask-Test                - Various unit testing helpers for Flask applications.
+DistelliFrameworkFlask    - Distelli Framework code for Python Flask APIs
+Flask-GAE-Mini-Profiler   - Flask integration of gae_mini_profiler
+Gluino                    - port of web2py libs to bottle, flask, pyramid, tornado (includes copy of modules from the web2py framework)
+flask-command             - flask-command - Run you flask+gunicorn app as a command
+Flask-ToyBox              - Create somehow-RESTful HTTP APIs with Flask
+Flask-Psycopg2            - postgresql adapter for Flask
+HipPocket                 - A wrapper around Flask to ease the development of larger applications
+flask-gae_blobstore       - Flask extension module for working with the blobstore & files apis on App Engine.
+Flask-paginate            - Simple paginate support for Flask
+Flask-WeRoBot             - Writing WeChat Robot by WeRoBot in Flask.
+flask-lesscss             - A small Flask extension that adds LessCSS support to Flask.
+goblet                    - Git web interface using libgit2 and flask
+Flask-ExtDirect           - Adds Ext.Direct support to Flask.
+Flask-Heroku-RQify        - Automatic RQ configuration for your Heroku Flask applications.
+Flask-ShortUrl            - Short URL generaotr for Flask
+trappist                  - Mount your Flask or WSGI app in your Django app.
+Flask-MongoSet            - Access MongoDB from your Flask application
+RESTfulEf                 - A generic restful api generator based on elixir and flask
+Flask-Stache              - Simple mustache templating for Flask applications
+Flask-oDesk               - Adds oDesk API support to Flask
+flask-heroku-mongoengine  - Heroku environment variable configurations for Flask
+Flask-API                 - A Flask extension which allow to build and publish an API for a Flask application
+Flask-Downloader          - Allow a Flask web app to download files on behalf of the user.
+flask-yamli18n            - Use yaml files as translation files in flask
+flask-gae_messages        - Flask extension for working with messages using the mail & xmpp apis on App Engine.
+Flask-BrowserID           - Flask support for BrowserID authentication
+Flask-fillin              - A flask extension that provides utilities to test forms.
+Flask-HTMLBuilder         - Flexible Python-only HTML generation for Flask
+airbrake-flask            - Airbrake client for Python Flask
+Flask-Injector            - Adds Injector support to Flask.
+flask_cm                  - Cloud Mesh: managing multiple virtual machines in Clouds
+Flask-Zen                 - Flask-Script commands to integrate with PyZen.
+Flask-Redis               - Adds Redis support to Flask
+flask-server              - UNKNOWN
+flask-csrf                - A small Flask extension for adding CSRF protection.
+Flask-Router              - Tuned flask's URL routing library
+conmongo                  - A Flask microplugin based on pymongo
+flask_locust              - SQL-Migrations for your Application
+Flask-Misaka              - A pleasant interface between the Flask web framework and the Misaka Markdown parser.
+Flask-APIForm             - A simple form validator for REST APIs in Flask
+flask-xsrf                - A Flask extension for XSRF/CSRF protection.
+Flask-OAuthlib            - OAuthlib for Flask
+Flask-Jsonpify            - A simple Flask extension extending Flask's core jsonify functionality to support JSON-Padded responses, using the callback specified in the querystring
+Flask-MongoRest           - Flask restful API framework for MongoDB/MongoEngine
+Flask-Breve               - Breve templating with Flask
+flask-project-templates   - Paster templates for creating Flask projects
+Flask-BasicAuth           - HTTP basic access authentication for Flask.
+flask-itemshop            - Simple flask blueprint (ItemBP) that you can mount in your app to get a basic purchase flow for a single item. Credit card processing is done with stripe.js and the stripe python API.
+Flask-Shelve              - Shelve support for Flask
+Flask-StatsD              - Access to statsd in your app.
+Flask-Cake                - Flask extension to execute Cake on filesystem events.
+Flask-Simon               - Simple MongoDB Models for Flask
+Flask-REST                - A simple REST toolkit for Flask
+Flask-RQ                  - RQ (Redis Queue) integration for Flask applications
+Flask-MVC                 - A framework to extend Flask to follow the model view controller, MVC, web application development pattern.
+thunderdome-flask         - Thunderdome Flask integration
+Flask-Sass                - A small Flask extension that makes it easy to use Sass with your Flask application.
+Flask-OlinAuth            - A simple Flask extension implementing Olin's authentication
+Flask-Config-Override     - Override Flask configuration via Cookie at runtime.
+Flask-Heroku-Runner       - Minimalist Heroku bootstrap for Flask
+Flask-Compass             - Adds automatic Compass compilation to Flask
+Flask-Mako                - Mako templating support for Flask applications.
+Flask-BabelEx             - Adds i18n/l10n support to Flask applications
+flaskup                   - A simple Flask application to share files.
+Flask-Redistore           - Adds Redis support to your Flask applications
+Flask-Gears               - Gears for Flask
+Flask-Static              - Generates a static website from a Flask application
+Flask-Pushrod             - An API microframework based on the idea of that the UI is just yet another API endpoint
+Flask-FAS                 - Adds Fedora Account System support to Flask
+flask-gemoji              - Add gemojis to your Flask apps
+Flask-Tweepy              - Tweet easily from Flask applications
+Flask-DebugToolbar-Mongo  - MongoDB panel for the Flask Debug Toolbar
+Flask-Wdb                 - Integrate Wdb instead of Werkzeug debugger for Flask applications
+Flask-GoogleFed           - Google Federated Logins for Flask.
+Flask-Sendmail            - Flask extension for sendmail
+Flask-RedisConfig         - Redis-backed config for Flask applications
+Flask-Babel2              - Adds i18n/l10n support to Flask applications
+Flask-Beaker              - Beaker session interface for Flask.
+Flask-Enterprise          - Enterprise capabilities for Flask
+flask_ample               - basic setup of ample for flask
+assentio                  - A minimal, lightweight flask-based blog
+Flask-Jigger              - Web APIs for Flask, unintrusive.
+Flask-DBConfig            - Configure Flask applications from a local DB
+flask-myapi               - Flask-MyAPI - RESTful support library for Flask
+Flask-Negotiate           - Content negotiation utility for Flask apps
+Flask-Passlib             - Flask extension for passlib
+Flask-OldSessions         - Provides a session class that works like the one in Flask before 0.10.
+flask_introspect          - basic setup of ample for flask
+flask-xuacompatible       - Sets X-UA-Compatible HTTP header in your Flask application.
+flask-stylus2css          - A small Flask extension that adds Stylus support to Flask.
+Flask-Memsessions         - A simple extension to drop in memcached session support for Flask.
+flask-mailer              - A Flask extension for sending emails
+plush_web                 - Micro framework inspirated by Sinatra, Express and Flask.
+Flask-FeatureFlags        - Enable or disable features in Flask apps based on configuration
+perfume                   - Simple Object Oriented layer for Flask.
+Flask-UUID                - UUID url converter for Flask routes
+mead                      - [Work In Progress] Flask-based CMS Influenced by WordPress
+Flask-JSONRPC             - JSON-RPC implementation for Flask
+Flask-ReqArg              - A Flask extension that maps request arguments into function arguments.
+Lapin                     - A flask-based web framework
+Flask-MenuBuilder         - An easy way to create menus to use with flask.
+Flask-NoExtRef            - Support for hiding external URL
+flask-rst                 - Create a static website from simple reStructuredText files
+Flask-Attest              - Test Flask applications with Attest
+Flask-MongoObject         - Access MongoDB from your Flask application
+Flask-MakoTemplates       - All future development will be done under the name Flask-Mako at <http://pypi.python.org/pypi/Flask-Mako>
+Flask-Bundle              - Class based tool that behaves like blueprints
+Flask-Failsafe            - A failsafe for the Flask reloader
+vuuvv                     - A web framework using flask, like ror.
+rest-api-blueprint        - Pedagogical blueprint of a REST API in Flask.
+Flask-Cache-PyLibMC       - PyLibMC cache for Flask-Cache, supports multiple operations
+and other awesome things.
+Flasky                    - Lazy man's Flask Application
+flask-jade2underscore     - A small Flask extension adds suppot to Jade2Underscore templates compiler (used in Backbone) to Flask.
+Tornado-Restless          - flask-restless adopted for tornado
+Flask-Raptor              - Raptor support for Flask
+Flask-Reggie              - Flask Regex Routes.
+flask-resources           - 
+Flask-Mobility            - A Flask extension to simplify building mobile-friendly sites.
+Flask-Modus               - Flask Method Overriding Middleware.
+Flask-gzip                - Compress responses in your Flask app with gzip.
+FlaskDeferredHandler      - A Flask handler for the Google Appengine's deferred library
+Flask-Fundatio            - Flask extension to integrate the Foundation front-end framework
+django-kungfu             - A Flasky approach to distributed Django configuration
+flask-samurai             - Easily create Heroku addons in Flask.
+logy                      - A flask based web application for central logging
+Flask-MongoRest-Swagger   - Swagger API generation for Flask-MongoRest
+Flask-Environments        - Environment tools and configuration for Flask applications
+flask_tlsauth             - Flask extension implementing TLS Authentication - simple client certificate CA inclusive
+flask-urls                - A collection of URL-related functions for Flask applications.
+Flask-Boilerplate         - Boilerplate code across various layers of flask, including domain abstractions.
+Flask-AConfig             - A simple extension to add advanced configuration source support.
+Flask-Storages            - 
+Flask-ZODB                - Use the ZODB with Flask
+Flask-DBMigrate           - Database schema change management for Flask\SQLAlchemy
+Flask-Email               - Flask extension for sending email
+Flask-JsonSchema          - Flask extension for validating JSON requets
+flask-canvas              - A Flask extension for Facebook canvas-based apps
+Flask-Resource            - Build resource-oriented Web apps with Flask.
+Flask-mongobit            - MongoBit support in Flask
+Flask-FluidDB             - Fluiddb access for flask
+buchner                   - Flask project template and helper library
+Flask-Storage             - Flask upload and storage extensions.
+Flask-MoSession           - Mongodb based server side session management system for Flask
+skaffold                  - Flask/SQLAlchemy Admin Scaffold
+Flask-Flipper             - 

@@ -76,15 +76,15 @@ def register():
         document = db.users.find({'email': registrationForm.email1.data})
 
         if document.count() == 0:
-            db.users.insert({"uid": getNextSequence(registrationForm.email1.data), 'email': registrationForm.email1.data, 'password': passwd_hash,
+            db.users.insert({'email': registrationForm.email1.data, 'password': passwd_hash,
                             'fname': registrationForm.fname.data, 'lname' :registrationForm.lname.data, 'role': 'user'})
         else:
-            return render_template('login.html', form = registrationForm, loginForm=loginForm,
+            return render_template('register.html', form = registrationForm, loginForm=loginForm,
                                    title='Sign In', providers = kunjika.config['OPENID_PROVIDERS'])
 
         return redirect(url_for('questions'))
     else:
-            return render_template('login.html', form = registrationForm, loginForm=loginForm,
+            return render_template('register.html', form = registrationForm, loginForm=loginForm,
                                    title='Sign In', providers = kunjika.config['OPENID_PROVIDERS'])
 
 @kunjika.route('/check_email', methods=['POST'])
