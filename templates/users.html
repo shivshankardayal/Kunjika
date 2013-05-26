@@ -41,20 +41,35 @@
 	      {% if logged_in is defined %}
 	      <a href="/users/edit/{{ user_id }}">edit</a>
 	      {% endif %}
-	      <a>
 	    </div>
 	  <div class="gravatar">
 	    <img src="{{ email | gravatar }}" />
 	  </div>
 	  </div>
-	    {{ email }}
+	  <div class="data">
+	    <table class="table-user">
+	      <tbody>
+		<tr>
+		  <th>Personal Details</th>
+		  <td>First Name:</td>
+		  <td>{{ fname }}</td>
+		</tr>
+		<tr>
+		  <th></th>
+		  <td>Last Name:</td>
+		  <td>{{ lname }}</td>
+		</tr>
+		<tr>
+		  <th></th>
+		  <td>Email:</td>
+		  <td>{{ email }}</td>
+		</tr>
+	      </tbody>
+	    </table>
+	  </div>
         </div><!-- /.navbar -->
       </div>
-
-
-
       <hr>
-
       <div class="footer">
         <p>&copy; Company 2013</p>
       </div>

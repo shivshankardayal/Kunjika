@@ -24,8 +24,12 @@ cb = CbClient("http://localhost:8091/pools/default","default", "")
 cb1 = Couchbase("localhost", "shiv", "yagyavalkya")
 bucket = cb1["default"]
 
-#Initialize count at first run. Later it is useless
+qc = CbClient("http://localhost:8091/pools/default", "questions", "")
 
+qbucket = Couchbase("localhost", "shiv", "yagyavalkya")
+qb = qbucket["questions"]
+
+#Initialize count at first run. Later it is useless
 try:
     cb.add('count', 0, 0, json.dumps(0))
 except:
@@ -68,9 +72,11 @@ def users(uid=None, name=None):
                     default='identicon',
                     force_default=False,
                     force_lower=False)
-    if session[uid]:
+    if uid in session:
         logged_in=True
-    return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'], lname=user['lname'], email=user['email'], gravatar=gravatar, logged_in=logged_in)
+        return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'], lname=user['lname'], email=user['email'], gravatar=gravatar, logged_in=logged_in)
+    return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'], lname=user['lname'], email=user['email'], gravatar=gravatar)
+
     #return render_template('users.html')
 
 @kunjika.route('/badges/<bid>')
@@ -83,8 +89,13 @@ def unanswered(uid=None):
 
 @kunjika.route('/ask')
 def ask():
-    return render_template('ask.html')
-
+    if request is not None:
+        uid = request.cookies.get('uid')
+        if uid in session:
+            return render_template('ask.html')
+    
+    return redirect(url_for('login'))
+    
 @kunjika.route('/login', methods=['GET', 'POST'])
 def login():
     registrationForm = RegistrationForm(request.form)
