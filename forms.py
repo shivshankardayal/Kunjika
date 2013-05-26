@@ -1,4 +1,4 @@
-from flask_wtf import Form, BooleanField, TextField, PasswordField, validators, RecaptchaField
+from flask_wtf import Form, BooleanField, TextField, PasswordField, validators, RecaptchaField, TextAreaField
 
 class RegistrationForm(Form):
     password = PasswordField('Password', [
@@ -20,3 +20,7 @@ class LoginForm(Form):
         validators.Required(),
         validators.Length(min=8, max=32)
     ])
+
+class QuestionForm(Form):
+    question = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
+    description = TextAreaField('', [validators.Length(min=20, max=200), validators.Required()])

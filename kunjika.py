@@ -3,7 +3,7 @@ from flask import render_template
 from flask import abort, redirect, url_for, flash, make_response
 from flask import request
 import json
-from register import RegistrationForm, LoginForm
+from forms import *
 from pymongo import *
 from flaskext.bcrypt import Bcrypt
 from couchbase.couchbaseclient import VBucketAwareCouchbaseClient as CbClient
@@ -15,7 +15,7 @@ from flaskext.gravatar import Gravatar
 
 kunjika = Flask(__name__)
 
-kunjika.config.from_object('config')
+kunjika.config.from_object('config' )
 kunjika.debug = True
 
 cb = CbClient("http://localhost:8091/pools/default","default", "")
@@ -63,7 +63,7 @@ def tags(tag=None):
     return render_template('tags.html')
 
 @kunjika.route('/users/<uid>')
-def users(uid=None, name=None):
+def users(uid=None):
     user = cb.get(uid)[2]
     user = json.loads(user)
     gravatar = Gravatar(kunjika,
@@ -88,11 +88,14 @@ def unanswered(uid=None):
     return render_template('unanswered.html')
 
 @kunjika.route('/ask')
-def ask():
+def ask(uid=None):
+    questionForm = QuestionForm(request.form)
     if request is not None:
         uid = request.cookies.get('uid')
+        user = cb.get(uid)[2]
+        user = json.loads(user)      
         if uid in session:
-            return render_template('ask.html')
+            return render_template('ask.html', form=questionForm, user_id=user['id'], fname=user['fname'], lname=user['lname'], email=user['email'], logged_in=True)
     
     return redirect(url_for('login'))
     
