@@ -51,6 +51,18 @@
             <div class="wmd-panel">
                 <div id="wmd-button-bar"></div>
                 {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
+                <div  id="insertImageDialog" title="Insert Image">
+                    <h4>
+                        From the web</h4>
+
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h4>
+                        From your computer</h4>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/imageupload"/>
+                </div>
                 <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
             </div>
         </form>
@@ -61,28 +73,100 @@
 {% endblock %}
 
 {% block page_footer %}
-<div class="row-fluid">
-<div class="container">
-    <hr/>
-        <p>&copy; 2013 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
-            Shashikant &amp; Shiv Shankar Dayal.<br/>
-            Licensed under GNU GPL. Contents are under GNU GPL.</p>
-</div>
-</div>
-</div>
+    <div class="row-fluid">
+        <div class="container">
+            <hr/>
+            <p>&copy; 2013 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
+                Shashikant &amp; Shiv Shankar Dayal.<br/>
+                Licensed under GNU GPL. Contents are under GNU GPL.</p>
+        </div>
+    </div>
+    </div>
     <script type="text/javascript">
         (function () {
-            var converter1 = Markdown.getSanitizingConverter();
+            var converter = Markdown.getSanitizingConverter();
 
-            converter1.hooks.chain("preBlockGamut", function (text, rbg) {
+            converter.hooks.chain("preBlockGamut", function (text, rbg) {
                 return text.replace(/^ {0,3}""" *\n((?:.*?\n)+?) {0,3}""" *$/gm, function (whole, inner) {
                     return "<blockquote>" + rbg(inner) + "</blockquote>\n";
                 });
             });
+            if ($('#wmd-input').length > 0) {
+                var converter = new Markdown.Converter();
+                var help = function () {
+                    window.open('http://stackoverflow.com/editing-help');
+                }
+                var editor = new Markdown.Editor(converter, null, { handler: help });
 
-            var editor1 = new Markdown.Editor(converter1);
+                var $dialog = $('#insertImageDialog').dialog({
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+                var $loader = $('span.loading-small', $dialog);
+                var $url = $('input[type=text]', $dialog);
+                var $file = $('input[type=file]', $dialog);
 
-            editor1.run();
+                editor.hooks.set('insertImageDialog', function (callback) {
+
+                    // dialog functions
+                    var dialogInsertClick = function () {
+                        callback($url.val().length > 0 ? $url.val() : null);
+                        dialogClose();
+                    };
+
+                    var dialogCancelClick = function () {
+                        dialogClose();
+                        callback(null);
+                    };
+
+                    var dialogClose = function () {
+                        // clean up inputs
+                        $url.val('');
+                        $file.val('');
+                        $dialog.dialog('close');
+                    };
+
+                    // set up dialog button handlers
+                    $dialog.dialog('option', 'buttons', {
+                        'Insert': dialogInsertClick,
+                        'Cancel': dialogCancelClick
+                    });
+
+                    var uploadStart = function () {
+                        $loader.show();
+                    };
+
+                    var uploadComplete = function (response) {
+                        $loader.hide();
+                        if (response.success) {
+                            callback(response.imagePath);
+                            dialogClose();
+                        } else {
+                            alert(response.message);
+                            $file.val('');
+                        }
+                    };
+
+                    // upload
+                    $file.unbind('change').ajaxfileupload({
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
+
+                    // open the dialog
+                    $dialog.dialog('open');
+
+                    return true; // tell the editor that we'll take care of getting the image url
+                });
+
+                editor.run();
+            }
+
+
         })();
     </script>
 {% endblock %}

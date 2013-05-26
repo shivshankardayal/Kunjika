@@ -185,3 +185,19 @@ label.error {
 #push #footer {
         height: 60px;
 }
+.loading-small { width: 16px; height: 16px; background: url('/static/img/ajax-loader.gif') no-repeat;
+                 display: inline-block; }
+#insertImageDialog { display:none; padding: 10px; }
+#insertImageDialog h4 { margin-bottom: 10px; }
+#insertImageDialog input[type=text] { width: 260px; }
+#insertImageDialog .loading-small { display:none; float: left; padding-right: 5px; }
+
+.ui-dialog{
+    background:#fff !important;
+    width: 500px !important;
+    height: 250px !important;
+}
+
+.ui-dialog-titlebar{
+    background: #ddd !important;
+}
