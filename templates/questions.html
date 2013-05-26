@@ -12,6 +12,7 @@
 
 {% block css_site %}
 <link href="/static/css/base.css" rel="stylesheet">
+
 {% endblock %}
 {% block container %}
 <div class="masthead">
@@ -25,7 +26,12 @@
                 <li><a href="/users">Users</a></li>
                 <li><a href="/unasnweres">Unanswered</a></li>
                 <li><a href="/ask" class="ask">Ask</a></li>
+		{% if logged_in is defined %}
+                <li><a href="/users/{{ user_id }}" class="login">{{ user_name }}</a></li>
+                <li><a href="/logout" class="login">Logout</a></li>
+		{% else %}
                 <li><a href="/login" class="login">Login</a></li>
+		{% endif %}
               </ul>
             </div>
           </div>

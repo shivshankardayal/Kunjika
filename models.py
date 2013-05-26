@@ -1,10 +1,21 @@
-from kunjika import kunjika
-from mongoengine import *
-import datetime
+from kunjika import cb
+class User():
 
-connect('kunjika', host=kunjika.config['DB_HOST'], port=kunjika.config['DB_PORT'])
+    def is_authenticated(self):
+        return True
 
-class Comments(Document):
-    comment = StringField(required=True, max_length=kunjika.config['MAX_COMMENT_LENGTH'],
-                          min_length=kunjika.config['MIN_COMMENT_LENGTH'])
-    commentator =
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self, email):
+        try:
+            document = cb.get(email)[2]
+            return unicode(document['email'])
+        except:
+            return None
+
+#    def __repr__(self):
+#        return '<User %r>' % (self.fname)

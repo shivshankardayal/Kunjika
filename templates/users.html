@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{title}} - Kunjika{% endblock %}
+{% block css_bootstrap %}
+{{ super() }}
+{# TODO: probably remove this and let the user set it manually? #}
+<style>
+  body {
+    padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+  }
+</style>
+{% endblock %}
+
+{% block css_site %}
+<link href="/static/css/base.css" rel="stylesheet">
+
+{% endblock %}
+{% block container %}
+<div class="masthead">
+        <h3 class="muted">Kunjika</h3>
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="container">
+              <ul class="nav">
+                <li><a href="/questions">Questions</a></li>
+                <li><a href="/tags">Tags</a></li>
+                <li class="active"><a href="/users">Users</a></li>
+                <li><a href="/unasnweres">Unanswered</a></li>
+                <li><a href="/ask" class="ask">Ask</a></li>
+		{% if logged_in is defined %}
+                <li><a href="/users/{{ user_id }}" class="login">{{ fname }}</a></li>
+                <li><a href="/logout" class="login">Logout</a></li>
+		{% else %}
+                <li><a href="/login" class="login">Login</a></li>
+		{% endif %}
+              </ul>
+            </div>
+          </div>
+	  <div class="userheader">
+	    <h3>{{ fname }} {{ lname }}</h3>
+	    <div class="fr">
+	      {% if logged_in is defined %}
+	      <a href="/users/edit/{{ user_id }}">edit</a>
+	      {% endif %}
+	      <a>
+	    </div>
+	  <div class="gravatar">
+	    <img src="{{ email | gravatar }}" />
+	  </div>
+	  </div>
+	    {{ email }}
+        </div><!-- /.navbar -->
+      </div>
+
+
+
+      <hr>
+
+      <div class="footer">
+        <p>&copy; Company 2013</p>
+      </div>
+{% endblock %}
