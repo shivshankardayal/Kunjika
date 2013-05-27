@@ -55,7 +55,7 @@ def questions(qid=None, uid=None, name=None, email=None):
             return resp
     except:
         pass
-    
+
     return render_template('questions.html', title='Questions')
 
 @kunjika.route('/tags/<tag>')
@@ -93,12 +93,12 @@ def ask(uid=None):
     if request is not None:
         uid = request.cookies.get('uid')
         user = cb.get(uid)[2]
-        user = json.loads(user)      
+        user = json.loads(user)
         if uid in session:
             return render_template('ask.html', form=questionForm, user_id=user['id'], fname=user['fname'], lname=user['lname'], email=user['email'], logged_in=True)
-    
+
     return redirect(url_for('login'))
-    
+
 @kunjika.route('/login', methods=['GET', 'POST'])
 def login():
     registrationForm = RegistrationForm(request.form)
@@ -134,7 +134,7 @@ def login():
             return redirect(url_for('questions'))
             #render_template('login.html', form = registrationForm, loginForm=loginForm, title='Sign In',
             #                providers = kunjika.config['OPENID_PROVIDERS'])
-            
+
     else:
         render_template('login.html', form = registrationForm, loginForm=loginForm, title='Sign In',
                         providers = kunjika.config['OPENID_PROVIDERS'])
@@ -152,9 +152,9 @@ def register():
 
         #document = None
         data = {}
-        
+
         view = bucket.view("_design/dev_get_role/_view/get_role")
-        
+
         if len(view) == 0:
             data['email'] = registrationForm.email1.data
             data['password'] = passwd_hash
@@ -166,7 +166,7 @@ def register():
             did = cb.get('count')[2]
             data['id'] = did
             cb.add(str(did), 0, 0, json.dumps(data))
-            
+
             return redirect(url_for('questions'))
 
         try:
@@ -183,7 +183,7 @@ def register():
                 did = cb.get('count')[2]
                 data['id'] = did
                 cb.add(str(did), 0, 0, json.dumps(data))
-                
+
                 return redirect(url_for('questions'))
 
         return render_template('register.html', form = registrationForm, loginForm=loginForm,
@@ -214,7 +214,7 @@ def logout():
         session.pop(uid, None)
     if 'admin' in session:
         session.pop('admin', None)
-        
+
     for k, v in session.iteritems():
         print str(k) + " " + str(v)
 

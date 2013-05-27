@@ -87,15 +87,15 @@
     </div>
     <script type="text/javascript">
         (function () {
-            var converter = Markdown.getSanitizingConverter();
+            /*var converter = Markdown.getSanitizingConverter();
 
             converter.hooks.chain("preBlockGamut", function (text, rbg) {
                 return text.replace(/^ {0,3}""" *\n((?:.*?\n)+?) {0,3}""" *$/gm, function (whole, inner) {
                     return "<blockquote>" + rbg(inner) + "</blockquote>\n";
                 });
-            });
+            });*/
 
-            var converter1 = Markdown.getSanitizingConverter();
+           /* var converter1 = Markdown.getSanitizingConverter();
                 Markdown.Extra.init(converter1, {
                   extensions: "all",
                   highlighter: "prettify"
@@ -115,7 +115,7 @@
                 });
 
                 // "all" is the default
-                Markdown.Extra.init(converter2, {highlighter: "prettify"});
+(                Markdown.Extra.init(converter2, {highlighter: "prettify"});
 
                 var help = function () { alert("Do you need help?"); }
                 var options = {
@@ -125,13 +125,30 @@
                 var editor2 = new Markdown.Editor(converter2, "-second", options);
                 editor2.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
 
-                editor2.run();
+                editor2.run();*/
 
             if ($('#wmd-input').length > 0) {
-                var converter = new Markdown.Converter();
+                var converter = new Markdown.getSanitizingConverter();
                 var help = function () {
                     window.open('http://stackoverflow.com/editing-help');
                 }
+                Markdown.Extra.init(converter, {
+                  extensions: "all",
+                  highlighter: "prettify"
+                });
+                converter.hooks.chain("preBlockGamut", function (text, rbg) {
+                return text.replace(/^ {0,3}""" *\n((?:.*?\n)+?) {0,3}""" *$/gm, function (whole, inner) {
+                    return "<blockquote>" + rbg(inner) + "</blockquote>\n";
+                    });
+                });
+
+                converter.hooks.chain("preConversion", function (text) {
+                    return text.replace(/\b(a\w*)/gi, "*$1*");
+                });
+                converter.hooks.chain("plainLinkText", function (url) {
+                    return "This is a link to " + url.replace(/^https?:\/\//, "");
+                });
+
                 var editor = new Markdown.Editor(converter, null, { handler: help });
 
                 var $dialog = $('#insertImageDialog').dialog({
@@ -198,7 +215,7 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-
+                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
                 editor.run();
             }
 
