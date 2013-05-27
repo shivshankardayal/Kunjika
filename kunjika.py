@@ -1,22 +1,30 @@
-from flask import Flask, session
-from flask import render_template
-from flask import abort, redirect, url_for, flash, make_response
-from flask import request
+from flask import Flask, session, render_template, abort, redirect, url_for, flash, make_response, request
 import json
 from forms import *
 from pymongo import *
 from flaskext.bcrypt import Bcrypt
 from couchbase.couchbaseclient import VBucketAwareCouchbaseClient as CbClient
 from couchbase.client import Couchbase
-import uuid
 import urllib2
 from pprint import pprint
 from flaskext.gravatar import Gravatar
+from werkzeug import secure_filename, SharedDataMiddleware
+import os
+from os.path import basename
+
+UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 kunjika = Flask(__name__)
-
+kunjika.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+kunjika.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 kunjika.config.from_object('config' )
 kunjika.debug = True
+kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
+                 build_only=True)
+kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
+    '/uploads':  kunjika.config['UPLOAD_FOLDER']
+})
 
 cb = CbClient("http://localhost:8091/pools/default","default", "")
 #bucket = cb["bucket"]
@@ -67,11 +75,11 @@ def users(uid=None):
     user = cb.get(uid)[2]
     user = json.loads(user)
     gravatar = Gravatar(kunjika,
-                    size=100,
-                    rating='g',
-                    default='identicon',
-                    force_default=False,
-                    force_lower=False)
+                        size=100,
+                        rating='g',
+                        default='identicon',
+                        force_default=False,
+                        force_lower=False)
     if uid in session:
         logged_in=True
         return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'], lname=user['lname'], email=user['email'], gravatar=gravatar, logged_in=logged_in)
@@ -219,6 +227,58 @@ def logout():
         print str(k) + " " + str(v)
 
     return redirect(url_for('questions'))
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+@kunjika.route('/image_upload', methods=['GET', 'POST'])
+def image_upload():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            pathname = os.path.join(kunjika.config['UPLOAD_FOLDER'], filename)
+            saved = False
+            suffix = 0
+            extension = os.path.splitext(basename(pathname))[1]
+            filename = os.path.splitext(basename(filename))[0]
+            print extension
+            print filename
+            f = filename
+            new_filename = ""
+            while saved != True:
+                try:
+                    with open(pathname):
+                        suffix += 1
+                        new_filename = f + '_' + str(suffix) + extension
+                        new_pathname = os.path.join(kunjika.config['UPLOAD_FOLDER'], new_filename)
+                        filename = new_filename
+                        try:
+                            with open(new_pathname):
+                                next
+                        except IOError:
+                            file.save(new_pathname)
+                            saved = True
+                            break
+                except IOError:
+                    try:
+                        file.save(pathname)
+                        saved = True
+                        break
+                    except IOError:
+                        saved = False
+                        break
+            data = {}
+
+            if saved == True:
+                data['success'] = "true"
+                data['imagePath'] = "http://localhost:5000/uploads/" + filename
+            else:
+                data['success'] = "false"
+                data['mesage'] = "Invalid image file"
+
+            return json.dumps(data)
 
 if __name__ == '__main__':
     kunjika.run()

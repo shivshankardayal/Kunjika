@@ -37,7 +37,7 @@
 
           // Skip elements that are already setup. May replace this 
           //  with uninit() later, to allow updating that settings
-          if($element.data('ajaxUploader-setup') === true) return;
+          //if($element.data('ajaxUploader-setup') === true) return;
 
           $element.change(function()
           {

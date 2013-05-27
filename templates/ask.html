@@ -54,17 +54,14 @@
             <div class="wmd-panel">
                 <div id="wmd-button-bar"></div>
                 {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
-                <div  id="insertImageDialog" title="Insert Image">
-                    <h4>
-                        From the web</h4>
-
+                <div  id="insertImageDialog" title="&nbsp;Insert Image">
+                    <h6>From the web</h6>
                     <p>
-                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                       <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
                     </p>
-                    <h4>
-                        From your computer</h4>
+                    <h6>From your computer (Max. 2MB)</h6>
                     <span class="loading-small"></span>
-                    <input type="file" name="file" id="file" data-action="/imageupload"/>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
                 </div>
                 <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
             </div>
@@ -201,6 +198,7 @@
                             alert(response.message);
                             $file.val('');
                         }
+	                editor.refreshPreview();
                     };
 
                     // upload
@@ -218,8 +216,6 @@
                 editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
                 editor.run();
             }
-
-
         })();
     </script>
 {% endblock %}
