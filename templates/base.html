@@ -20,6 +20,15 @@
     {% block css_bootstrap_responsive %}
     <link href="/static/css/bootstrap-responsive{{ debugmin() }}.css" rel="stylesheet">
     {% endblock %}
+            {% block js_jquery %}
+    {# Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline #}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="/static/js/jquery-1.9.1.min.js"><\/script>')</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.ajaxfileupload.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
+
+      {% endblock %}
     {% block css_site %}
     {% endblock %}
     {% block css_extra %}
@@ -69,15 +78,7 @@
     {% block post_container %}
     {% endblock %}
 
-    {% block js_jquery %}
-    {# Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline #}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="/static/js/jquery-1.9.1.min.js"><\/script>')</script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery.ajaxfileupload.js"></script>
-    <script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 
-      {% endblock %}
       {% block js_bootstrap %}
       <script src="/static/js/bootstrap{{ debugmin() }}.js"></script>
       {% endblock %}

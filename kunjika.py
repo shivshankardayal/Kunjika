@@ -13,20 +13,20 @@ import os
 from os.path import basename
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 kunjika = Flask(__name__)
 kunjika.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 kunjika.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
-kunjika.config.from_object('config' )
+kunjika.config.from_object('config')
 kunjika.debug = True
 kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
-                 build_only=True)
+                     build_only=True)
 kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
-    '/uploads':  kunjika.config['UPLOAD_FOLDER']
+    '/uploads': kunjika.config['UPLOAD_FOLDER']
 })
 
-cb = CbClient("http://localhost:8091/pools/default","default", "")
+cb = CbClient("http://localhost:8091/pools/default", "default", "")
 #bucket = cb["bucket"]
 
 cb1 = Couchbase("localhost", "shiv", "yagyavalkya")
@@ -44,6 +44,7 @@ except:
     pass
 
 bcrypt = Bcrypt(kunjika)
+
 
 @kunjika.route('/', methods=['GET', 'POST'])
 @kunjika.route('/questions', methods=['GET', 'POST'])
@@ -66,9 +67,11 @@ def questions(qid=None, uid=None, name=None, email=None):
 
     return render_template('questions.html', title='Questions')
 
+
 @kunjika.route('/tags/<tag>')
 def tags(tag=None):
     return render_template('tags.html')
+
 
 @kunjika.route('/users/<uid>')
 def users(uid=None):
@@ -81,19 +84,24 @@ def users(uid=None):
                         force_default=False,
                         force_lower=False)
     if uid in session:
-        logged_in=True
-        return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'], lname=user['lname'], email=user['email'], gravatar=gravatar, logged_in=logged_in)
-    return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'], lname=user['lname'], email=user['email'], gravatar=gravatar)
+        logged_in = True
+        return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
+                               lname=user['lname'], email=user['email'], gravatar=gravatar, logged_in=logged_in)
+    return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
+                           lname=user['lname'], email=user['email'], gravatar=gravatar)
 
     #return render_template('users.html')
+
 
 @kunjika.route('/badges/<bid>')
 def badge(bid=None):
     return render_template('badge.html')
 
+
 @kunjika.route('/unanswered/<uid>')
 def unanswered(uid=None):
     return render_template('unanswered.html')
+
 
 @kunjika.route('/ask')
 def ask(uid=None):
@@ -103,9 +111,11 @@ def ask(uid=None):
         user = cb.get(uid)[2]
         user = json.loads(user)
         if uid in session:
-            return render_template('ask.html', form=questionForm, user_id=user['id'], fname=user['fname'], lname=user['lname'], email=user['email'], logged_in=True)
+            return render_template('ask.html', title='ask', form=questionForm, user_id=user['id'], fname=user['fname'],
+                                   lname=user['lname'], email=user['email'], logged_in=True)
 
     return redirect(url_for('login'))
+
 
 @kunjika.route('/login', methods=['GET', 'POST'])
 def login():
@@ -115,7 +125,8 @@ def login():
     if loginForm.validate_on_submit() and request.method == 'POST':
         try:
             #document = json.loads(document)
-            document = urllib2.urlopen("http://localhost:8092/default/_design/dev_get_role/_view/get_id_from_email?key=" + '"' + loginForm.email.data +'"').read()
+            document = urllib2.urlopen(
+                "http://localhost:8092/default/_design/dev_get_role/_view/get_id_from_email?key=" + '"' + loginForm.email.data + '"').read()
             document = json.loads(document)
             did = document['rows'][0]['id']
             document = cb.get(did)[2]
@@ -135,8 +146,8 @@ def login():
 
             else:
                 #print "Hello"
-                render_template('login.html', form = registrationForm, loginForm=loginForm, title='Sign In',
-                                providers = kunjika.config['OPENID_PROVIDERS'])
+                render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
+                                providers=kunjika.config['OPENID_PROVIDERS'])
 
         except:
             return redirect(url_for('questions'))
@@ -144,18 +155,19 @@ def login():
             #                providers = kunjika.config['OPENID_PROVIDERS'])
 
     else:
-        render_template('login.html', form = registrationForm, loginForm=loginForm, title='Sign In',
-                        providers = kunjika.config['OPENID_PROVIDERS'])
+        render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
+                        providers=kunjika.config['OPENID_PROVIDERS'])
 
-    return render_template('login.html', form = registrationForm, loginForm=loginForm, title='Sign In',
-                           providers = kunjika.config['OPENID_PROVIDERS'])
+    return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
+                           providers=kunjika.config['OPENID_PROVIDERS'])
+
 
 @kunjika.route('/register', methods=['POST'])
 def register():
     loginForm = LoginForm(request.form)
     registrationForm = RegistrationForm(request.form)
 
-    if registrationForm.validate_on_submit() and request.method =='POST':
+    if registrationForm.validate_on_submit() and request.method == 'POST':
         passwd_hash = bcrypt.generate_password_hash(registrationForm.password.data)
 
         #document = None
@@ -194,15 +206,15 @@ def register():
 
                 return redirect(url_for('questions'))
 
-        return render_template('register.html', form = registrationForm, loginForm=loginForm,
-                               title='Register', providers = kunjika.config['OPENID_PROVIDERS'])
+        return render_template('register.html', form=registrationForm, loginForm=loginForm,
+                               title='Register', providers=kunjika.config['OPENID_PROVIDERS'])
 
-    return render_template('register.html', form = registrationForm, loginForm=loginForm,
-                           title='Register', providers = kunjika.config['OPENID_PROVIDERS'])
+    return render_template('register.html', form=registrationForm, loginForm=loginForm,
+                           title='Register', providers=kunjika.config['OPENID_PROVIDERS'])
+
 
 @kunjika.route('/check_email', methods=['POST'])
 def check_email():
-
     email = request.form['email']
 
     try:
@@ -212,6 +224,7 @@ def check_email():
 
     if document != None:
         return '0'
+
 
 @kunjika.route('/logout')
 def logout():
@@ -228,9 +241,11 @@ def logout():
 
     return redirect(url_for('questions'))
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 
 @kunjika.route('/image_upload', methods=['GET', 'POST'])
 def image_upload():
@@ -280,6 +295,12 @@ def image_upload():
                 data['mesage'] = "Invalid image file"
 
             return json.dumps(data)
+
+
+@kunjika.route('/get_tags', methods=['GET'])
+def get_tags(q=None):
+    return json.dumps([{"id": "0", "name": "0"}])
+
 
 if __name__ == '__main__':
     kunjika.run()
