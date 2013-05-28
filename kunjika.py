@@ -1,7 +1,6 @@
 from flask import Flask, session, render_template, abort, redirect, url_for, flash, make_response, request
 import json
 from forms import *
-from pymongo import *
 from flaskext.bcrypt import Bcrypt
 from couchbase.couchbaseclient import VBucketAwareCouchbaseClient as CbClient
 from couchbase.client import Couchbase
@@ -11,6 +10,7 @@ from flaskext.gravatar import Gravatar
 from werkzeug import secure_filename, SharedDataMiddleware
 import os
 from os.path import basename
+import time
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -103,10 +103,34 @@ def unanswered(uid=None):
     return render_template('unanswered.html')
 
 
-@kunjika.route('/ask')
+@kunjika.route('/ask', methods=['GET', 'POST'])
 def ask(uid=None):
     questionForm = QuestionForm(request.form)
-    if request is not None:
+
+    if questionForm.validate_on_submit() and request.method == 'POST':
+        title = questionForm.question.data
+        print questionForm.description.data
+        print questionForm.tags.data
+        length = len(title)
+        print length
+        prev_dash = False
+        title = title.lower()
+        new_title = ""
+        for i in range(length):
+            c = title[i]
+            if c == ' ' or c == ',' or c == '.' or c == '/' or c == '\\' or c == '-':
+                if not prev_dash:
+                    new_title += '-'
+                    prev_dash = True
+            elif ord(c) > 160:
+                c = c.decode('UTF-8').lower()
+                new_title += c
+                prev_dash = False
+            else:
+                new_title += c
+                prev_dash = False
+        print new_title
+    elif request is not None:
         uid = request.cookies.get('uid')
         user = cb.get(uid)[2]
         user = json.loads(user)
