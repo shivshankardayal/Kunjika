@@ -1,187 +1,192 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Kunjika{% endblock %}
 {% block css_bootstrap %}
-{{ super() }}
-{# TODO: probably remove this and let the user set it manually? #}
-<style>
-  body {
-  padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-  }
-</style>
+    {{ super() }}
+    {# TODO: probably remove this and let the user set it manually? #}
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
 {% endblock %}
 
 {% block css_site %}
-<link href="/static/css/base.css" rel="stylesheet">
-<link href="/static/css/wmd.css" rel="stylesheet">
-<link href="/static/css/prettify.css" rel="stylesheet">
-<script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
-<script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
-<script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
-<script type="text/javascript" src="/static/js/prettify.js"></script>
-<script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
+    <link href="/static/css/base.css" rel="stylesheet">
+    <link href="/static/css/wmd.css" rel="stylesheet">
+    <link href="/static/css/prettify.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
+    <script type="text/javascript" src="/static/js/prettify.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
 
 {% endblock %}
 {% block container %}
-<div class="masthead">
-  <h3 class="muted">Kunjika</h3>
+    <div class="masthead">
+    <h3 class="muted">Kunjika</h3>
 
-  <div class="navbar">
-    <div class="navbar-inner">
-      <div class="container">
-        <ul class="nav">
-          <li><a href="/questions">Questions</a></li>
-          <li><a href="/tags">Tags</a></li>
-          <li><a href="/users">Users</a></li>
-          <li><a href="/unasnweres">Unanswered</a></li>
-          <li class="active"><a href="/ask" class="ask">Ask</a></li>
-          {% if logged_in is defined %}
-          <li><a href="/users/{{ user_id }}" class="login">{{ fname }}</a></li>
-          <li><a href="/logout" class="login">Logout</a></li>
-          {% else %}
-          <li><a href="/login" class="login">Login</a></li>
-          {% endif %}
-        </ul>
-      </div>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container">
+                <ul class="nav">
+                    <li><a href="/questions">Questions</a></li>
+                    <li><a href="/tags">Tags</a></li>
+                    <li><a href="/users">Users</a></li>
+                    <li><a href="/unasnweres">Unanswered</a></li>
+                    <li class="active"><a href="/ask" class="ask">Ask</a></li>
+                    {% if logged_in is defined %}
+                        <li><a href="/users/{{ user_id }}" class="login">{{ fname }}</a></li>
+                        <li><a href="/logout" class="login">Logout</a></li>
+                    {% else %}
+                        <li><a href="/login" class="login">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
     </div>
-  </div>
-  <!-- /.navbar -->
-  <div class="row-fluid">
-    <div class="askbar" id="askbar">
-      <form class="ask-form" method="post" aciton="/ask">
-        {% from "macros.html" import render_field %}
-        {{ form.csrf_token }}
-        {{ render_field(form.question, class="question input-x-large span6", style="margin-left:25px;", placeholder="Please ask your question here?") }}
-        <div class="wmd-panel">
-          <div id="wmd-button-bar"></div>
-          {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
-          <div  id="insertImageDialog" title="&nbsp;Insert Image">
-            <h6>From the web</h6>
-            <p>
-              <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-            </p>
-            <h6>From your computer (Max. 2MB)</h6>
-            <span class="loading-small"></span>
-            <input type="file" name="file" id="file" data-action="/image_upload"/>
-          </div>
-          <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-	<div style="clear:both;"> </div>
-	{{ render_field(form.tags, class="input-xlarge span6", style="margin-left:45px; margin-top=30px;", placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
-        <div class="controls">
-          <button class="btn btn-primary">
-            Ask Question?
-          </button>
-        </div> 
-      </form>
-    </div>
-    <div id="sidebar" style="float:right">
-      side bar
-    </div>
-    {% endblock %}
-
-    {% block page_footer %}
+    <!-- /.navbar -->
     <div class="row-fluid">
-      <div class="container">
-        <hr/>
-        <p>&copy; 2013 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
-          Shashikant &amp; Shiv Shankar Dayal.<br/>
-          Licensed under GNU GPL. Contents are under GNU GPL.</p>
-      </div>
+    <div class="askbar" id="askbar">
+        <form class="ask-form" method="post" aciton="/ask">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            {{ render_field(form.question, class="question input-x-large span8", style="margin-left:25px;", placeholder="Please ask your question here?") }}
+            <div class="wmd-panel">
+                <div id="wmd-button-bar"></div>
+                {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
+                <div id="insertImageDialog" title="&nbsp;Insert Image">
+                    <h6>From the web</h6>
+
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
+                </div>
+                <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+                <div style="clear:both;"></div>
+                {{ render_field(form.tags, class="input-xlarge span8", style="margin-left:45px; margin-top=30px;", placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
+                <div class="controls">
+                    <button class="btn btn-primary">
+                        Ask Question?
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
-  </div>
-  <script type="text/javascript">
-    (function () {
-    if ($('#wmd-input').length > 0) {
-    var converter = new Markdown.getSanitizingConverter();
-    var help = function () {
-    window.open('http://stackoverflow.com/editing-help');
-    }
-    Markdown.Extra.init(converter, {
-    extensions: "all",
-    highlighter: "prettify"
-    });
-    converter.hooks.chain("preBlockGamut", function (text, rbg) {
-    return text.replace(/^ {0,3}""" *\n((?:.*?\n)+?) {0,3}""" *$/gm, function (whole, inner) {
-    return "<blockquote>" + rbg(inner) + "</blockquote>\n";
-    });
-    });
+        <div style="clear:both">
+        </div>
+    <div id="sidebar" style="float:right">
+        side bar
+    </div>
+</div>
+{% endblock %}
 
-    converter.hooks.chain("preConversion", function (text) {
-    return text.replace(/\b(a\w*)/gi, "*$1*");
-    });
-    converter.hooks.chain("plainLinkText", function (url) {
-    return "This is a link to " + url.replace(/^https?:\/\//, "");
-    });
+{% block page_footer %}
+    <div class="row-fluid">
+        <div class="container">
+            <hr/>
+            <p>&copy; 2013 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
+                Shashikant &amp; Shiv Shankar Dayal.<br/>
+                Licensed under GNU GPL. Contents are under GNU GPL.</p>
+        </div>
+    </div>
+</div>
+    <script type="text/javascript">
+        (function () {
+            if ($('#wmd-input').length > 0) {
+                var converter = new Markdown.getSanitizingConverter();
+                var help = function () {
+                    window.open('http://stackoverflow.com/editing-help');
+                }
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "prettify"
+                });
+                converter.hooks.chain("preBlockGamut", function (text, rbg) {
+                    return text.replace(/^ {0,3}""" *\n((?:.*?\n)+?) {0,3}""" *$/gm, function (whole, inner) {
+                        return "<blockquote>" + rbg(inner) + "</blockquote>\n";
+                    });
+                });
 
-    var editor = new Markdown.Editor(converter, null, { handler: help });
+                converter.hooks.chain("preConversion", function (text) {
+                    return text.replace(/\b(a\w*)/gi, "*$1*");
+                });
+                converter.hooks.chain("plainLinkText", function (url) {
+                    return "This is a link to " + url.replace(/^https?:\/\//, "");
+                });
 
-    var $dialog = $('#insertImageDialog').dialog({
-    autoOpen: false,
-    closeOnEscape: false,
-    open: function (event, ui) {
-    $(".ui-dialog-titlebar-close").hide();
-    }
-    });
-    var $loader = $('span.loading-small', $dialog);
-    var $url = $('input[type=text]', $dialog);
-    var $file = $('input[type=file]', $dialog);
+                var editor = new Markdown.Editor(converter, null, { handler: help });
 
-    editor.hooks.set('insertImageDialog', function (callback) {
+                var $dialog = $('#insertImageDialog').dialog({
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+                var $loader = $('span.loading-small', $dialog);
+                var $url = $('input[type=text]', $dialog);
+                var $file = $('input[type=file]', $dialog);
 
-    // dialog functions
-    var dialogInsertClick = function () {
-    callback($url.val().length > 0 ? $url.val() : null);
-    dialogClose();
-    };
+                editor.hooks.set('insertImageDialog', function (callback) {
 
-    var dialogCancelClick = function () {
-    dialogClose();
-    callback(null);
-    };
+                    // dialog functions
+                    var dialogInsertClick = function () {
+                        callback($url.val().length > 0 ? $url.val() : null);
+                        dialogClose();
+                    };
 
-    var dialogClose = function () {
-    // clean up inputs
-    $url.val('');
-    $file.val('');
-    $dialog.dialog('close');
-    };
+                    var dialogCancelClick = function () {
+                        dialogClose();
+                        callback(null);
+                    };
 
-    // set up dialog button handlers
-    $dialog.dialog('option', 'buttons', {
-    'Insert': dialogInsertClick,
-    'Cancel': dialogCancelClick
-    });
+                    var dialogClose = function () {
+                        // clean up inputs
+                        $url.val('');
+                        $file.val('');
+                        $dialog.dialog('close');
+                    };
 
-    var uploadStart = function () {
-    $loader.show();
-    };
+                    // set up dialog button handlers
+                    $dialog.dialog('option', 'buttons', {
+                        'Insert': dialogInsertClick,
+                        'Cancel': dialogCancelClick
+                    });
 
-    var uploadComplete = function (response) {
-    $loader.hide();
-    if (response.success) {
-    callback(response.imagePath);
-    dialogClose();
-    } else {
-    alert(response.message);
-    $file.val('');
-    }
-    editor.refreshPreview();
-    };
+                    var uploadStart = function () {
+                        $loader.show();
+                    };
 
-    // upload
-    $file.unbind('change').ajaxfileupload({
-    action: $file.attr('data-action'),
-    onStart: uploadStart,
-    onComplete: uploadComplete
-    });
+                    var uploadComplete = function (response) {
+                        $loader.hide();
+                        if (response.success) {
+                            callback(response.imagePath);
+                            dialogClose();
+                        } else {
+                            alert(response.message);
+                            $file.val('');
+                        }
+                        editor.refreshPreview();
+                    };
 
-    // open the dialog
-    $dialog.dialog('open');
+                    // upload
+                    $file.unbind('change').ajaxfileupload({
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
 
-    return true; // tell the editor that we'll take care of getting the image url
-    });
-    editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
-    editor.run();
-    }
-    })();
-  </script>
-  {% endblock %}
+                    // open the dialog
+                    $dialog.dialog('open');
+
+                    return true; // tell the editor that we'll take care of getting the image url
+                });
+                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.run();
+            }
+        })();
+    </script>
+{% endblock %}

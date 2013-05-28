@@ -1,5 +1,5 @@
 .wmd-panel {
-    min-width: 70%;
+    min-width: 100%;
 }
 
 .wmd-button-bar {
@@ -9,7 +9,7 @@
 
 .wmd-input {
     height: 300px;
-    width: 70%;
+    width: 100%;
     border: 1px solid DarkGray;
     float: left;
     margin-right: 100px;

@@ -201,3 +201,7 @@ label.error {
 .ui-dialog-titlebar{
     background: #ddd !important;
 }
+
+.askbar {
+    width: 70%;
+}

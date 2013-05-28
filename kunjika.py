@@ -264,6 +264,7 @@ def image_upload():
                 except IOError:
                     try:
                         file.save(pathname)
+                        filename = os.path.splitext(basename(pathname))[0] + os.path.splitext(basename(pathname))[1]
                         saved = True
                         break
                     except IOError:
