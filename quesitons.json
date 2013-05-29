@@ -1,12 +1,35 @@
 {
     "_comments":"This is a comment about how questions would look like in database",
     "qid": "integer identifying question id",
-    "content": [[{"title": "Question's current title"},
-        { "description": "Question's current description"
-        },
-        { "tags":"comma separated tags"
-        },
-        { "poster":"poster id"
-        }
-    ]]
+    "content": {
+	{"url": "Question's current url"
+	},
+	{"title": "Question's current title"},
+	{ "description": "Question's current description"
+	},
+	{ "tags":"comma separated tags"
+	},
+	{ "op":"op id"
+	},
+	{"ts":"timestamp"
+	},
+	{"ip":"ip address"
+	}
+    }
+    "edits" :[ 
+	{
+	    {"rid":"revision number"},
+	    {"title": "diff"},
+	    { "description": "diff"
+	    },
+	    { "tags":"diff"
+	    },
+	    { "editor":"editor id"
+	    },
+	    {"et":"timestamp"
+	    },
+	    {"ip":"ip address"
+	    }
+	}
+    ]
 }

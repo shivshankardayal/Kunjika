@@ -43,6 +43,13 @@ try:
 except:
     pass
 
+#Initialize question count at first run. Later it is useless
+try:
+    qb.add('qcount', 0, 0, json.dumps(0))
+except:
+    pass
+
+
 bcrypt = Bcrypt(kunjika)
 
 
@@ -108,9 +115,12 @@ def ask(uid=None):
     questionForm = QuestionForm(request.form)
 
     if questionForm.validate_on_submit() and request.method == 'POST':
+        question = {}
+        question['content'] = {}
         title = questionForm.question.data
-        print questionForm.description.data
-        print questionForm.tags.data
+        question['content']['description'] = questionForm.description.data
+        question['content']['tags'] = questionForm.tags.data
+        question['title'] = title
         length = len(title)
         print length
         prev_dash = False
@@ -136,12 +146,16 @@ def ask(uid=None):
         if prev_dash is True:
             url = url[:-1]
 
-        print url
-        uid = request.cookies.get('uid')
-        user = cb.get(uid)[2]
-        user = json.loads(user)
-        print 'Asked by ' + user['fname'] + user ['lname']
-        print 'Asked at ' + strftime("%a %d at %b %Y", gmtime())
+        question['content']['url'] = url
+        question['content']['op'] = request.cookies.get('uid')
+        question['content']['ts'] = strftime("%a %d at %b %Y", gmtime())
+        question['content']['ip'] = request.remote_addr
+        qb.incr('qcount', 1)
+        question['qid'] = qb.get('qcount')[2]
+
+        qb.add(str(question['qid']), 0, 0, json.dumps(question))
+        
+        return redirect(url_for('questions'))
 
     elif request is not None:
         uid = request.cookies.get('uid')
@@ -336,7 +350,7 @@ def image_upload():
 
 @kunjika.route('/get_tags', methods=['GET'])
 def get_tags(q=None):
-    return json.dumps([{"id": "0", "name": "0"}])
+    return json.dumps([{}])
 
 
 if __name__ == '__main__':
