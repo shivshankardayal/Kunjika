@@ -56,7 +56,7 @@ bcrypt = Bcrypt(kunjika)
 @kunjika.route('/', methods=['GET', 'POST'])
 @kunjika.route('/questions', methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>')
-def questions(qid=None, uid=None, name=None, email=None):
+def questions(qid=None, uid=None, name=None):
     uid = request.args.get('uid', '')
     name = request.args.get('name', '')
     qid = request.args.get('qid', '')
@@ -122,7 +122,7 @@ def ask(uid=None):
         question['content']['tags'] = questionForm.tags.data
         question['title'] = title
         length = len(title)
-        print length
+        #print length
         prev_dash = False
         url = ""
         for i in range(length):
@@ -154,8 +154,15 @@ def ask(uid=None):
         question['qid'] = qb.get('qcount')[2]
 
         qb.add(str(question['qid']), 0, 0, json.dumps(question))
+
+        user = cb.get(question['content']['op'])[2]
         
-        return redirect(url_for('questions'))
+        #print question['qid']
+        #print question['content']['op']
+        #print json.loads(user)['fname']
+        user = json.loads(user)
+
+        return redirect(url_for('questions', qid=question['qid'], uid=int(question['content']['op']), name=user['fname']))
 
     elif request is not None:
         uid = request.cookies.get('uid')
