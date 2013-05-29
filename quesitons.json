@@ -1,0 +1,12 @@
+{
+    "_comments":"This is a comment about how questions would look like in database",
+    "qid": "integer identifying question id",
+    "content": [[{"title": "Question's current title"},
+        { "description": "Question's current description"
+        },
+        { "tags":"comma separated tags"
+        },
+        { "poster":"poster id"
+        }
+    ]]
+}

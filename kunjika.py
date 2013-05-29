@@ -10,7 +10,7 @@ from flaskext.gravatar import Gravatar
 from werkzeug import secure_filename, SharedDataMiddleware
 import os
 from os.path import basename
-import time
+from time import gmtime, strftime
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -114,22 +114,35 @@ def ask(uid=None):
         length = len(title)
         print length
         prev_dash = False
-        title = title.lower()
-        new_title = ""
+        url = ""
         for i in range(length):
             c = title[i]
-            if c == ' ' or c == ',' or c == '.' or c == '/' or c == '\\' or c == '-':
-                if not prev_dash:
-                    new_title += '-'
+            if (c >= 'a' and c <= 'z') or (c >= '0' and c <= '9'):
+                url += c
+                prev_dash = False
+            elif (c >= 'A' and c <= 'Z'):
+                url += c
+            elif (c == ' ' or c == ',' or c == '.' or c == '/' or c == '\\' or c == '-' or c == '_' or c == '='):
+                if not prev_dash and len(url) > 0:
+                    url += '-'
                     prev_dash = True
             elif ord(c) > 160:
                 c = c.decode('UTF-8').lower()
-                new_title += c
+                url += c
                 prev_dash = False
-            else:
-                new_title += c
-                prev_dash = False
-        print new_title
+            if i == 80:
+                break
+
+        if prev_dash is True:
+            url = url[:-1]
+
+        print url
+        uid = request.cookies.get('uid')
+        user = cb.get(uid)[2]
+        user = json.loads(user)
+        print 'Asked by ' + user['fname'] + user ['lname']
+        print 'Asked at ' + strftime("%a %d at %b %Y", gmtime())
+
     elif request is not None:
         uid = request.cookies.get('uid')
         user = cb.get(uid)[2]
