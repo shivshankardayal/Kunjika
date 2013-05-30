@@ -3,18 +3,22 @@
 {% block css_bootstrap %}
 {{ super() }}
 {# TODO: probably remove this and let the user set it manually? #}
+<!--
 <style>
   body {
   padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
   }
 </style>
+ -->
 {% endblock %}
 
 {% block css_site %}
 <link href="/static/css/base.css" rel="stylesheet">
 
 {% endblock %}
-{% block container %}
+<!--
+
+<!--
 <div class="masthead">
   <h3 class="muted">Kunjika</h3>
   <div class="navbar">
@@ -35,11 +39,14 @@
         </ul>
       </div>
     </div>
-  </div><!-- /.navbar -->
+  </div>
 </div>
+-->
+
+
 <!-- masthead by shashi kant starts here -->
 
-    <div class="navbar fixed-top">
+    <div class="navbar-inverse fixed-top">
         <div class="navbar-inner">
             <div class="container">
                 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -50,8 +57,15 @@
                 <a class="brand" href="#">Kunjika</a>
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li><a href="#">testing link</a></li>
+                        <li class="active"><a href="#">link one</a></li>
+                        <li><a href="#">link one</a></li>
+                        <li><a href="#">link two</a></li>
+                        <li><a href="#">link three</a></li>
+                        <li><a href="#">link four</a></li>
                     </ul>
+                    <form class="navbar-search pull-left">
+                        <input type="text" class="search-query" placeholder="Search Kunjika">
+                    </form>
                 </div>
             </div>
         </div>
@@ -60,7 +74,7 @@
 <!--mashthead by shashi kant ends here -->
 
 
-
+{% block container %}
 <!-- Jumbotron -->
 <div class="jumbotron">
   <h1>Marketing stuff!</h1>
