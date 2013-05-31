@@ -10,7 +10,7 @@ from flaskext.gravatar import Gravatar
 from werkzeug import secure_filename, SharedDataMiddleware
 import os
 from os.path import basename
-from time import gmtime, strftime
+from time import gmtime, strftime, time
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -23,8 +23,8 @@ kunjika.debug = True
 kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
 kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
-    '/uploads': kunjika.config['UPLOAD_FOLDER']
-})
+        '/uploads': kunjika.config['UPLOAD_FOLDER']
+        })
 
 cb = CbClient("http://localhost:8091/pools/default", "default", "")
 
@@ -38,6 +38,12 @@ qc = CbClient("http://localhost:8091/pools/default", "questions", "")
 qbucket = Couchbase("localhost", "shiv", "yagyavalkya")
 qb = qbucket["questions"]
 
+tc = CbClient("http://localhost:8091/pools/default", "tags", "")
+
+tbucket = Couchbase("localhost", "shiv", "yagyavalkya")
+tb = qbucket["tags"]
+
+
 #Initialize count at first run. Later it is useless
 try:
     cb.add('count', 0, 0, json.dumps(0))
@@ -47,6 +53,11 @@ except:
 #Initialize question count at first run. Later it is useless
 try:
     qb.add('qcount', 0, 0, json.dumps(0))
+except:
+    pass
+
+try:
+    tb.add('tcount', 0, 0, json.dumps(0))
 except:
     pass
 
@@ -72,7 +83,9 @@ def questions(qid=None, uid=None, name=None):
             return resp
     except:
         pass
-
+    
+#   if qid == None:
+        
     return render_template('questions.html', title='Questions', qpage=True)
 
 
@@ -149,18 +162,18 @@ def ask(uid=None):
 
         question['content']['url'] = url
         question['content']['op'] = request.cookies.get('uid')
-        question['content']['ts'] = strftime("%a %d at %b %Y", gmtime())
+        question['content']['ts'] = int(time())
         question['content']['ip'] = request.remote_addr
         qb.incr('qcount', 1)
         question['qid'] = qb.get('qcount')[2]
+        question['votes'] = 0
+        question['answers'] = 0
+        question['views'] = 0
 
         qb.add(str(question['qid']), 0, 0, json.dumps(question))
+        add_tags(question['content']['tags'], question['qid'])
 
         user = cb.get(question['content']['op'])[2]
-        
-        #print question['qid']
-        #print question['content']['op']
-        #print json.loads(user)['fname']
         user = json.loads(user)
 
         return redirect(url_for('questions', qid=question['qid'], uid=int(question['content']['op']), name=user['fname']))
@@ -190,9 +203,7 @@ def login():
             did = document['rows'][0]['id']
             document = cb.get(did)[2]
             document = json.loads(document)
-            #print document['email'] + " " + document['password']
-            #print loginForm.email.data + " " + loginForm.password.data
-            #print document['id']
+
             if bcrypt.check_password_hash(document['password'], loginForm.password.data):
                 session[did] = did
                 #print document['email']
@@ -360,13 +371,27 @@ def image_upload():
 def get_tags(q=None):
     return json.dumps([{}])
 
+def add_tags(tags_passed, qid):
+    tags_list = tags_passed.split(',')
+
+    print str(tags_list)
+    for tag in tags_list:
+        try:
+            document = tb.get(tag)[2]
+            document = json.loads(document)
+            document['count'] += 1
+            document['qid'].append(qid)
+        
+            tb.replace(tag, 0, 0, json.dumps(document))
+
+        except:
+            data = {}
+            data['qid'] = []
+            data['tag'] = tag
+            data['count'] = 1
+            data['qid'].append(qid)
+            
+            tb.add(tag, 0, 0, json.dumps(data))
 
 if __name__ == '__main__':
     kunjika.run()
-
-
-
-
-
-
-

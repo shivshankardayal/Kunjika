@@ -35,15 +35,15 @@
 .table-user td{
     padding-right:10px;
 }
- #wrap {
-        min-height: 100%;
-        height: auto !important;
-        height: 100%;
-        /* Negative indent footer by it's height */
-        margin: 0 auto -60px;
-      }
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    /* Negative indent footer by it's height */
+    margin: 0 auto -60px;
+}
 #push #footer {
-        height: 60px;
+    height: 60px;
 }
 .loading-small { width: 16px; height: 16px; background: url('/static/img/ajax-loader.gif') no-repeat;
                  display: inline-block; }
@@ -86,4 +86,128 @@
     margin: 15px;
     text-align: right;
     white-space: nowrap;
+}
+
+.qsummary {
+    border-bottom: 1px dotted #DDDDDD;
+    float: left;
+    overflow: hidden;
+    padding: 11px 0 12px;
+}
+
+.cp {
+    background-position: 0 0;
+    cursor: pointer;
+    float: left;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.narrow .votes {
+    padding: 3px 0 0;
+    float: left;
+    height: 38px;
+    margin: 0 3px 0 0;
+    width: 38px;
+}
+
+.narrow .votes .mini-counts {
+    margin-bottom: 8px;
+}
+
+.votes {
+  color: #666666;
+  font-size: 11px;
+  padding: 0 0 7px;
+  text-align: center;
+}
+
+.mini-counts {
+  font-family: Arial,Helvetica,sans-serif;
+  font-size: 18px;
+  line-height: 24px;
+  padding: 0 0 2px;
+}
+
+.narrow .status {
+  padding: 0 5px;
+}
+
+.narrow .status {
+  float: left;
+  height: 38px;
+  margin: 0 3px 0 0;
+  width: 48px;
+}
+
+.answered {
+  color: #98B244;
+}
+
+.narrow .views {
+    padding: 3px 0 0 5px;
+    float: left;
+    height: 38px;
+    margin: 0 7px 0 0;
+    width: 40px;
+}
+
+.narrow .summary {
+  width: 550px;
+}
+
+.summary {
+  float: left;
+  width: 630px;
+}
+
+.tags {
+  float: left;
+  line-height: 18px;
+}
+
+.post-tag {
+  background-color: #F1F5E6;
+  border-radius: 15px 15px 15px 15px;
+  color: #666666 !important;
+  display: inline-block;
+  font-size: 11px;
+  line-height: 16px;
+  margin: 2px 2px 2px 0;
+  overflow: visible;
+  padding: 0.25em 0.8em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.narrow .started {
+  line-height: inherit;
+  padding-top: 4px;
+  white-space: nowrap;
+  width: auto;
+}
+
+.started {
+  color: #999999;
+  float: right;
+  font-size: 12px;
+  line-height: 18px !important;
+  width: 185px;
+}
+
+.started-link {
+  color: #999999;
+}
+
+.relativetime {
+  text-decoration: none;
+}
+
+.started .reputation-score {
+  font-size: 12px;
+  margin-left: 1px;
+  color: #6F7E82;
+  font-size: 12px;
+  font-weight: normal;
+  margin-right: 2px;
 }
