@@ -20,63 +20,108 @@
     {% block css_bootstrap_responsive %}
     <link href="/static/css/bootstrap-responsive{{ debugmin() }}.css" rel="stylesheet">
     {% endblock %}
-            {% block js_jquery %}
+    {% block js_jquery %}
     {# Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline #}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="/static/js/jquery-1.9.1.min.js"><\/script>')</script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery.ajaxfileupload.js"></script>
-    <script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+      <script type="text/javascript" src="/static/js/jquery.ajaxfileupload.js"></script>
+      <script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 
       {% endblock %}
-    {% block css_site %}
-    {% endblock %}
-    {% block css_extra %}
-    {% endblock %}
+      {% block css_site %}
+      {% endblock %}
+      {% block css_extra %}
+      {% endblock %}
 
-    {% block js_html5_shim %}
-    <!--[if lt IE 9]>
-        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-    {% endblock %}
-    {% block js_head %}
-    {% endblock %}
-    {% endblock %}
+      {% block js_html5_shim %}
+      <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+          <![endif]-->
+      {% endblock %}
+      {% block js_head %}
+      {% endblock %}
+      {% endblock %}
   </head>
 
   {# TODO: write a class builder macro #}
   <body class="{% block body_classes %}{% endblock %}" id="{% block body_id %}{% endblock %}"{% block bodytag_extra %}{% endblock %}>
-  <div id="row-fluid">
-    {% block body %}
+    <div id="row-fluid">
+      {% block body %}
 
-    {% block navbar_wrapper %}
-    {% endblock %}
-
-    {% block pre_container %}
-    {% endblock %}
-
-    {% block container_wrapper %}
-    <div class="container container-primary">
-      {% block container %}
-
-      {% block pre_content %}
+      {% block navbar_wrapper %}
+      <div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="navbar-inner">
+	  <div class="container-fluid">
+	    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+	    </button>
+	    <a class="brand" href="#">Kunjika</a>
+	    <div class="nav-collapse collapse">
+              <ul class="nav">
+		{% if qpage is defined %}
+		<li class="active"><a href="/questions">Questions</a></li>
+		{% else %}
+		<li><a href="/questions">Questions</a></li>
+		{% endif %}
+		<li><a href="/tags">Tags</a></li>
+		{% if upage is defined %}
+		<li class="active"><a href="/users">Users</a></li>
+		{% else %}
+		<li><a href="/users">Users</a></li>
+		{% endif %}
+		<li><a href="/unasnweres">Unanswered</a></li>
+		{% if apage is defined %}
+		<li class="active"><a href="/ask" class="ask">Ask</a></li>
+		{% else %}
+		<li><a href="/ask" class="ask">Ask</a></li>
+		{% endif %}
+		{% if logged_in is defined %}
+		{% if user_id == session[did] %}
+		<li class="active"><a href="/users/{{ user_id }}" class="login">{{ fname }}</a></li>
+		{% else %}
+		<li class="active"><a href="/users/{{ user_id }}" class="login">{{ fname }}</a></li>
+		{% endif %}
+		<li><a href="/logout" class="login">Logout</a></li>
+		{% elif lpage is defined %}
+		<li class="active"><a href="/login" class="login">Login</a></li>
+		{% else %}
+		<li><a href="/login" class="login">Login</a></li>
+		{% endif %}
+              </ul>
+	    </div><!--/.nav-collapse -->
+	  </div>
+	</div>
+      </div>
       {% endblock %}
 
-      {% block content %}
+      {% block pre_container %}
+      {% endblock %}
+
+      {% block container_wrapper %}
+      <div class="container container-primary">
+	{% block container %}
+
+	{% block pre_content %}
+	{% endblock %}
+
+	{% block content %}
+	{% endblock %}
+
+
+	{% block post_content %}
+	{% endblock %}
+
+	{% endblock %}
+
+      </div>
       {% endblock %}
 
 
-      {% block post_content %}
+      {% block post_container %}
       {% endblock %}
-
-      {% endblock %}
-
-    </div>
-    {% endblock %}
-
-
-    {% block post_container %}
-    {% endblock %}
 
 
       {% block js_bootstrap %}
@@ -98,17 +143,17 @@
 
 
       {% endblock %}
-  </div>
-        {% block page_footer %}
-<div class="row-fluid">
-<div class="container">
-    <hr/>
+    </div>
+    {% block page_footer %}
+    <div class="row-fluid">
+      <div class="container">
+	<hr/>
         <p>&copy; 2013 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
-            Shashikant &amp; Shiv Shankar Dayal.<br/>
-            Licensed under GNU GPL. Contents are under GNU GPL.</p>
-</div>
-</div>
+          Shashikant &amp; Shiv Shankar Dayal.<br/>
+          Licensed under GNU GPL. Contents are under GNU GPL.</p>
+      </div>
+    </div>
 
-      {% endblock %}
+    {% endblock %}
   </body>
 </html>

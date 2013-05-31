@@ -27,6 +27,7 @@ kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
 })
 
 cb = CbClient("http://localhost:8091/pools/default", "default", "")
+
 #bucket = cb["bucket"]
 
 cb1 = Couchbase("localhost", "shiv", "yagyavalkya")
@@ -63,7 +64,7 @@ def questions(qid=None, uid=None, name=None):
     try:
         if isinstance(uid, (unicode)):
             resp = make_response(render_template('questions.html', title='Questions',
-                                                 user_name=name, user_id=uid, logged_in=True))
+                                                 fname=name, user_id=uid, logged_in=True, qpage=True))
             resp.headers['Cache-Control'] = 'no-cache'
             resp.headers['Pragma'] = 'no-cache'
             resp.headers['Expires'] = 0
@@ -72,7 +73,7 @@ def questions(qid=None, uid=None, name=None):
     except:
         pass
 
-    return render_template('questions.html', title='Questions')
+    return render_template('questions.html', title='Questions', qpage=True)
 
 
 @kunjika.route('/tags/<tag>')
@@ -93,9 +94,9 @@ def users(uid=None):
     if uid in session:
         logged_in = True
         return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
-                               lname=user['lname'], email=user['email'], gravatar=gravatar, logged_in=logged_in)
+                               lname=user['lname'], email=user['email'], gravatar=gravatar, logged_in=logged_in, upage=True)
     return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
-                           lname=user['lname'], email=user['email'], gravatar=gravatar)
+                           lname=user['lname'], email=user['email'], gravatar=gravatar, upage=True)
 
     #return render_template('users.html')
 
@@ -170,7 +171,7 @@ def ask(uid=None):
         user = json.loads(user)
         if uid in session:
             return render_template('ask.html', title='ask', form=questionForm, user_id=user['id'], fname=user['fname'],
-                                   lname=user['lname'], email=user['email'], logged_in=True)
+                                   lname=user['lname'], email=user['email'], logged_in=True, apage=True)
 
     return redirect(url_for('login'))
 
@@ -184,7 +185,7 @@ def login():
         try:
             #document = json.loads(document)
             document = urllib2.urlopen(
-                "http://localhost:8092/default/_design/dev_get_role/_view/get_id_from_email?key=" + '"' + loginForm.email.data + '"').read()
+                "http://localhost:8092/default/_design/dev_dev/_view/get_id_from_email?key=" + '"' + loginForm.email.data + '"').read()
             document = json.loads(document)
             did = document['rows'][0]['id']
             document = cb.get(did)[2]
@@ -205,7 +206,7 @@ def login():
             else:
                 #print "Hello"
                 render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                                providers=kunjika.config['OPENID_PROVIDERS'])
+                                providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
 
         except:
             return redirect(url_for('questions'))
@@ -214,10 +215,10 @@ def login():
 
     else:
         render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                        providers=kunjika.config['OPENID_PROVIDERS'])
+                        providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
 
     return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                           providers=kunjika.config['OPENID_PROVIDERS'])
+                           providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
 
 
 @kunjika.route('/register', methods=['POST'])
@@ -231,7 +232,7 @@ def register():
         #document = None
         data = {}
 
-        view = bucket.view("_design/dev_get_role/_view/get_role")
+        view = bucket.view("_design/dev_dev/_view/get_role")
 
         if len(view) == 0:
             data['email'] = registrationForm.email1.data
@@ -265,10 +266,10 @@ def register():
                 return redirect(url_for('questions'))
 
         return render_template('register.html', form=registrationForm, loginForm=loginForm,
-                               title='Register', providers=kunjika.config['OPENID_PROVIDERS'])
+                               title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
 
     return render_template('register.html', form=registrationForm, loginForm=loginForm,
-                           title='Register', providers=kunjika.config['OPENID_PROVIDERS'])
+                           title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
 
 
 @kunjika.route('/check_email', methods=['POST'])
@@ -362,3 +363,10 @@ def get_tags(q=None):
 
 if __name__ == '__main__':
     kunjika.run()
+
+
+
+
+
+
+

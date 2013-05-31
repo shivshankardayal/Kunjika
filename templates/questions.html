@@ -11,31 +11,10 @@
 {% endblock %}
 
 {% block css_site %}
-<link href="/static/css/base.css" rel="stylesheet">
+<link href="/static/css/kunjika.css" rel="stylesheet">
 
 {% endblock %}
 {% block container %}
-<div class="masthead">
-  <h3 class="muted">Kunjika</h3>
-  <div class="navbar">
-    <div class="navbar-inner">
-      <div class="container">
-        <ul class="nav">
-          <li class="active"><a href="/questions">Questions</a></li>
-          <li><a href="/tags">Tags</a></li>
-          <li><a href="/users">Users</a></li>
-          <li><a href="/unasnweres">Unanswered</a></li>
-          <li><a href="/ask" class="ask">Ask</a></li>
-	  {% if logged_in is defined %}
-          <li><a href="/users/{{ user_id }}" class="login">{{ user_name }}</a></li>
-          <li><a href="/logout" class="login">Logout</a></li>
-	  {% else %}
-          <li><a href="/login" class="login">Login</a></li>
-	  {% endif %}
-        </ul>
-      </div>
-    </div>
-  </div><!-- /.navbar -->
 <div class="row-fluid">
   <div id="mainbar" class="mainbar">
     <p>wfhw</p>
