@@ -73,6 +73,13 @@ except:
 #except:
 #    pass
 
+gravatar32 =  Gravatar(kunjika,
+                     size=32,
+                     rating='g',
+                     default='identicon',
+                     force_default=False,
+                     force_lower=False)
+
 
 bcrypt = Bcrypt(kunjika)
 
@@ -116,9 +123,9 @@ def questions(qid=None, url=None):
         if g.user is None:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
         elif g.user is not None and g.user.is_authenticated():
-            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict, fname=g.user.name, user_id=g.user.id)
+            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict, fname=g.user.name, user_id=g.user.id, gravatar=gravatar32)
         else:
-            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
+            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict )
 
 @kunjika.route('/tags/<tag>')
 def tags(tag=None):
@@ -410,3 +417,4 @@ def add_tags(tags_passed, qid):
 
 if __name__ == '__main__':
     kunjika.run()
+

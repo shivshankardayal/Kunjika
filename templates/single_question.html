@@ -11,11 +11,11 @@
 {% endblock %}
 
 {% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link href="/static/css/prettify.css" rel="stylesheet">
     <!--    <link href="/static/css/googlecode.css" rel="stylesheet">-->
     <link href="/static/css/token-input.css" rel="stylesheet">
+    <link href="/static/css/kunjika.css" rel="stylesheet">
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
@@ -38,15 +38,33 @@
                     <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
                 {% endfor %}
             </div>
-        <table class="poster">
-            <tbody>
-            <tr>
-                <td class="post-menu">
-                    <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Improve this question</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+            <table class="poster">
+                <tbody>
+                <tr>
+                    <td class="vt">
+                        <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Improve this
+                            question</a>
+                    </td>
+                    <td class="post-signature owner" align="right">
+                        <div class="user-info ">
+                            <div class="user-action-time">
+                                Asked at <span title="2013-05-28 01:32:12Z" class="relativetime">{{ questions['ts'] }} </span>
+                            </div>
+                            <div class="user-gravatar32">
+                                <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">
+                                  <div class=""><img
+						   src="{{ questions['email']|gravatar }}"
+						   alt="" height="32" width="32"></div>
+                                </a>
+                            </div>
+                            <div class="user-details">
+                                <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">{{ questions['opname'] }}</a><br>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
         <div id="sidebar" class="sidebar">
             <p>wpifiwe</p>

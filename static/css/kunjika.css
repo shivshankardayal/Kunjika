@@ -326,10 +326,68 @@
 
 .poster {
     margin-bottom: 4px;
-    width: 656px;
+    width: 728px;
 }
 
 .post-tags {
     margin-bottom: 10px;
     clear: both;
+}
+
+.post-signature {
+  height: 58px;
+  padding-left: 5px;
+  padding-top: 2px;
+  text-align: left;
+  vertical-align: top;
+  width: 175px;
+}
+
+.owner {
+    background: none repeat scroll 0% 0% rgb(246, 246, 246);
+}
+
+.user-info {
+    height: 35px;
+    width: 185px;
+}
+
+.user-info .user-action-time {
+    font-size: 12px;
+    margin-bottom: 4px;
+    margin-top: 2px;
+}
+
+.vt {
+  vertical-align: top;
+}
+
+.post-menu > a {
+  border-radius: 10px 10px 10px 10px;
+  margin-right: 1px;
+  padding: 1px 6px;
+}
+
+.user-info .user-gravatar32 {
+  float: left;
+  height: 32px;
+  width: 32px;
+}
+
+.user-info .user-details {
+  float: left;
+  margin-left: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 145px;
+}
+
+.user-details {
+  color: #888888;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+pre.prettyprint {
+    background-color: #fff;
 }

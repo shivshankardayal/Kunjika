@@ -2,12 +2,20 @@ from kunjika import kunjika, qc, qb, cb
 import urllib2
 import json
 from time import localtime, strftime
+from flaskext.gravatar import Gravatar
 
 def get_question_by_id(qid, question):
     print qid
     question = qb.get(qid)[2]
     question = json.loads(question)
     print question
+
+    question['ts'] = strftime("%a, %d %b %Y %H:%M:%S", localtime(question['content']['ts']))
+    user = cb.get(question['content']['op'])[2]
+    user = json.loads(user)
+    question['email'] = user['email']
+    question['content']['tags'] = question['content']['tags'].split(',')
+    question['opname'] = user['fname']
 
     return question
 
@@ -23,14 +31,11 @@ def get_questions():
     for i in question_list:
         i['content']['tags'] = i['content']['tags'].split(',')
         print i
-        uid = i['content']['op']
-        try:
-            user = cb.get(uid)[2]
-        except:
-            print "Exception caught"
+        i['ts'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+
+        user = cb.get(i['content']['op'])[2]
         user = json.loads(user)
-        i['fname'] = user['fname']
-        i['ts'] = strftime("%a, %d %b %Y %H:%M:%S", localtime(i['content']['ts']))
+        i['opname'] = user['fname']
 
     return question_list
 
