@@ -14,6 +14,7 @@
     <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link href="/static/css/prettify.css" rel="stylesheet">
+<!--<link href="/static/css/googlecode.css" rel="stylesheet">-->
     <link href="/static/css/token-input.css" rel="stylesheet">
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
@@ -21,43 +22,45 @@
     <script type="text/javascript" src="/static/js/prettify.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
-
+    <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
+<!--    <script type="text/javascript" src="/static/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>-->
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
-    <div class="mainbar" id="mainbar">
-        <form class="ask-form" method="post" aciton="/ask">
-            {% from "macros.html" import render_field %}
-            {{ form.csrf_token }}
-            {{ render_field(form.question, class="question input-x-large span10", style="margin-left:25px;", placeholder="Please ask your question here?") }}
-            <div class="wmd-panel">
-                <div id="wmd-button-bar"></div>
-                {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
-                <div id="insertImageDialog" title="&nbsp;Insert Image">
-                    <h6>From the web</h6>
+        <div class="mainbar" id="mainbar">
+            <form class="ask-form" method="post" aciton="/ask">
+                {% from "macros.html" import render_field %}
+                {{ form.csrf_token }}
+                {{ render_field(form.question, class="question input-x-large span10", style="margin-left:25px;", placeholder="Please ask your question here?") }}
+                <div class="wmd-panel">
+                    <div id="wmd-button-bar"></div>
+                    {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
+                    <div id="insertImageDialog" title="&nbsp;Insert Image">
+                        <h6>From the web</h6>
 
-                    <p>
-                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-                    </p>
-                    <h6>From your computer (Max. 2MB)</h6>
-                    <span class="loading-small"></span>
-                    <input type="file" name="file" id="file" data-action="/image_upload"/>
+                        <p>
+                            <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                        </p>
+                        <h6>From your computer (Max. 2MB)</h6>
+                        <span class="loading-small"></span>
+                        <input type="file" name="file" id="file" data-action="/image_upload"/>
+                    </div>
+                    <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+                    <div style="clear:both;"></div>
+                    {{ render_field(form.tags, class="input-xlarge span10", id="kunjika-tags", style="margin-left:45px; margin-top=30px;", placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
+                    <div class="controls">
+                        <button class="btn btn-primary">
+                            Ask Question?
+                        </button>
+                    </div>
                 </div>
-                <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-                <div style="clear:both;"></div>
-                {{ render_field(form.tags, class="input-xlarge span10", id="kunjika-tags", style="margin-left:45px; margin-top=30px;", placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
-                <div class="controls">
-                    <button class="btn btn-primary">
-                        Ask Question?
-                    </button>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
+        <div id="sidebar" style="float:right">
+            side bar
+        </div>
     </div>
-    <div id="sidebar" style="float:right">
-        side bar
-    </div>
-</div>
 {% endblock %}
 
 {% block page_footer %}
@@ -69,7 +72,26 @@
                 Licensed under GNU GPL. Contents are under GNU GPL.</p>
         </div>
     </div>
-</div>
+    </div>
+<!--    <script type="text/javascript">
+        $("document").ready(function () {
+            //hljs.selected_languages = hljs.LANGUAGES;
+            $("textarea").each(function () {
+                $(this).keypress(function () {
+                    window.clearTimeout(hljs.Timeout);
+                    hljs.Timeout = window.setTimeout(function () {
+                        hljs.initHighlighting.called = false;
+                        hljs.initHighlighting();
+
+                    }, 200);
+                });
+            });
+            window.setTimeout(function () {
+                hljs.initHighlighting.called = false;
+                hljs.initHighlighting();
+            }, 200);
+        });
+    </script>-->
     <script type="text/javascript">
         (function () {
             if ($('#wmd-input').length > 0) {
@@ -89,9 +111,6 @@
 
                 converter.hooks.chain("preConversion", function (text) {
                     return text.replace(/\b(a\w*)/gi, "*$1*");
-                });
-                converter.hooks.chain("plainLinkText", function (url) {
-                    return "This is a link to " + url.replace(/^https?:\/\//, "");
                 });
 
                 var editor = new Markdown.Editor(converter, null, { handler: help });
@@ -165,13 +184,13 @@
                 editor.run();
             }
         })();
-        $(document).ready(function() {
+        $(document).ready(function () {
             $("#kunjika-tags").tokenInput("http://localhost:5000/get_tags", {
                 theme: "kunjika",
                 allowFreeTagging: true,
-                tokenLimit:5,
-                tokenDelimiter:',',
-                preventDuplicates:true
+                tokenLimit: 5,
+                tokenDelimiter: ',',
+                preventDuplicates: true
             });
         });
     </script>

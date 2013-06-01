@@ -68,10 +68,10 @@ try:
 except:
     pass
 
-try:
-    tb.add('tcount', 0, 0, json.dumps(0))
-except:
-    pass
+#try:
+#    tb.add('tcount', 0, 0, json.dumps(0))
+#except:
+#    pass
 
 
 bcrypt = Bcrypt(kunjika)
@@ -106,15 +106,15 @@ def questions(qid=None, url=None):
     if qid is None:
         questions_list = question.get_questions()
         if g.user is None:
-            return render_template('questions.html', title='Questions', qpage=True)
+            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list)
         elif g.user is not None and g.user.is_authenticated():
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list, fname=g.user.name, user_id=g.user.id)
         else:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list)
     else:
-        question_dict = question.get_question_by_id(qid, questions_dict)
+        questions_dict = question.get_question_by_id(qid, questions_dict)
         if g.user is None:
-            return render_template('single_question.html', title='Questions', qpage=True)
+            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
         elif g.user is not None and g.user.is_authenticated():
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict, fname=g.user.name, user_id=g.user.id)
         else:
@@ -126,7 +126,8 @@ def tags(tag=None):
 
 
 @kunjika.route('/users/<uid>')
-def users(uid=None):
+@kunjika.route('/users/<uid>/<uname>')
+def users(uid=None, uname=None):
     user = cb.get(uid)[2]
     user = json.loads(user)
     gravatar = Gravatar(kunjika,
@@ -152,7 +153,6 @@ def badge(bid=None):
 def unanswered(uid=None):
     return render_template('unanswered.html')
 
-@login_required
 @kunjika.route('/ask', methods=['GET', 'POST'])
 def ask():
     questionForm = QuestionForm(request.form)
@@ -190,7 +190,7 @@ def ask():
                 url = url[:-1]
 
             question['content']['url'] = url
-            question['content']['op'] = request.cookies.get('uid')
+            question['content']['op'] = str(g.user.id)
             question['content']['ts'] = int(time())
             question['content']['ip'] = request.remote_addr
             qb.incr('qcount', 1)
@@ -207,6 +207,7 @@ def ask():
 
             return redirect(url_for('questions', qid=question['qid']))
 
+        return render_template('ask.html', form=questionForm, apage=True, fname=g.user.name, user_id=g.user.id)
     return redirect(url_for('login'))
 
 

@@ -157,7 +157,7 @@
 }
 
 .narrow .summary {
-    width: 550px;
+    width: 570px;
 }
 
 .summary {
@@ -253,7 +253,7 @@
 }
 
 .unanswered {
-    color: #d22;
+    color: #922;
 }
 
 .narrow .views {
@@ -276,7 +276,7 @@
 }
 
 .narrow .summary {
-  width: 550px;
+  width: 570px;
 }
 
 .summary {
@@ -308,4 +308,28 @@
     color: rgb(153, 153, 153);
     font-size: 12px;
     line-height: 18px !important;
+}
+
+.q-header {
+    border-bottom: 1px solid rgb(164, 198, 57);
+}
+
+.question {
+    clear: both;
+    padding: 10px 0px 0px;
+    width: 728px;
+}
+
+.q-desc {
+    padding-top: 10px;
+}
+
+.poster {
+    margin-bottom: 4px;
+    width: 656px;
+}
+
+.post-tags {
+    margin-bottom: 10px;
+    clear: both;
 }
