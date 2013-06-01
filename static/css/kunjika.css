@@ -116,32 +116,36 @@
 }
 
 .votes {
-  color: #666666;
-  font-size: 11px;
-  padding: 0 0 7px;
-  text-align: center;
+    color: #666666;
+    font-size: 11px;
+    padding: 0 0 7px;
+    text-align: center;
 }
 
 .mini-counts {
-  font-family: Arial,Helvetica,sans-serif;
-  font-size: 18px;
-  line-height: 24px;
-  padding: 0 0 2px;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 18px;
+    line-height: 24px;
+    padding: 0 0 2px;
 }
 
 .narrow .status {
-  padding: 0 5px;
-}
-
-.narrow .status {
-  float: left;
-  height: 38px;
-  margin: 0 3px 0 0;
-  width: 48px;
+    padding: 0 5px;
+    float: left;
+    height: 38px;
+    margin: 0 3px 0 0;
+    width: 48px;
+    font-size: 11px;
+    padding: 4px 0;
+    text-align: center;
 }
 
 .answered {
-  color: #98B244;
+    color: #98B244;
+}
+
+.unanswered {
+    color: #ddd;
 }
 
 .narrow .views {
@@ -153,6 +157,125 @@
 }
 
 .narrow .summary {
+    width: 550px;
+}
+
+.summary {
+    float: left;
+    width: 630px;
+}
+
+.tags {
+    float: left;
+    line-height: 18px;
+}
+
+.post-tag {
+    background-color: #f7f7f7;
+    border-radius: 15px 15px 15px 15px;
+    color: #08c !important;
+    display: inline-block;
+    font-size: 11px;
+    line-height: 16px;
+    margin: 2px 2px 2px 0;
+    overflow: visible;
+    padding: 0.25em 0.8em;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.post-tag:hover {
+    backgound-color:#ddd;
+}
+
+.narrow .started {
+    line-height: inherit;
+    padding-top: 4px;
+    white-space: nowrap;
+    width: auto;
+}
+
+.started {
+    color: #999999;
+    float: right;
+    font-size: 12px;
+    line-height: 18px !important;
+    width: 185px;
+}
+
+.started-link {
+    color: #999999;
+}
+
+.relativetime {
+    text-decoration: none;
+}
+
+.started .reputation-score {
+    font-size: 12px;
+    margin-left: 1px;
+    color: #6F7E82;
+    font-size: 12px;
+    font-weight: normal;
+    margin-right: 2px;
+}
+
+.narrow .votes {
+    padding: 3px 0px 0px;
+    float: left;
+    height: 38px;
+    margin: 0px 3px 0px 0px;
+    width: 38px;
+}
+
+.votes {
+    color: rgb(102, 102, 102);
+    font-size: 11px;
+    padding: 0px 0px 7px;
+    text-align: center;
+}
+
+.narrow .status {
+    padding: 3px 0px 0px 0px;
+    float: left;
+    height: 38px;
+}
+.status{
+    margin: 0px 3px 0px 0px;
+    width: 48px;
+    font-size: 11px;
+    padding: 0px 0px 7px;
+    text-align: center;
+}
+
+.answered {
+    color: rgb(152, 178, 68);
+}
+
+.unanswered {
+    color: #d22;
+}
+
+.narrow .views {
+    padding: 3px 0px 0px 0px;
+    float: left;
+    height: 38px;
+    margin: 0px 3px 0px 0px;
+    width: 40px;
+}
+
+.views {
+    color: rgb(136, 136, 136);
+    font-size: 11px;
+    padding: 0px 0px 7px;
+    text-align: center;
+}
+
+.mini-counts {
+  margin-bottom: 8px;
+}
+
+.narrow .summary {
   width: 550px;
 }
 
@@ -161,53 +284,28 @@
   width: 630px;
 }
 
-.tags {
-  float: left;
-  line-height: 18px;
+.summary .question-hyperlink {
+  color: #444;
 }
 
-.post-tag {
-  background-color: #F1F5E6;
-  border-radius: 15px 15px 15px 15px;
-  color: #666666 !important;
-  display: inline-block;
-  font-size: 11px;
-  line-height: 16px;
-  margin: 2px 2px 2px 0;
-  overflow: visible;
-  padding: 0.25em 0.8em;
-  text-decoration: none;
-  white-space: nowrap;
+.question-hyperlink {
+  font-size: 17px;
+  font-weight: normal;
+  line-height: 1.1;
+  margin-bottom: 1.2em;
 }
 
 .narrow .started {
-  line-height: inherit;
-  padding-top: 4px;
-  white-space: nowrap;
-  width: auto;
+    width: auto;
+    line-height: inherit;
+    padding-top: 4px;
+    white-space: nowrap;
 }
 
 .started {
-  color: #999999;
-  float: right;
-  font-size: 12px;
-  line-height: 18px !important;
-  width: 185px;
-}
-
-.started-link {
-  color: #999999;
-}
-
-.relativetime {
-  text-decoration: none;
-}
-
-.started .reputation-score {
-  font-size: 12px;
-  margin-left: 1px;
-  color: #6F7E82;
-  font-size: 12px;
-  font-weight: normal;
-  margin-right: 2px;
+    width: 185px;
+    float: right;
+    color: rgb(153, 153, 153);
+    font-size: 12px;
+    line-height: 18px !important;
 }
