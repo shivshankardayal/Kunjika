@@ -11,7 +11,8 @@ def get_question_by_id(qid, question):
 
     return question
 
-def get_questions(questions):
+def get_questions():
+    questions = dict
     questions = urllib2.urlopen("http://localhost:8092/questions/_design/dev_dev/_view/get_questions?descending=true&limit=20").read()
     questions = json.loads(questions)
     question_list = []

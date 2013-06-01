@@ -78,15 +78,9 @@
 		{% else %}
 		<li><a href="/ask" class="ask">Ask</a></li>
 		{% endif %}
-		{% if logged_in is defined %}
-		{% if user_id == session[did] %}
+		{% if user_id is defined %}
 		<li class="active"><a href="/users/{{ user_id }}" class="login">{{ fname }}</a></li>
-		{% else %}
-		<li class="active"><a href="/users/{{ user_id }}" class="login">{{ fname }}</a></li>
-		{% endif %}
 		<li><a href="/logout" class="login">Logout</a></li>
-		{% elif lpage is defined %}
-		<li class="active"><a href="/login" class="login">Login</a></li>
 		{% else %}
 		<li><a href="/login" class="login">Login</a></li>
 		{% endif %}
