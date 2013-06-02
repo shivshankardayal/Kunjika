@@ -73,8 +73,15 @@ except:
 #except:
 #    pass
 
-gravatar32 =  Gravatar(kunjika,
+gravatar32 = Gravatar(kunjika,
                      size=32,
+                     rating='g',
+                     default='identicon',
+                     force_default=False,
+                     force_lower=False)
+
+gravatar100 = Gravatar(kunjika,
+                     size=100,
                      rating='g',
                      default='identicon',
                      force_default=False,
@@ -106,10 +113,10 @@ def load_user(id):
 
 @kunjika.route('/', methods=['GET', 'POST'])
 @kunjika.route('/questions', methods=['GET', 'POST'])
-@kunjika.route('/questions/<qid>/<url>')
+@kunjika.route('/questions/<qid>/<url>', methods=['GET', 'POST'])
 def questions(qid=None, url=None):
-    questions_dict = dict
-    questions_list = list
+    questions_dict = {}
+    questions_list = []
     if qid is None:
         questions_list = question.get_questions()
         if g.user is None:
@@ -123,7 +130,39 @@ def questions(qid=None, url=None):
         if g.user is None:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
         elif g.user is not None and g.user.is_authenticated():
-            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict, fname=g.user.name, user_id=g.user.id, gravatar=gravatar32)
+            answerForm = AnswerForm(request.form)
+            if answerForm.validate_on_submit() and request.method == 'POST':
+                answer = {}
+                if 'answers' in questions_dict:
+                    answer['aid'] = 1
+                    answer['answer'] = answerForm.answer.data
+                    answer['poster'] = g.user.id
+                    answer['ts'] = int(time())
+                    answer['votes'] = 0
+                    answer['ip'] = request.remote_addr
+                    answer['best'] = False
+                    questions_dict['acount'] += 1
+
+                    questions_dict['answers'].append(answer)
+
+                else:
+                    answer['aid'] = 1
+                    answer['answer'] = answerForm.answer.data
+                    answer['poster'] = g.user.id
+                    answer['ts'] = int(time())
+                    answer['votes'] = 0
+                    answer['ip'] = request.remote_addr
+                    answer['best'] = False
+                    questions_dict['acount'] = 1
+
+                    questions_dict['answers'] = []
+                    questions_dict['answers'].append(answer)
+
+                    print repr(answer)
+                qc.replace(str(questions_dict['qid']), 0, 0, json.dumps(questions_dict))
+
+                return redirect(url_for('questions'))
+            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict, form=answerForm, fname=g.user.name, user_id=g.user.id, gravatar=gravatar32)
         else:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict )
 
@@ -137,7 +176,7 @@ def tags(tag=None):
 def users(uid=None, uname=None):
     user = cb.get(uid)[2]
     user = json.loads(user)
-    gravatar = Gravatar(kunjika,
+    gravatar100 = Gravatar(kunjika,
                         size=100,
                         rating='g',
                         default='identicon',
@@ -146,9 +185,9 @@ def users(uid=None, uname=None):
     if uid in session:
         logged_in = True
         return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
-                               lname=user['lname'], email=user['email'], gravatar=gravatar, logged_in=logged_in, upage=True)
+                               lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, upage=True)
     return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
-                           lname=user['lname'], email=user['email'], gravatar=gravatar, upage=True)
+                           lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True)
 
 
 @kunjika.route('/badges/<bid>')
@@ -169,7 +208,8 @@ def ask():
             question['content'] = {}
             title = questionForm.question.data
             question['content']['description'] = questionForm.description.data
-            question['content']['tags'] = questionForm.tags.data
+            question['content']['tags'] = []
+            question['content']['tags'] = questionForm.tags.data.split(',')
             question['title'] = title
             length = len(title)
             #print length
@@ -203,7 +243,7 @@ def ask():
             qb.incr('qcount', 1)
             question['qid'] = qb.get('qcount')[2]
             question['votes'] = 0
-            question['answers'] = 0
+            question['acount'] = 0
             question['views'] = 0
 
             qb.add(str(question['qid']), 0, 0, json.dumps(question))
@@ -305,7 +345,13 @@ def register():
                 data['id'] = did
                 cb.add(str(did), 0, 0, json.dumps(data))
 
-                return redirect(url_for('questions'))
+                user = User(data['fname'], did)
+                try:
+                    login_user(user, remember=True)
+                    g.user = user
+                    return redirect(url_for('questions'))
+                except:
+                    return make_response("cant login")
 
         return render_template('register.html', form=registrationForm, loginForm=loginForm,
                                title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
@@ -394,10 +440,7 @@ def get_tags(q=None):
     return json.dumps([{}])
 
 def add_tags(tags_passed, qid):
-    tags_list = tags_passed.split(',')
-
-    print str(tags_list)
-    for tag in tags_list:
+    for tag in tags_passed:
         try:
             document = tb.get(tag)[2]
             document = json.loads(document)

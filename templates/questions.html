@@ -33,10 +33,17 @@
 	    <div class="mini-counts">{{ question['votes'] }}</div>
 	    <div>votes</div>
 	  </div>
-	  <div class="status unanswered">
-            <div class="mini-counts">{{ question['answers' ]}}</div>
-            <div>answers</div>
-          </div>
+        {% if question['acount'] == 0 %}
+            <div class="status unanswered">
+                <div class="mini-counts">{{ question['acount' ]}}</div>
+                <div>answers</div>
+            </div>
+        {% else %}
+            <div class="status answered">
+                <div class="mini-counts">{{ question['acount' ]}}</div>
+            <div><ans></ans>wers</div>
+            </div>
+        {% endif %}
 	  <div class="views">
             <div class="mini-counts">{{ question['views'] }}</div>
             <div>views</div>
@@ -51,7 +58,7 @@
 	  {% endfor %}
 	</div>
 	<div class="started">
-	  <p>Asked at {{ question['ts'] }} by <a href="/users/{{ question['content']['op'] }}/{{ question['fname'] }}">{{ fname }}</a></p>
+	  <p>Asked on {{ question['ts'] }} by <a href="/users/{{ question['content']['op'] }}/{{ question['fname'] }}">{{ question['opname'] }}</a></p>
 	</div>
       </div>
       {%  endfor %}

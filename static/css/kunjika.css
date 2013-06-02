@@ -249,7 +249,7 @@
 }
 
 .answered {
-    color: rgb(152, 178, 68);
+    color: rgb(134, 160, 50);
 }
 
 .unanswered {
@@ -360,6 +360,8 @@
 
 .vt {
   vertical-align: top;
+  float:left;
+  padding-right:10px;
 }
 
 .post-menu > a {
@@ -390,4 +392,33 @@
 
 pre.prettyprint {
     background-color: #fff;
+}
+
+.answers {
+  clear: both;
+  padding-top: 10px;
+  width: 728px;
+}
+
+.answers-header {
+  margin-top: 10px;
+  width: 728px;
+}
+
+.subheader {
+  border-bottom: 1px solid #a4c639;
+  clear: both;
+  height: 34px;
+  margin-bottom: 0;
+  margin-top: 5px;
+  overflow-y: hidden;
+  padding: 0;
+}
+
+.answer {
+  border-top: 1px solid #a4c639;
+  /*border-top: 1px solid #FFFFFF;*/
+  padding-bottom: 20px;
+  padding-top: 20px;
+  width: 728px;
 }
