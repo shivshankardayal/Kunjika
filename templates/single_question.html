@@ -25,31 +25,208 @@
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
     <!--    <script type="text/javascript" src="/static/js/highlight.pack.js"></script>
             <script>hljs.initHighlightingOnLoad();</script>-->
+    <script>
+        function toggleDiv(divid) {
+            var objDiv = document.getElementById(divid);
+            var id = '#' + divid;
+            console.log('#' + divid);
+            $(id).toggle("slow");
+
+            if ($(id).hasClass('ran')) {
+
+            } else {
+                $(id).addClass('ran');
+
+                var converter = new Markdown.getSanitizingConverter();
+                var help = function () {
+                    window.open('http://stackoverflow.com/editing-help');
+                }
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "prettify"
+                });
+                var editor = new Markdown.Editor(converter, '-' + divid, { handler: help });
+
+                var $dialog = $('#insertImageDialog').dialog({
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+                var $loader = $('span.loading-small', $dialog);
+                var $url = $('input[type=text]', $dialog);
+                var $file = $('input[type=file]', $dialog);
+
+                editor.hooks.set('insertImageDialog', function (callback) {
+
+                    // dialog functions
+                    var dialogInsertClick = function () {
+                        callback($url.val().length > 0 ? $url.val() : null);
+                        dialogClose();
+                    };
+
+                    var dialogCancelClick = function () {
+                        dialogClose();
+                        callback(null);
+                    };
+
+                    var dialogClose = function () {
+                        // clean up inputs
+                        $url.val('');
+                        $file.val('');
+                        $dialog.dialog('close');
+                    };
+
+                    // set up dialog button handlers
+                    $dialog.dialog('option', 'buttons', {
+                        'Insert': dialogInsertClick,
+                        'Cancel': dialogCancelClick
+                    });
+
+                    var uploadStart = function () {
+                        $loader.show();
+                    };
+
+                    var uploadComplete = function (response) {
+                        $loader.hide();
+                        if (response.success) {
+                            callback(response.imagePath);
+                            dialogClose();
+                        } else {
+                            alert(response.message);
+                            $file.val('');
+                        }
+                        editor.refreshPreview();
+                    };
+
+                    // upload
+                    $file.unbind('change').ajaxfileupload({
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
+
+                    // open the dialog
+                    $dialog.dialog('open');
+
+                    return true; // tell the editor that we'll take care of getting the image url
+                });
+                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.run();
+            }
+        }
+    </script>
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
-        <div id="mainbar" class="mainbar">
-            <div class="q-header">
-                <h3>{{ questions['title'] }}</h3>
+    <div id="mainbar" class="mainbar">
+    <div class="q-header">
+        <h3>{{ questions['title'] }}</h3>
+    </div>
+    <div class="q-desc" id="q-desc">{{ questions['content']['description'] }}</div>
+    <div class="post-tags">
+        {% for tag in questions['content']['tags'] %}
+            <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
+        {% endfor %}
+    </div>
+    <table class="poster">
+        <tbody>
+        <tr>
+            {% if user_id is defined %}
+                <td class="vt">
+                    <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Enhance</a>
+                </td>
+                <td class="vt">
+                    <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Flag</a>
+                </td>
+                <td class="vt">
+                    <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
+                       onclick="toggleDiv('{{ questions['qid'] }}');">Comment</a>
+                </td>
+            {% else %}
+                <td class="vt">
+                </td>
+            {% endif %}
+            <td class="post-signature owner" align="right">
+                <div class="user-info ">
+                    <div class="user-action-time">
+                        Asked on <span title="2013-05-28 01:32:12Z"
+                                       class="relativetime">{{ questions['tstamp'] }} </span>
+                    </div>
+                    <div class="user-gravatar32">
+                        <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">
+                            <div class=""><img
+                                    src="{{ questions['email']|gravatar }}"
+                                    alt="" height="32" width="32"></div>
+                        </a>
+                    </div>
+                    <div class="user-details">
+                        <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">{{ questions['opname'] }}</a><br>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <form class="comment-form" method="post"
+          aciton="/postcomment">
+        {% from "macros.html" import render_field %}
+        {{ form.csrf_token }}
+        <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}">
+            <div id="wmd-button-bar-{{ questions['qid'] }}" class="wmd-bar"></div>
+            <div class="control-group">
+                <label for="answer" class="control-label"></label>
+
+                <div class="controls">
+
+                    <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
+                              name="answer" id="wmd-input-{{ questions['qid'] }}" class="wmd-input"></textarea>
+                </div>
             </div>
-            <div class="q-desc" id="q-desc">{{ questions['content']['description'] }}</div>
-            <div class="post-tags">
-                {% for tag in questions['content']['tags'] %}
-                    <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
-                {% endfor %}
+            <div id="insertImageDialog" title="&nbsp;Insert Image">
+                <h6>From the web</h6>
+
+                <p>
+                    <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                </p>
+                <h6>From your computer (Max. 2MB)</h6>
+                <span class="loading-small"></span>
+                <input type="file" name="file" id="file" data-action="/image_upload"/>
             </div>
+            <div id="wmd-preview-{{ questions['qid'] }}" class="wmd-panel wmd-preview"></div>
+            <div style="clear:both;"></div>
+            <div class="controls">
+                <button class="btn btn-primary">
+                    Post answer
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="answers">
+        <div class="answer-header"></div>
+        <div class="subheader answer-subheader">
+            <h4>Know someone who can share his knowledge or you want to share it with others?</h4>
+        </div>
+        <h6>{{ questions['acount'] }} answers</h6>
+        {% for answer in questions['answers'] %}
+            <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['answer'] }}</div>
             <table class="poster">
                 <tbody>
                 <tr>
                     {% if user_id is defined %}
                         <td class="vt">
-                            <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Enhance</a>
+                            <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
+                               title="">Enhance</a>
                         </td>
                         <td class="vt">
-                            <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Flag</a>
+                            <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
+                               title="">Flag</a>
                         </td>
                         <td class="vt">
-                            <a href="/posts/{{ questions['qid'] }}/comment" class="suggest-edit-post" title="">Comment</a>
+                            <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                               id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                               onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');">Comment</a>
                         </td>
                     {% else %}
                         <td class="vt">
@@ -58,106 +235,96 @@
                     <td class="post-signature owner" align="right">
                         <div class="user-info ">
                             <div class="user-action-time">
-                                Asked on <span title="2013-05-28 01:32:12Z"
-                                               class="relativetime">{{ questions['tstamp'] }} </span>
+                                Answered on <span title="2013-05-28 01:32:12Z"
+                                                  class="relativetime">{{ answer['tstamp'] }} </span>
                             </div>
                             <div class="user-gravatar32">
-                                <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">
+                                <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">
                                     <div class=""><img
-                                            src="{{ questions['email']|gravatar }}"
+                                            src="{{ answer['email']|gravatar }}"
                                             alt="" height="32" width="32"></div>
                                 </a>
                             </div>
                             <div class="user-details">
-                                <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">{{ questions['opname'] }}</a><br>
+                                <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">{{ answer['opname'] }}</a><br>
                             </div>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <div class="answers">
-                <div class="answer-header"></div>
-                <div class="subheader answer-subheader">
-                    <h4>Know someone who can share his knowledge or you want to share it with others?</h4>
-                </div>
-                <h6>{{ questions['acount'] }} answers</h6>
-                {% for answer in questions['answers'] %}
-                    <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['answer'] }}</div>
-                    <table class="poster">
-                    <tbody>
-                    <tr>
-                        {% if user_id is defined %}
-                            <td class="vt">
-                                <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
-                                   title="">Enhance</a>
-                            </td>
-                            <td class="vt">
-                                <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post" title="">Flag</a>
-                            </td>
-                            <td class="vt">
-                                <a href="/posts/{{ answer['aid'] }}/comment" class="suggest-edit-post" title="">Comment</a>
-                            </td>
-                        {% else %}
-                            <td class="vt">
-                            </td>
-                        {% endif %}
-                        <td class="post-signature owner" align="right">
-                            <div class="user-info ">
-                                <div class="user-action-time">
-                                    Answered on <span title="2013-05-28 01:32:12Z"
-                                                   class="relativetime">{{ answer['tstamp'] }} </span>
-                                </div>
-                                <div class="user-gravatar32">
-                                    <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">
-                                        <div class=""><img
-                                                src="{{ answer['email']|gravatar }}"
-                                                alt="" height="32" width="32"></div>
-                                    </a>
-                                </div>
-                                <div class="user-details">
-                                    <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">{{ answer['opname'] }}</a><br>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                {% endfor %}
-            </div>
-            {% if user_id is defined %}
-                <h3>Your answer</h3>
-                <form class="ask-form" method="post"
-                      aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
-                    {% from "macros.html" import render_field %}
-                    {{ form.csrf_token }}
-                    <div class="wmd-panel">
-                        <div id="wmd-button-bar"></div>
-                        {{ render_field(form.answer, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please post your answer here..") }}
-                        <div id="insertImageDialog" title="&nbsp;Insert Image">
-                            <h6>From the web</h6>
+            <form class="comment-form" method="post"
+                  aciton="/postcomment">
+                {% from "macros.html" import render_field %}
+                {{ form.csrf_token }}
+                <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}-{{ answer['aid'] }}">
+                    <div id="wmd-button-bar-{{ questions['qid'] }}-{{ answer['aid'] }}" class="wmd-bar"></div>
+                    <div class="control-group">
+                        <label for="answer" class="control-label"></label>
 
-                            <p>
-                                <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-                            </p>
-                            <h6>From your computer (Max. 2MB)</h6>
-                            <span class="loading-small"></span>
-                            <input type="file" name="file" id="file" data-action="/image_upload"/>
-                        </div>
-                        <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-                        <div style="clear:both;"></div>
                         <div class="controls">
-                            <button class="btn btn-primary">
-                                Post answer
-                            </button>
+
+                            <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
+                                      name="answer" id="wmd-input-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                      class="wmd-input"></textarea>
                         </div>
                     </div>
-                </form>
-            {% endif %}
-        </div>
-        <div id="sidebar" class="sidebar">
-            <p>wpifiwe</p>
-        </div>
+                    <div id="insertImageDialog" title="&nbsp;Insert Image">
+                        <h6>From the web</h6>
+
+                        <p>
+                            <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                        </p>
+                        <h6>From your computer (Max. 2MB)</h6>
+                        <span class="loading-small"></span>
+                        <input type="file" name="file" id="file" data-action="/image_upload"/>
+                    </div>
+                    <div id="wmd-preview-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                         class="wmd-panel wmd-preview"></div>
+                    <div style="clear:both;"></div>
+                    <div class="controls">
+                        <button class="btn btn-primary">
+                            Post answer
+                        </button>
+                    </div>
+                </div>
+            </form>
+        {% endfor %}
+    </div>
+    {% if user_id is defined %}
+        <h3>Your answer</h3>
+        <form class="answer-form" method="post"
+              aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <div class="wmd-panel">
+                <div id="wmd-button-bar"></div>
+
+                {{ render_field(form.answer, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please post your answer here..") }}
+                <div id="insertImageDialog" title="&nbsp;Insert Image">
+                    <h6>From the web</h6>
+
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
+                </div>
+                <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+                <div style="clear:both;"></div>
+                <div class="controls">
+                    <button class="btn btn-primary">
+                        Post answer
+                    </button>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+    </div>
+    <div id="sidebar" class="sidebar">
+        <p>wpifiwe</p>
+    </div>
     </div>
     <!--    <script type="text/javascript">
             $("document").ready(function () {
@@ -188,10 +355,10 @@
         var originalHTML = $("#q-desc").text();
         var convertedHTML = converter.makeHtml(originalHTML);
         $("#q-desc").html(convertedHTML);
-        $(".answer").each(function() {
-        var originalHTML = $(this).text();
-        var convertedHTML = converter.makeHtml(originalHTML);
-        $(this).html(convertedHTML);
+        $(".answer").each(function () {
+            var originalHTML = $(this).text();
+            var convertedHTML = converter.makeHtml(originalHTML);
+            $(this).html(convertedHTML);
         });
     </script>
     <script type="text/javascript">
@@ -205,15 +372,6 @@
                     extensions: "all",
                     highlighter: "prettify"
                 });
-                /*converter.hooks.chain("preBlockGamut", function (text, rbg) {
-                 return text.replace(/^ {0,3}""" *\n((?:.*?\n)+?) {0,3}""" *$/gm, function (whole, inner) {
-                 return "<blockquote>" + rbg(inner) + "</blockquote>\n";
-                 });
-                 });
-
-                 converter.hooks.chain("preConversion", function (text) {
-                 return text.replace(/\b(a\w*)/gi, "*$1*");
-                 });*/
 
                 var editor = new Markdown.Editor(converter, null, { handler: help });
 

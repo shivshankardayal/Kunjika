@@ -134,7 +134,7 @@ def questions(qid=None, url=None):
             if answerForm.validate_on_submit() and request.method == 'POST':
                 answer = {}
                 if 'answers' in questions_dict:
-                    answer['aid'] = 1
+                    answer['aid'] += 1
                     answer['answer'] = answerForm.answer.data
                     answer['poster'] = g.user.id
                     answer['ts'] = int(time())
@@ -252,7 +252,7 @@ def ask():
             user = cb.get(question['content']['op'])[2]
             user = json.loads(user)
 
-            return redirect(url_for('questions', qid=question['qid']))
+            return redirect('/questions/' + str(question['qid']) + '/' + str(question['content']['url']))
 
         return render_template('ask.html', form=questionForm, apage=True, fname=g.user.name, user_id=g.user.id)
     return redirect(url_for('login'))
