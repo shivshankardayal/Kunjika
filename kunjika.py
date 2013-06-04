@@ -424,6 +424,10 @@ def add_tags(tags_passed, qid):
 
             tb.add(tag, data)
 
+@kunjika.route('/postcomment')
+def postcomment():
+    return '<div class="comment">hello</div>'
+
 if __name__ == '__main__':
     kunjika.run()
 

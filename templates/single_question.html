@@ -117,6 +117,26 @@
             }
         }
     </script>
+    <script type=text/javascript>
+        $(".comment-form").submit(function(event) {
+                /* stop form from submitting normally */
+                event.preventDefault();
+                /* get some values from elements on the page: */
+                var $form = $(this),
+                term = $form.find( 'input[name="comment"]' ).val(),
+                url = $form.attr( 'action' );
+                /* Send the data using post */
+                var posting = $.post( url, { comment: term } );
+                /* Put the results in a div */
+                alert(term);
+                posting.done(function( data ) {
+
+                    alert(data);
+                var content = $( data ).find( '.comment' );
+                $( this ).append( content );
+            });
+        });
+    </script>
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
@@ -181,7 +201,7 @@
                 <div class="controls">
 
                     <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
-                              name="answer" id="wmd-input-{{ questions['qid'] }}" class="wmd-input"></textarea>
+                              name="comment" id="wmd-input-{{ questions['qid'] }}" class="wmd-input"></textarea>
                 </div>
             </div>
             <div id="insertImageDialog" title="&nbsp;Insert Image">
@@ -265,7 +285,7 @@
                         <div class="controls">
 
                             <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
-                                      name="answer" id="wmd-input-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                      name="comment" id="wmd-input-{{ questions['qid'] }}-{{ answer['aid'] }}"
                                       class="wmd-input"></textarea>
                         </div>
                     </div>
