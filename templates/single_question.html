@@ -169,7 +169,7 @@
         </tr>
         </tbody>
     </table>
-    <form class="comment-form" method="post"
+    <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
           aciton="/postcomment">
         {% from "macros.html" import render_field %}
         {{ form.csrf_token }}
@@ -253,7 +253,7 @@
                 </tr>
                 </tbody>
             </table>
-            <form class="comment-form" method="post"
+            <form class="comment-form" id="f-{{ questions['qid'] }}-{{ answer['aid'] }}" method="post"
                   aciton="/postcomment">
                 {% from "macros.html" import render_field %}
                 {{ form.csrf_token }}

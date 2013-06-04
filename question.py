@@ -15,7 +15,7 @@ def get_question_by_id(qid, question):
     if 'answers' in question:
         for i in question['answers']:
             user = cb.get(str(i['poster'])).value
-            user = json.loads(user)
+            #user = json.loads(user)
             i['opname'] = user['fname']
             i['email'] = user['email']
             i['tstamp'] = strftime("%a, %d %b %Y %H:%M:%S", localtime(i['ts']))

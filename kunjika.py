@@ -88,6 +88,7 @@ def load_user(id):
 
 @kunjika.route('/', methods=['GET', 'POST'])
 @kunjika.route('/questions', methods=['GET', 'POST'])
+@kunjika.route('/questions/<qid>', methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>/<url>', methods=['GET', 'POST'])
 def questions(qid=None, url=None):
     questions_dict = {}
@@ -111,7 +112,7 @@ def questions(qid=None, url=None):
             if answerForm.validate_on_submit() and request.method == 'POST':
                 answer = {}
                 if 'answers' in questions_dict:
-                    answer['aid'] += 1
+                    answer['aid'] = questions_dict['acount'] + 1
                     answer['answer'] = answerForm.answer.data
                     answer['poster'] = g.user.id
                     answer['ts'] = int(time())
@@ -137,7 +138,7 @@ def questions(qid=None, url=None):
 
                 qb.replace(str(questions_dict['qid']), questions_dict)
 
-                return redirect(url_for('questions'))
+                return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict, form=answerForm, fname=g.user.name, user_id=g.user.id, gravatar=gravatar32)
         else:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict )
@@ -224,7 +225,7 @@ def ask():
             qb.add(str(question['qid']), question)
             add_tags(question['content']['tags'], question['qid'])
 
-            return redirect('/questions/' + str(question['qid']) + '/' + str(question['content']['url']))
+            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
 
         return render_template('ask.html', title='Ask', form=questionForm, apage=True, fname=g.user.name, user_id=g.user.id)
     return redirect(url_for('login'))
@@ -412,7 +413,7 @@ def add_tags(tags_passed, qid):
             document['count'] += 1
             document['qid'].append(qid)
 
-            tb.replace(tag, json.dumps(document))
+            tb.replace(tag, document)
 
         except:
             data = {}
