@@ -2,8 +2,8 @@ from flask import Flask, session, render_template, abort, redirect, url_for, fla
 import json
 from forms import *
 from flaskext.bcrypt import Bcrypt
-#from couchbase.couchbaseclient import VBucketAwareCouchbaseClient as CbClient
 from couchbase import Couchbase
+from couchbase.exceptions import *
 import urllib2
 from pprint import pprint
 from flaskext.gravatar import Gravatar
@@ -34,44 +34,21 @@ kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
 lm = LoginManager()
 lm.init_app(kunjika)
 
-#cb = CbClient("http://localhost:8091/pools/default", "default", "")
-
-#bucket = cb["bucket"]
-
 cb = Couchbase.connect("default")
-#bucket = cb["default"]
-
-#qc = CbClient("http://localhost:8091/pools/default", "questions", "yagyavalkya")
-
-#qbucket = Couchbase("localhost", "shiv", "yagyavalkya")
 qb = Couchbase.connect("questions")
-
-#tc = CbClient("http://localhost:8091/pools/default", "tags", "yagyavalkya")
-
-#tbucket = Couchbase("localhost", "shiv", "yagyavalkya")
 tb = Couchbase.connect("tags")
-
-#sc = CbClient("http://localhost:8091/pools/default", "session", "yagyavalkya")
-
-#sbucket = Couchbase("localhost", "shiv", "yagyavalkya")
-#sb = sbucket["session"]
 
 #Initialize count at first run. Later it is useless
 try:
-    cb.add('count', 0, 0, json.dumps(0))
+    cb.add('count', 0)
 except:
     pass
 
 #Initialize question count at first run. Later it is useless
 try:
-    qb.add('qcount', 0, 0, json.dumps(0))
+    qb.add('qcount', 0)
 except:
     pass
-
-#try:
-#    tb.add('tcount', 0, 0, json.dumps(0))
-#except:
-#    pass
 
 gravatar32 = Gravatar(kunjika,
                      size=32,
@@ -98,16 +75,14 @@ def before_request():
 
 def get_user(uid):
     try:
-        user_from_db = cb.get(str(uid))[2]
-        user_from_db = json.loads(user_from_db)
-        #print "hello4"
+        user_from_db = cb.get(str(uid)).value
         return User(user_from_db['fname'], user_from_db['id'])
-    except:
+    except NotFoundError:
         return None
 
 @lm.user_loader
 def load_user(id):
-    #print "hello3"
+    print id
     user = get_user(int(id))
     return user
 
@@ -117,6 +92,8 @@ def load_user(id):
 def questions(qid=None, url=None):
     questions_dict = {}
     questions_list = []
+    print g.user.name
+    print g.user.id
     if qid is None:
         questions_list = question.get_questions()
         if g.user is None:
@@ -158,8 +135,7 @@ def questions(qid=None, url=None):
                     questions_dict['answers'] = []
                     questions_dict['answers'].append(answer)
 
-                    print repr(answer)
-                qc.replace(str(questions_dict['qid']), 0, 0, json.dumps(questions_dict))
+                qb.replace(str(questions_dict['qid']), questions_dict)
 
                 return redirect(url_for('questions'))
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict, form=answerForm, fname=g.user.name, user_id=g.user.id, gravatar=gravatar32)
@@ -174,8 +150,8 @@ def tags(tag=None):
 @kunjika.route('/users/<uid>')
 @kunjika.route('/users/<uid>/<uname>')
 def users(uid=None, uname=None):
-    user = cb.get(uid)[2]
-    user = json.loads(user)
+    user = cb.get(uid).value
+    #user = json.loads(user)
     gravatar100 = Gravatar(kunjika,
                         size=100,
                         rating='g',
@@ -212,7 +188,6 @@ def ask():
             question['content']['tags'] = questionForm.tags.data.split(',')
             question['title'] = title
             length = len(title)
-            #print length
             prev_dash = False
             url = ""
             for i in range(length):
@@ -241,20 +216,17 @@ def ask():
             question['content']['ts'] = int(time())
             question['content']['ip'] = request.remote_addr
             qb.incr('qcount', 1)
-            question['qid'] = qb.get('qcount')[2]
+            question['qid'] = qb.get('qcount').value
             question['votes'] = 0
             question['acount'] = 0
             question['views'] = 0
 
-            qb.add(str(question['qid']), 0, 0, json.dumps(question))
+            qb.add(str(question['qid']), question)
             add_tags(question['content']['tags'], question['qid'])
-
-            user = cb.get(question['content']['op'])[2]
-            user = json.loads(user)
 
             return redirect('/questions/' + str(question['qid']) + '/' + str(question['content']['url']))
 
-        return render_template('ask.html', form=questionForm, apage=True, fname=g.user.name, user_id=g.user.id)
+        return render_template('ask.html', title='Ask', form=questionForm, apage=True, fname=g.user.name, user_id=g.user.id)
     return redirect(url_for('login'))
 
 
@@ -267,20 +239,17 @@ def login():
         try:
             #document = json.loads(document)
             document = urllib2.urlopen(
-                "http://localhost:8092/default/_design/dev_dev/_view/get_id_from_email?key=" + '"' + loginForm.email.data + '"').read()
-            document = json.loads(document)
-            did = document['rows'][0]['id']
-            document = cb.get(did)[2]
-            document = json.loads(document)
-
+                'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + loginForm.email.data + '"').read()
+            document = json.loads(document)['rows'][0]['value']
             if bcrypt.check_password_hash(document['password'], loginForm.password.data):
-                session[did] = did
+                session[document['id']] = document['id']
                 session['logged_in'] = True
                 if 'role' in document:
                     session['admin'] = True
-                user = User(document['fname'], did)
+                user = User(document['fname'], document['id'])
                 try:
                     login_user(user, remember=True)
+                    #print "hello"
                     g.user = user
                     return redirect(url_for('questions'))
                 except:
@@ -311,12 +280,10 @@ def register():
     if registrationForm.validate_on_submit() and request.method == 'POST':
         passwd_hash = bcrypt.generate_password_hash(registrationForm.password.data)
 
-        #document = None
         data = {}
 
-        view = cb._view("question", "get_role")
-        print view
-        if len(view) == 0:
+        view = cb._view("dev_qa", "get_role")
+        if len(view.value['rows']) == 0:
             data['email'] = registrationForm.email1.data
             data['password'] = passwd_hash
             data['role'] = 'admin'
@@ -324,15 +291,17 @@ def register():
             data['lname'] = registrationForm.lname.data
 
             cb.incr('count', 1)
-            did = cb.get('count')[2]
+            did = cb.get('count').value
             data['id'] = did
-            cb.add(str(did), 0, 0, json.dumps(data))
-
+            cb.add(str(did), data)
+            user = User(data['fname'], data['id'])
+            login_user(user, remember=True)
+            g.user = user
             return redirect(url_for('questions'))
 
         try:
             document = None
-            document = cb.get(registrationForm.email1.data)
+            document = cb.get(registrationForm.email1.data).value
         except:
             if document == None:
                 data['email'] = registrationForm.email1.data
@@ -341,9 +310,9 @@ def register():
                 data['lname'] = registrationForm.lname.data
 
                 cb.incr('count', 1)
-                did = cb.get('count')[2]
+                did = cb.get('count').value
                 data['id'] = did
-                cb.add(str(did), 0, 0, json.dumps(data))
+                cb.add(str(did), data)
 
                 user = User(data['fname'], did)
                 try:
@@ -375,7 +344,6 @@ def check_email():
 
 @kunjika.route('/logout')
 def logout():
-    #g.user = None
     logout_user()
     return redirect(url_for('questions'))
 
@@ -396,8 +364,6 @@ def image_upload():
             suffix = 0
             extension = os.path.splitext(basename(pathname))[1]
             filename = os.path.splitext(basename(filename))[0]
-            print extension
-            print filename
             f = filename
             new_filename = ""
             while saved != True:
@@ -442,12 +408,11 @@ def get_tags(q=None):
 def add_tags(tags_passed, qid):
     for tag in tags_passed:
         try:
-            document = tb.get(tag)[2]
-            document = json.loads(document)
+            document = tb.get(tag).value
             document['count'] += 1
             document['qid'].append(qid)
 
-            tb.replace(tag, 0, 0, json.dumps(document))
+            tb.replace(tag, json.dumps(document))
 
         except:
             data = {}
@@ -456,7 +421,7 @@ def add_tags(tags_passed, qid):
             data['count'] = 1
             data['qid'].append(qid)
 
-            tb.add(tag, 0, 0, json.dumps(data))
+            tb.add(tag, data)
 
 if __name__ == '__main__':
     kunjika.run()
