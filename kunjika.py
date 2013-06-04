@@ -2,8 +2,8 @@ from flask import Flask, session, render_template, abort, redirect, url_for, fla
 import json
 from forms import *
 from flaskext.bcrypt import Bcrypt
-from couchbase.couchbaseclient import VBucketAwareCouchbaseClient as CbClient
-from couchbase.client import Couchbase
+#from couchbase.couchbaseclient import VBucketAwareCouchbaseClient as CbClient
+from couchbase import Couchbase
 import urllib2
 from pprint import pprint
 from flaskext.gravatar import Gravatar
@@ -34,27 +34,27 @@ kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
 lm = LoginManager()
 lm.init_app(kunjika)
 
-cb = CbClient("http://localhost:8091/pools/default", "default", "")
+#cb = CbClient("http://localhost:8091/pools/default", "default", "")
 
 #bucket = cb["bucket"]
 
-cb1 = Couchbase("localhost", "shiv", "yagyavalkya")
-bucket = cb1["default"]
+cb = Couchbase.connect("default")
+#bucket = cb["default"]
 
-qc = CbClient("http://localhost:8091/pools/default", "questions", "")
+#qc = CbClient("http://localhost:8091/pools/default", "questions", "yagyavalkya")
 
-qbucket = Couchbase("localhost", "shiv", "yagyavalkya")
-qb = qbucket["questions"]
+#qbucket = Couchbase("localhost", "shiv", "yagyavalkya")
+qb = Couchbase.connect("questions")
 
-tc = CbClient("http://localhost:8091/pools/default", "tags", "")
+#tc = CbClient("http://localhost:8091/pools/default", "tags", "yagyavalkya")
 
-tbucket = Couchbase("localhost", "shiv", "yagyavalkya")
-tb = qbucket["tags"]
+#tbucket = Couchbase("localhost", "shiv", "yagyavalkya")
+tb = Couchbase.connect("tags")
 
-sc = CbClient("http://localhost:8091/pools/default", "session", "yagyavalkya")
+#sc = CbClient("http://localhost:8091/pools/default", "session", "yagyavalkya")
 
-sbucket = Couchbase("localhost", "shiv", "yagyavalkya")
-sb = sbucket["session"]
+#sbucket = Couchbase("localhost", "shiv", "yagyavalkya")
+#sb = sbucket["session"]
 
 #Initialize count at first run. Later it is useless
 try:
@@ -314,8 +314,8 @@ def register():
         #document = None
         data = {}
 
-        view = bucket.view("_design/dev_dev/_view/get_role")
-
+        view = cb._view("question", "get_role")
+        print view
         if len(view) == 0:
             data['email'] = registrationForm.email1.data
             data['password'] = passwd_hash
@@ -446,7 +446,7 @@ def add_tags(tags_passed, qid):
             document = json.loads(document)
             document['count'] += 1
             document['qid'].append(qid)
-        
+
             tb.replace(tag, 0, 0, json.dumps(document))
 
         except:
@@ -455,7 +455,7 @@ def add_tags(tags_passed, qid):
             data['tag'] = tag
             data['count'] = 1
             data['qid'].append(qid)
-            
+
             tb.add(tag, 0, 0, json.dumps(data))
 
 if __name__ == '__main__':

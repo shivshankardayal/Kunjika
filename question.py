@@ -1,4 +1,4 @@
-from kunjika import kunjika, qc, qb, cb
+from kunjika import kunjika, qb, cb
 import urllib2
 import json
 from time import localtime, strftime
