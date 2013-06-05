@@ -12,13 +12,19 @@ def get_question_by_id(qid, question):
     question['email'] = user['email']
     question['opname'] = user['fname']
 
+    if'comments' in question:
+        for i in question['comments']:
+            i['tstamp'] = strftime("%a, %d %b %Y %H:%M:%S", localtime(i['ts']))
     if 'answers' in question:
         for i in question['answers']:
             user = cb.get(str(i['poster'])).value
             #user = json.loads(user)
             i['opname'] = user['fname']
             i['email'] = user['email']
-            i['tstamp'] = strftime("%a, %d %b %Y %H:%M:%S", localtime(i['ts']))
+            i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
+            if 'comments' in i:
+                for i in i['comments']:
+                    i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
 
     return question
 

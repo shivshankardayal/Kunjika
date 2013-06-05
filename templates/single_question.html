@@ -122,7 +122,7 @@
     $(document).ready(function() {
     var options = {
         //target:        '#output1',   // target element(s) to be updated with server response
-        beforeSubmit:  showRequest,  // pre-submit callback
+        //beforeSubmit:  showRequest,  // pre-submit callback
         success:       showResponse,  // post-submit callback
 
         // other available options:
@@ -138,23 +138,35 @@
 
     // bind form using 'ajaxForm'
     $('form.comment-form').ajaxForm(options);
-    function showRequest(formData, jqForm, options) {
+    //function showRequest(formData, jqForm, options) {
         // formData is an array; here we use $.param to convert it to a string to display it
         // but the form plugin does this for you automatically when it submits the data
-        var queryString = $.param(formData);
+        //var queryString = $.param(formData);
 
         // jqForm is a jQuery object encapsulating the form element.  To access the
         // DOM element for the form do this:
         // var formElement = jqForm[0];
 
-        alert('About to submit: \n\n' + queryString);
+        //alert('About to submit: \n\n' + queryString);
 
         // here we could return false to prevent the form from being submitted;
         // returning anything other than false will allow the form submit to continue
-        return true;
-    }
+        //return true;
+    //}
     function showResponse(responseText, statusText, xhr, $form)  {
-        alert(responseText);
+        var converter = new Markdown.Converter();
+        Markdown.Extra.init(converter, {
+            extensions: "all",
+            highlighter: "prettify"
+        });
+
+        responseJSON = jQuery.parseJSON(responseText);
+        str = '<div class="comment" id="c-' + responseJSON.id + '">';
+        comment = converter.makeHtml(responseJSON.comment);
+        str += comment;
+        str += " &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
+        str += " "+ responseJSON.ts + "</div>"
+        $(str).insertBefore('form.comment-form');
     }
 });
     </script>
@@ -211,11 +223,11 @@
         </tbody>
     </table>
     {% for comment in questions['comments'] %}
-    <div class="comment" id ="c-{{ questions['comments'] }}">comment['comment'] &mdash;
-    	<a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
-    	{{ comment['ts'] }}
-    {% endfor %}
+    <div class="comment" id ="c-{{ comment['cid'] }}"><div class="content"> {{ comment['comment'] }}</div> -
+    	<a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }}</a>
+    	{{ comment['tstamp'] }}
     </div>
+    {% endfor %}
     <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
           aciton="/postcomment">
         {% from "macros.html" import render_field %}
@@ -299,6 +311,13 @@
                 </tr>
                 </tbody>
             </table>
+            {% for comment in answer['comments'] %}
+            <div class="comment" id ="c-{{ comment['cid'] }}"><div class="contetn">{{ comment['comment'] }}</div> -
+                <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
+            {{ comment['tstamp'] }}
+            </div>
+            {% endfor %}
+    
             <form class="comment-form" id="f-{{ questions['qid'] }}-{{ answer['aid'] }}" method="post"
                   aciton="/postcomment">
                 {% from "macros.html" import render_field %}
@@ -401,6 +420,11 @@
         var convertedHTML = converter.makeHtml(originalHTML);
         $("#q-desc").html(convertedHTML);
         $(".answer").each(function () {
+            var originalHTML = $(this).text();
+            var convertedHTML = converter.makeHtml(originalHTML);
+            $(this).html(convertedHTML);
+        });
+        $(".content").each(function () {
             var originalHTML = $(this).text();
             var convertedHTML = converter.makeHtml(originalHTML);
             $(this).html(convertedHTML);

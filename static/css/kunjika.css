@@ -429,3 +429,12 @@ pre.prettyprint {
 
 .ran {
 }
+
+.comment {
+  border-bottom: 1px dotted #333;
+  font-size: 12px;
+/*  color: #333;*/
+  margin-left: 80px;
+  margin-top:4px;
+  margin-bottom: 4px;
+}

@@ -441,7 +441,6 @@ def postcomment():
 
     question = qb.get(qid).value
     aid =int(aid)
-    aid -= 1
     comment = {}
     #comment['aid'] = questions_dict['acount'] + 1
     comment['comment'] = request.form['comment']
@@ -450,6 +449,7 @@ def postcomment():
     comment['ts'] = int(time())
     comment['ip'] = request.remote_addr
     if aid != 0:
+        aid -= 1
         if 'comments' in question['answers'][aid]:
             question['answers'][aid]['ccount'] += 1
             comment['cid'] = question['answers'][aid]['ccount']
@@ -467,15 +467,17 @@ def postcomment():
         else:
             question['ccount'] = 1
             question['comments'] = []
-            question['cid'] = 1
+            comment['cid'] = 1
             question['comments'].append(comment)
 
     pprint(question)
 
-    #qb.replace(str(qid), question)
+    qb.replace(str(qid), question)
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
-    return '<div class="comment" id="c-' + str(comment['cid']) + '>' + request.form['comment'] +'&mdash; ' \
-           '<a href="/users/"' + str(g.user.id) + '/' + g.user.name + '>' + g.user.name +'</a>' + str(ts) +'</div>'
+    #return '<div class="comment" id="c-' + str(comment['cid']) + '">' + request.form['comment'] +'<div>&mdash;</div>' \
+    #       '<a href="/users/"' + str(g.user.id) + '/' + g.user.name + '>' + g.user.name +'</a> ' + str(ts) +'</div>'
+    return json.dumps({"id": comment['cid'], "comment": request.form['comment'], "user_id": g.user.id,
+     "uname": g.user.name, "ts":ts})
 
 if __name__ == '__main__':
     kunjika.run()
