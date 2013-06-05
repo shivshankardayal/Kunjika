@@ -312,7 +312,7 @@
                 </tbody>
             </table>
             {% for comment in answer['comments'] %}
-            <div class="comment" id ="c-{{ comment['cid'] }}"><div class="contetn">{{ comment['comment'] }}</div> -
+            <div class="comment" id ="c-{{ comment['cid'] }}"><div class="content">{{ comment['comment'] }}</div> -
                 <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
             {{ comment['tstamp'] }}
             </div>
