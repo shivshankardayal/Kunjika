@@ -1,4 +1,4 @@
-from flask import Flask, session, render_template, abort, redirect, url_for, flash, make_response, request, g
+from flask import Flask, session, render_template, abort, redirect, url_for, flash, make_response, request, g, jsonify
 import json
 from forms import *
 from flaskext.bcrypt import Bcrypt
@@ -10,7 +10,7 @@ from flaskext.gravatar import Gravatar
 from werkzeug import secure_filename, SharedDataMiddleware
 import os
 from os.path import basename
-from time import gmtime, strftime, time
+from time import localtime, strftime, time
 from flask.ext.login import (LoginManager, current_user, login_required,
                             login_user, logout_user, UserMixin, AnonymousUser,
                             confirm_login, fresh_login_required)
@@ -424,9 +424,58 @@ def add_tags(tags_passed, qid):
 
             tb.add(tag, data)
 
-@kunjika.route('/postcomment')
+@kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():
-    return '<div class="comment">hello</div>'
+    #print request.form
+    #print type(request.form['comment'])
+    if len(request.form['comment'])<10 or len(request.form['comment'])>5000:
+        return "Comment must be between 10 and 5000 characters."
+    else:
+        elements = request.form['element'].split('-')
+        qid = elements[0]
+        print "qid = " + qid
+        aid = 0
+        if len(elements) == 2: # check if comment has been made on answers
+            aid = elements[1]
+        print "aid = ",  aid   # if it is on question aid will be zero
+
+    question = qb.get(qid).value
+    aid =int(aid)
+    aid -= 1
+    comment = {}
+    #comment['aid'] = questions_dict['acount'] + 1
+    comment['comment'] = request.form['comment']
+    comment['poster'] = g.user.id
+    comment['opname'] = g.user.name
+    comment['ts'] = int(time())
+    comment['ip'] = request.remote_addr
+    if aid != 0:
+        if 'comments' in question['answers'][aid]:
+            question['answers'][aid]['ccount'] += 1
+            comment['cid'] = question['answers'][aid]['ccount']
+            question['answers'][aid]['comments'].append(comment)
+        else:
+            question['answers'][aid]['ccount'] =1
+            question['answers'][aid]['comments'] = []
+            comment['cid'] = 1
+            question['answers'][aid]['comments'].append(comment)
+    else:
+        if 'comments' in question:
+            question['ccount'] += 1
+            comment['cid'] = question['ccount']
+            question['comments'].append(comment)
+        else:
+            question['ccount'] = 1
+            question['comments'] = []
+            question['cid'] = 1
+            question['comments'].append(comment)
+
+    pprint(question)
+
+    #qb.replace(str(qid), question)
+    ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
+    return '<div class="comment" id="c-' + str(comment['cid']) + '>' + request.form['comment'] +'&mdash; ' \
+           '<a href="/users/"' + str(g.user.id) + '/' + g.user.name + '>' + g.user.name +'</a>' + str(ts) +'</div>'
 
 if __name__ == '__main__':
     kunjika.run()

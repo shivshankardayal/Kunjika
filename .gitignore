@@ -5,3 +5,5 @@ build/
 .idea/
 uploads/
 venv/
+.project
+.pydevproject

@@ -23,6 +23,7 @@
             src="/static/js/prettify.js?lang=clj&amp;lbg=erlang&amp;lang=matlab&amp;lang=sql&amp;lang=vb&amp;lang=css&amp;lang=go&amp;lang=pascal&amp;lan=tcl&amp;lang=yaml&amp;lan=basic&amp;lang=dart&amp;lan=lua&amp;lang=scala&amp;lang=wiki&amp;lang=tex"></script>
     <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
     <!--    <script type="text/javascript" src="/static/js/highlight.pack.js"></script>
             <script>hljs.initHighlightingOnLoad();</script>-->
     <script>
@@ -117,25 +118,45 @@
             }
         }
     </script>
-    <script type=text/javascript>
-        $(".comment-form").submit(function(event) {
-                /* stop form from submitting normally */
-                event.preventDefault();
-                /* get some values from elements on the page: */
-                var $form = $(this),
-                term = $form.find( 'input[name="comment"]' ).val(),
-                url = $form.attr( 'action' );
-                /* Send the data using post */
-                var posting = $.post( url, { comment: term } );
-                /* Put the results in a div */
-                alert(term);
-                posting.done(function( data ) {
+    <script>
+    $(document).ready(function() {
+    var options = {
+        //target:        '#output1',   // target element(s) to be updated with server response
+        beforeSubmit:  showRequest,  // pre-submit callback
+        success:       showResponse,  // post-submit callback
 
-                    alert(data);
-                var content = $( data ).find( '.comment' );
-                $( this ).append( content );
-            });
-        });
+        // other available options:
+        url:       '/postcomment',         // override for form's 'action' attribute
+        //type:      'post',        // 'get' or 'post', override for form's 'method' attribute
+        //dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
+        clearForm: true,        // clear all form fields after successful submit
+        resetForm: true        // reset the form after successful submit
+
+        // $.ajax options can be used here too, for example:
+        //timeout:   3000
+    };
+
+    // bind form using 'ajaxForm'
+    $('form.comment-form').ajaxForm(options);
+    function showRequest(formData, jqForm, options) {
+        // formData is an array; here we use $.param to convert it to a string to display it
+        // but the form plugin does this for you automatically when it submits the data
+        var queryString = $.param(formData);
+
+        // jqForm is a jQuery object encapsulating the form element.  To access the
+        // DOM element for the form do this:
+        // var formElement = jqForm[0];
+
+        alert('About to submit: \n\n' + queryString);
+
+        // here we could return false to prevent the form from being submitted;
+        // returning anything other than false will allow the form submit to continue
+        return true;
+    }
+    function showResponse(responseText, statusText, xhr, $form)  {
+        alert(responseText);
+    }
+});
     </script>
 {% endblock %}
 {% block container %}
@@ -189,6 +210,12 @@
         </tr>
         </tbody>
     </table>
+    {% for comment in questions['comments'] %}
+    <div class="comment" id ="c-{{ questions['comments'] }}">comment['comment'] &mdash;
+    	<a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
+    	{{ comment['ts'] }}
+    {% endfor %}
+    </div>
     <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
           aciton="/postcomment">
         {% from "macros.html" import render_field %}
@@ -215,11 +242,10 @@
                 <input type="file" name="file" id="file" data-action="/image_upload"/>
             </div>
             <div id="wmd-preview-{{ questions['qid'] }}" class="wmd-panel wmd-preview"></div>
+            <input type="hidden" name="element" value="{{ questions['qid'] }}">
             <div style="clear:both;"></div>
             <div class="controls">
-                <button class="btn btn-primary">
-                    Post answer
-                </button>
+                <input type="submit" value="Post comment" class="btn btn-primary">
             </div>
         </div>
     </form>
@@ -301,11 +327,10 @@
                     </div>
                     <div id="wmd-preview-{{ questions['qid'] }}-{{ answer['aid'] }}"
                          class="wmd-panel wmd-preview"></div>
+                    <input type="hidden" name="element" value="{{ questions['qid'] }}-{{ answer['aid'] }}">
                     <div style="clear:both;"></div>
                     <div class="controls">
-                        <button class="btn btn-primary">
-                            Post answer
-                        </button>
+                        <input type="submit" value="Post comment" class="btn btn-primary">
                     </div>
                 </div>
             </form>
