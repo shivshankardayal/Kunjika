@@ -48,7 +48,9 @@
                 });
                 var editor = new Markdown.Editor(converter, '-' + divid, { handler: help });
 
-                var $dialog = $('#insertImageDialog').dialog({
+                var str = '#insertImageDialog' + '-' + divid;
+                //alert(str);
+                var $dialog = $(str).dialog({
                     autoOpen: false,
                     closeOnEscape: false,
                     open: function (event, ui) {
@@ -243,7 +245,7 @@
                               name="comment" id="wmd-input-{{ questions['qid'] }}" class="wmd-input"></textarea>
                 </div>
             </div>
-            <div id="insertImageDialog" title="&nbsp;Insert Image">
+            <div id="insertImageDialog-{{ questions['qid'] }}" title="&nbsp;Insert Image">
                 <h6>From the web</h6>
 
                 <p>
@@ -334,7 +336,7 @@
                                       class="wmd-input"></textarea>
                         </div>
                     </div>
-                    <div id="insertImageDialog" title="&nbsp;Insert Image">
+                    <div id="insertImageDialog-{{ questions['qid'] }}-{{ answer['aid'] }}" title="&nbsp;Insert Image">
                         <h6>From the web</h6>
 
                         <p>
