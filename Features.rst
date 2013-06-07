@@ -14,6 +14,19 @@ TODO
 10. Search on question title/contents.
 11. Showing views and votes.
 12. Making questions favorite for one user.
+13. Admin panel.
+14. Tag cloud.
+15. Similar questions.
+16. Search using Sphinx and Google custom search integration.
+17. Users page.
+18. Code attachments also .zip source attachments upto 50KB.
+19. Email verification.
+20. Following questions.
+21. Following tags, users.
+22. RSS for tags, users, questions.
+23. Rating user on the basis of questions and answers.
+24. Reputation system.
+25. Badges. 
 
 DONE
 ====
