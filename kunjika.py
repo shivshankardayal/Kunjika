@@ -16,6 +16,7 @@ from flask.ext.login import (LoginManager, current_user, login_required,
                             confirm_login, fresh_login_required)
 from models import User, Anonymous
 import question
+import votes
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -423,6 +424,10 @@ def add_tags(tags_passed, qid):
             data['qid'].append(qid)
 
             tb.add(tag, data)
+
+@kunjika.route('/vote_clicked', methods=['GET', 'POST'])
+def vote_clicked():
+    return votes.handle_vote(request)
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():

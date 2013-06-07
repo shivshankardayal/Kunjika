@@ -574,11 +574,27 @@
         })();
     </script>
     <script>
-    $('.voteup-on').click(function(){
-        alert($(this).attr('id'));
-    });
-    $('.votedown-on').click(function(){
-        alert($(this).attr('id'));
-    });
+        $('.voteup-on').click(function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/vote_clicked', {
+                id : '#' + $(this).attr('id'),
+                vote_count : $(this).parent().next().text(),
+                direction : 'up'
+            }, function (data) {
+                $(id).parent().next().text(data.id);
+            });
+            return false;
+        });
+        $('.votedown-on').click(function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/vote_clicked', {
+                id : '#' + $(this).attr('id'),
+                vote_count: $(this).parent().prev().prev().text(),
+                direction : 'down'
+            }, function (data) {
+                $(id).parent().prev().prev().text(data.id);
+            });
+            return false;
+        });
     </script>
 {% endblock %}
