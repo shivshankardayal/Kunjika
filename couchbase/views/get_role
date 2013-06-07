@@ -1,5 +1,5 @@
 function (doc, meta) {
-      if(doc.role == "admin") {
-              emit([doc.email, doc.fname, doc.lname, doc.id], null);
-                }
+if(doc.role == "admin") {
+emit([doc.email, doc.fname, doc.lname, doc.id], null);
+}
 }

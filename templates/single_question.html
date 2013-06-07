@@ -51,12 +51,12 @@
                 var str = '#insertImageDialog' + '-' + divid;
                 //alert(str);
                 var $dialog = $(str).dialog({
-                    autoOpen: false,
-                    closeOnEscape: false,
-                    open: function (event, ui) {
-                        $(".ui-dialog-titlebar-close").hide();
-                    }
-                });
+                                                autoOpen: false,
+                                                closeOnEscape: false,
+                                                open: function (event, ui) {
+                                                    $(".ui-dialog-titlebar-close").hide();
+                                                }
+                                            });
                 var $loader = $('span.loading-small', $dialog);
                 var $url = $('input[type=text]', $dialog);
                 var $file = $('input[type=file]', $dialog);
@@ -105,10 +105,10 @@
 
                     // upload
                     $file.unbind('change').ajaxfileupload({
-                        action: $file.attr('data-action'),
-                        onStart: uploadStart,
-                        onComplete: uploadComplete
-                    });
+                                                              action: $file.attr('data-action'),
+                                                              onStart: uploadStart,
+                                                              onComplete: uploadComplete
+                                                          });
 
                     // open the dialog
                     $dialog.dialog('open');
@@ -121,56 +121,56 @@
         }
     </script>
     <script>
-    $(document).ready(function() {
-    var options = {
-        //target:        '#output1',   // target element(s) to be updated with server response
-        //beforeSubmit:  showRequest,  // pre-submit callback
-        success:       showResponse,  // post-submit callback
+        $(document).ready(function () {
+            var options = {
+                //target:        '#output1',   // target element(s) to be updated with server response
+                //beforeSubmit:  showRequest,  // pre-submit callback
+                success: showResponse,  // post-submit callback
 
-        // other available options:
-        url:       '/postcomment',         // override for form's 'action' attribute
-        //type:      'post',        // 'get' or 'post', override for form's 'method' attribute
-        //dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
-        clearForm: true,        // clear all form fields after successful submit
-        resetForm: true        // reset the form after successful submit
+                // other available options:
+                url: '/postcomment',         // override for form's 'action' attribute
+                //type:      'post',        // 'get' or 'post', override for form's 'method' attribute
+                //dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
+                clearForm: true,        // clear all form fields after successful submit
+                resetForm: true        // reset the form after successful submit
 
-        // $.ajax options can be used here too, for example:
-        //timeout:   3000
-    };
+                // $.ajax options can be used here too, for example:
+                //timeout:   3000
+            };
 
-    // bind form using 'ajaxForm'
-    $('form.comment-form').ajaxForm(options);
-    //function showRequest(formData, jqForm, options) {
-        // formData is an array; here we use $.param to convert it to a string to display it
-        // but the form plugin does this for you automatically when it submits the data
-        //var queryString = $.param(formData);
+            // bind form using 'ajaxForm'
+            $('form.comment-form').ajaxForm(options);
+            //function showRequest(formData, jqForm, options) {
+            // formData is an array; here we use $.param to convert it to a string to display it
+            // but the form plugin does this for you automatically when it submits the data
+            //var queryString = $.param(formData);
 
-        // jqForm is a jQuery object encapsulating the form element.  To access the
-        // DOM element for the form do this:
-        // var formElement = jqForm[0];
+            // jqForm is a jQuery object encapsulating the form element.  To access the
+            // DOM element for the form do this:
+            // var formElement = jqForm[0];
 
-        //alert('About to submit: \n\n' + queryString);
+            //alert('About to submit: \n\n' + queryString);
 
-        // here we could return false to prevent the form from being submitted;
-        // returning anything other than false will allow the form submit to continue
-        //return true;
-    //}
-    function showResponse(responseText, statusText, xhr, $form)  {
-        var converter = new Markdown.Converter();
-        Markdown.Extra.init(converter, {
-            extensions: "all",
-            highlighter: "prettify"
+            // here we could return false to prevent the form from being submitted;
+            // returning anything other than false will allow the form submit to continue
+            //return true;
+            //}
+            function showResponse(responseText, statusText, xhr, $form) {
+                var converter = new Markdown.Converter();
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "prettify"
+                });
+
+                responseJSON = jQuery.parseJSON(responseText);
+                str = '<div class="comment" id="c-' + responseJSON.id + '">';
+                comment = converter.makeHtml(responseJSON.comment);
+                str += comment;
+                str += " &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
+                str += " " + responseJSON.ts + "</div>"
+                $(str).insertBefore('form.comment-form');
+            }
         });
-
-        responseJSON = jQuery.parseJSON(responseText);
-        str = '<div class="comment" id="c-' + responseJSON.id + '">';
-        comment = converter.makeHtml(responseJSON.comment);
-        str += comment;
-        str += " &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
-        str += " "+ responseJSON.ts + "</div>"
-        $(str).insertBefore('form.comment-form');
-    }
-});
     </script>
 {% endblock %}
 {% block container %}
@@ -179,56 +179,84 @@
     <div class="q-header">
         <h3>{{ questions['title'] }}</h3>
     </div>
-    <div class="q-desc" id="q-desc">{{ questions['content']['description'] }}</div>
-    <div class="post-tags">
-        {% for tag in questions['content']['tags'] %}
-            <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
-        {% endfor %}
-    </div>
-    <table class="poster">
-        <tbody>
+    <table>
         <tr>
-            {% if user_id is defined %}
-                <td class="vt">
-                    <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Enhance</a>
-                </td>
-                <td class="vt">
-                    <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Flag</a>
-                </td>
-                <td class="vt">
-                    <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
-                       onclick="toggleDiv('{{ questions['qid'] }}');">Comment</a>
-                </td>
-            {% else %}
-                <td class="vt">
-                </td>
-            {% endif %}
-            <td class="post-signature owner" align="right">
-                <div class="user-info ">
-                    <div class="user-action-time">
-                        Asked on <span title="2013-05-28 01:32:12Z"
-                                       class="relativetime">{{ questions['tstamp'] }} </span>
-                    </div>
-                    <div class="user-gravatar32">
-                        <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">
-                            <div class=""><img
-                                    src="{{ questions['email']|gravatar }}"
-                                    alt="" height="32" width="32"></div>
-                        </a>
-                    </div>
-                    <div class="user-details">
-                        <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">{{ questions['opname'] }}</a><br>
-                    </div>
+            <td class="votes">
+                <div class="vote">
+	    <span class="icon-stack">
+	      <a class="voteup-on"
+             title="This question shows research effort. It is useful and clear (click again to take back your vote)"
+             href="#" id="v-{{ questions['qid'] }}">
+              <i class="icon-double-angle-up icon-large"></i>
+          </a>
+	    </span>
+
+                    <div class="mini-counts">{{ questions['votes'] }}</div>
+                    <div>votes</div>
+	    <span class="icon-stack">
+	      <a class="votedown-on"
+             title="This question shows research effort. It is useful and clear (click again to take back your vote)"
+             href="#" id="v-{{ questions['qid'] }}">
+              <i class="icon-double-angle-down icon-large"></i>
+          </a>
+	    </span>
                 </div>
             </td>
-        </tr>
-        </tbody>
+            <td class="post">
+                <div class="q-desc" id="q-desc">{{ questions['content']['description'] }}</div>
+                <div class="post-tags">
+                    {% for tag in questions['content']['tags'] %}
+                        <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
+                    {% endfor %}
+                </div>
+                <table class="poster">
+                    <tbody>
+                    <tr>
+                        {% if user_id is defined %}
+                            <td class="vt">
+                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Edit</a>
+                            </td>
+                            <td class="vt">
+                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Flag</a>
+                            </td>
+                            <td class="vt">
+                                <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
+                                   onclick="toggleDiv('{{ questions['qid'] }}');">Comment</a>
+                            </td>
+                        {% else %}
+                            <td class="vt">
+                            </td>
+                        {% endif %}
+                        <td class="post-signature owner" align="right">
+                            <div class="user-info ">
+                                <div class="user-action-time">
+                                    Asked on <span title="2013-05-28 01:32:12Z"
+                                                   class="relativetime">{{ questions['tstamp'] }} </span>
+                                </div>
+                                <div class="user-gravatar32">
+                                    <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">
+                                        <div class=""><img
+                                                src="{{ questions['email']|gravatar }}"
+                                                alt="" height="32" width="32"></div>
+                                    </a>
+                                </div>
+                                <div class="user-details">
+                                    <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">{{ questions['opname'] }}</a><br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
     </table>
     {% for comment in questions['comments'] %}
-    <div class="comment" id ="c-{{ comment['cid'] }}"><div class="content"> {{ comment['comment'] }}</div> -
-    	<a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }}</a>
-    	{{ comment['tstamp'] }}
-    </div>
+        <div class="comment" id="c-{{ comment['cid'] }}">
+            <div class="content"> {{ comment['comment'] }}</div>
+            -
+            <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }}</a>
+            {{ comment['tstamp'] }}
+        </div>
     {% endfor %}
     <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
           aciton="/postcomment">
@@ -257,6 +285,7 @@
             </div>
             <div id="wmd-preview-{{ questions['qid'] }}" class="wmd-panel wmd-preview"></div>
             <input type="hidden" name="element" value="{{ questions['qid'] }}">
+
             <div style="clear:both;"></div>
             <div class="controls">
                 <input type="submit" value="Post comment" class="btn btn-primary">
@@ -270,56 +299,83 @@
         </div>
         <h6>{{ questions['acount'] }} answers</h6>
         {% for answer in questions['answers'] %}
-            <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['answer'] }}</div>
-            <table class="poster">
-                <tbody>
+            <table>
                 <tr>
-                    {% if user_id is defined %}
-                        <td class="vt">
-                            <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
-                               title="">Enhance</a>
-                        </td>
-                        <td class="vt">
-                            <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
-                               title="">Flag</a>
-                        </td>
-                        <td class="vt">
-                            <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                               id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                               onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');">Comment</a>
-                        </td>
-                    {% else %}
-                        <td class="vt">
-                        </td>
-                    {% endif %}
-                    <td class="post-signature owner" align="right">
-                        <div class="user-info ">
-                            <div class="user-action-time">
-                                Answered on <span title="2013-05-28 01:32:12Z"
-                                                  class="relativetime">{{ answer['tstamp'] }} </span>
-                            </div>
-                            <div class="user-gravatar32">
-                                <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">
-                                    <div class=""><img
-                                            src="{{ answer['email']|gravatar }}"
-                                            alt="" height="32" width="32"></div>
+                    <td class="votes">
+                        <div class="vote">
+                            <span class="icon-stack">
+                                <a class="voteup-on"
+                                   title="This answer shows research effort. It is useful and clear (click again to take back your vote)"
+                                   href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                    <i class="icon-double-angle-up icon-large"></i>
                                 </a>
-                            </div>
-                            <div class="user-details">
-                                <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">{{ answer['opname'] }}</a><br>
-                            </div>
+                            </span>
+
+                            <div class="mini-counts">{{ questions['votes'] }}</div>
+                            <div>votes</div>
+                            <span class="icon-stack">
+                                <a class="votedown-on"
+                                   title="This answer shows research effort. It is useful and clear (click again to take back your vote)"
+                                   href="#" id="v-{{ quesitons['qid'] }}-{{ answer['aid'] }}">
+                                    <i class="icon-double-angle-down icon-large"></i>
+                                </a>
+                            </span>
                         </div>
                     </td>
+                    <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['answer'] }}</div>
+                    <table class="poster">
+                        <tbody>
+                        <tr>
+                            {% if user_id is defined %}
+                                <td class="vt">
+                                    <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
+                                       title="">Edit</a>
+                                </td>
+                                <td class="vt">
+                                    <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
+                                       title="">Flag</a>
+                                </td>
+                                <td class="vt">
+                                    <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                       id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                       onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');">Comment</a>
+                                </td>
+                            {% else %}
+                                <td class="vt">
+                                </td>
+                            {% endif %}
+                            <td class="post-signature owner" align="right">
+                                <div class="user-info ">
+                                    <div class="user-action-time">
+                                        Answered on <span title="2013-05-28 01:32:12Z"
+                                                          class="relativetime">{{ answer['tstamp'] }} </span>
+                                    </div>
+                                    <div class="user-gravatar32">
+                                        <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">
+                                            <div class=""><img
+                                                    src="{{ answer['email']|gravatar }}"
+                                                    alt="" height="32" width="32"></div>
+                                        </a>
+                                    </div>
+                                    <div class="user-details">
+                                        <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">{{ answer['opname'] }}</a><br>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </tr>
-                </tbody>
             </table>
             {% for comment in answer['comments'] %}
-            <div class="comment" id ="c-{{ comment['cid'] }}"><div class="content">{{ comment['comment'] }}</div> -
-                <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
-            {{ comment['tstamp'] }}
-            </div>
+                <div class="comment" id="c-{{ comment['cid'] }}">
+                    <div class="content">{{ comment['comment'] }}</div>
+                    -
+                    <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
+                    {{ comment['tstamp'] }}
+                </div>
             {% endfor %}
-    
+
             <form class="comment-form" id="f-{{ questions['qid'] }}-{{ answer['aid'] }}" method="post"
                   aciton="/postcomment">
                 {% from "macros.html" import render_field %}
@@ -349,6 +405,7 @@
                     <div id="wmd-preview-{{ questions['qid'] }}-{{ answer['aid'] }}"
                          class="wmd-panel wmd-preview"></div>
                     <input type="hidden" name="element" value="{{ questions['qid'] }}-{{ answer['aid'] }}">
+
                     <div style="clear:both;"></div>
                     <div class="controls">
                         <input type="submit" value="Post comment" class="btn btn-primary">
@@ -447,12 +504,12 @@
                 var editor = new Markdown.Editor(converter, null, { handler: help });
 
                 var $dialog = $('#insertImageDialog').dialog({
-                    autoOpen: false,
-                    closeOnEscape: false,
-                    open: function (event, ui) {
-                        $(".ui-dialog-titlebar-close").hide();
-                    }
-                });
+                                                                 autoOpen: false,
+                                                                 closeOnEscape: false,
+                                                                 open: function (event, ui) {
+                                                                     $(".ui-dialog-titlebar-close").hide();
+                                                                 }
+                                                             });
                 var $loader = $('span.loading-small', $dialog);
                 var $url = $('input[type=text]', $dialog);
                 var $file = $('input[type=file]', $dialog);
@@ -501,10 +558,10 @@
 
                     // upload
                     $file.unbind('change').ajaxfileupload({
-                        action: $file.attr('data-action'),
-                        onStart: uploadStart,
-                        onComplete: uploadComplete
-                    });
+                                                              action: $file.attr('data-action'),
+                                                              onStart: uploadStart,
+                                                              onComplete: uploadComplete
+                                                          });
 
                     // open the dialog
                     $dialog.dialog('open');
@@ -515,5 +572,13 @@
                 editor.run();
             }
         })();
+    </script>
+    <script>
+    $('.voteup-on').click(function(){
+        alert($(this).attr('id'));
+    });
+    $('.votedown-on').click(function(){
+        alert($(this).attr('id'));
+    });
     </script>
 {% endblock %}

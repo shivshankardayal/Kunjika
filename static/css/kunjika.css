@@ -70,6 +70,7 @@
     float: left;
     margin: 0 10px 20px 0;
     width: 728px;
+    display:table;
 }
 
 #sidebar, .sidebar {
@@ -272,27 +273,27 @@
 }
 
 .mini-counts {
-  margin-bottom: 8px;
+    margin-bottom: 8px;
 }
 
 .narrow .summary {
-  width: 570px;
+    width: 570px;
 }
 
 .summary {
-  float: left;
-  width: 630px;
+    float: left;
+    width: 630px;
 }
 
 .summary .question-hyperlink {
-  color: #444;
+    color: #444;
 }
 
 .question-hyperlink {
-  font-size: 17px;
-  font-weight: normal;
-  line-height: 1.1;
-  margin-bottom: 1.2em;
+    font-size: 17px;
+    font-weight: normal;
+    line-height: 1.1;
+    margin-bottom: 1.2em;
 }
 
 .narrow .started {
@@ -335,12 +336,12 @@
 }
 
 .post-signature {
-  height: 58px;
-  padding-left: 5px;
-  padding-top: 2px;
-  text-align: left;
-  vertical-align: top;
-  width: 175px;
+    height: 58px;
+    padding-left: 5px;
+    padding-top: 2px;
+    text-align: left;
+    vertical-align: top;
+    width: 175px;
 }
 
 .owner {
@@ -359,35 +360,35 @@
 }
 
 .vt {
-  vertical-align: top;
-  float:left;
-  padding-right:10px;
+    vertical-align: top;
+    float:left;
+    padding-right:10px;
 }
 
 .post-menu > a {
-  border-radius: 10px 10px 10px 10px;
-  margin-right: 1px;
-  padding: 1px 6px;
+    border-radius: 10px 10px 10px 10px;
+    margin-right: 1px;
+    padding: 1px 6px;
 }
 
 .user-info .user-gravatar32 {
-  float: left;
-  height: 32px;
-  width: 32px;
+    float: left;
+    height: 32px;
+    width: 32px;
 }
 
 .user-info .user-details {
-  float: left;
-  margin-left: 5px;
-  overflow: hidden;
-  white-space: nowrap;
-  width: 145px;
+    float: left;
+    margin-left: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 145px;
 }
 
 .user-details {
-  color: #888888;
-  font-size: 12px;
-  line-height: 17px;
+    color: #888888;
+    font-size: 12px;
+    line-height: 17px;
 }
 
 pre.prettyprint {
@@ -395,32 +396,32 @@ pre.prettyprint {
 }
 
 .answers {
-  clear: both;
-  padding-top: 10px;
-  width: 728px;
+    clear: both;
+    padding-top: 10px;
+    width: 728px;
 }
 
 .answers-header {
-  margin-top: 10px;
-  width: 728px;
+    margin-top: 10px;
+    width: 728px;
 }
 
 .subheader {
-  border-bottom: 1px solid #a4c639;
-  clear: both;
-  height: 34px;
-  margin-bottom: 0;
-  margin-top: 5px;
-  overflow-y: hidden;
-  padding: 0;
+    border-bottom: 1px solid #a4c639;
+    clear: both;
+    height: 34px;
+    margin-bottom: 0;
+    margin-top: 5px;
+    overflow-y: hidden;
+    padding: 0;
 }
 
 .answer {
-  border-top: 1px solid #a4c639;
-  /*border-top: 1px solid #FFFFFF;*/
-  padding-bottom: 20px;
-  padding-top: 20px;
-  width: 728px;
+    border-top: 1px solid #a4c639;
+    /*border-top: 1px solid #FFFFFF;*/
+    padding-bottom: 20px;
+    padding-top: 20px;
+    width: 728px;
 }
 
 .hidden-comment-form {
@@ -431,10 +432,36 @@ pre.prettyprint {
 }
 
 .comment {
-  border-bottom: 1px dotted #333;
-  font-size: 11px;
-  color: #555;
-  margin-left: 80px;
-  margin-top:4px;
-  margin-bottom: 4px;
+    border-bottom: 1px dotted #333;
+    font-size: 11px;
+    color: #555;
+    margin-left: 80px;
+    margin-top:4px;
+    margin-bottom: 4px;
+}
+
+.votebar{
+    float: left;
+    width: 60px;
+    height: 60px;
+    padding: 0px;
+    margin-top:30px;
+    clear:both;
+    text-align: left;
+}
+
+.votes{
+    padding-right:15px;
+}
+
+.voteup-on, .voteup-on:hover{
+    text-decoration:none;
+    pointer: hand;
+    color: #070;
+}
+
+.votedown-on, .votedown-on:hover{
+    text-decoration:none;
+    pointer: hand;
+    color: #700;
 }
