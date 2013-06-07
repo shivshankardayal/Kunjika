@@ -17,7 +17,7 @@ from flask.ext.login import (LoginManager, current_user, login_required,
 from models import User, Anonymous
 import question
 
-UPLOAD_FOLDER = '/Users/shiv/Kunjika/uploads'
+UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 kunjika = Flask(__name__)
