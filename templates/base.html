@@ -73,27 +73,27 @@ MathJax.Hub.Config({
 	    <div class="nav-collapse collapse">
               <ul class="nav">
 		{% if qpage is defined %}
-		<li class="active"><a href="/questions">Questions</a></li>
+		<li class="active"><a href="/questions"><i class="icon-question"></i> Questions</a></li>
 		{% else %}
-		<li><a href="/questions">Questions</a></li>
+		<li><a href="/questions"><i class="icon-question"></i> Questions</a></li>
 		{% endif %}
-		<li><a href="/tags">Tags</a></li>
+		<li><a href="/tags"><i class="icon-tags"></i> Tags</a></li>
 		{% if upage is defined %}
-		<li class="active"><a href="/users">Users</a></li>
+		<li class="active"><a href="/users"><i class="icon-user"></i> Users</a></li>
 		{% else %}
-		<li><a href="/users">Users</a></li>
+		<li><a href="/users"><i class="icon-user"></i> Users</a></li>
 		{% endif %}
-		<li><a href="/unasnweres">Unanswered</a></li>
+		<li><a href="/unasnweres"><i class="icon-question-sign"></i> Unanswered</a></li>
 		{% if apage is defined %}
-		<li class="active"><a href="/ask" class="ask">Ask</a></li>
+		<li class="active"><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a></li>
 		{% else %}
-		<li><a href="/ask" class="ask">Ask</a></li>
+		<li><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a></li>
 		{% endif %}
 		{% if user_id is defined %}
-		<li class="active"><a href="/users/{{ user_id }}" class="login">{{ fname }}</a></li>
-		<li><a href="/logout" class="login">Logout</a></li>
+		<li class="active"><a href="/users/{{ user_id }}" class="login"><i class="icon-sigin"></i> {{ fname }}</a></li>
+		<li><a href="/logout" class="login"><i class="icon-signout"></i> Logout</a></li>
 		{% else %}
-		<li><a href="/login" class="login">Login</a></li>
+		<li><a href="/login" class="login"><i class="icon-signin"></i> Login</a></li>
 		{% endif %}
               </ul>
 	    </div><!--/.nav-collapse -->
