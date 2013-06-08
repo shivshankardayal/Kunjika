@@ -175,8 +175,7 @@
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
-    <div id="mainbar" class="mainbar">
-    <div class="q-header">
+    <div id="mainbar" class="mainbar">    <div class="q-header">
         <h3>{{ questions['title'] }}</h3>
     </div>
     <table>
@@ -214,14 +213,14 @@
                     <tr>
                         {% if user_id is defined %}
                             <td class="vt">
-                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Edit <i class="icon-edit"></i></a>
+                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title=""><i class="icon-edit"></i> Edit</a>
                             </td>
                             <td class="vt">
-                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Flag <i class="icon-flag" style="color:#d00"></i></a>
+                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title=""><i class="icon-flag" style="color:#d00"></i> Flag</a>
                             </td>
                             <td class="vt">
                                 <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
-                                   onclick="toggleDiv('{{ questions['qid'] }}');">Comment <i class="icon-comment" style="color:#333"></i></a>
+                                   onclick="toggleDiv('{{ questions['qid'] }}');"><i class="icon-comment" style="color:#333"></i> Comment</a>
                             </td>
                         {% else %}
                             <td class="vt">
@@ -330,16 +329,16 @@
                                 {% if user_id is defined %}
                                     <td class="vt">
                                         <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
-                                           title="">Edit <i class="icon-edit"></i></a>
+                                           title=""><i class="icon-edit"></i> Edit</a>
                                     </td>
                                     <td class="vt">
                                         <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
-                                           title="">Flag <i class="icon-flag" style="color:#d00"></i></a>
+                                           title=""><i class="icon-flag" style="color:#d00"></i> Flag</a>
                                     </td>
                                     <td class="vt">
                                         <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
                                            id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');">Comment <i class="icon-comment" style="color:#333"></i></a>
+                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');"><i class="icon-comment" style="color:#333"></i> Comment</a>
                                     </td>
                                 {% else %}
                                     <td class="vt">
