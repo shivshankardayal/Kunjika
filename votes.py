@@ -33,7 +33,7 @@ def handle_vote(request):
             if answer['aid'] == int(aid):
                 print "hello"
                 if answer['poster'] == g.user.id:
-                    return jsonify({'vote_count':question['votes']})
+                    return jsonify({'vote_count':answer['votes']})
                 else:
                     user = kunjika.cb.get(str(g.user.id)).value
                     pprint(user)

@@ -58,7 +58,7 @@
 	  {% endfor %}
 	</div>
 	<div class="started">
-	  <p>Asked on {{ question['ts'] }} by <a href="/users/{{ question['content']['op'] }}/{{ question['fname'] }}">{{ question['opname'] }}</a></p>
+	  <p>Asked on {{ question['tstamp'] }} by <a href="/users/{{ question['content']['op'] }}/{{ question['opname'] }}">{{ question['opname'] }}</a></p>
 	</div>
       </div>
       {%  endfor %}
