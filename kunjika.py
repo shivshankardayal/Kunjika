@@ -83,7 +83,7 @@ def get_user(uid):
 
 @lm.user_loader
 def load_user(id):
-    print id
+    #print id
     user = get_user(int(id))
     return user
 
@@ -94,8 +94,8 @@ def load_user(id):
 def questions(qid=None, url=None):
     questions_dict = {}
     questions_list = []
-    print g.user.name
-    print g.user.id
+    #print g.user.name
+    #print g.user.id
     if qid is None:
         questions_list = question.get_questions()
         if g.user is None:
@@ -243,6 +243,7 @@ def login():
             document = urllib2.urlopen(
                 'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + loginForm.email.data + '"').read()
             document = json.loads(document)['rows'][0]['value']
+            print(document)
             if bcrypt.check_password_hash(document['password'], loginForm.password.data):
                 session[document['id']] = document['id']
                 session['logged_in'] = True
@@ -438,11 +439,11 @@ def postcomment():
     else:
         elements = request.form['element'].split('-')
         qid = elements[0]
-        print "qid = " + qid
+        #print "qid = " + qid
         aid = 0
         if len(elements) == 2: # check if comment has been made on answers
             aid = elements[1]
-        print "aid = ",  aid   # if it is on question aid will be zero
+        #print "aid = ",  aid   # if it is on question aid will be zero
 
     question = qb.get(qid).value
     aid =int(aid)

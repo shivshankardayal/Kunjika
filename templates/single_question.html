@@ -311,12 +311,12 @@
                                 </a>
                             </span>
 
-                            <div class="mini-counts">{{ questions['votes'] }}</div>
+                            <div class="mini-counts">{{ answer['votes'] }}</div>
                             <div>votes</div>
                             <span class="icon-stack">
                                 <a class="votedown-on"
                                    title="This answer shows research effort. It is useful and clear (click again to take back your vote)"
-                                   href="#" id="v-{{ quesitons['qid'] }}-{{ answer['aid'] }}">
+                                   href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
                                     <i class="icon-double-angle-down icon-large"></i>
                                 </a>
                             </span>
@@ -581,7 +581,7 @@
                 vote_count : $(this).parent().next().text(),
                 direction : 'up'
             }, function (data) {
-                $(id).parent().next().text(data.id);
+                $(id).parent().next().text(data.vote_count);
             });
             return false;
         });
@@ -592,7 +592,7 @@
                 vote_count: $(this).parent().prev().prev().text(),
                 direction : 'down'
             }, function (data) {
-                $(id).parent().prev().prev().text(data.id);
+                $(id).parent().prev().prev().text(data.vote_count);
             });
             return false;
         });

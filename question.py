@@ -31,7 +31,7 @@ def get_question_by_id(qid, question):
 def get_questions():
     questions = urllib2.urlopen("http://localhost:8092/questions/_design/dev_dev/_view/get_questions?descending=true&limit=20").read()
     questions = json.loads(questions)
-    print questions
+    #print questions
     question_list = []
     for i in questions['rows']:
         question_list.append(i['value'])
