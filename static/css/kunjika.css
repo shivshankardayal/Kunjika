@@ -414,10 +414,10 @@ pre.prettyprint {
     margin-top: 5px;
     overflow-y: hidden;
     padding: 0;
+    width:768px;
 }
 
 .answer {
-    border-top: 1px solid #a4c639;
     /*border-top: 1px solid #FFFFFF;*/
     padding-bottom: 20px;
     padding-top: 20px;
@@ -464,4 +464,8 @@ pre.prettyprint {
     text-decoration:none;
     pointer: hand;
     color: #700;
+}
+
+.hr {
+    border-top: 1px solid #a4c639;
 }

@@ -300,7 +300,7 @@
         <h6>{{ questions['acount'] }} answers</h6>
         {% for answer in questions['answers'] %}
             <table>
-                <tr>
+                <tr class="hr">
                     <td class="votes">
                         <div class="vote">
                             <span class="icon-stack">
@@ -322,6 +322,7 @@
                             </span>
                         </div>
                     </td>
+                    <td>
                     <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['answer'] }}</div>
                     <table class="poster">
                         <tbody>
@@ -365,6 +366,7 @@
                         </tr>
                         </tbody>
                     </table>
+                    </td>
                 </tr>
             </table>
             {% for comment in answer['comments'] %}
