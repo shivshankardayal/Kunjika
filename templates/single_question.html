@@ -183,23 +183,23 @@
         <tr>
             <td class="votes">
                 <div class="vote">
-	    <span class="icon-stack">
-	      <a class="voteup-on"
-             title="This question shows research effort. It is useful and clear (click again to take back your vote)"
-             href="#" id="v-{{ questions['qid'] }}">
-              <i class="icon-double-angle-up icon-large"></i>
-          </a>
-	    </span>
+                    <span class="icon-stack">
+                        <a class="voteup-on"
+                           title="This question shows research effort. It is useful and clear (click again to take back your vote)"
+                           href="#" id="v-{{ questions['qid'] }}">
+                            <i class="icon-double-angle-up icon-large"></i>
+                        </a>
+                    </span>
 
                     <div class="mini-counts">{{ questions['votes'] }}</div>
                     <div>votes</div>
-	    <span class="icon-stack">
-	      <a class="votedown-on"
-             title="This question shows research effort. It is useful and clear (click again to take back your vote)"
-             href="#" id="v-{{ questions['qid'] }}">
-              <i class="icon-double-angle-down icon-large"></i>
-          </a>
-	    </span>
+                    <span class="icon-stack">
+                        <a class="votedown-on"
+                           title="This question shows no research effort. It is not useful and unclear (click again to take back your vote)"
+                           href="#" id="v-{{ questions['qid'] }}">
+                            <i class="icon-double-angle-down icon-large"></i>
+                        </a>
+                    </span>
                 </div>
             </td>
             <td class="post">
@@ -315,7 +315,7 @@
                             <div>votes</div>
                             <span class="icon-stack">
                                 <a class="votedown-on"
-                                   title="This answer shows research effort. It is useful and clear (click again to take back your vote)"
+                                   title="This answer shows no research effort. It is not useful and unclear (click again to take back your vote)"
                                    href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
                                     <i class="icon-double-angle-down icon-large"></i>
                                 </a>
@@ -323,49 +323,49 @@
                         </div>
                     </td>
                     <td>
-                    <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['answer'] }}</div>
-                    <table class="poster">
-                        <tbody>
-                        <tr>
-                            {% if user_id is defined %}
-                                <td class="vt">
-                                    <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
-                                       title="">Edit</a>
-                                </td>
-                                <td class="vt">
-                                    <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
-                                       title="">Flag</a>
-                                </td>
-                                <td class="vt">
-                                    <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                                       id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                                       onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');">Comment</a>
-                                </td>
-                            {% else %}
-                                <td class="vt">
-                                </td>
-                            {% endif %}
-                            <td class="post-signature owner" align="right">
-                                <div class="user-info ">
-                                    <div class="user-action-time">
-                                        Answered on <span title="2013-05-28 01:32:12Z"
-                                                          class="relativetime">{{ answer['tstamp'] }} </span>
+                        <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['answer'] }}</div>
+                        <table class="poster">
+                            <tbody>
+                            <tr>
+                                {% if user_id is defined %}
+                                    <td class="vt">
+                                        <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
+                                           title="">Edit</a>
+                                    </td>
+                                    <td class="vt">
+                                        <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
+                                           title="">Flag</a>
+                                    </td>
+                                    <td class="vt">
+                                        <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');">Comment</a>
+                                    </td>
+                                {% else %}
+                                    <td class="vt">
+                                    </td>
+                                {% endif %}
+                                <td class="post-signature owner" align="right">
+                                    <div class="user-info ">
+                                        <div class="user-action-time">
+                                            Answered on <span title="2013-05-28 01:32:12Z"
+                                                              class="relativetime">{{ answer['tstamp'] }} </span>
+                                        </div>
+                                        <div class="user-gravatar32">
+                                            <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">
+                                                <div class=""><img
+                                                        src="{{ answer['email']|gravatar }}"
+                                                        alt="" height="32" width="32"></div>
+                                            </a>
+                                        </div>
+                                        <div class="user-details">
+                                            <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">{{ answer['opname'] }}</a><br>
+                                        </div>
                                     </div>
-                                    <div class="user-gravatar32">
-                                        <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">
-                                            <div class=""><img
-                                                    src="{{ answer['email']|gravatar }}"
-                                                    alt="" height="32" width="32"></div>
-                                        </a>
-                                    </div>
-                                    <div class="user-details">
-                                        <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">{{ answer['opname'] }}</a><br>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </td>
                 </tr>
             </table>
@@ -579,9 +579,8 @@
         $('.voteup-on').click(function () {
             id = '#' + $(this).attr('id');
             $.getJSON('/vote_clicked', {
-                id : '#' + $(this).attr('id'),
-                vote_count : $(this).parent().next().text(),
-                direction : 'up'
+                id: '#' + $(this).attr('id'),
+                direction: 'up'
             }, function (data) {
                 $(id).parent().next().text(data.vote_count);
             });
@@ -590,11 +589,10 @@
         $('.votedown-on').click(function () {
             id = '#' + $(this).attr('id');
             $.getJSON('/vote_clicked', {
-                id : '#' + $(this).attr('id'),
-                vote_count: $(this).parent().prev().prev().text(),
-                direction : 'down'
+                id: '#' + $(this).attr('id'),
+                direction: 'down'
             }, function (data) {
-                $(id).parent().prev().prev().text(data.vote_count);
+                $(id).parent().siblings().first().text(data.vote_count);
             });
             return false;
         });
