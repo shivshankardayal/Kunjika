@@ -214,14 +214,14 @@
                     <tr>
                         {% if user_id is defined %}
                             <td class="vt">
-                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Edit</a>
+                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Edit <i class="icon-edit"></i></a>
                             </td>
                             <td class="vt">
-                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Flag</a>
+                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title="">Flag <i class="icon-flag" style="color:#d00"></i></a>
                             </td>
                             <td class="vt">
                                 <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
-                                   onclick="toggleDiv('{{ questions['qid'] }}');">Comment</a>
+                                   onclick="toggleDiv('{{ questions['qid'] }}');">Comment <i class="icon-comment" style="color:#333"></i></a>
                             </td>
                         {% else %}
                             <td class="vt">
@@ -255,7 +255,7 @@
             <div class="content"> {{ comment['comment'] }}</div>
             -
             <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }}</a>
-            {{ comment['tstamp'] }}
+            {{ comment['tstamp'] }}&nbsp;<a title="edit" href="/edit/c-{{ questions['qid'] }}-{{ comment['cid'] }}"><i class="icon-edit"></i></a>
         </div>
     {% endfor %}
     <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
@@ -330,16 +330,16 @@
                                 {% if user_id is defined %}
                                     <td class="vt">
                                         <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
-                                           title="">Edit</a>
+                                           title="">Edit <i class="icon-edit"></i></a>
                                     </td>
                                     <td class="vt">
                                         <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
-                                           title="">Flag</a>
+                                           title="">Flag <i class="icon-flag" style="color:#d00"></i></a>
                                     </td>
                                     <td class="vt">
                                         <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
                                            id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');">Comment</a>
+                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');">Comment <i class="icon-comment" style="color:#333"></i></a>
                                     </td>
                                 {% else %}
                                     <td class="vt">
@@ -374,7 +374,7 @@
                     <div class="content">{{ comment['comment'] }}</div>
                     -
                     <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
-                    {{ comment['tstamp'] }}
+                    {{ comment['tstamp'] }}&nbsp;<a title="edit" href="/edit/c-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i class="icon-edit"></i></a>
                 </div>
             {% endfor %}
 
