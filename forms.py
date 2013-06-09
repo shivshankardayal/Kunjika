@@ -29,3 +29,5 @@ class QuestionForm(Form):
 class AnswerForm(Form):
     answer = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
 
+class CommentForm(Form):
+    comment = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])

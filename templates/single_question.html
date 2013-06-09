@@ -203,7 +203,7 @@
             </td>
             <td class="post">
                 <div class="q-desc" id="q-desc">{{ questions['content']['description'] }}</div>
-                <div class="post-tags">
+                <div class="post-tags"><i class="icon-tags" style="color:#a4c639;"></i>
                     {% for tag in questions['content']['tags'] %}
                         <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
                     {% endfor %}
@@ -213,7 +213,7 @@
                     <tr>
                         {% if user_id is defined %}
                             <td class="vt">
-                                <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title=""><i class="icon-edit"></i> Edit</a>
+                                <a href="/edit/qe-{{ questions['qid'] }}" class="suggest-edit-post" title=""><i class="icon-edit"></i> Edit</a>
                             </td>
                             <td class="vt">
                                 <a href="/posts/{{ questions['qid'] }}/edit" class="suggest-edit-post" title=""><i class="icon-flag" style="color:#d00"></i> Flag</a>
@@ -249,12 +249,29 @@
                 </table>
             </td>
     </table>
+    <br/>
+    <span style="padding-left:40px;" class='st_googleplus' displayText=''></span>
+    <span class='st_facebook' displayText=''></span>
+    <span class='st_twitter' displayText=''></span>
+    <span class='st_linkedin' displayText=''></span>
+    <span class='st_pinterest' displayText=''></span>
+    <span class='st_baidu' displayText=''></span>
+    <span class='st_blogger' displayText=''></span>
+    <span class='st_tumblr' displayText=''></span>
+    <span class='st_delicious' displayText=''></span>
+    <span class='st_reddit' displayText=''></span>
+    <span class='st_digg' displayText=''></span>
+    <span class='st_slashdot' displayText=''></span>
+    <span class='st_fblike' displayText=''></span>
+    <span class='st_fbrec' displayText=''></span>
+    <span class='st_plusone' displayText=''></span>
+    <span class='st_email' displayText='Email'></span>
     {% for comment in questions['comments'] %}
         <div class="comment" id="c-{{ comment['cid'] }}">
             <div class="content"> {{ comment['comment'] }}</div>
             -
             <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }}</a>
-            {{ comment['tstamp'] }}&nbsp;<a title="edit" href="/edit/c-{{ questions['qid'] }}-{{ comment['cid'] }}"><i class="icon-edit"></i></a>
+            {{ comment['tstamp'] }}&nbsp;<a title="edit" href="/edit/ce-{{ questions['qid'] }}-{{ comment['cid'] }}"><i class="icon-edit"></i></a>
         </div>
     {% endfor %}
     <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
@@ -328,7 +345,7 @@
                             <tr>
                                 {% if user_id is defined %}
                                     <td class="vt">
-                                        <a href="/posts/{{ answer['aid'] }}/edit" class="suggest-edit-post"
+                                        <a href="/edit/ae-{{ questions['qid'] }}-{{ answer['aid'] }}" class="suggest-edit-post"
                                            title=""><i class="icon-edit"></i> Edit</a>
                                     </td>
                                     <td class="vt">
@@ -373,7 +390,7 @@
                     <div class="content">{{ comment['comment'] }}</div>
                     -
                     <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
-                    {{ comment['tstamp'] }}&nbsp;<a title="edit" href="/edit/c-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i class="icon-edit"></i></a>
+                    {{ comment['tstamp'] }}&nbsp;<a title="edit" href="/edit/ce-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i class="icon-edit"></i></a>
                 </div>
             {% endfor %}
 
@@ -596,4 +613,7 @@
             return false;
         });
     </script>
+<script type="text/javascript">var switchTo5x=true;</script>
+<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+<script type="text/javascript">stLight.options({publisher: "ur-49fb3c1c-f817-275f-74b6-3363921b7b06", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
 {% endblock %}

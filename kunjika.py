@@ -17,7 +17,7 @@ from flask.ext.login import (LoginManager, current_user, login_required,
 from models import User, Anonymous
 import question
 import votes
-# import edit
+import edit
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -431,9 +431,42 @@ def add_tags(tags_passed, qid):
 def vote_clicked():
     return votes.handle_vote(request)
 
-# @kunjika.route('/edit/<element>', methods=['GET', 'POST'])
-# def edit():
-#     return edit.handle_edit()
+@kunjika.route('/edit/<element>', methods=['GET', 'POST'])
+def edits(element):
+    #edit_list = edit.handle_edit(element)
+    #pprint(edit_list)
+
+    aid = 0
+    cid = 0
+    qid = 0
+
+    edit_list = element.split('-')
+
+    question = qb.get(edit_list[1]).value
+    type = edit_list[0]
+
+    if type == 'ce':
+        if len(edit_list) == 3:
+            cid = edit_list[2]
+        else:
+            cid = edit_list[3]
+            aid = edit_list[2]
+    elif type == 'ae':
+        aid = edit_list[2]
+        qid = edit_list[1]
+    elif type == 'qe':
+        qid = edit_list[1]
+
+    if  cid != 0:
+        form = CommentForm(request.form)
+    elif aid != 0:
+        form = AnswerForm(request.form)
+    else:
+        form = QuestionForm(request.form)
+
+
+    return render_template('edit.html', title='Edit', form=form, question=question, type=type, qid=qid, aid=int(aid), cid=int(cid))
+
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():

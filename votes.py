@@ -25,84 +25,74 @@ def handle_vote(request):
 
     if aid != 0:
         question = kunjika.qb.get(qid).value
-        print aid
-        for answer in question['answers']:
-            pprint(answer)
-            #print type(answer['aid'])
-            #print type(aid)
-            if answer['aid'] == int(aid):
-                print "hello"
-                if answer['poster'] == g.user.id:
-                    return jsonify({'vote_count':answer['votes']})
-                else:
-                    user = kunjika.cb.get(str(g.user.id)).value
-                    pprint(user)
-                    if 'votes' in user:
-                        for votes in user['votes']:
-                            if votes['id'] == id:
-                                if direction == 'up' and votes['value'] != 1:
-                                    answer['votes'] += 1
-                                    votes['value'] += 1
-                                    kunjika.cb.replace(str(g.user.id), user)
-                                    kunjika.qb.replace(str(qid), question)
-                                    return jsonify({'vote_count':answer['votes']})
-                                elif direction == 'up' and votes['value'] == 1:
-                                    return jsonify({'vote_count':answer['votes']})
-                                elif direction == 'down' and votes['value'] != -1:
-                                    answer['votes'] -= 1
-                                    votes['value'] -= 1
-                                    kunjika.cb.replace(str(g.user.id), user)
-                                    kunjika.qb.replace(str(qid), question)
-                                    return jsonify({'vote_count':answer['votes']})
-                                elif direction == 'down' and votes['value'] == -1:
-                                    return jsonify({'vote_count':answer['votes']})
-
-                        vote = {}
-                        vote['id'] = id
+        answer = question['answers'][int(aid) - 1]
+        if answer['poster'] == g.user.id:
+            return jsonify({'vote_count':answer['votes']})
+        else:
+            user = kunjika.cb.get(str(g.user.id)).value
+            pprint(user)
+            if 'votes' in user:
+                for votes in user['votes']:
+                    if votes['id'] == id:
                         if direction == 'up' and votes['value'] != 1:
-                            #pprint(answer)
                             answer['votes'] += 1
-                            vote['value'] = 1
-                            user['votes'].append(vote)
+                            votes['value'] += 1
                             kunjika.cb.replace(str(g.user.id), user)
                             kunjika.qb.replace(str(qid), question)
                             return jsonify({'vote_count':answer['votes']})
                         elif direction == 'up' and votes['value'] == 1:
-                            pprint(answer)
                             return jsonify({'vote_count':answer['votes']})
                         elif direction == 'down' and votes['value'] != -1:
-                            #pprint(answer)
                             answer['votes'] -= 1
-                            votes['value'] = -1
-                            user['votes'].append(vote)
+                            votes['value'] -= 1
                             kunjika.cb.replace(str(g.user.id), user)
                             kunjika.qb.replace(str(qid), question)
                             return jsonify({'vote_count':answer['votes']})
                         elif direction == 'down' and votes['value'] == -1:
-                            pprint(answer)
                             return jsonify({'vote_count':answer['votes']})
+
+                vote = {}
+                vote['id'] = id
+                if direction == 'up' and votes['value'] != 1:
+                    answer['votes'] += 1
+                    vote['value'] = 1
+                    user['votes'].append(vote)
+                    kunjika.cb.replace(str(g.user.id), user)
+                    kunjika.qb.replace(str(qid), question)
+                    return jsonify({'vote_count':answer['votes']})
+                elif direction == 'up' and votes['value'] == 1:
+                    return jsonify({'vote_count':answer['votes']})
+                elif direction == 'down' and votes['value'] != -1:
+                    answer['votes'] -= 1
+                    votes['value'] = -1
+                    user['votes'].append(vote)
+                    kunjika.cb.replace(str(g.user.id), user)
+                    kunjika.qb.replace(str(qid), question)
+                    return jsonify({'vote_count':answer['votes']})
+                elif direction == 'down' and votes['value'] == -1:
+                    return jsonify({'vote_count':answer['votes']})
+                else:
+                    votes = []
+                    vote = {}
+                    vote['id'] = id
+                    if direction == 'up':
+                        vote['value'] = 1
+                        answer['votes'] += 1
                     else:
-                        votes = []
-                        vote = {}
-                        vote['id'] = id
-                        if direction == 'up':
-                            vote['value'] = 1
-                            answer['votes'] += 1
-                        else:
-                            vote['value'] = -1
-                            answer['votes'] -= 1
+                        vote['value'] = -1
+                        answer['votes'] -= 1
+                        
+                    votes.append(vote)
 
-                        votes.append(vote)
-
-                        user['votes'] = votes
-
-                        kunjika.cb.replace(str(g.user.id), user)
-                        kunjika.qb.replace(str(qid), question)
-
-                        return jsonify({'vote_count':answer['votes']})
+                    user['votes'] = votes
+                    
+                    kunjika.cb.replace(str(g.user.id), user)
+                    kunjika.qb.replace(str(qid), question)
+                    
+                    return jsonify({'vote_count':answer['votes']})
 
     else:
-        print "aid= " + str(aid)
+        #print "aid= " + str(aid)
         question = kunjika.qb.get(qid).value
         if str(g.user.id) == question['content']['op']:
             return jsonify({'vote_count':question['votes']})
