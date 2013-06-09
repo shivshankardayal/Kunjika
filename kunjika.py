@@ -108,7 +108,7 @@ def questions(qid=None, url=None):
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list)
     else:
         questions_dict = question.get_question_by_id(qid, questions_dict)
-        if g.user is None:
+        if g.user is AnonymousUser:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
         elif g.user is not None and g.user.is_authenticated():
             answerForm = AnswerForm(request.form)
