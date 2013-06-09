@@ -28,6 +28,7 @@
         <div id="mainbar" class="mainbar">
             <div id="qsummary">
                 {% for question in questions %}
+                    {% if question['acount'] == 0 %}
                     <div id="qsummary-{{ question['qid'] }}" class="qsummary narrow">
                         <div class="cp">
                             <div class="votes">
@@ -67,6 +68,7 @@
                             </p>
                         </div>
                     </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>

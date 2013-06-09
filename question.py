@@ -7,7 +7,7 @@ from flaskext.gravatar import Gravatar
 def get_question_by_id(qid, question):
     question = qb.get(qid).value
 
-    question['tstamp'] = strftime("%a, %d %b %Y %H:%M:%S", localtime(question['content']['ts']))
+    question['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(question['content']['ts']))
     user = cb.get(question['content']['op']).value
     question['email'] = user['email']
     question['opname'] = user['fname']

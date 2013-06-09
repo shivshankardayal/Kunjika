@@ -636,7 +636,7 @@
             });
             return false;
         });
-    $('.accept-answer').click(function(){
+    $('.ok').click(function(){
         id = '#' + $(this).attr('id');
         //$(this).css("color", "#070");
         $.getJSON('/answer_accepted', {
@@ -644,11 +644,9 @@
         }, function (data) {
             //alert(data.success);
             $('.ok').each(function(){
-                $(this).removeClass("accepted-answer");
-                $(this).addClass("accept-answer");
+                $(this).css("color", "#333");
             });
-            $(id).removeClass("accept-answer");
-            $(id).addClass("accepted-answer");
+            $(id).css("color", "#070");
         });
         return false;
     });

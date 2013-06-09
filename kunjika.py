@@ -538,6 +538,17 @@ def postcomment():
                        "uname": g.user.name, "ts": ts})
 
 
+@kunjika.route('/unanswered')
+def unanswered():
+    questions_list = question.get_questions()
+    if g.user is None:
+        return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list)
+    elif g.user is not None and g.user.is_authenticated():
+        return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
+        fname=g.user.name, user_id=g.user.id)
+    else:
+        return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list)
+
 if __name__ == '__main__':
     kunjika.run()
 

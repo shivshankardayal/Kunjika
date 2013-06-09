@@ -1,140 +1,153 @@
 <!DOCTYPE html>
 <html lang="{% block html_lang %}en{% endblock %}">
-  <head>
+<head>
     <meta http-Equiv="Cache-Control" Content="no-cache"/>
     <meta http-Equiv="Pragma" Content="no-cache"/>
     <meta http-Equiv="Expires" Content="0"/>
     {% from "macros.html" import debugmin %}
     {% block head %}
-    <title>{% block title %}{{title}}{% endblock %}</title>
-    {% block meta %}
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{% block meta_description %}{% endblock %}">
-    <meta name="author" content="{% block meta_author %}{% endblock %}">
-    {% endblock %}
+        <title>{% block title %}{{ title }}{% endblock %}</title>
+        {% block meta %}
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="description" content="{% block meta_description %}{% endblock %}">
+            <meta name="author" content="{% block meta_author %}{% endblock %}">
+        {% endblock %}
 
-    {% block css_bootstrap %}
-    <link href="/static/css/bootstrap{{ debugmin() }}.css" rel="stylesheet">
-    {% endblock %}
-    {% block css_bootstrap_responsive %}
-    <link href="/static/css/bootstrap-responsive{{ debugmin() }}.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/font-awesome.css">
-    <!--[if IE 7]>
+        {% block css_bootstrap %}
+            <link href="/static/css/bootstrap{{ debugmin() }}.css" rel="stylesheet">
+        {% endblock %}
+        {% block css_bootstrap_responsive %}
+            <link href="/static/css/bootstrap-responsive{{ debugmin() }}.css" rel="stylesheet">
+            <link rel="stylesheet" href="/static/css/font-awesome.css">
+            <!--[if IE 7]>
 	<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome-ie7.css">
 	<![endif]-->
-    {% endblock %}
-    {% block js_jquery %}
-        {# Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline #}
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="/static/js/jquery-1.9.1.min.js"><\/script>')</script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="/static/js/jquery.ajaxfileupload.js"></script>
-        <script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
+        {% endblock %}
+        {% block js_jquery %}
+            {# Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline #}
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+            <script>window.jQuery || document.write('<script src="/static/js/jquery-1.9.1.min.js"><\/script>')</script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+            <script type="text/javascript" src="/static/js/jquery.ajaxfileupload.js"></script>
+            <script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 
-        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  tex2jax: {inlineMath: [['\\(','\\)'], ['\\[','\\]']]},
-    processEscapes: true
-});
-</script>
-      {% endblock %}
-      {% block css_site %}
-      {% endblock %}
-      {% block css_extra %}
-      {% endblock %}
+            <script type="text/javascript"
+                    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+            <script type="text/x-mathjax-config">
+                MathJax.Hub.Config({
+                tex2jax: {inlineMath: [['\\(','\\)'], ['\\[','\\]']]},
+                processEscapes: true
+                });
+            </script>
+        {% endblock %}
+        {% block css_site %}
+        {% endblock %}
+        {% block css_extra %}
+        {% endblock %}
 
-      {% block js_html5_shim %}
-      <!--[if lt IE 9]>
+        {% block js_html5_shim %}
+            <!--[if lt IE 9]>
           <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
           <![endif]-->
-      {% endblock %}
-      {% block js_head %}
-      {% endblock %}
-      {% endblock %}
-  </head>
+        {% endblock %}
+        {% block js_head %}
+        {% endblock %}
+    {% endblock %}
+</head>
 
-  {# TODO: write a class builder macro #}
-  <body class="{% block body_classes %}{% endblock %}" id="{% block body_id %}{% endblock %}"{% block bodytag_extra %}{% endblock %}>
-    <div id="row-fluid">
-      {% block body %}
+{# TODO: write a class builder macro #}
+<body class="{% block body_classes %}{% endblock %}" id="{% block body_id %}{% endblock %}"
+        {% block bodytag_extra %}{% endblock %}>
+<div id="row-fluid">
+    {% block body %}
 
-      {% block navbar_wrapper %}
-      <div class="navbar navbar-inverse navbar-fixed-top">
-	<div class="navbar-inner">
-	  <div class="container-fluid">
-	    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-	    </button>
-	    <a class="brand" href="#">Kunjika</a>
-	    <div class="nav-collapse collapse">
-              <ul class="nav">
-		{% if qpage is defined %}
-		<li class="active"><a href="/questions"><i class="icon-question"></i> Questions</a></li>
-		{% else %}
-		<li><a href="/questions"><i class="icon-question"></i> Questions</a></li>
-		{% endif %}
-		<li><a href="/tags"><i class="icon-tags"></i> Tags</a></li>
-		{% if upage is defined %}
-		<li class="active"><a href="/users"><i class="icon-user"></i> Users</a></li>
-		{% else %}
-		<li><a href="/users"><i class="icon-user"></i> Users</a></li>
-		{% endif %}
-		<li><a href="/unasnweres"><i class="icon-question-sign"></i> Unanswered</a></li>
-		{% if apage is defined %}
-		<li class="active"><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a></li>
-		{% else %}
-		<li><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a></li>
-		{% endif %}
-		{% if user_id is defined %}
-		<li class="active"><a href="/users/{{ user_id }}" class="login"><i class="icon-sigin"></i> {{ fname }}</a></li>
-		<li><a href="/logout" class="login"><i class="icon-signout"></i> Logout</a></li>
-		{% else %}
-		<li><a href="/login" class="login"><i class="icon-signin"></i> Login</a></li>
-		{% endif %}
-              </ul>
-	    </div><!--/.nav-collapse -->
-	  </div>
-	</div>
-      </div>
-      {% endblock %}
+        {% block navbar_wrapper %}
+            <div class="navbar navbar-inverse navbar-fixed-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="brand" href="#">Kunjika</a>
 
-      {% block pre_container %}
-      {% endblock %}
+                        <div class="nav-collapse collapse">
+                            <ul class="nav">
+                                {% if qpage is defined %}
+                                    <li class="active"><a href="/questions"><i class="icon-question"></i> Questions</a>
+                                    </li>
+                                {% else %}
+                                    <li><a href="/questions"><i class="icon-question"></i> Questions</a></li>
+                                {% endif %}
+                                <li><a href="/tags"><i class="icon-tags"></i> Tags</a></li>
+                                {% if upage is defined %}
+                                    <li class="active"><a href="/users"><i class="icon-user"></i> Users</a></li>
+                                {% else %}
+                                    <li><a href="/users"><i class="icon-user"></i> Users</a></li>
+                                {% endif %}
+                                {% if unpage is defined %}
+                                    <li class="active"><a href="/unanswered"><i class="icon-question-sign"></i>
+                                        Unanswered</a></li>
+                                {% else %}
+                                    <li><a href="/unanswered"><i class="icon-question-sign"></i>
+                                        Unanswered</a></li>
+                                {% endif %}
+                                {% if apage is defined %}
+                                    <li class="active"><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a>
+                                    </li>
+                                {% else %}
+                                    <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a></li>
+                                {% endif %}
+                                {% if user_id is defined %}
+                                    <li class="active"><a href="/users/{{ user_id }}" class="login"><i
+                                            class="icon-sigin"></i> {{ fname }}</a></li>
+                                    <li><a href="/logout" class="login"><i class="icon-signout"></i> Logout</a></li>
+                                {% else %}
+                                    <li><a href="/login" class="login"><i class="icon-signin"></i> Login</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <!--/.nav-collapse -->
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
 
-      {% block container_wrapper %}
-      <div class="container container-primary">
-	{% block container %}
+        {% block pre_container %}
+        {% endblock %}
 
-	{% block pre_content %}
-	{% endblock %}
+        {% block container_wrapper %}
+            <div class="container container-primary">
+                {% block container %}
 
-	{% block content %}
-	{% endblock %}
+                    {% block pre_content %}
+                    {% endblock %}
 
-
-	{% block post_content %}
-	{% endblock %}
-
-	{% endblock %}
-
-      </div>
-      {% endblock %}
-
-
-      {% block post_container %}
-      {% endblock %}
+                    {% block content %}
+                    {% endblock %}
 
 
-      {% block js_bootstrap %}
-      <script src="/static/js/bootstrap{{ debugmin() }}.js"></script>
-      {% endblock %}
-      {% block js_analytics %}
-      {# Via HTML5BP. Asynchronous Google Analytics snippet. mathiasbynens.be/notes/async-analytics-snippet #}
-      <!--<script>
+                    {% block post_content %}
+                    {% endblock %}
+
+                {% endblock %}
+
+            </div>
+        {% endblock %}
+
+
+        {% block post_container %}
+        {% endblock %}
+
+
+        {% block js_bootstrap %}
+            <script src="/static/js/bootstrap{{ debugmin() }}.js"></script>
+        {% endblock %}
+        {% block js_analytics %}
+            {# Via HTML5BP. Asynchronous Google Analytics snippet. mathiasbynens.be/notes/async-analytics-snippet #}
+            <!--<script>
           {% block google_analytics %}
           {% if not DEBUG %}
           var _gaq=[['_setAccount','{% block google_analytics_id %}UA-XXXXX-X{% endblock %}'],['_trackPageview']];
@@ -144,22 +157,22 @@ MathJax.Hub.Config({
           {% endif %}
           {% endblock %}
           </script>-->
-      {% endblock %}
+        {% endblock %}
 
-
-      {% endblock %}
-    </div>
-    {% block page_footer %}
-    <div class="row-fluid">
-      <div class="container">
-	<hr/>
-        <p>&copy; 2013 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
-          Shashikant &amp; Shiv Shankar Dayal.<br/>
-          Licensed under GNU GPL. Contents are under GNU GPL.</p>
-      </div>
-    </div>
 
     {% endblock %}
+</div>
+{% block page_footer %}
+    <div class="row-fluid">
+        <div class="container">
+            <hr/>
+            <p>&copy; 2013 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
+                Shashikant &amp; Shiv Shankar Dayal.<br/>
+                Licensed under GNU GPL. Contents are under GNU GPL.</p>
+        </div>
+    </div>
 
-  </body>
+{% endblock %}
+
+</body>
 </html>
