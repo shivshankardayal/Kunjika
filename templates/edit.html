@@ -30,7 +30,11 @@
         <div class="mainbar" id="mainbar">
             {% if type == 'ce' %}
                 <h3>Please edit your comment.</h3>
+                {% if aid != 0 %}
                 <form class="edit-form" method="post" aciton="/edit/ce-{{ qid }}-{{ aid }}-{{ cid }}">
+                {% else %}
+                    <form class="edit-form" method="post" aciton="/edit/ce-{{ qid }}-{{ cid }}">
+                {% endif %}
                 {% from "macros.html" import render_field %}
                 {{ form.csrf_token }}
                 <div class="wmd-panel">
@@ -40,11 +44,11 @@
 
                         <div class="controls">
                             {% if aid != 0 %}
-                                <textarea class="wmd-input" id="wmd-input" name="description"
+                                <textarea class="wmd-input" id="wmd-input" name="comment"
                                           placeholder="Please describe your question here."
                                           stlyle="margin-left:5px;">{{ question['answers'][aid - 1]['comments'][cid - 1]['comment'] }}</textarea>
                             {% else %}
-                                <textarea class="wmd-input" id="wmd-input" name="description"
+                                <textarea class="wmd-input" id="wmd-input" name="comment"
                                           placeholder="Please describe your question here."
                                           stlyle="margin-left:5px;">{{ question['comments'][cid - 1]['comment'] }}</textarea>
                             {% endif %}
@@ -65,7 +69,7 @@
                 <div class="controls">
                 <button class="btn btn-primary">
                 Edit Comment
-            {% elif aid != 0 %}
+            {% elif type == 'ae' %}
                 <h3>Please edit your answer.</h3>
                 <form class="edit-form" method="post" aciton="/edit/ae-{{ qid }}-{{ aid }}">
                 {% from "macros.html" import render_field %}
@@ -76,7 +80,7 @@
                         <label class="control-label" for="description"></label>
 
                         <div class="controls">
-                            <textarea class="wmd-input" id="wmd-input" name="description"
+                            <textarea class="wmd-input" id="wmd-input" name="answer"
                                       placeholder="Please describe your question here."
                                       stlyle="margin-left:5px;">{{ question['answers'][aid - 1]['answer'] }}</textarea>
                         </div>

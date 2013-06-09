@@ -18,6 +18,7 @@ from models import User, Anonymous
 import question
 import votes
 import edit
+import utility
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -190,29 +191,8 @@ def ask():
             question['content']['tags'] = []
             question['content']['tags'] = questionForm.tags.data.split(',')
             question['title'] = title
-            length = len(title)
-            prev_dash = False
-            url = ""
-            for i in range(length):
-                c = title[i]
-                if (c >= 'a' and c <= 'z') or (c >= '0' and c <= '9'):
-                    url += c
-                    prev_dash = False
-                elif (c >= 'A' and c <= 'Z'):
-                    url += c
-                elif (c == ' ' or c == ',' or c == '.' or c == '/' or c == '\\' or c == '-' or c == '_' or c == '='):
-                    if not prev_dash and len(url) > 0:
-                        url += '-'
-                        prev_dash = True
-                elif ord(c) > 160:
-                    c = c.decode('UTF-8').lower()
-                    url += c
-                    prev_dash = False
-                if i == 80:
-                    break
 
-            if prev_dash is True:
-                url = url[:-1]
+            url = utility.generate_url(title)
 
             question['content']['url'] = url
             question['content']['op'] = str(g.user.id)
@@ -444,28 +424,48 @@ def edits(element):
 
     question = qb.get(edit_list[1]).value
     type = edit_list[0]
-
+    form = ""
+    qid = edit_list[1]
     if type == 'ce':
+        form = CommentForm(request.form)
         if len(edit_list) == 3:
             cid = edit_list[2]
         else:
             cid = edit_list[3]
             aid = edit_list[2]
     elif type == 'ae':
-        aid = edit_list[2]
-        qid = edit_list[1]
-    elif type == 'qe':
-        qid = edit_list[1]
-
-    if  cid != 0:
-        form = CommentForm(request.form)
-    elif aid != 0:
         form = AnswerForm(request.form)
-    else:
+        aid = edit_list[2]
+    elif type == 'qe':
         form = QuestionForm(request.form)
 
+    if request.method == 'POST':
+        if type == 'ce':
+            if form.validate_on_submit():
+                if aid != 0:
+                    question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['comment'] = form.comment.data
+                else:
+                    print "test"
+                    question['comments'][int(cid) - 1]['comment'] = form.comment.data
 
-    return render_template('edit.html', title='Edit', form=form, question=question, type=type, qid=qid, aid=int(aid), cid=int(cid))
+                qb.replace(qid, question)
+
+            return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
+        elif type == 'ae':
+            if form.validate_on_submit():
+                question['answers'][int(aid) - 1]['answer'] = form.answer.data
+
+                qb.replace(qid, question)
+
+            return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
+        else:
+            if form.validate_on_submit():
+                question['content']['description'] = form.description.data
+
+                qb.replace(qid, question)
+            return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
+    else:
+        return render_template('edit.html', title='Edit', form=form, question=question, type=type, qid=qid, aid=int(aid), cid=int(cid))
 
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
