@@ -12,8 +12,8 @@ import os
 from os.path import basename
 from time import localtime, strftime, time
 from flask.ext.login import (LoginManager, current_user, login_required,
-                            login_user, logout_user, UserMixin, AnonymousUser,
-                            confirm_login, fresh_login_required)
+                             login_user, logout_user, UserMixin, AnonymousUser,
+                             confirm_login, fresh_login_required)
 from models import User, Anonymous
 import question
 import votes
@@ -31,8 +31,7 @@ kunjika.debug = True
 kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
 kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
-        '/uploads': kunjika.config['UPLOAD_FOLDER']
-        })
+    '/uploads': kunjika.config['UPLOAD_FOLDER']})
 
 lm = LoginManager()
 lm.init_app(kunjika)
@@ -54,27 +53,28 @@ except:
     pass
 
 gravatar32 = Gravatar(kunjika,
-                     size=32,
-                     rating='g',
-                     default='identicon',
-                     force_default=False,
-                     force_lower=False)
+                      size=32,
+                      rating='g',
+                      default='identicon',
+                      force_default=False,
+                      force_lower=False)
 
 gravatar100 = Gravatar(kunjika,
-                     size=100,
-                     rating='g',
-                     default='identicon',
-                     force_default=False,
-                     force_lower=False)
-
+                       size=100,
+                       rating='g',
+                       default='identicon',
+                       force_default=False,
+                       force_lower=False)
 
 bcrypt = Bcrypt(kunjika)
 
 lm.anonymous_user = Anonymous
 
+
 @kunjika.before_request
 def before_request():
     g.user = current_user
+
 
 def get_user(uid):
     try:
@@ -83,11 +83,13 @@ def get_user(uid):
     except NotFoundError:
         return None
 
+
 @lm.user_loader
-def load_user(id):
+def load_user(uid):
     #print id
-    user = get_user(int(id))
+    user = get_user(int(uid))
     return user
+
 
 @kunjika.route('/', methods=['GET', 'POST'])
 @kunjika.route('/questions', methods=['GET', 'POST'])
@@ -95,15 +97,13 @@ def load_user(id):
 @kunjika.route('/questions/<qid>/<url>', methods=['GET', 'POST'])
 def questions(qid=None, url=None):
     questions_dict = {}
-    questions_list = []
-    #print g.user.name
-    #print g.user.id
     if qid is None:
         questions_list = question.get_questions()
         if g.user is None:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list)
         elif g.user is not None and g.user.is_authenticated():
-            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list, fname=g.user.name, user_id=g.user.id)
+            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
+                                   fname=g.user.name, user_id=g.user.id)
         else:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list)
     else:
@@ -142,9 +142,11 @@ def questions(qid=None, url=None):
                 qb.replace(str(questions_dict['qid']), questions_dict)
 
                 return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
-            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict, form=answerForm, fname=g.user.name, user_id=g.user.id, gravatar=gravatar32)
+            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
+                                   form=answerForm, fname=g.user.name, user_id=g.user.id, gravatar=gravatar32)
         else:
-            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict )
+            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
+
 
 @kunjika.route('/tags/<tag>')
 def tags(tag=None):
@@ -157,15 +159,16 @@ def users(uid=None, uname=None):
     user = cb.get(uid).value
     #user = json.loads(user)
     gravatar100 = Gravatar(kunjika,
-                        size=100,
-                        rating='g',
-                        default='identicon',
-                        force_default=False,
-                        force_lower=False)
+                           size=100,
+                           rating='g',
+                           default='identicon',
+                           force_default=False,
+                           force_lower=False)
     if uid in session:
         logged_in = True
         return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
-                               lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, upage=True)
+                               lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
+                               upage=True)
     return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
                            lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True)
 
@@ -178,6 +181,7 @@ def badge(bid=None):
 @kunjika.route('/unanswered/<uid>')
 def unanswered(uid=None):
     return render_template('unanswered.html')
+
 
 @kunjika.route('/ask', methods=['GET', 'POST'])
 def ask():
@@ -209,7 +213,8 @@ def ask():
 
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
 
-        return render_template('ask.html', title='Ask', form=questionForm, apage=True, fname=g.user.name, user_id=g.user.id)
+        return render_template('ask.html', title='Ask', form=questionForm, apage=True, fname=g.user.name,
+                               user_id=g.user.id)
     return redirect(url_for('login'))
 
 
@@ -350,7 +355,7 @@ def image_upload():
             filename = os.path.splitext(basename(filename))[0]
             f = filename
             new_filename = ""
-            while saved != True:
+            while saved is False:
                 try:
                     with open(pathname):
                         suffix += 1
@@ -375,7 +380,7 @@ def image_upload():
                         break
             data = {}
 
-            if saved == True:
+            if saved is True:
                 data['success'] = "true"
                 data['imagePath'] = "http://localhost:5000/uploads/" + filename
             else:
@@ -388,6 +393,7 @@ def image_upload():
 @kunjika.route('/get_tags', methods=['GET'])
 def get_tags(q=None):
     return json.dumps([{}])
+
 
 def add_tags(tags_passed, qid):
     for tag in tags_passed:
@@ -407,9 +413,11 @@ def add_tags(tags_passed, qid):
 
             tb.add(tag, data)
 
+
 @kunjika.route('/vote_clicked', methods=['GET', 'POST'])
 def vote_clicked():
     return votes.handle_vote(request)
+
 
 @kunjika.route('/edit/<element>', methods=['GET', 'POST'])
 def edits(element):
@@ -465,14 +473,20 @@ def edits(element):
                 qb.replace(qid, question)
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
     else:
-        return render_template('edit.html', title='Edit', form=form, question=question, type=type, qid=qid, aid=int(aid), cid=int(cid))
+        return render_template('edit.html', title='Edit', form=form, question=question, type=type, qid=qid,
+                               aid=int(aid), cid=int(cid))
+
+
+@kunjika.route('/answer_accepted')
+def answer_accepted():
+    return utility.accept_answer(request.args.get('id'))
 
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():
     #print request.form
     #print type(request.form['comment'])
-    if len(request.form['comment'])<10 or len(request.form['comment'])>5000:
+    if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
         return "Comment must be between 10 and 5000 characters."
     else:
         elements = request.form['element'].split('-')
@@ -481,10 +495,10 @@ def postcomment():
         aid = 0
         if len(elements) == 2: # check if comment has been made on answers
             aid = elements[1]
-        #print "aid = ",  aid   # if it is on question aid will be zero
+            #print "aid = ",  aid   # if it is on question aid will be zero
 
     question = qb.get(qid).value
-    aid =int(aid)
+    aid = int(aid)
     comment = {}
     #comment['aid'] = questions_dict['acount'] + 1
     comment['comment'] = request.form['comment']
@@ -499,7 +513,7 @@ def postcomment():
             comment['cid'] = question['answers'][aid]['ccount']
             question['answers'][aid]['comments'].append(comment)
         else:
-            question['answers'][aid]['ccount'] =1
+            question['answers'][aid]['ccount'] = 1
             question['answers'][aid]['comments'] = []
             comment['cid'] = 1
             question['answers'][aid]['comments'].append(comment)
@@ -521,7 +535,8 @@ def postcomment():
     #return '<div class="comment" id="c-' + str(comment['cid']) + '">' + request.form['comment'] +'<div>&mdash;</div>' \
     #       '<a href="/users/"' + str(g.user.id) + '/' + g.user.name + '>' + g.user.name +'</a> ' + str(ts) +'</div>'
     return json.dumps({"id": comment['cid'], "comment": request.form['comment'], "user_id": g.user.id,
-     "uname": g.user.name, "ts":ts})
+                       "uname": g.user.name, "ts": ts})
+
 
 if __name__ == '__main__':
     kunjika.run()

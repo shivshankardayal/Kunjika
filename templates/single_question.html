@@ -336,6 +336,20 @@
                                     <i class="icon-double-angle-down icon-large"></i>
                                 </a>
                             </span>
+                            <br/>
+                            {% if questions['content']['op'] != g.user.id %}
+                            <span class="icon-stack">
+                                <a class="accept-answer" title="This is the best answer so OP selects this." href="#"
+                                   id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                    <i class="icon-ok icon-large"></i>
+                                </a>
+                            </span>
+                            {% else %}
+                                {% if answer['best'] == True %}
+                                   <i class="icon-ok icon-large" style="color:#070"></i>
+                            </span>
+                                {% endif %}
+                            {% endif %}
                         </div>
                     </td>
                     <td>
@@ -612,6 +626,20 @@
             });
             return false;
         });
+    $('.accept-answer').click(function(){
+        id = '#' + $(this).attr('id');
+        //$(this).css("color", "#070");
+        $.getJSON('/answer_accepted', {
+            id : '#' + $(this).attr('id')
+        }, function (data) {
+            //alert(data.success);
+            $('.accept-answer').each(function(){
+                $(this).css("color","#333")
+            });
+            $(id).css("color","#070");
+        });
+        return false;
+    });
     </script>
 <script type="text/javascript">var switchTo5x=true;</script>
 <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>

@@ -469,3 +469,9 @@ pre.prettyprint {
 .hr {
     border-top: 1px solid #a4c639;
 }
+
+.accept-answer, .accept-answer:hover {
+    text-decoration:none;
+    pointer: hand;
+    color: #333;
+}
