@@ -143,7 +143,7 @@ def questions(qid=None, url=None):
 
                 return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
-                                   form=answerForm, fname=g.user.name, user_id=g.user.id, gravatar=gravatar32)
+                                   form=answerForm, fname=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32)
         else:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
 

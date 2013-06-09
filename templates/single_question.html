@@ -220,7 +220,7 @@
                             </td>
                             <td class="vt">
                                 <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
-                                   onclick="toggleDiv('{{ questions['qid'] }}');"><i class="icon-comment" style="color:#333"></i> Comment</a>
+                                   onclick="toggleDiv('{{ questions['qid'] }}');"><i class="icon-comment" style="color:#a4c639"></i> Comment</a>
                             </td>
                         {% else %}
                             <td class="vt">
@@ -337,17 +337,27 @@
                                 </a>
                             </span>
                             <br/>
-                            {% if questions['content']['op'] != g.user.id %}
-                            <span class="icon-stack">
-                                <a class="accept-answer" title="This is the best answer so OP selects this." href="#"
-                                   id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
-                                    <i class="icon-ok icon-large"></i>
-                                </a>
-                            </span>
-                            {% else %}
+                            {% if questions['content']['op'] != user_id %}
                                 {% if answer['best'] == True %}
-                                   <i class="icon-ok icon-large" style="color:#070"></i>
-                            </span>
+                                    <span class="icon-stack">
+                                        <i class="icon-ok icon-large accepted-answer"></i>
+                                    </span>
+                                {% endif %}
+                            {% else %}
+                                {% if answer['best'] == False %}
+                                    <span class="icon-stack">
+                                        <a class="accept-answer ok" title="This is the best answer so OP selects this." href="#"
+                                           id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                            <i class="icon-ok icon-large"></i>
+                                        </a>
+                                    </span>
+                                {% else %}
+                                    <span class="icon-stack">
+                                        <a class="accepted-answer ok" title="This is the best answer so OP selects this." href="#"
+                                           id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                            <i class="icon-ok icon-large"></i>
+                                        </a>
+                                    </span>
                                 {% endif %}
                             {% endif %}
                         </div>
@@ -369,7 +379,7 @@
                                     <td class="vt">
                                         <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
                                            id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');"><i class="icon-comment" style="color:#333"></i> Comment</a>
+                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');"><i class="icon-comment" style="color:#a4c639"></i> Comment</a>
                                     </td>
                                 {% else %}
                                     <td class="vt">
@@ -633,10 +643,12 @@
             id : '#' + $(this).attr('id')
         }, function (data) {
             //alert(data.success);
-            $('.accept-answer').each(function(){
-                $(this).css("color","#333")
+            $('.ok').each(function(){
+                $(this).removeClass("accepted-answer");
+                $(this).addClass("accept-answer");
             });
-            $(id).css("color","#070");
+            $(id).removeClass("accept-answer");
+            $(id).addClass("accepted-answer");
         });
         return false;
     });
