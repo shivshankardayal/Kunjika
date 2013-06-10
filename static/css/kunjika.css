@@ -481,3 +481,15 @@ pre.prettyprint {
     pointer: hand;
     color: #070;
 }
+
+.starred, .starred:hover{
+    color:#dd0;
+    text-decoration: none;
+    padding-top: 5px;
+}
+
+.unstarred, .unstarred:hover{
+    color:#333;
+    text-decoration: none;
+    padding-top: 5px;
+}

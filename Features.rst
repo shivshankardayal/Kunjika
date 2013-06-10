@@ -8,17 +8,16 @@ TODO
 4.  OpenID integration.
 5.  More fields for user activity and profile.
 6.  Search on question title/contents.
-7.  Making questions favorite for one user.
-8.  Tag cloud.
-9.  Similar questions.
-10. Search using Sphinx and Google custom search integration.
-11. Users page.
-12. Code attachments also .zip source attachments up to 50KB.
-13. Email verification.
-14. Following questions.
-15. Following tags, users.
-16. RSS for tags, users, questions.
-
+7.  Tag cloud.
+8.  Similar questions.
+9.  Search using Sphinx and Google custom search integration.
+10. Users page.
+11. Code attachments also .zip source attachments up to 50KB.
+12. Email verification.
+13. Following questions.
+14. Following tags, users.
+15. RSS for tags, users, questions.
+16. Sitemap generation
 
 DONE
 ====
@@ -40,3 +39,4 @@ DONE
     (e). 10 points for accepted answer
     (f). 2 points for accepting answer.
     (f). 4 points for answering.
+12. Making questions favorite for one user.

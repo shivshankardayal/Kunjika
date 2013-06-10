@@ -199,6 +199,19 @@
                             <i class="icon-thumbs-down icon-large"></i>
                         </a>
                     </span>
+                    {% if g.user.id in questions['users_fav'] %}
+                    <a class="starred"
+                       title="This question is of particular interest to you. Click to favorite it."
+                       href="#" id="f-{{ questions['qid'] }}">
+                        <i class="icon-star icon-large"></i>
+                    </a>
+                    {% else %}
+                    <a class="unstarred"
+                       title="This question is of particular interest to you. Click to favorite it."
+                       href="#" id="f-{{ questions['qid'] }}">
+                        <i class="icon-star icon-large"></i>
+                    </a>
+                    {% endif %}
                 </div>
             </td>
             <td class="post">
@@ -650,6 +663,26 @@
                 $(this).css("color", "#333");
             });
             $(id).css("color", "#070");
+        });
+        return false;
+    });
+    $('body').on("click", ".starred", function(){
+        id = '#' + $(this).attr('id');
+        $.getJSON('/favorited', {
+            id : '#' + $(this).attr('id')
+        }, function (data) {
+            $(id).removeClass('starred');
+            $(id).addClass('unstarred');
+        });
+        return false;
+    });
+    $('body').on("click", ".unstarred", function(){
+        id = '#' + $(this).attr('id');
+        $.getJSON('/favorited', {
+            id : '#' + $(this).attr('id')
+        }, function (data) {
+            $(id).removeClass('unstarred');
+            $(id).addClass('starred');
         });
         return false;
     });

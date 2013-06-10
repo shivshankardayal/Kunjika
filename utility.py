@@ -58,3 +58,36 @@ def accept_answer(idntfr):
     kunjika.qb.replace(qid, question)
 
     return jsonify({"success": True})
+
+def handle_favorite(idntfr):
+
+    qid = idntfr[3:]
+
+    print qid
+    question = kunjika.qb.get(qid).value
+    user = kunjika.cb.get(str(g.user.id)).value
+
+    print question
+    print user
+    if 'users_fav' in question:
+        if g.user.id in question['users_fav']:
+            question['users_fav'].remove(g.user.id)
+        else:
+            question['users_fav'].append(g.user.id)
+    else:
+        question['users_fav'] = []
+        question['users_fav'].append(g.user.id)
+
+    if 'fav_q' in user:
+        if qid in user['fav_q']:
+            user['fav_q'].remove(qid)
+        else:
+            user['fav_q'].append(qid)
+    else:
+        user['fav_q'] = []
+        user['fav_q'].append(qid)
+
+    kunjika.cb.replace(qid, user)
+    kunjika.qb.replace(str(g.user.id), question)
+
+    return jsonify({"success": True})

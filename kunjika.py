@@ -503,6 +503,10 @@ def answer_accepted():
     return utility.accept_answer(request.args.get('id'))
 
 
+@kunjika.route('/favorited')
+def favorited():
+    return utility.handle_favorite(request.args.get('id'))
+
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():
     #print request.form
