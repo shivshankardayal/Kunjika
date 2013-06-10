@@ -32,6 +32,7 @@ DONE
 9.  Unanswered url.
 10.  Showing views using very simple algorithm which people may not like.
 11. Reputation system.
+
     (a). 1 point for asking question
     (b). 1 point for doing voting up -1 for down.
     (c). 2 points for getting vote up -2 for down.
