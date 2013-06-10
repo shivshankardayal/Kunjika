@@ -33,11 +33,12 @@ DONE
 10.  Showing views using very simple algorithm which people may not like.
 11. Reputation system.
 
-    (a). 1 point for asking question
-    (b). 1 point for doing voting up -1 for down.
-    (c). 2 points for getting vote up -2 for down.
-    (d). 1 point for editing.
-    (e). 10 points for accepted answer
-    (f). 2 points for accepting answer.
-    (f). 4 points for answering.
+    a. 1 point for asking question
+    b. 1 point for doing voting up -1 for down.
+    c. 2 points for getting vote up -2 for down.
+    d. 1 point for editing.
+    e. 10 points for accepted answer
+    f. 2 points for accepting answer.
+    g. 4 points for answering.
+    
 12. Making questions favorite for one user.
