@@ -9,15 +9,15 @@ TODO
 5.  More fields for user activity and profile.
 6.  Search on question title/contents.
 7.  Making questions favorite for one user.
-9.  Tag cloud.
-10. Similar questions.
-12. Search using Sphinx and Google custom search integration.
-12. Users page.
-13. Code attachments also .zip source attachments up to 50KB.
-14. Email verification.
-15. Following questions.
-16. Following tags, users.
-17. RSS for tags, users, questions.
+8.  Tag cloud.
+9.  Similar questions.
+10. Search using Sphinx and Google custom search integration.
+11. Users page.
+12. Code attachments also .zip source attachments up to 50KB.
+13. Email verification.
+14. Following questions.
+15. Following tags, users.
+16. RSS for tags, users, questions.
 
 
 DONE
