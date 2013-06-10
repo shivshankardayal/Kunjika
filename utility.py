@@ -40,13 +40,20 @@ def accept_answer(idntfr):
 
     question = kunjika.qb.get(qid).value
 
+    voter = kunjika.cb.get(g.user.id)
+
     if int(question['content']['op']) != g.user.id:
         return jsonify({"success": False})
     for answer in question['answers']:
         if answer['aid'] != int(aid):
+            if answer['best'] is True:
+                answer['poster']['rep'] -= 10
+                voter['rep'] -= 2
             answer['best'] = False
         else:
             answer['best'] = True
+            answer['poster']['rep'] += 10
+            voter['rep'] += 2
 
     kunjika.qb.replace(qid, question)
 

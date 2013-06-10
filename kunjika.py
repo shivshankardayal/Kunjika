@@ -108,6 +108,10 @@ def questions(qid=None, url=None):
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list)
     else:
         questions_dict = question.get_question_by_id(qid, questions_dict)
+        if request.referrer == "http://localhost:5000/questions":
+            questions_dict['views'] += 1
+        elif request.host_url != "http://localhost:5000/":
+            questions_dict['views'] += 1
         if g.user is AnonymousUser:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
         elif g.user is not None and g.user.is_authenticated():
@@ -139,9 +143,14 @@ def questions(qid=None, url=None):
                     questions_dict['answers'] = []
                     questions_dict['answers'].append(answer)
 
+                user = cb.get(str(g.user.id)).value
+                user['rep'] += 4
+                cb.replace(str(g.user.id), user)
                 qb.replace(str(questions_dict['qid']), questions_dict)
 
                 return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+
+            qb.replace(str(questions_dict['qid']), questions_dict)
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                    form=answerForm, fname=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32)
         else:
@@ -209,6 +218,10 @@ def ask():
             question['views'] = 0
 
             qb.add(str(question['qid']), question)
+
+            user = cb.get(str(g.user.id)).value
+            user['rep'] += 1
+            cb.replace(str(g.user.id), user)
             add_tags(question['content']['tags'], question['qid'])
 
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
@@ -278,6 +291,7 @@ def register():
             data['role'] = 'admin'
             data['fname'] = registrationForm.fname.data
             data['lname'] = registrationForm.lname.data
+            data['rep'] = 0
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -297,6 +311,7 @@ def register():
                 data['password'] = passwd_hash
                 data['fname'] = registrationForm.fname.data
                 data['lname'] = registrationForm.lname.data
+                data['rep'] = 0
 
                 cb.incr('count', 1)
                 did = cb.get('count').value
@@ -456,6 +471,8 @@ def edits(element):
                     print "test"
                     question['comments'][int(cid) - 1]['comment'] = form.comment.data
 
+                editor = cb.get(str(g.user.id)).value
+                editor['rep'] += 1
                 qb.replace(qid, question)
 
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
@@ -463,6 +480,8 @@ def edits(element):
             if form.validate_on_submit():
                 question['answers'][int(aid) - 1]['answer'] = form.answer.data
 
+                editor = cb.get(str(g.user.id)).value
+                editor['rep'] += 1
                 qb.replace(qid, question)
 
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
@@ -470,6 +489,8 @@ def edits(element):
             if form.validate_on_submit():
                 question['content']['description'] = form.description.data
 
+                editor = cb.get(str(g.user.id)).value
+                editor['rep'] += 1
                 qb.replace(qid, question)
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
     else:

@@ -8,21 +8,17 @@ TODO
 4.  OpenID integration.
 5.  More fields for user activity and profile.
 6.  Search on question title/contents.
-7.  Showing views.
-8.  Making questions favorite for one user.
-9.  Admin panel.
-10. Tag cloud.
-11. Similar questions.
+7.  Making questions favorite for one user.
+9.  Tag cloud.
+10. Similar questions.
 12. Search using Sphinx and Google custom search integration.
-13. Users page.
-14. Code attachments also .zip source attachments upto 50KB.
-15. Email verification.
-16. Following questions.
-17. Following tags, users.
-18. RSS for tags, users, questions.
-19. Rating user on the basis of questions and answers.
-20. Reputation system.
-21. Badges
+12. Users page.
+13. Code attachments also .zip source attachments up to 50KB.
+14. Email verification.
+15. Following questions.
+16. Following tags, users.
+17. RSS for tags, users, questions.
+
 
 DONE
 ====
@@ -35,3 +31,12 @@ DONE
 7.  Accepting answers.
 8.  Profile page.
 9.  Unanswered url.
+10.  Showing views using very simple algorithm which people may not like.
+11. Reputation system.
+    (a). 1 point for asking question
+    (b). 1 point for doing voting up -1 for down.
+    (c). 2 points for getting vote up -2 for down.
+    (d). 1 point for editing.
+    (e). 10 points for accepted answer
+    (f). 2 points for accepting answer.
+    (f). 4 points for answering.
