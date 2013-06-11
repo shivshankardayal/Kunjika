@@ -2,22 +2,21 @@ Features
 ********
 TODO
 ====
-1.  Editing questions
-2.  Tag wiki implementation.
+1.  Editing questions.
+2.  Simple tags display.
 3.  Flagging inappropriate comments.
 4.  OpenID integration.
 5.  More fields for user activity and profile.
 6.  Search on question title/contents.
-7.  Tag cloud.
-8.  Similar questions.
-9.  Search using Sphinx and Google custom search integration.
-10. Users page.
-11. Code attachments also .zip source attachments up to 50KB.
-12. Email verification.
-13. Following questions.
-14. Following tags, users.
-15. RSS for tags, users, questions.
-16. Sitemap generation
+7.  Popular tags display on main page in side bar.
+8.  Simple count of questions, answers, comments and user.
+9.  Users page.
+10. Code attachments also .zip source attachments up to 50KB.
+11. Email verification.
+12. Following questions.
+13. Following tags, users.
+14. RSS for tags, users, questions.
+15. Sitemap generation
 
 DONE
 ====
@@ -40,5 +39,12 @@ DONE
     e. 10 points for accepted answer
     f. 2 points for accepting answer.
     g. 4 points for answering.
-    
+
 12. Making questions favorite for one user.
+
+Postponed for later
+===================
+1.  Search using Sphinx and Google custom search integration.
+2.  Tag wiki implementation.
+3.  Similar questions.
+4.  Extra cloning of stackoverflow.
