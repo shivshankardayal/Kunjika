@@ -8,8 +8,6 @@
             padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
         }
     </style>
-    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-    <META HTTP-EQUIV="Expires" CONTENT="-1">
 {% endblock %}
 
 {% block css_site %}
@@ -30,6 +28,7 @@
         <div id="mainbar" class="mainbar">
             <div id="qsummary">
                 {% for question in questions %}
+                    {% if question['acount'] == 0 %}
                     <div id="qsummary-{{ question['qid'] }}" class="qsummary narrow">
                         <div class="cp">
                             <div class="votes">
@@ -69,6 +68,7 @@
                             </p>
                         </div>
                     </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>

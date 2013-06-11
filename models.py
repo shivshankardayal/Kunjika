@@ -1,6 +1,12 @@
-from kunjika import cb
-class User():
+from flask.ext.login import (LoginManager, current_user, login_required,
+                            login_user, logout_user, UserMixin, AnonymousUser,
+                            confirm_login, fresh_login_required)
 
+class User(UserMixin):
+    def __init__(self, name, id, active=True):
+        self.name = name
+        self.id = id
+        self.active = active
     def is_authenticated(self):
         return True
 
@@ -10,12 +16,10 @@ class User():
     def is_anonymous(self):
         return False
 
-    def get_id(self, email):
-        try:
-            document = cb.get(email)[2]
-            return unicode(document['email'])
-        except:
-            return None
+    def get_id(self):
+        return unicode(self.id)
 
-#    def __repr__(self):
-#        return '<User %r>' % (self.fname)
+
+class Anonymous(AnonymousUser):
+    name = u"Anonymous"
+    id = -1

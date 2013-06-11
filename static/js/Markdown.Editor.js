@@ -1501,7 +1501,8 @@
                 helpButton.id = "wmd-help-button" + postfix;
                 helpButton.XShift = "-240px";
                 helpButton.isHelp = true;
-                helpButton.style.right = "30%";
+                //helpButton.style.right = "30%";  ssd
+                helpButton.style.right = "0%"; //ssd
                 helpButton.title = getString("help");
                 helpButton.onclick = helpOptions.handler;
 

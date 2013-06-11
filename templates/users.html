@@ -11,62 +11,40 @@
 {% endblock %}
 
 {% block css_site %}
-<link href="/static/css/base.css" rel="stylesheet">
+<link href="/static/css/kunjika.css" rel="stylesheet">
 
 {% endblock %}
 {% block container %}
-<div class="masthead">
-  <h3 class="muted">Kunjika</h3>
-  <div class="navbar">
-    <div class="navbar-inner">
-      <div class="container">
-        <ul class="nav">
-          <li><a href="/questions">Questions</a></li>
-          <li><a href="/tags">Tags</a></li>
-          <li class="active"><a href="/users">Users</a></li>
-          <li><a href="/unasnweres">Unanswered</a></li>
-          <li><a href="/ask" class="ask">Ask</a></li>
-	  {% if logged_in is defined %}
-          <li><a href="/users/{{ user_id }}" class="login">{{ fname }}</a></li>
-          <li><a href="/logout" class="login">Logout</a></li>
-	  {% else %}
-          <li><a href="/login" class="login">Login</a></li>
-	  {% endif %}
-        </ul>
-      </div>
-    </div>
-    <div class="userheader">
-      <h3>{{ fname }} {{ lname }}</h3>
-      <div class="fr">
-	{% if logged_in is defined %}
-	<a href="/users/edit/{{ user_id }}">edit</a>
-	{% endif %}
-      </div>
-      <div class="gravatar">
-	<img src="{{ email | gravatar }}" />
-      </div>
-    </div>
-    <div class="data">
-      <table class="table-user">
-	<tbody>
-	  <tr>
-	    <th>Personal Details</th>
-	    <td>First Name:</td>
-	    <td>{{ fname }}</td>
-	  </tr>
-	  <tr>
-	    <th></th>
-	    <td>Last Name:</td>
-	    <td>{{ lname }}</td>
-	  </tr>
-	  <tr>
-	    <th></th>
-	    <td>Email:</td>
-	    <td>{{ email }}</td>
-	  </tr>
-	</tbody>
-      </table>
-    </div>
-  </div><!-- /.navbar -->
+<div class="userheader">
+  <h3>{{ fname }} {{ lname }}</h3>
+  <div class="fr">
+    {% if logged_in is defined %}
+    <a href="/users/edit/{{ user_id }}">edit</a>
+    {% endif %}
+  </div>
+  <div class="gravatar">
+    <img src="{{ email | gravatar(size=100) }}" />
+  </div>
+</div>
+<div class="data">
+  <table class="table-user">
+    <tbody>
+      <tr>
+	<th>Personal Details</th>
+	<td>First Name:</td>
+	<td>{{ fname }}</td>
+      </tr>
+      <tr>
+	<th></th>
+	<td>Last Name:</td>
+	<td>{{ lname }}</td>
+      </tr>
+      <tr>
+	<th></th>
+	<td>Email:</td>
+	<td>{{ email }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 {% endblock %}
