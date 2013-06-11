@@ -28,7 +28,7 @@ DONE
 7.  Accepting answers.
 8.  Profile page.
 9.  Unanswered url.
-10.  Showing views using very simple algorithm which people may not like.
+10. Showing views using very simple algorithm which people may not like.
 11. Reputation system.
 
     a. 1 point for asking question
