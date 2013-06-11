@@ -104,6 +104,30 @@
                                 {% else %}
                                     <li><a href="/login" class="login"><i class="icon-signin"></i> Login</a></li>
                                 {% endif %}
+
+                                <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                Search
+                                <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <div class="span4">
+                                        <script>
+                                            (function() {
+                                            var cx = '000002629091691089689:o1aouv8ldg8';
+                                            var gcse = document.createElement('script');
+                                            gcse.type = 'text/javascript';
+                                            gcse.async = true;
+                                            gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                                            '//www.google.com/cse/cse.js?cx=' + cx;
+                                            var s = document.getElementsByTagName('script')[0];
+                                            s.parentNode.insertBefore(gcse, s);
+                                            })();
+                                        </script>
+                                    <gcse:search></gcse:search>
+                                </ul>
+                                </li>
+
                             </ul>
                         </div>
                         <!--/.nav-collapse -->
