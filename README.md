@@ -17,6 +17,3 @@ I never learned SQL and the schema thing is a pain for me. So I chose Couchbase
 which provided nice replication, auto-sharding and memcached functionality apart
 from document based database. So one query for question, one for user and one
 for tag and it is done.
-
-After doing this much prototyping I am leaving this as it is and moving to
-original goal which was developing Kunjika using CppCMS.
