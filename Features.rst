@@ -7,15 +7,15 @@ TODO
 3.  Flagging inappropriate comments.
 4.  OpenID integration.
 5.  More fields for user activity and profile.
-7.  Popular tags display on main page in side bar.
-8.  Simple count of questions, answers, comments and user.
-9.  Users page.
-10. Code attachments also .zip source attachments up to 50KB.
-11. Email verification.
-12. Following questions.
-13. Following tags, users.
-14. RSS for tags, users, questions.
-15. Sitemap generation
+6.  Popular tags display on main page in side bar.
+7.  Simple count of questions, answers, comments and user.
+8.  Users page.
+9.  Code attachments also .zip source attachments up to 50KB.
+10. Email verification.
+11. Following questions.
+12. Following tags, users.
+13. RSS for tags, users, questions.
+14. Sitemap generation
 
 DONE
 ====
@@ -28,7 +28,7 @@ DONE
 7.  Accepting answers.
 8.  Profile page.
 9.  Unanswered url.
-10.  Showing views using very simple algorithm which people may not like.
+10. Showing views using very simple algorithm which people may not like.
 11. Reputation system.
 
     a. 1 point for asking question

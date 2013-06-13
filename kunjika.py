@@ -52,6 +52,12 @@ try:
 except:
     pass
 
+#Initialize question count at first run. Later it is useless
+try:
+    tb.add('tcount', 0)
+except:
+    pass
+
 gravatar32 = Gravatar(kunjika,
                       size=32,
                       rating='g',
@@ -425,6 +431,7 @@ def add_tags(tags_passed, qid):
             data['tag'] = tag
             data['count'] = 1
             data['qid'].append(qid)
+            tb.incr('tcount', 1)
 
             tb.add(tag, data)
 
@@ -573,6 +580,21 @@ def unanswered():
         fname=g.user.name, user_id=g.user.id)
     else:
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list)
+
+
+@app.route('/users/', defaults={'page': 1})
+@app.route('/users/page/<int:page>')
+def show_users(page):
+    count = cb.get('count').value
+    users = utility.get_users_for_page(page, PER_PAGE, count)
+    if not users and page != 1:
+        abort(404)
+    pagination = Pagination(page, PER_PAGE, count)
+    return render_template('users.html',
+        pagination=pagination,
+        users=users
+    )
+
 
 if __name__ == '__main__':
     kunjika.run()
