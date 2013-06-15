@@ -32,6 +32,9 @@ kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
 kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
     '/uploads': kunjika.config['UPLOAD_FOLDER']})
+QUESTIONS_PER_PAGE=kunjika.config['QUESTIONS_PER_PAGE']
+TAGS_PER_PAGE=kunjika.config['TAGS_PER_PAGE']
+USERS_PER_PAGE=kunjika.config['USERS_PER_PAGE']
 
 lm = LoginManager()
 lm.init_app(kunjika)
@@ -570,9 +573,14 @@ def postcomment():
                        "uname": g.user.name, "ts": ts})
 
 
-@kunjika.route('/unanswered')
-def unanswered():
-    questions_list = question.get_questions()
+@kunjika.route('/unanswered', defaults={'page': 1})
+@kunjika.route('/unanswered/page/<int:page>')
+def unanswered(page):
+    count = qb.get('count').value
+    questions_list = utility.get_questions_for_page(page, QUESTIONS_PER_PAGE, count)
+    if not questions_list and page != 1:
+        abort(404)
+    pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
     if g.user is None:
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list)
     elif g.user is not None and g.user.is_authenticated():
@@ -582,17 +590,31 @@ def unanswered():
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list)
 
 
-@app.route('/users/', defaults={'page': 1})
-@app.route('/users/page/<int:page>')
+@kunjika.route('/users/', defaults={'page': 1})
+@kunjika.route('/users/page/<int:page>')
 def show_users(page):
     count = cb.get('count').value
-    users = utility.get_users_for_page(page, PER_PAGE, count)
+    users = utility.get_users_for_page(page, USERS_PER_PAGE, count)
     if not users and page != 1:
         abort(404)
-    pagination = Pagination(page, PER_PAGE, count)
+    pagination = utility.Pagination(page, USERS_PER_PAGE, count)
     return render_template('users.html',
         pagination=pagination,
         users=users
+    )
+
+
+@kunjika.route('/tags/', defaults={'page': 1})
+@kunjika.route('/tags/page/<int:page>')
+def show_users(page):
+    count = tb.get('count').value
+    tags = utility.get_tags_for_page(page, TAGS_PER_PAGE, count)
+    if not tags and page != 1:
+        abort(404)
+    pagination = utility.Pagination(page, TAGS_PER_PAGE, count)
+    return render_template('users.html',
+        pagination=pagination,
+        tags=tags
     )
 
 
