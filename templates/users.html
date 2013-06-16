@@ -52,29 +52,39 @@
     {% else %}
         <div id="users">
             <table>
-                {% for i in range(0, no_of_users) %}
+                {% set i = 0 %}
+                {% for user in users %}
+                {% if i < no_of_users %}
+                {% if (no_of_users - i) > 4 %}
+                    {% set k = 4 %}
+                {% else %}
+                    {% set k = no_of_users - i %}
+                {% endif %}
                     <tr>
-                        {% for j in range(0, i%4 + 1) %}
+                        {% for j in range(0, k) %}
                             <td>
                                 <div class="user-info user-hover">
                                     <div class="user-gravatar32">
-                                        <a href="/users/{{ users[j]['id'] }}/{{ users[j]['fname'] }}">
-                                            <img src="{{ users[j]['email'] | gravatar(size=48) }}" />
+                                        <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['fname'] }}">
+                                            <img src="{{ users[j + i]['email'] | gravatar(size=48) }}" />
                                         </a>
                                     </div>
                                     <div class="user-details">
-                                        <a href="/users/{{ users[j]['id'] }}/{{ users[j]['fname'] }}">{{ users[j]['fname'] }}</a><br>
-                                        <span class="user-location">{{ users[j]['location'] }}</span><br>
-                                        <span class="reputation-score" dir="ltr">{{ users[j]['rep'] }}</span>
+                                        <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['fname'] }}">{{ users[j + i]['fname'] }}</a><br>
+                                        <span class="user-location">{{ users[j + i]['location'] }}</span><br>
+                                        <span class="reputation-score" dir="ltr">{{ users[j + i]['rep'] }}</span>
                                     </div>
                                     <div class="user-tags">
                                     </div>
                                 </div>
                             </td>
                         {% endfor %}
+                    {% set i = i + 3 %}
                     </tr>
+                {% endif %}
                 {% endfor %}
             </table>
+        {{ render_pagination(pagination) }}
         </div>
     {% endif %}
 {% endblock %}

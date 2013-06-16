@@ -493,3 +493,31 @@ pre.prettyprint {
     text-decoration: none;
     padding-top: 5px;
 }
+
+.tag-cell {
+    width: 230px;
+    border-bottom: 1px dotted rgb(224, 224, 224);
+    padding-bottom: 12px;
+    padding-right: 6px;
+    padding-top: 6px;
+    vertical-align: top;
+}
+
+.item-multiplier {
+    font-size: 90%;
+    font-weight: normal;
+    margin-right: 4px;
+    color: rgb(153, 153, 153);
+}
+
+.excerpt {
+    font-size: 12px;
+    height: 39px;
+    line-height: 14px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.cbt {
+    clear: both;
+}

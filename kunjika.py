@@ -447,6 +447,7 @@ def add_tags(tags_passed, qid):
         except:
             data = {}
             data['qid'] = []
+            data['excerpt'] = ""
             data['tag'] = tag
             data['count'] = 1
             data['qid'].append(qid)
@@ -643,15 +644,18 @@ def show_users(page):
 @kunjika.route('/tags/', defaults={'page': 1})
 @kunjika.route('/tags/page/<int:page>')
 def show_tags(page):
-    count = tb.get('count').value
+    count = tb.get('tcount').value
     tags = utility.get_tags_per_page(page, TAGS_PER_PAGE, count)
     if not tags and page != 1:
         abort(404)
     pagination = utility.Pagination(page, TAGS_PER_PAGE, count)
-    return render_template('users.html',
-        pagination=pagination,
-        tags=tags
-    )
+    no_of_tags = len(tags)
+    if g.user.id in session:
+        logged_in = True
+        return render_template('tags.html', title='Tags', logged_in=logged_in, tpage=True,
+                               pagination=pagination, tags=tags, no_of_users=no_of_tags)
+    return render_template('tags.html', title='Tags', tpage=True,
+                           pagination=pagination, tags=tags, no_of_tags=no_of_tags)
 
 
 if __name__ == '__main__':

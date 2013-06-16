@@ -151,7 +151,19 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
     return question_list
 
 def get_tags_per_page(page, TAGS_PER_PAGE, count):
-    pass
+
+    skip = (page - 1) * TAGS_PER_PAGE
+    tags = urllib2.urlopen(
+                'http://localhost:8092/tags/_design/dev_qa/_view/get_by_count?limit=' +
+                str(TAGS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
+    tags = json.loads(tags)
+
+    tags_list = []
+
+    for i in tags['rows']:
+        tags_list.append(i['value'])
+
+    return tags_list
 
 def get_users_per_page(page, USERS_PER_PAGE, count):
 
