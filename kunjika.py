@@ -11,6 +11,7 @@ from werkzeug import secure_filename, SharedDataMiddleware
 import os
 from os.path import basename
 from time import localtime, strftime, time
+import datetime
 from flask.ext.login import (LoginManager, current_user, login_required,
                              login_user, logout_user, UserMixin, AnonymousUser,
                              confirm_login, fresh_login_required)
@@ -20,8 +21,9 @@ import votes
 import edit
 import utility
 import jinja2
-from itsdangerous import URLSafeSerializer, BadSignature
 from flask.ext.mail import Mail, Message
+from urlparse import urljoin
+from werkzeug.contrib.atom import AtomFeed
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
@@ -826,6 +828,29 @@ def show_tags(page):
                                tags=tags, no_of_users=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return render_template('tags.html', title='Tags', tpage=True, pagination=pagination, tags=tags,
                            no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+
+def make_external(url):
+    return urljoin(request.url_root, url)
+
+@kunjika.route('/recent_questions.atom')
+def recent_feed():
+    feed = AtomFeed('Recent Questions',
+                    feed_url=request.url, url=request.url_root)
+    questions = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_questions?limit=' + str(50)).read()
+    questions = json.loads(questions)['rows']
+
+    question_list = []
+    for i in questions:
+        question_list.append(i['value'])
+
+
+    for question in question_list:
+        feed.add(question['title'], unicode(question['content']['description']),
+                 content_type='html',
+                 author='http://localhost:5000/users/' + unicode(question['content']['op']) + question['opname'],
+                 url=make_external('http://localhost:5000/question' + unicode(question['qid']) + question['content']['url']),
+                 updated=datetime.datetime(2013, 05, 17))
+    return feed.get_response()
 
 if __name__ == '__main__':
     kunjika.run()

@@ -6,10 +6,8 @@ TODO
 2. Flagging inappropriate comments.
 3. OpenID integration.
 4. More fields for user activity and profile.
-6. Following questions.
-7. Following tags, users.
-8. RSS for tags, users, questions.
-9. Sitemap generation
+6. Following questions, tags and users.
+7. Sitemap generation
 
 DONE
 ====
@@ -42,6 +40,7 @@ DONE
 16. Simple count of questions, answers, tags and users.
 17. Popular tags display on main page in side bar.
 16. Code attachments also .zip source attachments up to 2MB.
+17. Atom feed for questions.
 
 Postponed for later
 ===================
@@ -49,6 +48,7 @@ Postponed for later
 2.  Tag wiki implementation.
 3.  Similar questions.
 4.  Extra cloning of stackoverflow.
+5.  Feed for users and questions.
 
 Removed features
 ================
