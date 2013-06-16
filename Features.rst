@@ -7,13 +7,12 @@ TODO
 3.  OpenID integration.
 4.  More fields for user activity and profile.
 5.  Popular tags display on main page in side bar.
-6.  Simple count of questions, answers, tags and users.
-7.  Code attachments also .zip source attachments up to 50KB.
-8.  Email verification.
-9.  Following questions.
-10. Following tags, users.
-11. RSS for tags, users, questions.
-12. Sitemap generation
+6.  Code attachments also .zip source attachments up to 50KB.
+7.  Email verification.
+8.  Following questions.
+9.  Following tags, users.
+10. RSS for tags, users, questions.
+11. Sitemap generation
 
 DONE
 ====
@@ -43,6 +42,7 @@ DONE
     Currently using libreprogramming's code.
 14. Simple tags display.
 15. Users page.
+16. Simple count of questions, answers, tags and users.
 Postponed for later
 ===================
 1.  Search using Sphinx and Google custom search integration.

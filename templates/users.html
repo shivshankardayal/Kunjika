@@ -15,6 +15,8 @@
 
 {% endblock %}
 {% block container %}
+    <div class="row-fluid">
+    <div id="mainbar" class="mainbar">
     {% if pagination is not defined %}
         <div class="userheader">
             <h3>{{ fname }} {{ lname }}</h3>
@@ -48,6 +50,7 @@
                 </tr>
                 </tbody>
             </table>
+        </div>
         </div>
     {% else %}
         <div id="users">
@@ -86,6 +89,7 @@
             </table>
         {{ render_pagination(pagination) }}
         </div>
+        </div>
     {% endif %}
     <div id="sidebar">
             <div class="module" id="questions-count">
@@ -104,5 +108,6 @@
                 <div class="summarycount al">{{ tcount }}</div>
                 <p>tags</p>
             </div>
+    </div>
     </div>
 {% endblock %}
