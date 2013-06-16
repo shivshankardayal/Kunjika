@@ -20,6 +20,8 @@ import votes
 import edit
 import utility
 import jinja2
+from itsdangerous import URLSafeSerializer, BadSignature
+from flask.ext.mail import Mail, Message
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -36,6 +38,9 @@ kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
 QUESTIONS_PER_PAGE = kunjika.config['QUESTIONS_PER_PAGE']
 TAGS_PER_PAGE = kunjika.config['TAGS_PER_PAGE']
 USERS_PER_PAGE = kunjika.config['USERS_PER_PAGE']
+
+mail = Mail(kunjika)
+admin = kunjika.config['ADMIN_EMAIL']
 
 lm = LoginManager()
 lm.init_app(kunjika)
@@ -388,6 +393,7 @@ def register():
             user = User(data['fname'], data['id'])
             login_user(user, remember=True)
             g.user = user
+
             return redirect(url_for('questions'))
 
         try:
@@ -410,6 +416,14 @@ def register():
                 try:
                     login_user(user, remember=True)
                     g.user = user
+                    msg = Message("Registration at Kunjika")
+                    msg.recipients = [data['email']]
+                    msg.sender = admin
+                    msg.html = "<p>Hi,<br/> Thanks for registering at kunjika. If you have not" \
+                               "registered please email at " + admin + " .<br/>Best regards," \
+                                                                      "<br/> Admin<p>"
+                    mail.send(msg)
+
                     return redirect(url_for('questions'))
                 except:
                     return make_response("cant login")
@@ -750,7 +764,6 @@ def show_tags(page):
                                tags=tags, no_of_users=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
     return render_template('tags.html', title='Tags', tpage=True, pagination=pagination, tags=tags,
                            no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
-
 
 if __name__ == '__main__':
     kunjika.run()

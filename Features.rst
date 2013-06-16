@@ -8,11 +8,10 @@ TODO
 4.  More fields for user activity and profile.
 5.  Popular tags display on main page in side bar.
 6.  Code attachments also .zip source attachments up to 50KB.
-7.  Email verification.
-8.  Following questions.
-9.  Following tags, users.
-10. RSS for tags, users, questions.
-11. Sitemap generation
+7.  Following questions.
+8.  Following tags, users.
+9.  RSS for tags, users, questions.
+10. Sitemap generation
 
 DONE
 ====
@@ -43,9 +42,14 @@ DONE
 14. Simple tags display.
 15. Users page.
 16. Simple count of questions, answers, tags and users.
+
 Postponed for later
 ===================
 1.  Search using Sphinx and Google custom search integration.
 2.  Tag wiki implementation.
 3.  Similar questions.
 4.  Extra cloning of stackoverflow.
+
+Removed features
+================
+1.  Email verification.
