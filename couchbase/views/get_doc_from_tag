@@ -1,0 +1,5 @@
+function (doc, meta) {
+      if(doc.tag) {
+              emit(doc.tag, doc, null)
+                }
+}

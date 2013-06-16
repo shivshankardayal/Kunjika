@@ -116,12 +116,18 @@ def load_user(uid):
 @kunjika.route('/questions/tagged/<string:tag>', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions/tagged/<string:tag>/page/<int:page>')
 def questions(tag=None, page=None, qid=None, url=None):
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
-    acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
+    try:
+        qcount = qb.get('qcount').value
+        ucount = cb.get('count').value
+        tcount = tb.get('tcount').value
+        acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+        acount = json.loads(acount)
+        if len(acount['rows']) is not 0:
+            acount = acount['rows'][0]['value']
+        else:
+            acount = 0
+    except:
+        pass
     questions_dict = {}
     if tag is not None:
         questions_list = utility.get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag)
@@ -216,7 +222,10 @@ def tags(tag=None):
     tcount = tb.get('tcount').value
     acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
     acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
     return render_template('tags.html')
 
 
@@ -228,7 +237,10 @@ def users(uid=None, uname=None):
     tcount = tb.get('tcount').value
     acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
     acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
     user = cb.get(uid).value
     #user = json.loads(user)
     gravatar100 = Gravatar(kunjika,
@@ -264,7 +276,11 @@ def ask():
     tcount = tb.get('tcount').value
     acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
     acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
     questionForm = QuestionForm(request.form)
     if g.user is not None and g.user.is_authenticated():
         if questionForm.validate_on_submit() and request.method == 'POST':
@@ -315,7 +331,11 @@ def login():
     tcount = tb.get('tcount').value
     acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
     acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
     registrationForm = RegistrationForm(request.form)
     loginForm = LoginForm(request.form)
 
@@ -368,9 +388,14 @@ def register():
     tcount = tb.get('tcount').value
     acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
     acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
     loginForm = LoginForm(request.form)
     registrationForm = RegistrationForm(request.form)
+    document = None
 
     if registrationForm.validate_on_submit() and request.method == 'POST':
         passwd_hash = bcrypt.generate_password_hash(registrationForm.password.data)
@@ -396,41 +421,37 @@ def register():
 
             return redirect(url_for('questions'))
 
-        try:
-            document = None
-            document = cb.get(registrationForm.email1.data).value
-        except:
-            if document == None:
-                data['email'] = registrationForm.email1.data
-                data['password'] = passwd_hash
-                data['fname'] = registrationForm.fname.data
-                data['lname'] = registrationForm.lname.data
-                data['rep'] = 0
+        document = urllib2.urlopen(
+            'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + registrationForm.email1.data + '"').read()
+        document = json.loads(document)['rows'][0]['value']
+        print(document)
+        if document['total_rows'] is 0:
+            data['email'] = registrationForm.email1.data
+            data['password'] = passwd_hash
+            data['fname'] = registrationForm.fname.data
+            data['lname'] = registrationForm.lname.data
+            data['rep'] = 0
 
-                cb.incr('count', 1)
-                did = cb.get('count').value
-                data['id'] = did
-                cb.add(str(did), data)
+            cb.incr('count', 1)
+            did = cb.get('count').value
+            data['id'] = did
+            cb.add(str(did), data)
 
-                user = User(data['fname'], did)
-                try:
-                    login_user(user, remember=True)
-                    g.user = user
-                    msg = Message("Registration at Kunjika")
-                    msg.recipients = [data['email']]
-                    msg.sender = admin
-                    msg.html = "<p>Hi,<br/> Thanks for registering at kunjika. If you have not" \
-                               "registered please email at " + admin + " .<br/>Best regards," \
-                                                                      "<br/> Admin<p>"
-                    mail.send(msg)
+            user = User(data['fname'], did)
+            try:
+                login_user(user, remember=True)
+                g.user = user
+                msg = Message("Registration at Kunjika")
+                msg.recipients = [data['email']]
+                msg.sender = admin
+                msg.html = "<p>Hi,<br/> Thanks for registering at kunjika. If you have not" \
+                           "registered please email at " + admin + " .<br/>Best regards," \
+                                                                  "<br/> Admin<p>"
+                mail.send(msg)
 
-                    return redirect(url_for('questions'))
-                except:
-                    return make_response("cant login")
-
-        return render_template('register.html', form=registrationForm, loginForm=loginForm,
-                               title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                               qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                return redirect(url_for('questions'))
+            except:
+                return make_response("cant login")
 
     return render_template('register.html', form=registrationForm, loginForm=loginForm,
                            title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
@@ -548,7 +569,11 @@ def edits(element):
     tcount = tb.get('tcount').value
     acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
     acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
     #edit_list = edit.handle_edit(element)
     #pprint(edit_list)
 
@@ -685,7 +710,11 @@ def unanswered(page):
     tcount = tb.get('tcount').value
     acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
     acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
     skip = (page - 1) * QUESTIONS_PER_PAGE
     questions = urllib2.urlopen(
         'http://localhost:8092/questions/_design/dev_dev/_view/get_unanswered?limit=' +
@@ -726,7 +755,11 @@ def show_users(page):
     tcount = tb.get('tcount').value
     acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
     acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
     count = cb.get('count').value
     users = utility.get_users_per_page(page, USERS_PER_PAGE, count)
     if not users and page != 1:
@@ -751,7 +784,11 @@ def show_tags(page):
     tcount = tb.get('tcount').value
     acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
     acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
     count = tb.get('tcount').value
     tags = utility.get_tags_per_page(page, TAGS_PER_PAGE, count)
     if not tags and page != 1:

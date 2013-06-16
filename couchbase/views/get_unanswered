@@ -1,0 +1,5 @@
+function (doc, meta) {
+  if(doc.acount==0) {
+    emit(doc.content.ts, doc,null);
+  }
+}
