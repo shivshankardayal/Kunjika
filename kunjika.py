@@ -401,9 +401,9 @@ def register():
         passwd_hash = bcrypt.generate_password_hash(registrationForm.password.data)
 
         data = {}
-
-        view = cb._view("dev_qa", "get_role")
-        if len(view.value['rows']) == 0:
+        view = urllib2.urlopen('http://localhost:8092/default/_design/dev_qa/_view/get_role?stale=false').read()
+        view = json.loads(view)
+        if len(view['rows']) == 0:
             data['email'] = registrationForm.email1.data
             data['password'] = passwd_hash
             data['role'] = 'admin'
@@ -422,8 +422,8 @@ def register():
             return redirect(url_for('questions'))
 
         document = urllib2.urlopen(
-            'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + registrationForm.email1.data + '"').read()
-        document = json.loads(document)['rows'][0]['value']
+            'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + registrationForm.email1.data + '"&stale=false').read()
+        document = json.loads(document)
         print(document)
         if document['total_rows'] is 0:
             data['email'] = registrationForm.email1.data
