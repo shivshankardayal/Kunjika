@@ -33,9 +33,9 @@ kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
 kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
     '/uploads': kunjika.config['UPLOAD_FOLDER']})
-QUESTIONS_PER_PAGE=kunjika.config['QUESTIONS_PER_PAGE']
-TAGS_PER_PAGE=kunjika.config['TAGS_PER_PAGE']
-USERS_PER_PAGE=kunjika.config['USERS_PER_PAGE']
+QUESTIONS_PER_PAGE = kunjika.config['QUESTIONS_PER_PAGE']
+TAGS_PER_PAGE = kunjika.config['TAGS_PER_PAGE']
+USERS_PER_PAGE = kunjika.config['USERS_PER_PAGE']
 
 lm = LoginManager()
 lm.init_app(kunjika)
@@ -82,6 +82,7 @@ lm.anonymous_user = Anonymous
 
 kunjika.jinja_env.globals['url_for_other_page'] = utility.url_for_other_page
 
+
 @kunjika.before_request
 def before_request():
     g.user = current_user
@@ -107,8 +108,32 @@ def load_user(uid):
 @kunjika.route('/questions/<qid>', methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>/<url>', methods=['GET', 'POST'])
 @kunjika.route('/questions/page/<int:page>')
-def questions(page=None, qid=None, url=None):
+@kunjika.route('/questions/tagged/<string:tag>', defaults={'page': 1}, methods=['GET', 'POST'])
+@kunjika.route('/questions/tagged/<string:tag>/page/<int:page>')
+def questions(tag=None, page=None, qid=None, url=None):
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
     questions_dict = {}
+    if tag is not None:
+        questions_list = utility.get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag)
+        count = len(questions_list)
+        if not questions_list and page != 1:
+            abort(404)
+        pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
+        if g.user is None:
+            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
+                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+        elif g.user is not None and g.user.is_authenticated():
+            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
+                                   fname=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
+                                   ucount=ucount, tcount=tcount, acount=acount)
+        else:
+            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
+                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
     if qid is None:
         count = qb.get('qcount').value
         questions_list = utility.get_questions_for_page(page, QUESTIONS_PER_PAGE, count)
@@ -118,13 +143,14 @@ def questions(page=None, qid=None, url=None):
         #questions_list = question.get_questions()
         if g.user is None:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   pagination=pagination)
+                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
         elif g.user is not None and g.user.is_authenticated():
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   fname=g.user.name, user_id=g.user.id, pagination=pagination)
+                                   fname=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
+                                   ucount=ucount, tcount=tcount, acount=acount)
         else:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   pagination=pagination)
+                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
     else:
         questions_dict = question.get_question_by_id(qid, questions_dict)
         if request.referrer == "http://localhost:5000/questions":
@@ -171,19 +197,33 @@ def questions(page=None, qid=None, url=None):
 
             qb.replace(str(questions_dict['qid']), questions_dict)
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
-                                   form=answerForm, fname=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32)
+                                   form=answerForm, fname=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
+                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
         else:
-            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
+            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
+                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
 
 @kunjika.route('/tags/<tag>')
 def tags(tag=None):
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
     return render_template('tags.html')
 
 
 @kunjika.route('/users/<uid>')
 @kunjika.route('/users/<uid>/<uname>')
 def users(uid=None, uname=None):
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
     user = cb.get(uid).value
     #user = json.loads(user)
     gravatar100 = Gravatar(kunjika,
@@ -196,23 +236,30 @@ def users(uid=None, uname=None):
         logged_in = True
         return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
                                lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
-                               upage=True)
+                               upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
     return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
-                           lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True)
-
-
-@kunjika.route('/badges/<bid>')
-def badge(bid=None):
-    return render_template('badge.html')
-
+                           lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True,
+                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
 @kunjika.route('/unanswered/<uid>')
 def unanswered(uid=None):
-    return render_template('unanswered.html')
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
+    return render_template('unanswered.html', qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
 
 @kunjika.route('/ask', methods=['GET', 'POST'])
 def ask():
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
     questionForm = QuestionForm(request.form)
     if g.user is not None and g.user.is_authenticated():
         if questionForm.validate_on_submit() and request.method == 'POST':
@@ -252,12 +299,18 @@ def ask():
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
 
         return render_template('ask.html', title='Ask', form=questionForm, apage=True, fname=g.user.name,
-                               user_id=g.user.id)
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
     return redirect(url_for('login'))
 
 
 @kunjika.route('/login', methods=['GET', 'POST'])
 def login():
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
     registrationForm = RegistrationForm(request.form)
     loginForm = LoginForm(request.form)
 
@@ -284,23 +337,33 @@ def login():
 
             else:
                 render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                                providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
+                                providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
+                                qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
         except:
             return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                                   providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
+                                   providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
+                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
 
     else:
         render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                        providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
+                        providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
+                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
     return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                           providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
+                           providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
+                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
 
 @kunjika.route('/register', methods=['POST'])
 def register():
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
     loginForm = LoginForm(request.form)
     registrationForm = RegistrationForm(request.form)
 
@@ -352,10 +415,12 @@ def register():
                     return make_response("cant login")
 
         return render_template('register.html', form=registrationForm, loginForm=loginForm,
-                               title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
+                               title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
+                               qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
     return render_template('register.html', form=registrationForm, loginForm=loginForm,
-                           title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True)
+                           title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
+                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
 
 @kunjika.route('/check_email', methods=['POST'])
@@ -463,6 +528,12 @@ def vote_clicked():
 
 @kunjika.route('/edit/<element>', methods=['GET', 'POST'])
 def edits(element):
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
     #edit_list = edit.handle_edit(element)
     #pprint(edit_list)
 
@@ -522,7 +593,7 @@ def edits(element):
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
     else:
         return render_template('edit.html', title='Edit', form=form, question=question, type=type, qid=qid,
-                               aid=int(aid), cid=int(cid))
+                               aid=int(aid), cid=int(cid), qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
 
 @kunjika.route('/answer_accepted')
@@ -533,6 +604,7 @@ def answer_accepted():
 @kunjika.route('/favorited')
 def favorited():
     return utility.handle_favorite(request.args.get('id'))
+
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():
@@ -593,10 +665,16 @@ def postcomment():
 @kunjika.route('/unanswered', defaults={'page': 1})
 @kunjika.route('/unanswered/page/<int:page>')
 def unanswered(page):
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
     skip = (page - 1) * QUESTIONS_PER_PAGE
     questions = urllib2.urlopen(
-                'http://localhost:8092/questions/_design/dev_dev/_view/get_unanswered?limit=' +
-                str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
+        'http://localhost:8092/questions/_design/dev_dev/_view/get_unanswered?limit=' +
+        str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
     questions = json.loads(questions)
     count = questions['total_rows']
     #print questions
@@ -615,18 +693,25 @@ def unanswered(page):
     pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
     if g.user is None:
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
-                               pagination=pagination)
+                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
     elif g.user is not None and g.user.is_authenticated():
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
-        fname=g.user.name, user_id=g.user.id, pagination=pagination)
+                               fname=g.user.name, user_id=g.user.id, pagination=pagination,
+                               qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
     else:
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
-                               pagination=pagination)
+                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
 
 @kunjika.route('/users/', defaults={'page': 1})
 @kunjika.route('/users/page/<int:page>')
 def show_users(page):
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
     count = cb.get('count').value
     users = utility.get_users_per_page(page, USERS_PER_PAGE, count)
     if not users and page != 1:
@@ -636,14 +721,22 @@ def show_users(page):
     if g.user.id in session:
         logged_in = True
         return render_template('users.html', title='Users', gravatar32=gravatar32, logged_in=logged_in, upage=True,
-                               pagination=pagination, users=users, no_of_users=no_of_users)
+                               pagination=pagination, users=users, no_of_users=no_of_users,
+                               qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
     return render_template('users.html', title='Users', gravatar32=gravatar32, upage=True,
-                           pagination=pagination, users=users, no_of_users=no_of_users)
+                           pagination=pagination, users=users, no_of_users=no_of_users,
+                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
 
 @kunjika.route('/tags/', defaults={'page': 1})
 @kunjika.route('/tags/page/<int:page>')
 def show_tags(page):
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    acount = acount['rows'][0]['value']
     count = tb.get('tcount').value
     tags = utility.get_tags_per_page(page, TAGS_PER_PAGE, count)
     if not tags and page != 1:
@@ -652,10 +745,10 @@ def show_tags(page):
     no_of_tags = len(tags)
     if g.user.id in session:
         logged_in = True
-        return render_template('tags.html', title='Tags', logged_in=logged_in, tpage=True,
-                               pagination=pagination, tags=tags, no_of_users=no_of_tags)
-    return render_template('tags.html', title='Tags', tpage=True,
-                           pagination=pagination, tags=tags, no_of_tags=no_of_tags)
+        return render_template('tags.html', title='Tags', logged_in=logged_in, tpage=True, pagination=pagination,
+                               tags=tags, no_of_users=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+    return render_template('tags.html', title='Tags', tpage=True, pagination=pagination, tags=tags,
+                           no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
 
 
 if __name__ == '__main__':

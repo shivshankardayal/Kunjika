@@ -165,10 +165,24 @@
         </div>
         </form>
     </div>
-    <div id="sidebar" style="float:right">
-        side bar
-    </div>
-    </div>
+    <div id="sidebar">
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ qcount }}</div>
+                <p>questions</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ acount }}</div>
+                <p>answers</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ ucount }}</div>
+                <p>users</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ tcount }}</div>
+                <p>tags</p>
+            </div>
+        </div>
 
     <!--script type="text/javascript">
     $(document).ready(function () {

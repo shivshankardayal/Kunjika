@@ -521,3 +521,25 @@ pre.prettyprint {
 .cbt {
     clear: both;
 }
+
+.module {
+    color: rgb(68, 68, 68);
+    padding: 0px 8px 2px;
+    margin-bottom: 10px;
+}
+
+.al {
+    text-align: left;
+}
+
+.summarycount {
+    color: rgb(128, 129, 133);
+    font-size: 350%;
+    font-weight: bold;
+}
+
+.module p {
+    font-size: 120%;
+    line-height: 1.3;
+    margin-bottom: 0.5em;
+}

@@ -180,6 +180,24 @@ def get_users_per_page(page, USERS_PER_PAGE, count):
 
     return users_list
 
+def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
+
+    skip = (page - 1) * QUESTIONS_PER_PAGE
+    tag = urllib2.quote(tag, '')
+    tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?&key=' + '"' + tag + '"').read()
+    tag = json.loads(tag)['rows'][0]['value']
+    question_list = []
+    for qid in tag['qid']:
+        question_list.append(kunjika.qb.get(str(qid)).value)
+
+    for i in question_list:
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+
+        user = kunjika.cb.get(i['content']['op']).value
+        i['opname'] = user['fname']
+
+    return question_list
+
 def url_for_other_page(page):
     args = request.view_args.copy()
     args['page'] = page

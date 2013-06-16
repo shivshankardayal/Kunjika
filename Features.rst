@@ -3,19 +3,17 @@ Features
 TODO
 ====
 1.  Editing questions.
-2.  Simple tags display.
-3.  Flagging inappropriate comments.
-4.  OpenID integration.
-5.  More fields for user activity and profile.
-6.  Popular tags display on main page in side bar.
-7.  Simple count of questions, answers, comments and user.
-8.  Users page.
-9.  Code attachments also .zip source attachments up to 50KB.
-10. Email verification.
-11. Following questions.
-12. Following tags, users.
-13. RSS for tags, users, questions.
-14. Sitemap generation
+2.  Flagging inappropriate comments.
+3.  OpenID integration.
+4.  More fields for user activity and profile.
+5.  Popular tags display on main page in side bar.
+6.  Simple count of questions, answers, tags and users.
+7.  Code attachments also .zip source attachments up to 50KB.
+8.  Email verification.
+9.  Following questions.
+10. Following tags, users.
+11. RSS for tags, users, questions.
+12. Sitemap generation
 
 DONE
 ====
@@ -43,7 +41,8 @@ DONE
 13. Search on question title/contents using Google's custom search. Note that
     crawler crawls depending upon activity so new stuff wont reflect immediately.
     Currently using libreprogramming's code.
-
+14. Simple tags display.
+15. Users page.
 Postponed for later
 ===================
 1.  Search using Sphinx and Google custom search integration.

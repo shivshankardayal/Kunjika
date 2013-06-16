@@ -42,7 +42,7 @@
                                     </div>
                                 </td>
                             {% endfor %}
-                            {% set i = i + 3 %}
+                            {% set i = i + 4 %}
                         </tr>
                     {% endif %}
                 {% endfor %}
@@ -50,4 +50,22 @@
             {{ render_pagination(pagination) }}
         </div>
     {% endif %}
+    <div id="sidebar">
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ qcount }}</div>
+                <p>questions</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ acount }}</div>
+                <p>answers</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ ucount }}</div>
+                <p>users</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ tcount }}</div>
+                <p>tags</p>
+            </div>
+    </div>
 {% endblock %}
