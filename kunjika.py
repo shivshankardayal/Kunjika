@@ -24,7 +24,8 @@ from itsdangerous import URLSafeSerializer, BadSignature
 from flask.ext.mail import Mail, Message
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
+                          'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg'])
 
 kunjika = Flask(__name__)
 kunjika.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -107,7 +108,6 @@ def load_user(uid):
     user = get_user(int(uid))
     return user
 
-
 @kunjika.route('/', methods=['GET', 'POST'])
 @kunjika.route('/questions', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>', methods=['GET', 'POST'])
@@ -116,6 +116,7 @@ def load_user(uid):
 @kunjika.route('/questions/tagged/<string:tag>', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions/tagged/<string:tag>/page/<int:page>')
 def questions(tag=None, page=None, qid=None, url=None):
+    tag_list = []
     try:
         qcount = qb.get('qcount').value
         ucount = cb.get('count').value
@@ -126,6 +127,8 @@ def questions(tag=None, page=None, qid=None, url=None):
             acount = acount['rows'][0]['value']
         else:
             acount = 0
+        if tcount > 0:
+            tag_list = utility.get_popular_tags()
     except:
         pass
     questions_dict = {}
@@ -137,14 +140,14 @@ def questions(tag=None, page=None, qid=None, url=None):
         pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
         if g.user is None:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         elif g.user is not None and g.user.is_authenticated():
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
                                    fname=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
-                                   ucount=ucount, tcount=tcount, acount=acount)
+                                   ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         else:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     if qid is None:
         count = qb.get('qcount').value
         questions_list = utility.get_questions_for_page(page, QUESTIONS_PER_PAGE, count)
@@ -154,14 +157,14 @@ def questions(tag=None, page=None, qid=None, url=None):
         #questions_list = question.get_questions()
         if g.user is None:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         elif g.user is not None and g.user.is_authenticated():
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
                                    fname=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
-                                   ucount=ucount, tcount=tcount, acount=acount)
+                                   ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         else:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     else:
         questions_dict = question.get_question_by_id(qid, questions_dict)
         if request.referrer == "http://localhost:5000/questions":
@@ -209,10 +212,10 @@ def questions(tag=None, page=None, qid=None, url=None):
             qb.replace(str(questions_dict['qid']), questions_dict)
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                    form=answerForm, fname=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
-                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         else:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
-                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
 @kunjika.route('/tags/<tag>')
@@ -232,6 +235,7 @@ def tags(tag=None):
 @kunjika.route('/users/<uid>')
 @kunjika.route('/users/<uid>/<uname>')
 def users(uid=None, uname=None):
+    tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
@@ -241,6 +245,9 @@ def users(uid=None, uname=None):
         acount = acount['rows'][0]['value']
     else:
         acount = 0
+
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
     user = cb.get(uid).value
     #user = json.loads(user)
     gravatar100 = Gravatar(kunjika,
@@ -253,24 +260,26 @@ def users(uid=None, uname=None):
         logged_in = True
         return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
                                lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
-                               upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                               upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
                            lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True,
-                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 @kunjika.route('/unanswered/<uid>')
 def unanswered(uid=None):
+    tag_list = utility.get_popular_tags()
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
     acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
     acount = json.loads(acount)
     acount = acount['rows'][0]['value']
-    return render_template('unanswered.html', qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+    return render_template('unanswered.html', qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
 @kunjika.route('/ask', methods=['GET', 'POST'])
 def ask():
+    tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
@@ -281,6 +290,8 @@ def ask():
     else:
         acount = 0
 
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
     questionForm = QuestionForm(request.form)
     if g.user is not None and g.user.is_authenticated():
         if questionForm.validate_on_submit() and request.method == 'POST':
@@ -320,12 +331,13 @@ def ask():
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
 
         return render_template('ask.html', title='Ask', form=questionForm, apage=True, fname=g.user.name,
-                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
 
 
 @kunjika.route('/login', methods=['GET', 'POST'])
 def login():
+    tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
@@ -336,6 +348,8 @@ def login():
     else:
         acount = 0
 
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
     registrationForm = RegistrationForm(request.form)
     loginForm = LoginForm(request.form)
 
@@ -363,26 +377,27 @@ def login():
             else:
                 render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
                                 providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                                qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                                qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
         except:
             return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
                                    providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
     else:
         render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
                         providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
     return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
                            providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
 @kunjika.route('/register', methods=['POST'])
 def register():
+    tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
@@ -393,6 +408,8 @@ def register():
     else:
         acount = 0
 
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
     loginForm = LoginForm(request.form)
     registrationForm = RegistrationForm(request.form)
     document = None
@@ -455,7 +472,7 @@ def register():
 
     return render_template('register.html', form=registrationForm, loginForm=loginForm,
                            title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
 @kunjika.route('/check_email', methods=['POST'])
@@ -564,6 +581,7 @@ def vote_clicked():
 
 @kunjika.route('/edit/<element>', methods=['GET', 'POST'])
 def edits(element):
+    tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
@@ -573,7 +591,8 @@ def edits(element):
         acount = acount['rows'][0]['value']
     else:
         acount = 0
-
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
     #edit_list = edit.handle_edit(element)
     #pprint(edit_list)
 
@@ -633,7 +652,7 @@ def edits(element):
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
     else:
         return render_template('edit.html', title='Edit', form=form, question=question, type=type, qid=qid,
-                               aid=int(aid), cid=int(cid), qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                               aid=int(aid), cid=int(cid), qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
 @kunjika.route('/answer_accepted')
@@ -705,6 +724,7 @@ def postcomment():
 @kunjika.route('/unanswered', defaults={'page': 1})
 @kunjika.route('/unanswered/page/<int:page>')
 def unanswered(page):
+    tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
@@ -714,7 +734,8 @@ def unanswered(page):
         acount = acount['rows'][0]['value']
     else:
         acount = 0
-
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
     skip = (page - 1) * QUESTIONS_PER_PAGE
     questions = urllib2.urlopen(
         'http://localhost:8092/questions/_design/dev_dev/_view/get_unanswered?limit=' +
@@ -737,19 +758,20 @@ def unanswered(page):
     pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
     if g.user is None:
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
-                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     elif g.user is not None and g.user.is_authenticated():
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
                                fname=g.user.name, user_id=g.user.id, pagination=pagination,
-                               qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                               qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     else:
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
-                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
 @kunjika.route('/users/', defaults={'page': 1})
 @kunjika.route('/users/page/<int:page>')
 def show_users(page):
+    tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
@@ -759,7 +781,8 @@ def show_users(page):
         acount = acount['rows'][0]['value']
     else:
         acount = 0
-
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
     count = cb.get('count').value
     users = utility.get_users_per_page(page, USERS_PER_PAGE, count)
     if not users and page != 1:
@@ -770,15 +793,16 @@ def show_users(page):
         logged_in = True
         return render_template('users.html', title='Users', gravatar32=gravatar32, logged_in=logged_in, upage=True,
                                pagination=pagination, users=users, no_of_users=no_of_users,
-                               qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                               qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return render_template('users.html', title='Users', gravatar32=gravatar32, upage=True,
                            pagination=pagination, users=users, no_of_users=no_of_users,
-                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
 @kunjika.route('/tags/', defaults={'page': 1})
 @kunjika.route('/tags/page/<int:page>')
 def show_tags(page):
+    tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
@@ -788,7 +812,8 @@ def show_tags(page):
         acount = acount['rows'][0]['value']
     else:
         acount = 0
-
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
     count = tb.get('tcount').value
     tags = utility.get_tags_per_page(page, TAGS_PER_PAGE, count)
     if not tags and page != 1:
@@ -798,9 +823,9 @@ def show_tags(page):
     if g.user.id in session:
         logged_in = True
         return render_template('tags.html', title='Tags', logged_in=logged_in, tpage=True, pagination=pagination,
-                               tags=tags, no_of_users=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                               tags=tags, no_of_users=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return render_template('tags.html', title='Tags', tpage=True, pagination=pagination, tags=tags,
-                           no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount)
+                           no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 if __name__ == '__main__':
     kunjika.run()

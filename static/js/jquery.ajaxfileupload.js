@@ -19,7 +19,8 @@
           onComplete: function(response) { console.log('got response: '); console.log(response); console.log(this); },
           onCancel: function() { console.log('cancelling: '); console.log(this); },
           validate_extensions : true,
-          valid_extensions : ['gif','png','jpg','jpeg'],
+          valid_extensions : ['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
+              'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg'],
           submit_button : null
         };
 

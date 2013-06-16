@@ -534,8 +534,9 @@ pre.prettyprint {
 
 .summarycount {
     color: rgb(128, 129, 133);
-    font-size: 350%;
+    font-size: 250%;
     font-weight: bold;
+    padding-bottom: 5px;
 }
 
 .module p {

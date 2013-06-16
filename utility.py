@@ -203,4 +203,13 @@ def url_for_other_page(page):
     args['page'] = page
     return url_for(request.endpoint, **args)
 
+def get_popular_tags():
 
+    tag_list = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_by_count?descending=true').read()
+    tag_list = json.loads(tag_list)['rows']
+
+    tags = []
+    for i in tag_list:
+        tags.append(i['value'])
+
+    return tags

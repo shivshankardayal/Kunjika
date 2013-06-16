@@ -36,7 +36,7 @@
                 <div class="wmd-panel">
                     <div id="wmd-button-bar"></div>
                     {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
-                    <div id="insertImageDialog" title="&nbsp;Insert Image">
+                    <div id="insertImageDialog" title="&nbsp;Insert Image or File">
                         <h6>From the web</h6>
 
                         <p>
@@ -74,8 +74,15 @@
                 <div class="summarycount al">{{ tcount }}</div>
                 <p>tags</p>
             </div>
+            <div id="popular-tags" class="module">
+                <h4 id="h-popular-tags">Popular-tags</h4>
+                {% for tag in tag_list %}
+                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
+                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">{{ tag['count'] }}</span></span>
+                    <br/>
+                {% endfor %}
+            </div>
         </div>
-    </div>
 {% endblock %}
 
 {% block page_footer %}
