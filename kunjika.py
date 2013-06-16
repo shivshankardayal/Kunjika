@@ -497,6 +497,7 @@ def image_upload():
 
 @kunjika.route('/get_tags', methods=['GET'])
 def get_tags(q=None):
+    print request.args.get('q')
     return json.dumps([{}])
 
 
