@@ -1,7 +1,10 @@
 import kunjika
 from flask import jsonify, g
 from math import ceil
-
+import urllib2
+import json
+from time import strftime, localtime
+from flask import url_for, request
 
 def generate_url(title):
     length = len(title)
@@ -126,17 +129,48 @@ class Pagination(object):
                 yield num
                 last = num
 
-def get_questions_per_page(page, QUESTIONS_PER_PAGE, count):
+def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
 
-    offset = (page - 1) * QUESTIONS_PER_PAGE
-    document = urllib2.urlopen(
-                'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + loginForm.email.data + '"').read()
+    skip = (page - 1) * QUESTIONS_PER_PAGE
+    questions = urllib2.urlopen(
+                'http://localhost:8092/questions/_design/dev_dev/_view/get_questions?limit=' +
+                str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
+
+    questions = json.loads(questions)
+    #print questions
+    question_list = []
+    for i in questions['rows']:
+        question_list.append(i['value'])
+
+    for i in question_list:
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+
+        user = kunjika.cb.get(i['content']['op']).value
+        i['opname'] = user['fname']
+
+    return question_list
+
+def get_tags_per_page(page, TAGS_PER_PAGE, count):
     pass
-
-
-def get_tagss_per_page(page, TAGS_PER_PAGE, count):
-    pass
-
 
 def get_users_per_page(page, USERS_PER_PAGE, count):
-    pass
+
+    skip = (page - 1) * USERS_PER_PAGE
+    users = urllib2.urlopen(
+                'http://localhost:8092/default/_design/dev_qa/_view/get_by_reputation?limit=' +
+                str(USERS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
+    users = json.loads(users)
+
+    users_list = []
+
+    for i in users['rows']:
+        users_list.append(i['value'])
+
+    return users_list
+
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
+
+

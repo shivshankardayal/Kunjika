@@ -19,6 +19,7 @@ import question
 import votes
 import edit
 import utility
+import jinja2
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -79,6 +80,7 @@ bcrypt = Bcrypt(kunjika)
 
 lm.anonymous_user = Anonymous
 
+kunjika.jinja_env.globals['url_for_other_page'] = utility.url_for_other_page
 
 @kunjika.before_request
 def before_request():
@@ -101,20 +103,28 @@ def load_user(uid):
 
 
 @kunjika.route('/', methods=['GET', 'POST'])
-@kunjika.route('/questions', methods=['GET', 'POST'])
+@kunjika.route('/questions', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>', methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>/<url>', methods=['GET', 'POST'])
-def questions(qid=None, url=None):
+@kunjika.route('/questions/page/<int:page>')
+def questions(page=None, qid=None, url=None):
     questions_dict = {}
     if qid is None:
-        questions_list = question.get_questions()
+        count = qb.get('qcount').value
+        questions_list = utility.get_questions_for_page(page, QUESTIONS_PER_PAGE, count)
+        if not questions_list and page != 1:
+            abort(404)
+        pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
+        #questions_list = question.get_questions()
         if g.user is None:
-            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list)
+            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
+                                   pagination=pagination)
         elif g.user is not None and g.user.is_authenticated():
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   fname=g.user.name, user_id=g.user.id)
+                                   fname=g.user.name, user_id=g.user.id, pagination=pagination)
         else:
-            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list)
+            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
+                                   pagination=pagination)
     else:
         questions_dict = question.get_question_by_id(qid, questions_dict)
         if request.referrer == "http://localhost:5000/questions":
@@ -230,6 +240,12 @@ def ask():
 
             user = cb.get(str(g.user.id)).value
             user['rep'] += 1
+            if not questions in user:
+                user['questions'] = []
+                user['questions'].append(question['qid'])
+            else:
+                user['questions'].append(question['qid'])
+
             cb.replace(str(g.user.id), user)
             add_tags(question['content']['tags'], question['qid'])
 
@@ -576,39 +592,59 @@ def postcomment():
 @kunjika.route('/unanswered', defaults={'page': 1})
 @kunjika.route('/unanswered/page/<int:page>')
 def unanswered(page):
-    count = qb.get('count').value
-    questions_list = utility.get_questions_for_page(page, QUESTIONS_PER_PAGE, count)
+    skip = (page - 1) * QUESTIONS_PER_PAGE
+    questions = urllib2.urlopen(
+                'http://localhost:8092/questions/_design/dev_dev/_view/get_unanswered?limit=' +
+                str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
+    questions = json.loads(questions)
+    count = questions['total_rows']
+    #print questions
+    questions_list = []
+    for i in questions['rows']:
+        questions_list.append(i['value'])
+
+    for i in questions_list:
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+
+        user = cb.get(i['content']['op']).value
+        i['opname'] = user['fname']
+
     if not questions_list and page != 1:
         abort(404)
     pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
     if g.user is None:
-        return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list)
+        return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
+                               pagination=pagination)
     elif g.user is not None and g.user.is_authenticated():
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
-        fname=g.user.name, user_id=g.user.id)
+        fname=g.user.name, user_id=g.user.id, pagination=pagination)
     else:
-        return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list)
+        return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
+                               pagination=pagination)
 
 
 @kunjika.route('/users/', defaults={'page': 1})
 @kunjika.route('/users/page/<int:page>')
 def show_users(page):
     count = cb.get('count').value
-    users = utility.get_users_for_page(page, USERS_PER_PAGE, count)
+    users = utility.get_users_per_page(page, USERS_PER_PAGE, count)
     if not users and page != 1:
         abort(404)
     pagination = utility.Pagination(page, USERS_PER_PAGE, count)
-    return render_template('users.html',
-        pagination=pagination,
-        users=users
-    )
+    no_of_users = len(users)
+    if g.user.id in session:
+        logged_in = True
+        return render_template('users.html', title='Users', gravatar32=gravatar32, logged_in=logged_in, upage=True,
+                               pagination=pagination, users=users, no_of_users=no_of_users)
+    return render_template('users.html', title='Users', gravatar32=gravatar32, upage=True,
+                           pagination=pagination, users=users, no_of_users=no_of_users)
 
 
 @kunjika.route('/tags/', defaults={'page': 1})
 @kunjika.route('/tags/page/<int:page>')
-def show_users(page):
+def show_tags(page):
     count = tb.get('count').value
-    tags = utility.get_tags_for_page(page, TAGS_PER_PAGE, count)
+    tags = utility.get_tags_per_page(page, TAGS_PER_PAGE, count)
     if not tags and page != 1:
         abort(404)
     pagination = utility.Pagination(page, TAGS_PER_PAGE, count)

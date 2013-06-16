@@ -2,6 +2,7 @@
 <html lang="{% block html_lang %}en{% endblock %}">
 <head>
     {% from "macros.html" import debugmin %}
+    {% from "macros.html" import render_pagination %}
     {% block head %}
         <title>{% block title %}{{ title }}{% endblock %}</title>
         {% block meta %}
