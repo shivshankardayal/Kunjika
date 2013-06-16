@@ -6,7 +6,6 @@ TODO
 2. Flagging inappropriate comments.
 3. OpenID integration.
 4. More fields for user activity and profile.
-5. Code attachments also .zip source attachments up to 50KB.
 6. Following questions.
 7. Following tags, users.
 8. RSS for tags, users, questions.
@@ -41,7 +40,8 @@ DONE
 14. Simple tags display.
 15. Users page.
 16. Simple count of questions, answers, tags and users.
-17.  Popular tags display on main page in side bar.
+17. Popular tags display on main page in side bar.
+16. Code attachments also .zip source attachments up to 2MB.
 
 Postponed for later
 ===================
