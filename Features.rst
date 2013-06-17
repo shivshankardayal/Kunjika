@@ -6,7 +6,7 @@ TODO
 2. Flagging inappropriate comments.
 3. OpenID integration.
 4. More fields for user activity and profile.
-6. Following questions, tags and users.
+5. Following questions, tags and users.
 
 DONE
 ====
