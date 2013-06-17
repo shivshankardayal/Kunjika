@@ -2,11 +2,10 @@ Features
 ********
 TODO
 ====
-1. Editing questions.
-2. Flagging inappropriate comments.
-3. OpenID integration.
-4. More fields for user activity and profile.
-5. Following questions, tags and users.
+1. Flagging inappropriate comments.
+2. OpenID integration.
+3. More fields for user activity and profile.
+4. Following questions, tags and users.
 
 DONE
 ====
@@ -15,7 +14,7 @@ DONE
 3.  Comment posting on either.
 4.  Syntax highlighting and image upload in questions, answers or comments.
 5.  Voting on answers and questions.
-6.  Editing answers and comments.
+6.  Editing questions, answers and comments.
 7.  Accepting answers.
 8.  Profile page.
 9.  Unanswered url.
@@ -33,7 +32,6 @@ DONE
 12. Making questions favorite for one user.
 13. Search on question title/contents using Google's custom search. Note that
     crawler crawls depending upon activity so new stuff wont reflect immediately.
-    Currently using libreprogramming's code.
 14. Simple tags display(allow editing excerpt).
 15. Users page.
 16. Simple count of questions, answers, tags and users.

@@ -220,7 +220,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                                    qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
-@kunjika.route('/tags/<tag>')
+'''@kunjika.route('/tags/<tag>')
 def tags(tag=None):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
@@ -232,7 +232,7 @@ def tags(tag=None):
     else:
         acount = 0
     return render_template('tags.html')
-
+'''
 
 @kunjika.route('/users/<uid>')
 @kunjika.route('/users/<uid>/<uname>')
@@ -267,7 +267,7 @@ def users(uid=None, uname=None):
                            lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
-@kunjika.route('/unanswered/<uid>')
+'''@kunjika.route('/unanswered/<uid>')
 def unanswered(uid=None):
     tag_list = utility.get_popular_tags()
     qcount = qb.get('qcount').value
@@ -277,7 +277,7 @@ def unanswered(uid=None):
     acount = json.loads(acount)
     acount = acount['rows'][0]['value']
     return render_template('unanswered.html', qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
-
+'''
 
 @kunjika.route('/ask', methods=['GET', 'POST'])
 def ask():
@@ -361,7 +361,7 @@ def login():
             document = urllib2.urlopen(
                 'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + loginForm.email.data + '"').read()
             document = json.loads(document)['rows'][0]['value']
-            print(document)
+            #print(document)
             if bcrypt.check_password_hash(document['password'], loginForm.password.data):
                 session[document['id']] = document['id']
                 session['logged_in'] = True
@@ -443,7 +443,7 @@ def register():
         document = urllib2.urlopen(
             'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + registrationForm.email1.data + '"&stale=false').read()
         document = json.loads(document)
-        print(document)
+        #print(document)
         if document['total_rows'] is 0:
             data['email'] = registrationForm.email1.data
             data['password'] = passwd_hash
@@ -549,10 +549,23 @@ def image_upload():
             return json.dumps(data)
 
 
-@kunjika.route('/get_tags', methods=['GET'])
-def get_tags(q=None):
-    print request.args.get('q')
-    return json.dumps([{}])
+@kunjika.route('/get_tags/<qid>', methods=['GET', 'POST'])
+def get_tags(q=None, qid=None):
+    #print request.args.get('q')
+
+    if qid is not None:
+        question = qb.get(str(qid)).value
+
+        tags = question['content']['tags']
+
+        tags_list = []
+        for i in tags:
+            tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(i) + '"').read()
+            #print tag
+            tag = json.loads(tag)['rows'][0]['value']
+            tags_list.append({"id": tag['tid'], "name": tag['tag']})
+    #print tags_list
+    return json.dumps(tags_list)
 
 
 def add_tags(tags_passed, qid):
@@ -561,7 +574,6 @@ def add_tags(tags_passed, qid):
             document = tb.get(tag).value
             document['count'] += 1
             document['qid'].append(qid)
-
             tb.replace(tag, document)
 
         except:
@@ -572,9 +584,42 @@ def add_tags(tags_passed, qid):
             data['count'] = 1
             data['qid'].append(qid)
             tb.incr('tcount', 1)
+            tid = tb.get('tcount').value
+            data['tid'] = tid
 
             tb.add(tag, data)
 
+def replace_tags(tags_passed, qid, current_tags):
+    for tag in tags_passed:
+        if tag not in current_tags:
+            try:
+                document = tb.get(tag).value
+                document['count'] += 1
+                document['qid'].append(qid)
+                tb.replace(tag, document)
+
+            except:
+                data = {}
+                data['qid'] = []
+                data['excerpt'] = ""
+                data['tag'] = tag
+                data['count'] = 1
+                data['qid'].append(qid)
+                tb.incr('tcount', 1)
+                tid = tb.get('tcount').value
+                data['tid'] = tid
+
+                tb.add(tag, data)
+
+    for tag in current_tags:
+        if tag not in tags_passed:
+            tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(tag) + '"').read()
+            #print tag
+            tag = json.loads(tag)['rows'][0]['value']
+            tag['qid'].remove(int(qid))
+            tag['count'] -= 1
+
+            tb.replace(tag['tag'], tag)
 
 @kunjika.route('/vote_clicked', methods=['GET', 'POST'])
 def vote_clicked():
@@ -627,7 +672,6 @@ def edits(element):
                 if aid != 0:
                     question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['comment'] = form.comment.data
                 else:
-                    print "test"
                     question['comments'][int(cid) - 1]['comment'] = form.comment.data
 
                 editor = cb.get(str(g.user.id)).value
@@ -647,10 +691,23 @@ def edits(element):
         else:
             if form.validate_on_submit():
                 question['content']['description'] = form.description.data
+                tags = form.tags.data.split(',')
+                tag_list = []
+                current_tags = question['content']['tags']
+                for tag in tags:
+                    try:
+                        tag = int(tag)
+                        tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_tag_by_id?key=' + str(tag)).read()
+                        tag = json.loads(tag)['rows'][0]['value']
+                        tag_list.append(tag['tag'])
+                    except:
+                        tag_list.append(tag)
 
+                question['content']['tags'] = tag_list
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1
-                qb.replace(qid, question)
+                qb.replace(str(qid), question)
+                replace_tags(question['content']['tags'], question['qid'], current_tags)
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
     else:
         return render_template('edit.html', title='Edit', form=form, question=question, type=type, qid=qid,
@@ -713,7 +770,7 @@ def postcomment():
             comment['cid'] = 1
             question['comments'].append(comment)
 
-    pprint(question)
+    #pprint(question)
 
     qb.replace(str(qid), question)
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))

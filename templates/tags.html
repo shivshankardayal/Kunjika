@@ -35,6 +35,8 @@
                                     <a href="/questions/tagged/{{ tags[i+j]['tag'] }}" class="post-tag" title="" rel="tag">{{ tags[i+j]['tag'] }}</a><span
                                         class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
                                         class="item-multiplier-count">{{ tags[i+j]['count'] }}</span></span>
+
+                                    <div><a href="/excerpt/{{ tag['tag'] }}">Excerpt</a></div>
                                     {% if 'excerpt' in tags[i+j] %}
                                     <div class="excerpt">{{ tags[i+j]['excerpt'] }}
                                     </div>
