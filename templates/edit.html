@@ -27,169 +27,173 @@
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
-        <div class="mainbar" id="mainbar">
-            {% if type == 'ce' %}
-                <h3>Please edit your comment.</h3>
-                {% if aid != 0 %}
+    <div class="mainbar" id="mainbar">
+        {% if type == 'ce' %}
+            <h3>Please edit your comment.</h3>
+            {% if aid != 0 %}
                 <form class="edit-form" method="post" aciton="/edit/ce-{{ qid }}-{{ aid }}-{{ cid }}">
-                {% else %}
-                    <form class="edit-form" method="post" aciton="/edit/ce-{{ qid }}-{{ cid }}">
-                {% endif %}
-                {% from "macros.html" import render_field %}
-                {{ form.csrf_token }}
-                <div class="wmd-panel">
-                    <div id="wmd-button-bar"></div>
-                    <div class="control-group">
-                        <label class="control-label" for="description"></label>
-
-                        <div class="controls">
-                            {% if aid != 0 %}
-                                <textarea class="wmd-input" id="wmd-input" name="comment"
-                                          placeholder="Please describe your question here."
-                                          stlyle="margin-left:5px;">{{ question['answers'][aid - 1]['comments'][cid - 1]['comment'] }}</textarea>
-                            {% else %}
-                                <textarea class="wmd-input" id="wmd-input" name="comment"
-                                          placeholder="Please describe your question here."
-                                          stlyle="margin-left:5px;">{{ question['comments'][cid - 1]['comment'] }}</textarea>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div id="insertImageDialog" title="&nbsp;Insert Image">
-                        <h6>From the web</h6>
-
-                        <p>
-                            <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-                        </p>
-                        <h6>From your computer (Max. 2MB)</h6>
-                        <span class="loading-small"></span>
-                        <input type="file" name="file" id="file" data-action="/image_upload"/>
-                    </div>
-                    <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-                </div>
-                <div class="controls">
-                <button class="btn btn-primary">
-                Edit Comment
-            {% elif type == 'ae' %}
-                <h3>Please edit your answer.</h3>
-                <form class="edit-form" method="post" aciton="/edit/ae-{{ qid }}-{{ aid }}">
-                {% from "macros.html" import render_field %}
-                {{ form.csrf_token }}
-                <div class="wmd-panel">
-                    <div id="wmd-button-bar"></div>
-                    <div class="control-group">
-                        <label class="control-label" for="description"></label>
-
-                        <div class="controls">
-                            <textarea class="wmd-input" id="wmd-input" name="answer"
-                                      placeholder="Please describe your question here."
-                                      stlyle="margin-left:5px;">{{ question['answers'][aid - 1]['answer'] }}</textarea>
-                        </div>
-                    </div>
-                    <div id="insertImageDialog" title="&nbsp;Insert Image">
-                        <h6>From the web</h6>
-
-                        <p>
-                            <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-                        </p>
-                        <h6>From your computer (Max. 2MB)</h6>
-                        <span class="loading-small"></span>
-                        <input type="file" name="file" id="file" data-action="/image_upload"/>
-                    </div>
-                    <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-                </div>
-                <div class="controls">
-                <button class="btn btn-primary">
-                Edit Answer
             {% else %}
-                <h3>Please edit your question.</h3>
-                <form class="ask-form" method="post" aciton="/edit/qe-{{ qid }}">
-                {% from "macros.html" import render_field %}
-                {{ form.csrf_token }}
+                <form class="edit-form" method="post" aciton="/edit/ce-{{ qid }}-{{ cid }}">
+            {% endif %}
+        {% from "macros.html" import render_field %}
+        {{ form.csrf_token }}
+        <div class="wmd-panel">
+            <div id="wmd-button-bar"></div>
+            <div class="control-group">
+                <label class="control-label" for="description"></label>
+
+                <div class="controls">
+                    {% if aid != 0 %}
+                        <textarea class="wmd-input" id="wmd-input" name="comment"
+                                  placeholder="Please describe your question here."
+                                  stlyle="margin-left:5px;">{{ question['answers'][aid - 1]['comments'][cid - 1]['comment'] }}</textarea>
+                    {% else %}
+                        <textarea class="wmd-input" id="wmd-input" name="comment"
+                                  placeholder="Please describe your question here."
+                                  stlyle="margin-left:5px;">{{ question['comments'][cid - 1]['comment'] }}</textarea>
+                    {% endif %}
+                </div>
+            </div>
+            <div id="insertImageDialog" title="&nbsp;Insert Image or File">
+                <h6>From the web</h6>
+
+                <p>
+                    <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                </p>
+                <h6>From your computer (Max. 2MB)</h6>
+                <span class="loading-small"></span>
+                <input type="file" name="file" id="file" data-action="/image_upload"/>
+            </div>
+            <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+        </div>
+        <div class="controls">
+            <button class="btn btn-primary">
+                Edit Comment
+        </form>
+        {% elif type == 'ae' %}
+            <h3>Please edit your answer.</h3>
+            <form class="edit-form" method="post" aciton="/edit/ae-{{ qid }}-{{ aid }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <div class="wmd-panel">
+                <div id="wmd-button-bar"></div>
                 <div class="control-group">
-                    <label class="control-label" for="question">Question</label>
+                    <label class="control-label" for="description"></label>
 
                     <div class="controls">
-                        <input class="question input-x-large span10" id="question" name="question"
-                               style="margin-left:25px;" value="{{ question['title'] }}" type="text">
+                        <textarea class="wmd-input" id="wmd-input" name="answer"
+                                  placeholder="Please describe your question here."
+                                  stlyle="margin-left:5px;">{{ question['answers'][aid - 1]['answer'] }}</textarea>
                     </div>
                 </div>
-                <div class="wmd-panel">
-                    <div id="wmd-button-bar"></div>
-                    <div class="control-group">
-                        <label class="control-label" for="description"></label>
+                <div id="insertImageDialog" title="&nbsp;Insert Image or File">
+                    <h6>From the web</h6>
 
-                        <div class="controls">
-                            <textarea class="wmd-input" id="wmd-input" name="description"
-                                      placeholder="Please describe your question here."
-                                      stlyle="margin-left:5px;">{{ question['content']['description'] }}</textarea>
-                        </div>
-                    </div>
-                    <div id="insertImageDialog" title="&nbsp;Insert Image">
-                        <h6>From the web</h6>
-
-                        <p>
-                            <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-                        </p>
-                        <h6>From your computer (Max. 2MB)</h6>
-                        <span class="loading-small"></span>
-                        <input type="file" name="file" id="file" data-action="/image_upload"/>
-                    </div>
-                    <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-                    <div style="clear:both;"></div>
-                    <div class="control-group">
-                        <label class="control-label" for="tags">Tags</label>
-
-                        <div class="controls">
-
-                            <ul class="token-input-list-kunjika">
-                                <li class="token-input-input-token-kunjika"><input id="token-input-kunjika-tags"
-                                                                                   style="outline: medium none; width: 30px;"
-                                                                                   autocomplete="off"
-                                                                                   autocapitalize="off" type="text">
-                                    <tester style="position: absolute; top: -9999px; left: -9999px; width: auto; font-size: 14px; font-family: &quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif; font-weight: 400; letter-spacing: 0px; white-space:
-                                    nowrap;"></tester>
-                                </li>
-                            </ul>
-                            <input class="input-xlarge span10" id="kunjika-tags" name="tags"
-                                   placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags"
-                                   style="margin-left: 45px; display: none;" value="" type="text">
-                        </div>
-                    </div>
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
                 </div>
-                <div class="controls">
-                <button class="btn btn-primary">
-                Edit Question
-            {% endif %}
-            </button>
+                <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
             </div>
+            <div class="controls">
+            <button class="btn btn-primary">
+            Edit Answer
+            </form>
+        {% else %}
+            <h3>Please edit your question.</h3>
+            <form class="ask-form" method="post" aciton="/edit/qe-{{ qid }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <div class="control-group">
+                <label class="control-label" for="question">Question</label>
+
+                <div class="controls">
+                    <input class="question input-x-large span10" id="question" name="question"
+                           style="margin-left:25px;" value="{{ question['title'] }}" type="text">
+                </div>
+            </div>
+            <div class="wmd-panel">
+                <div id="wmd-button-bar"></div>
+                <div class="control-group">
+                    <label class="control-label" for="description"></label>
+
+                    <div class="controls">
+                        <textarea class="wmd-input" id="wmd-input" name="description"
+                                  placeholder="Please describe your question here."
+                                  stlyle="margin-left:5px;">{{ question['content']['description'] }}</textarea>
+                    </div>
+                </div>
+                <div id="insertImageDialog" title="&nbsp;Insert Image or File">
+                    <h6>From the web</h6>
+
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
+                </div>
+                <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+                <div style="clear:both;"></div>
+                <div class="control-group">
+                    <label class="control-label" for="tags">Tags</label>
+
+                    <div class="controls">
+
+                        <ul class="token-input-list-kunjika">
+                            <li class="token-input-input-token-kunjika"><input id="token-input-kunjika-tags"
+                                                                               style="outline: medium none; width: 30px;"
+                                                                               autocomplete="off"
+                                                                               autocapitalize="off" type="text">
+                                <tester style="position: absolute; top: -9999px; left: -9999px; width: auto; font-size: 14px; font-family: &quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif; font-weight: 400; letter-spacing: 0px; white-space:
+                                    nowrap;"></tester>
+                            </li>
+                        </ul>
+                        <input class="input-xlarge span10" id="kunjika-tags" name="tags"
+                               placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags"
+                               style="margin-left: 45px; display: none;" value="" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+            <button class="btn btn-primary">
+            Edit Question
+        {% endif %}
+        </button>
+        </div>
         </div>
         </form>
     </div>
     <div id="sidebar">
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ qcount }}</div>
-                <p>questions</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ acount }}</div>
-                <p>answers</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ ucount }}</div>
-                <p>users</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ tcount }}</div>
-                <p>tags</p>
-            </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular-tags</h4>
-                {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
-                {% endfor %}
-            </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ qcount }}</div>
+            <p>questions</p>
+        </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ acount }}</div>
+            <p>answers</p>
+        </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ ucount }}</div>
+            <p>users</p>
+        </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ tcount }}</div>
+            <p>tags</p>
+        </div>
+        <div id="popular-tags" class="module">
+            <h4 id="h-popular-tags">Popular-tags</h4>
+            {% for tag in tag_list %}
+                <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
+                   title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
+                <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
+                        class="item-multiplier-count">{{ tag['count'] }}</span></span>
+                <br/>
+            {% endfor %}
+        </div>
     </div>
 
     <!--script type="text/javascript">
@@ -197,4 +201,89 @@
             $("#token-input-kunjika-tags").tokenInput("/get_tags/{{ question[qid] }}");
         });
     </script-->
+
+        <script type="text/javascript">
+        (function () {
+            if ($('#wmd-input').length > 0) {
+                var converter = new Markdown.getSanitizingConverter();
+                var help = function () {
+                    window.open('http://stackoverflow.com/editing-help');
+                }
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "prettify"
+                });
+
+                var editor = new Markdown.Editor(converter, null, { handler: help });
+
+                var $dialog = $('#insertImageDialog').dialog({
+                                                                 autoOpen: false,
+                                                                 closeOnEscape: false,
+                                                                 open: function (event, ui) {
+                                                                     $(".ui-dialog-titlebar-close").hide();
+                                                                 }
+                                                             });
+                var $loader = $('span.loading-small', $dialog);
+                var $url = $('input[type=text]', $dialog);
+                var $file = $('input[type=file]', $dialog);
+
+                editor.hooks.set('insertImageDialog', function (callback) {
+
+                    // dialog functions
+                    var dialogInsertClick = function () {
+                        callback($url.val().length > 0 ? $url.val() : null);
+                        dialogClose();
+                    };
+
+                    var dialogCancelClick = function () {
+                        dialogClose();
+                        callback(null);
+                    };
+
+                    var dialogClose = function () {
+                        // clean up inputs
+                        $url.val('');
+                        $file.val('');
+                        $dialog.dialog('close');
+                    };
+
+                    // set up dialog button handlers
+                    $dialog.dialog('option', 'buttons', {
+                        'Insert': dialogInsertClick,
+                        'Cancel': dialogCancelClick
+                    });
+
+                    var uploadStart = function () {
+                        $loader.show();
+                    };
+
+                    var uploadComplete = function (response) {
+                        $loader.hide();
+                        if (response.success) {
+                            callback(response.imagePath);
+                            dialogClose();
+                        } else {
+                            alert(response.message);
+                            $file.val('');
+                        }
+                        editor.refreshPreview();
+                    };
+
+                    // upload
+                    $file.unbind('change').ajaxfileupload({
+                                                              action: $file.attr('data-action'),
+                                                              onStart: uploadStart,
+                                                              onComplete: uploadComplete
+                                                          });
+
+                    // open the dialog
+                    $dialog.dialog('open');
+
+                    return true; // tell the editor that we'll take care of getting the image url
+                });
+                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.run();
+            }
+        })();
+    </script>
 {% endblock %}

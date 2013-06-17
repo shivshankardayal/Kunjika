@@ -7,7 +7,6 @@ TODO
 3. OpenID integration.
 4. More fields for user activity and profile.
 6. Following questions, tags and users.
-7. Sitemap generation
 
 DONE
 ====
@@ -35,20 +34,21 @@ DONE
 13. Search on question title/contents using Google's custom search. Note that
     crawler crawls depending upon activity so new stuff wont reflect immediately.
     Currently using libreprogramming's code.
-14. Simple tags display.
+14. Simple tags display(allow editing excerpt).
 15. Users page.
 16. Simple count of questions, answers, tags and users.
 17. Popular tags display on main page in side bar.
 16. Code attachments also .zip source attachments up to 2MB.
-17. Atom feed for questions.
+17. Atom feed for questions(update proper time).
 
 Postponed for later
 ===================
-1.  Search using Sphinx and Google custom search integration.
-2.  Tag wiki implementation.
-3.  Similar questions.
-4.  Extra cloning of stackoverflow.
-5.  Feed for users and questions.
+1. Search using Sphinx and Google custom search integration.
+2. Tag wiki implementation.
+3. Similar questions.
+4. Extra cloning of stackoverflow.
+5. Feed for users and questions.
+6. Sitemap generation
 
 Removed features
 ================
