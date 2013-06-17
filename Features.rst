@@ -38,8 +38,8 @@ DONE
 15. Users page.
 16. Simple count of questions, answers, tags and users.
 17. Popular tags display on main page in side bar.
-16. Code attachments also .zip source attachments up to 2MB.
-17. Atom feed for questions(update proper time).
+18. Code attachments also .zip source attachments up to 2MB.
+19. Atom feed for questions(update proper time).
 
 Postponed for later
 ===================
