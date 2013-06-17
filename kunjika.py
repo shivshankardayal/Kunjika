@@ -263,8 +263,7 @@ def users(uid=None, uname=None):
         return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
                                lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
                                upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
-    return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
-                           lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True,
+    return render_template('users.html', title=user['fname'], lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 '''@kunjika.route('/unanswered/<uid>')
@@ -848,13 +847,14 @@ def show_users(page):
         abort(404)
     pagination = utility.Pagination(page, USERS_PER_PAGE, count)
     no_of_users = len(users)
-    if g.user.id in session:
+    if g.user is not None and g.user.is_authenticated():
         logged_in = True
         return render_template('users.html', title='Users', gravatar32=gravatar32, logged_in=logged_in, upage=True,
                                pagination=pagination, users=users, no_of_users=no_of_users,
-                               qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                               qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
+                               fname=g.user.name, user_id=g.user.id)
     return render_template('users.html', title='Users', gravatar32=gravatar32, upage=True,
-                           pagination=pagination, users=users, no_of_users=no_of_users,
+                           pagination=pagination, users=users, no_of_users=no_of_users, fname=g.user.name,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
@@ -879,10 +879,11 @@ def show_tags(page):
         abort(404)
     pagination = utility.Pagination(page, TAGS_PER_PAGE, count)
     no_of_tags = len(tags)
-    if g.user.id in session:
+    if g.user is not None and g.user.is_authenticated():
         logged_in = True
         return render_template('tags.html', title='Tags', logged_in=logged_in, tpage=True, pagination=pagination,
-                               tags=tags, no_of_users=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                               tags=tags, no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount,
+                               fname=g.user.name, user_id=g.user.id, acount=acount, tag_list=tag_list)
     return render_template('tags.html', title='Tags', tpage=True, pagination=pagination, tags=tags,
                            no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 

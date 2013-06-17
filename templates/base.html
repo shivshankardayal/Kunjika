@@ -79,7 +79,11 @@
                                 {% else %}
                                     <li><a href="/questions"><i class="icon-question"></i> Questions</a></li>
                                 {% endif %}
+                                {% if tpage is defined %}
+                                <li class="active"><a href="/tags"><i class="icon-tags"></i> Tags</a></li>
+                                {% else %}
                                 <li><a href="/tags"><i class="icon-tags"></i> Tags</a></li>
+                                {% endif %}
                                 {% if upage is defined %}
                                     <li class="active"><a href="/users"><i class="icon-user"></i> Users</a></li>
                                 {% else %}
