@@ -1,184 +1,213 @@
 {% extends "base.html" %}
-{% block title %}{{title}} - Kunjika{% endblock %}
+{% block title %}{{ title }} - Kunjika{% endblock %}
 {% block css_bootstrap %}
-{{ super() }}
-{# TODO: probably remove this and let the user set it manually? #}
-<style>
-  body {
-  padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-  }
-</style>
+    {{ super() }}
+    {# TODO: probably remove this and let the user set it manually? #}
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
 {% endblock %}
-{% block navbar_wrapper %}
-<div class="container">
-  {% block navbar_container %}
-  {% block navbar_links %}
-  {% endblock %}
-  <div class="" id="loginModal">
-    <div class="modal-header">
-      <h3>Have an Account?</h3>
-    </div>
-    <div class="modal-body">
-      <div class="well">
-        <ul class="nav nav-tabs">
-          <li>
-            <a href="#login" data-toggle="tab">Login</a>
-          </li>
-          <li class="active">
-            <a href="#create" data-toggle="tab">Create Account</a>
-          </li>
-        </ul>
-        <div class="tab-pane active in" id="create">
-          <form class="form-horizontal" id="tab" method="post" action="/questions">
-            <fieldset>
-              <div id="legend">
-                <legend class="">
-                  Register
-                </legend>
-              </div>
-              {% from "macros.html" import render_field %}
-              {{ form.csrf_token }}
-              {{ render_field(form.email1, class="input-xlarge") }}
-              <div class="control-group">
-                <div class="controls">
-                  <input type="button" name="check_acailability" class="btn btn-info" id="check_availability" value="Check Availability">
-                  <div id="availability_result"></div>
+{% block container %}
+    <div class="container">
+        <div class="" id="loginModal">
+            <div class="modal-header">
+                <h3>Have an Account?</h3>
+            </div>
+            <div class="modal-body">
+                <div class="well">
+                    <ul class="nav nav-tabs">
+                        <li>
+                            <a href="#login" data-toggle="tab">Login</a>
+                        </li>
+                        <li class="active">
+                            <a href="#create" data-toggle="tab">Create Account</a>
+                        </li>
+                        <li class="active">
+                            <a href="#openid" data-toggle="tab">OpenID Login</a>
+                        </li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content">
+                    <div class="tab-pane active in" id="create">
+                        <form class="form-horizontal" id="tab" method="post" action="/questions">
+                            <fieldset>
+                                <div id="legend">
+                                    <legend class="">
+                                        Register
+                                    </legend>
+                                </div>
+                                {% from "macros.html" import render_field %}
+                                {{ form.csrf_token }}
+                                {{ render_field(form.email1, class="input-xlarge") }}
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <input type="button" name="check_acailability" class="btn btn-info"
+                                               id="check_availability" value="Check Availability">
+
+                                        <div id="availability_result"></div>
+                                    </div>
+                                </div>
+                                {{ render_field(form.password, class="input-xlarge") }}
+                                {{ render_field(form.confirm, class="input-xlarge") }}
+                                {{ render_field(form.fname, class="input-xlarge") }}
+                                {{ render_field(form.lname, class="input-xlarge") }}
+                                <label class="control-label">ReCaptcha</label>
+
+                                <div class="control-group">
+                                    <div class="controls">
+                                        {{ form.recaptcha }}
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <button class="btn btn-primary">
+                                            Create Account
+                                        </button>
+                                    </div>
+                                </div>
+                                <p>
+                                    <br/>
+                                    By registering, you agree to the <a href="/legal/privacy-policy">privacy
+                                    policy</a> and <a href="/legal/terms-of-service">terms of service</a>.
+                                </p>
+                            </fieldset>
+                        </form>
+                    </div>
+                        <div class="tab-pane fade" id="login">
+                            <form class="form-horizontal" action='/login' method="post">
+                                <fieldset>
+                                    <div id="legend">
+                                        <legend class="">
+                                            Login
+                                        </legend>
+                                    </div>
+                                    {% from "macros.html" import render_field %}
+                                    {{ loginForm.csrf_token }}
+                                    {{ render_field(loginForm.email, class="input-xlarge") }}
+                                    {{ render_field(loginForm.password, class="input-xlarge") }}
+                                    <div class="control-group">
+                                        <!-- Button -->
+                                        <div class="controls">
+                                            <button class="btn btn-success">
+                                                Login
+                                            </button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="openid">
+                            <form class="form-horizontal" id="tab" method="post" action="/openid_login">
+                                <fieldset>
+                                    <div id="legend">
+                                        <legend class="">
+                                            OpenID Login
+                                        </legend>
+                                    </div>
+                                    {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+                                    {% from "macros.html" import render_field %}
+                                    {{ openidForm.csrf_token }}
+                                    {{ render_field(openidForm.openid, class="input-xlarge") }}
+                                    {{ render_field(openidForm.googleid, class="input-xlarge") }}
+                                    {{ render_field(openidForm.yahooid, class="input-xlarge") }}
+                                    <div class="control-group">
+                                        <!-- Button -->
+                                        <div class="controls">
+                                            <button class="btn btn-success">
+                                                Login
+                                            </button>
+                                            <input type=hidden name=next value="{{ next }}">
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              {{ render_field(form.password, class="input-xlarge") }}
-              {{ render_field(form.confirm, class="input-xlarge") }}
-              {{ render_field(form.fname, class="input-xlarge") }}
-              {{ render_field(form.lname, class="input-xlarge") }}
-              <label class="control-label">ReCaptcha</label>
-              <div class="control-group">
-                <div class="controls">
-                  {{ form.recaptcha }}
-                </div>
-              </div>
-              <div class="control-group">
-                <div class="controls">
-                  <button class="btn btn-primary">
-                    Create Account
-                  </button>
-                </div>
-              </div>
-              <p>
-                <br/>
-                By registering, you agree to the <a href="/legal/privacy-policy">privacy policy</a> and <a href="/legal/terms-of-service">terms of service</a>.
-              </p>
-            </fieldset>
-          </form>
+            </div>
         </div>
-        <div id="myTabContent" class="tab-content">
-          <div class="tab-pane fade" id="login">
-            <form class="form-horizontal" action='/login' method="post">
-              <fieldset>
-                <div id="legend">
-                  <legend class="">
-                    Login
-                  </legend>
-                </div>
-                {% from "macros.html" import render_field %}
-                {{ loginForm.csrf_token }}
-                {{ render_field(loginForm.email, class="input-xlarge") }}
-                {{ render_field(loginForm.password, class="input-xlarge") }}
-                <div class="control-group">
-                  <!-- Button -->
-                  <div class="controls">
-                    <button class="btn btn-success">
-                      Login
-                    </button>
-                  </div>
-                </div>
-              </fieldset>
-            </form>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-  {% endblock %}
-</div>
-<script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
-<script>
-  $(document).ready(function() {
-  $('#tab').validate({
-  debug : true,
-  rules : {
-  username : {
-  minlength : 4,
-  maxlength : 16,
-  required : true
-  },
-  email1 : {
-  required : true,
-  email : true,
-  minlength : 5,
-  maxlength : 128
-  },
-  url : {
-  required : false,
-  url : true,
-  minlength : 5,
-  maxlength : 64
-  },
-  password : {
-  required : true,
-  minlength : 8,
-  maxlength : 32,
-  equalTo: '#confirm'
-  },
-  confirm : {
-  required : true,
-  minlength : 8,
-  maxlength : 32
-  },
-  fname : {
-  minlength : 2,
-  maxlength : 32,
-  required: true
-  },
-  lname : {
-  minlength : 2,
-  maxlength : 32,
-  required:true
-  }
-  },
-  highlight : function(element) {
-  $(element).closest('.control-group').removeClass('success').addClass('error');
-  },
-  success : function(element) {
-  element.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
-  },
-  submitHandler : function(form) {
-  form.submit();
-  }
-  });
+    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#tab').validate({
+                debug: true,
+                rules: {
+                    username: {
+                        minlength: 4,
+                        maxlength: 16,
+                        required: true
+                    },
+                    email1: {
+                        required: true,
+                        email: true,
+                        minlength: 5,
+                        maxlength: 128
+                    },
+                    url: {
+                        required: false,
+                        url: true,
+                        minlength: 5,
+                        maxlength: 64
+                    },
+                    password: {
+                        required: true,
+                        minlength: 8,
+                        maxlength: 32,
+                        equalTo: '#confirm'
+                    },
+                    confirm: {
+                        required: true,
+                        minlength: 8,
+                        maxlength: 32
+                    },
+                    fname: {
+                        minlength: 2,
+                        maxlength: 32,
+                        required: true
+                    },
+                    lname: {
+                        minlength: 2,
+                        maxlength: 32,
+                        required: true
+                    }
+                },
+                highlight: function (element) {
+                    $(element).closest('.control-group').removeClass('success').addClass('error');
+                },
+                success: function (element) {
+                    element.addClass('valid').closest('.control-group').removeClass('error').addClass('success');
+                },
+                submitHandler: function (form) {
+                    form.submit();
+                }
+            });
 
-  $('#check_availability').click(function() {
-  var checking_html = 'Checking...';
-  $('#availability_result').html(checking_html);
-  check_availability();
-  });
-  });
-  function check_availability() {
+            $('#check_availability').click(function () {
+                var checking_html = 'Checking...';
+                $('#availability_result').html(checking_html);
+                check_availability();
+            });
+        });
+        function check_availability() {
 
-  //get the username
-  var email = $('#email1').val();
+            //get the username
+            var email = $('#email1').val();
 
-  //use ajax to run the check
-  $.post("/check_email", {
-  email : email
-  }, function(result) {
-  //if the result is 1
-  if (result == "1") {
-  //show that the username is available
-  $('#availability_result').html('<p style="color:#040"><br/>' + email + ' is available as username.</p>');
-  } else {
-  //show that the username is NOT available
-  $('#availability_result').html('<p style="color:#770"><br/>' + email + ' is already registered.</p>');
-  }
-  });
-  }
-</script>
+            //use ajax to run the check
+            $.post("/check_email", {
+                email: email
+            }, function (result) {
+                //if the result is 1
+                if (result == "1") {
+                    //show that the username is available
+                    $('#availability_result').html('<p style="color:#040"><br/>' + email + ' is available as username.</p>');
+                } else {
+                    //show that the username is NOT available
+                    $('#availability_result').html('<p style="color:#770"><br/>' + email + ' is already registered.</p>');
+                }
+            });
+        }
+    </script>
 {% endblock %}

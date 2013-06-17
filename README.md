@@ -1,6 +1,8 @@
 Kunjika
 =======
 
+"It is software made up of bugs."
+
 Stackoverflow clone. I am using Flask framework so obviously Python as well.
 Couchbase for database and Memcahced funcitonality.
 
@@ -17,3 +19,5 @@ I never learned SQL and the schema thing is a pain for me. So I chose Couchbase
 which provided nice replication, auto-sharding and memcached functionality apart
 from document based database. So one query for question, one for user and one
 for tag and it is done.
+
+It is almost done. Few features are remaining then I will release the alpha.

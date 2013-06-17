@@ -19,7 +19,7 @@
     <div id="mainbar" class="mainbar">
     {% if pagination is not defined %}
         <div class="userheader">
-            <h3>{{ fname }} {{ lname }}</h3>
+            <h3>{{ name }}</h3>
 
             <div class="fr">
                 {% if logged_in is defined %}
@@ -68,12 +68,12 @@
                             <td>
                                 <div class="user-info user-hover">
                                     <div class="user-gravatar32">
-                                        <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['fname'] }}">
+                                        <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name'] }}">
                                             <img src="{{ users[j + i]['email'] | gravatar(size=48) }}" />
                                         </a>
                                     </div>
                                     <div class="user-details">
-                                        <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['fname'] }}">{{ users[j + i]['fname'] }}</a><br>
+                                        <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name'] }}">{{ users[j + i]['name'] }}</a><br>
                                         <span class="user-location">{{ users[j + i]['location'] }}</span><br>
                                         <span class="reputation-score" dir="ltr">{{ users[j + i]['rep'] }}</span>
                                     </div>

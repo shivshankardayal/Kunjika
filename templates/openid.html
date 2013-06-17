@@ -19,17 +19,88 @@
             <div class="well">
                 <ul class="nav nav-tabs">
                     <li class="active">
-                        <a href="#login" data-toggle="tab">Login</a>
+                        <a href="#openid" data-toggle="tab">OpenID Login</a>
                     </li>
                     <li>
                         <a href="#create" data-toggle="tab">Create Account</a>
                     </li>
                     <li>
-                        <a href="#openid" data-toggle="tab">OpenID Login</a>
+                        <a href="#login" data-toggle="tab">Login</a>
                     </li>
                 </ul>
                 <div id="myTabContent" class="tab-content">
-                    <div class="tab-pane active in" id="login">
+                <div class="tab-pane active in" id="openid">
+                    <form class="form-horizontal" id="tab" method="post" action="/openid_login">
+                        <fieldset>
+                            <div id="legend">
+                                <legend class="">
+                                    OpenID Login
+                                </legend>
+                            </div>
+                            {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+                            {% from "macros.html" import render_field %}
+                            {{ openidForm.csrf_token }}
+                            {{ render_field(openidForm.openid, class="input-xlarge") }}
+                            {{ render_field(openidForm.googleid, class="input-xlarge") }}
+                            {{ render_field(openidForm.yahooid, class="input-xlarge") }}
+                            <div class="control-group">
+                                <!-- Button -->
+                                <div class="controls">
+                                    <button class="btn btn-success">
+                                        Login
+                                    </button>
+                                    <input type=hidden name=next value="{{ next }}">
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="create">
+                    <form class="form-horizontal" id="tab" method="post" action="/register">
+                        <fieldset>
+                            <div id="legend">
+                                <legend class="">
+                                    Register
+                                </legend>
+                            </div>
+                            {% from "macros.html" import render_field %}
+                            {{ form.csrf_token }}
+                            {{ render_field(form.email1, class="input-xlarge") }}
+                            <div class="control-group">
+                                <div class="controls">
+                                    <input type="button" name="check_acailability" class="btn btn-info"
+                                           id="check_availability" value="Check Availability">
+
+                                    <div id="availability_result"></div>
+                                </div>
+                            </div>
+                            {{ render_field(form.password, class="input-xlarge") }}
+                            {{ render_field(form.confirm, class="input-xlarge") }}
+                            {{ render_field(form.fname, class="input-xlarge") }}
+                            {{ render_field(form.lname, class="input-xlarge") }}
+                            <label class="control-label">ReCaptcha</label>
+
+                            <div class="control-group">
+                                <div class="controls">
+                                    {{ form.recaptcha }}
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <button class="btn btn-primary">
+                                        Create Account
+                                    </button>
+                                </div>
+                            </div>
+                            <p>
+                                <br/>
+                                By registering, you agree to the <a href="/legal/privacy-policy">privacy policy</a>
+                                and <a href="/legal/terms-of-service">terms of service</a>.
+                            </p>
+                        </fieldset>
+                    </form>
+                </div>
+                    <div class="tab-pane fade" id="login">
                         <form class="form-horizontal" action='/login' method="post">
                             <fieldset>
                                 <div id="legend">
@@ -47,77 +118,6 @@
                                         <button class="btn btn-success">
                                             Login
                                         </button>
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </form>
-                    </div>
-                    <div class="tab-pane fade" id="create">
-                        <form class="form-horizontal" id="tab" method="post" action="/register">
-                            <fieldset>
-                                <div id="legend">
-                                    <legend class="">
-                                        Register
-                                    </legend>
-                                </div>
-                                {% from "macros.html" import render_field %}
-                                {{ form.csrf_token }}
-                                {{ render_field(form.email1, class="input-xlarge") }}
-                                <div class="control-group">
-                                    <div class="controls">
-                                        <input type="button" name="check_acailability" class="btn btn-info"
-                                               id="check_availability" value="Check Availability">
-
-                                        <div id="availability_result"></div>
-                                    </div>
-                                </div>
-                                {{ render_field(form.password, class="input-xlarge") }}
-                                {{ render_field(form.confirm, class="input-xlarge") }}
-                                {{ render_field(form.fname, class="input-xlarge") }}
-                                {{ render_field(form.lname, class="input-xlarge") }}
-                                <label class="control-label">ReCaptcha</label>
-
-                                <div class="control-group">
-                                    <div class="controls">
-                                        {{ form.recaptcha }}
-                                    </div>
-                                </div>
-                                <div class="control-group">
-                                    <div class="controls">
-                                        <button class="btn btn-primary">
-                                            Create Account
-                                        </button>
-                                    </div>
-                                </div>
-                                <p>
-                                    <br/>
-                                    By registering, you agree to the <a href="/legal/privacy-policy">privacy policy</a>
-                                    and <a href="/legal/terms-of-service">terms of service</a>.
-                                </p>
-                            </fieldset>
-                        </form>
-                    </div>
-                    <div class="tab-pane fade" id="openid">
-                        <form class="form-horizontal" id="tab" method="post" action="/openid_login">
-                            <fieldset>
-                                <div id="legend">
-                                    <legend class="">
-                                        OpenID Login
-                                    </legend>
-                                </div>
-                                {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
-                                {% from "macros.html" import render_field %}
-                                {{ openidForm.csrf_token }}
-                                {{ render_field(openidForm.openid, class="input-xlarge") }}
-                                {{ render_field(openidForm.googleid, class="input-xlarge") }}
-                                {{ render_field(openidForm.yahooid, class="input-xlarge") }}
-                                <div class="control-group">
-                                    <!-- Button -->
-                                    <div class="controls">
-                                        <button class="btn btn-success">
-                                            Login
-                                        </button>
-                                        <input type=hidden name=next value="{{ next }}">
                                     </div>
                                 </div>
                             </fieldset>

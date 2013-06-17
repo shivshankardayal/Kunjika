@@ -146,7 +146,7 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
         i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
 
         user = kunjika.cb.get(i['content']['op']).value
-        i['opname'] = user['fname']
+        i['opname'] = user['name']
 
     return question_list
 
@@ -194,7 +194,7 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
         i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
 
         user = kunjika.cb.get(i['content']['op']).value
-        i['opname'] = user['fname']
+        i['opname'] = user['name']
 
     return question_list
 

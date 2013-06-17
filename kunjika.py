@@ -24,6 +24,8 @@ import jinja2
 from flask.ext.mail import Mail, Message
 from urlparse import urljoin
 from werkzeug.contrib.atom import AtomFeed
+from flask_openid import OpenID
+from config import OPENID_PROVIDERS
 
 UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
@@ -42,6 +44,8 @@ QUESTIONS_PER_PAGE = kunjika.config['QUESTIONS_PER_PAGE']
 TAGS_PER_PAGE = kunjika.config['TAGS_PER_PAGE']
 USERS_PER_PAGE = kunjika.config['USERS_PER_PAGE']
 
+oid = OpenID(kunjika, '/tmp')
+
 mail = Mail(kunjika)
 admin = kunjika.config['ADMIN_EMAIL']
 
@@ -51,6 +55,7 @@ lm.init_app(kunjika)
 cb = Couchbase.connect("default")
 qb = Couchbase.connect("questions")
 tb = Couchbase.connect("tags")
+
 
 #Initialize count at first run. Later it is useless
 try:
@@ -90,16 +95,16 @@ lm.anonymous_user = Anonymous
 
 kunjika.jinja_env.globals['url_for_other_page'] = utility.url_for_other_page
 
-
 @kunjika.before_request
 def before_request():
     g.user = current_user
-
+    if 'openid' in session:
+        g.user = utility.filter_by(openid=session['openid']).first()
 
 def get_user(uid):
     try:
         user_from_db = cb.get(str(uid)).value
-        return User(user_from_db['fname'], user_from_db['id'])
+        return User(user_from_db['name'], user_from_db['id'])
     except NotFoundError:
         return None
 
@@ -110,7 +115,7 @@ def load_user(uid):
     user = get_user(int(uid))
     return user
 
-@kunjika.route('/', methods=['GET', 'POST'])
+@kunjika.route('/', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>', methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>/<url>', methods=['GET', 'POST'])
@@ -145,7 +150,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                                    pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         elif g.user is not None and g.user.is_authenticated():
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   fname=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
+                                   name=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
                                    ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         else:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
@@ -162,7 +167,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                                    pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         elif g.user is not None and g.user.is_authenticated():
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   fname=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
+                                   name=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
                                    ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         else:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
@@ -213,7 +218,7 @@ def questions(tag=None, page=None, qid=None, url=None):
 
             qb.replace(str(questions_dict['qid']), questions_dict)
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
-                                   form=answerForm, fname=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
+                                   form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
                                    qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         else:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
@@ -260,10 +265,10 @@ def users(uid=None, uname=None):
                            force_lower=False)
     if uid in session:
         logged_in = True
-        return render_template('users.html', title=user['fname'], user_id=user['id'], fname=user['fname'],
+        return render_template('users.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'],
                                lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
                                upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
-    return render_template('users.html', title=user['fname'], lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True,
+    return render_template('users.html', title=user['name'], lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 '''@kunjika.route('/unanswered/<uid>')
@@ -331,28 +336,60 @@ def ask():
 
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
 
-        return render_template('ask.html', title='Ask', form=questionForm, apage=True, fname=g.user.name,
+        return render_template('ask.html', title='Ask', form=questionForm, apage=True, name=g.user.name,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
 
+@oid.after_login
+def create_or_login(resp):
+    session['openid'] = resp.identity_url
+    print "hello" + resp.identity_url
+    print resp.email
+    print resp.fullname
+    print resp.nickname
+    user = utility.filter_by(openid=resp.identity_url)
+    if user is not None:
+        flash(u'Successfully signed in')
+        g.user = user
+        print oid.get_next_url()
+        return redirect(oid.get_next_url())
+    print oid.get_next_url()
+    return redirect(url_for('create_profile', next=oid.get_next_url(),
+                            name=resp.fullname or resp.nickname,
+                            email=resp.email))
+
+@kunjika.route('/openid_login', methods=['GET', 'POST'])
+@oid.loginhandler
+def openid_login():
+    registrationForm = RegistrationForm(request.form)
+    loginForm = LoginForm(request.form)
+    openidForm = OpenIDForm(request.form)
+
+    print g.user
+
+    if g.user is not AnonymousUser and g.user.is_authenticated():
+        return redirect(oid.get_next_url())
+    if openidForm.validate_on_submit() and request.method == 'POST':
+        openid = request.form.get('openid')
+        googleid = request.form.get('googleid')
+        yahooid = request.form.get('yahooid')
+        print openid
+        print yahooid
+        print googleid
+        if openid:
+            return oid.try_login(openid, ask_for=['email', 'fullname', 'nickname'])
+        if yahooid:
+            return oid.try_login('https://me.yahoo.com', ask_for=['email', 'fullname', 'nickname'])
+        if googleid:
+            return oid.try_login('https://www.google.com/accounts/o8/id', ask_for=['email', 'fullname', 'nickname'])
+    return render_template('openid.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+                           lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
 
 @kunjika.route('/login', methods=['GET', 'POST'])
 def login():
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
-    acount = json.loads(acount)
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
     registrationForm = RegistrationForm(request.form)
     loginForm = LoginForm(request.form)
+    openidForm = OpenIDForm(request.form)
 
     if loginForm.validate_on_submit() and request.method == 'POST':
         try:
@@ -366,7 +403,7 @@ def login():
                 session['logged_in'] = True
                 if 'role' in document:
                     session['admin'] = True
-                user = User(document['fname'], document['id'])
+                user = User(document['name'], document['id'])
                 try:
                     login_user(user, remember=True)
                     #print "hello"
@@ -376,43 +413,28 @@ def login():
                     return make_response("cant login")
 
             else:
-                render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                                providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                                qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+                                lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
 
         except:
-            return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                                   providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+            return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
+                                   title='Sign In', lpage=True,
+                                   next=oid.get_next_url(), error=oid.fetch_error())
 
 
     else:
-        render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                        providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+        render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+                        lpage=True, next=oid.get_next_url(),error=oid.fetch_error())
 
-    return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
-                           providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+    return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+                           lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
 
 
 @kunjika.route('/register', methods=['POST'])
 def register():
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
-    acount = json.loads(acount)
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
     loginForm = LoginForm(request.form)
     registrationForm = RegistrationForm(request.form)
+    openidForm = OpenIDForm(request.form)
     document = None
 
     if registrationForm.validate_on_submit() and request.method == 'POST':
@@ -434,7 +456,7 @@ def register():
             did = cb.get('count').value
             data['id'] = did
             cb.add(str(did), data)
-            user = User(data['fname'], data['id'])
+            user = User(data['name'], data['id'])
             login_user(user, remember=True)
             g.user = user
 
@@ -457,7 +479,7 @@ def register():
             data['id'] = did
             cb.add(str(did), data)
 
-            user = User(data['fname'], did)
+            user = User(data['name'], did)
             try:
                 login_user(user, remember=True)
                 g.user = user
@@ -473,9 +495,9 @@ def register():
             except:
                 return make_response("cant login")
 
-    return render_template('register.html', form=registrationForm, loginForm=loginForm,
-                           title='Register', providers=kunjika.config['OPENID_PROVIDERS'], lpage=True,
-                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+    return render_template('register.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
+                           title='Register', lpage=True,
+                           next=oid.get_next_url(), error=oid.fetch_error())
 
 
 @kunjika.route('/check_email', methods=['POST'])
@@ -811,7 +833,7 @@ def unanswered(page):
         i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
 
         user = cb.get(i['content']['op']).value
-        i['opname'] = user['fname']
+        i['opname'] = user['name']
 
     if not questions_list and page != 1:
         abort(404)
@@ -821,7 +843,7 @@ def unanswered(page):
                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     elif g.user is not None and g.user.is_authenticated():
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
-                               fname=g.user.name, user_id=g.user.id, pagination=pagination,
+                               name=g.user.name, user_id=g.user.id, pagination=pagination,
                                qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     else:
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
@@ -854,9 +876,9 @@ def show_users(page):
         return render_template('users.html', title='Users', gravatar32=gravatar32, logged_in=logged_in, upage=True,
                                pagination=pagination, users=users, no_of_users=no_of_users,
                                qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                               fname=g.user.name, user_id=g.user.id)
+                               name=g.user.name, user_id=g.user.id)
     return render_template('users.html', title='Users', gravatar32=gravatar32, upage=True,
-                           pagination=pagination, users=users, no_of_users=no_of_users, fname=g.user.name,
+                           pagination=pagination, users=users, no_of_users=no_of_users, name=g.user.name,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
@@ -885,7 +907,7 @@ def show_tags(page):
         logged_in = True
         return render_template('tags.html', title='Tags', logged_in=logged_in, tpage=True, pagination=pagination,
                                tags=tags, no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount,
-                               fname=g.user.name, user_id=g.user.id, acount=acount, tag_list=tag_list)
+                               name=g.user.name, user_id=g.user.id, acount=acount, tag_list=tag_list)
     return render_template('tags.html', title='Tags', tpage=True, pagination=pagination, tags=tags,
                            no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
@@ -908,7 +930,7 @@ def recent_feed():
         feed.add(question['title'], unicode(question['content']['description']),
                  content_type='html',
                  author='http://localhost:5000/users/' + unicode(question['content']['op']) + question['opname'],
-                 url=make_external('http://localhost:5000/question' + unicode(question['qid']) + question['content']['url']),
+                 url=make_external('http://localhost:5000/questions' + '/' + unicode(question['qid']) + "/" + question['content']['url']),
                  updated=datetime.datetime(2013, 05, 17))
     return feed.get_response()
 

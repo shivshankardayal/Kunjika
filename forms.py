@@ -21,6 +21,11 @@ class LoginForm(Form):
         validators.Length(min=8, max=32)
     ])
 
+class OpenIDForm(Form):
+    openid = TextField('OpenID', [validators.Length(min=2, max=64), validators.Optional()])
+    googleid = TextField('GoogleID', [validators.Length(min=2, max=64), validators.Optional()])
+    yahooid = TextField('YahooID', [validators.Length(min=2, max=64), validators.Optional()])
+
 class QuestionForm(Form):
     question = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
     description = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])

@@ -10,7 +10,7 @@ def get_question_by_id(qid, question):
     question['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(question['content']['ts']))
     user = cb.get(question['content']['op']).value
     question['email'] = user['email']
-    question['opname'] = user['fname']
+    question['opname'] = user['name']
 
     if'comments' in question:
         for i in question['comments']:
@@ -19,7 +19,7 @@ def get_question_by_id(qid, question):
         for i in question['answers']:
             user = cb.get(str(i['poster'])).value
             #user = json.loads(user)
-            i['opname'] = user['fname']
+            i['opname'] = user['name']
             i['email'] = user['email']
             i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
             if 'comments' in i:
@@ -29,7 +29,7 @@ def get_question_by_id(qid, question):
     return question
 
 def get_questions():
-    questions = urllib2.urlopen("http://localhost:8092/questions/_design/dev_dev/_view/get_questions?descending=true&limit=20").read()
+    questions = urllib2.urlopen("http://localhost:8092/questions/_design/dev_dev/_view/get_questions?descending=true&limit=20&stale=false").read()
     questions = json.loads(questions)
     #print questions
     question_list = []
@@ -40,7 +40,7 @@ def get_questions():
         i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
 
         user = cb.get(i['content']['op']).value
-        i['opname'] = user['fname']
+        i['opname'] = user['name']
 
     return question_list
 

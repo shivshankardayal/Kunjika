@@ -3,9 +3,10 @@ Features
 TODO
 ====
 1. Flagging inappropriate comments.
-2. OpenID integration.
+2. OpenID integration.(half done)
 3. More fields for user activity and profile.
-4. Following questions, tags and users.
+4. Banning/unbanning users.
+5. Following questions.
 
 DONE
 ====
@@ -38,15 +39,17 @@ DONE
 17. Popular tags display on main page in side bar.
 18. Code attachments also .zip source attachments up to 2MB.
 19. Atom feed for questions(update proper time).
+20. Google custom search integration.
 
 Postponed for later
 ===================
-1. Search using Sphinx and Google custom search integration.
+1. Search using Sphinx.
 2. Tag wiki implementation.
 3. Similar questions.
 4. Extra cloning of stackoverflow.
 5. Feed for users and questions.
 6. Sitemap generation
+7. Following tags and users.
 
 Removed features
 ================
