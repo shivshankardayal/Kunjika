@@ -173,7 +173,7 @@
 
 .post-tag {
     background-color: #f7f7f7;
-    border-radius: 15px 15px 15px 15px;
+    /*border-radius: 5px;*/
     color: #08c !important;
     display: inline-block;
     font-size: 11px;
@@ -186,7 +186,7 @@
 }
 
 .post-tag:hover {
-    backgound-color:#ddd;
+    backgound-color:#000000;
 }
 
 .narrow .started {

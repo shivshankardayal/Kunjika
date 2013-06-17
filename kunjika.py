@@ -427,6 +427,7 @@ def register():
             data['role'] = 'admin'
             data['fname'] = registrationForm.fname.data
             data['lname'] = registrationForm.lname.data
+            data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
 
             cb.incr('count', 1)
@@ -448,6 +449,7 @@ def register():
             data['password'] = passwd_hash
             data['fname'] = registrationForm.fname.data
             data['lname'] = registrationForm.lname.data
+            data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
 
             cb.incr('count', 1)
