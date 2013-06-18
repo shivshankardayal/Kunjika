@@ -828,7 +828,52 @@ def favorited():
 
 @kunjika.route('/flag')
 def flag():
-    return utility.flag(request.args.get('id'))
+    idntfr = request.args.get('id')
+    url = request.args.get('url')
+    user = cb.get(str(g.user.id)).value
+    idntfr_list = idntfr.split('-')
+
+    question = qb.get(str(idntfr_list[1])).value
+    op_id = 0
+    print idntfr_list
+    if idntfr_list[0] == '#qqf':
+        op_id = question['content']['op']
+    elif idntfr_list[0] == '#qcf':
+        for comment in question['comments']:
+            if unicode(comment['cid']) == idntfr_list[1]:
+                op_id = comment['poster']
+    elif idntfr_list[0] == '#qaf':
+        for answer in question['answers']:
+            if unicode(answer['aid']) == idntfr_list[2]:
+                op_id = answer['poster']
+    elif idntfr_list[0] == unicode('#qac'):
+        for answer in question['answers']:
+            print "hello"
+            if unicode(answer['aid']) == idntfr_list[2]:
+                for comment in answer['comments']:
+                    if unicode(comment['cid']) == idntfr_list[3]:
+                        op_id = comment['poster']
+                        print op_id
+
+    print op_id
+
+    flagged_user = cb.get(str(op_id)).value
+
+    msg = Message("Inappropriate content flag for element " + str(idntfr))
+    msg.recipients = [admin]
+    msg.sender = admin
+    msg.html = '<p>Hi,<br/><br/>' \
+               'URL: ' + url + '<br/><br/>' \
+               'Flagger Name: ' + str(user['name']) + '<br/>' \
+               'Flagger Email: ' + str(user['email']) + '<br/>' \
+               'Flagger ID: ' + str(user['id']) + '<br/><br/>' \
+               'Flagged User Name: ' + str(flagged_user['name']) + '<br/>' \
+               'Flagger User Email: ' + str(flagged_user['email']) + '<br/>' \
+               'Flagger User ID: ' + str(flagged_user['id']) + '<br/>' \
+               '<br/> Admin<p>'
+    mail.send(msg)
+
+    return jsonify({"success": True})
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():

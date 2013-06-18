@@ -226,8 +226,3 @@ def filter_by(email):
     else:
         return None
 
-def flag(id):
-
-
-
-    return jsonify({"success": True})

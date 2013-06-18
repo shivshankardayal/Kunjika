@@ -2,10 +2,8 @@ Features
 ********
 TODO
 ====
-1. Flagging inappropriate comments.
-2. More fields for user activity and profile.
-3. Banning/unbanning users.
-4. Following questions.
+1. More fields for user activity and profile.
+2. Banning/unbanning users.
 
 DONE
 ====
@@ -40,6 +38,7 @@ DONE
 19. Atom feed for questions(update proper time)..
 20. OpenID integration.(take care of GET of create_profile)
 21. Email notification at registration.
+22. Flagging inappropriate questions, answers and comments.
 
 Postponed for later
 ===================
@@ -49,7 +48,4 @@ Postponed for later
 4. Extra cloning of stackoverflow.
 5. Feed for users and questions.
 6. Sitemap generation
-7. Following tags and users.
-
-Removed features
-================
+7. Following questions, tags and users.
