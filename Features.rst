@@ -3,10 +3,9 @@ Features
 TODO
 ====
 1. Flagging inappropriate comments.
-2. OpenID integration.(half done)
-3. More fields for user activity and profile.
-4. Banning/unbanning users.
-5. Following questions.
+2. More fields for user activity and profile.
+3. Banning/unbanning users.
+4. Following questions.
 
 DONE
 ====
@@ -40,6 +39,7 @@ DONE
 18. Code attachments also .zip source attachments up to 2MB.
 19. Atom feed for questions(update proper time).
 20. Google custom search integration.
+21. OpenID integration.(take care of GET of create_profile)
 
 Postponed for later
 ===================
