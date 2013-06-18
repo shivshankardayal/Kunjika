@@ -51,12 +51,12 @@
                 var str = '#insertImageDialog' + '-' + divid;
                 //alert(str);
                 var $dialog = $(str).dialog({
-                                                autoOpen: false,
-                                                closeOnEscape: false,
-                                                open: function (event, ui) {
-                                                    $(".ui-dialog-titlebar-close").hide();
-                                                }
-                                            });
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
                 var $loader = $('span.loading-small', $dialog);
                 var $url = $('input[type=text]', $dialog);
                 var $file = $('input[type=file]', $dialog);
@@ -105,10 +105,10 @@
 
                     // upload
                     $file.unbind('change').ajaxfileupload({
-                                                              action: $file.attr('data-action'),
-                                                              onStart: uploadStart,
-                                                              onComplete: uploadComplete
-                                                          });
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
 
                     // open the dialog
                     $dialog.dialog('open');
@@ -175,7 +175,8 @@
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
-    <div id="mainbar" class="mainbar">    <div class="q-header">
+    <div id="mainbar" class="mainbar">
+    <div class="q-header">
         <h3>{{ questions['title'] }}</h3>
     </div>
     <table>
@@ -200,17 +201,17 @@
                         </a>
                     </span>
                     {% if g.user.id in questions['users_fav'] %}
-                    <a class="starred"
-                       title="This question is of particular interest to you. Click to favorite it."
-                       href="#" id="f-{{ questions['qid'] }}">
-                        <i class="icon-star icon-large"></i>
-                    </a>
+                        <a class="starred"
+                           title="This question is of particular interest to you. Click to favorite it."
+                           href="#" id="f-{{ questions['qid'] }}">
+                            <i class="icon-star icon-large"></i>
+                        </a>
                     {% else %}
-                    <a class="unstarred"
-                       title="This question is of particular interest to you. Click to favorite it."
-                       href="#" id="f-{{ questions['qid'] }}">
-                        <i class="icon-star icon-large"></i>
-                    </a>
+                        <a class="unstarred"
+                           title="This question is of particular interest to you. Click to favorite it."
+                           href="#" id="f-{{ questions['qid'] }}">
+                            <i class="icon-star icon-large"></i>
+                        </a>
                     {% endif %}
                 </div>
             </td>
@@ -226,14 +227,18 @@
                     <tr>
                         {% if user_id is defined %}
                             <td class="vt">
-                                <a href="/edit/qe-{{ questions['qid'] }}" class="suggest-edit-post" title=""><i class="icon-edit"></i> Edit</a>
+                                <a href="/edit/qe-{{ questions['qid'] }}" class="suggest-edit-post" title=""><i
+                                        class="icon-edit"></i> Edit</a>
                             </td>
                             <td class="vt">
-                                <a href="/flag/{{ questions['qid'] }}" class="suggest-edit-post" title=""><i class="icon-flag" style="color:#d00"></i> Flag</a>
+                                <a href="/flag/{{ questions['qid'] }}" title="Flag for inappropriate comment"
+                                   id="qqf-{{ questions['qid'] }}" class="flag" title=""><i class="icon-flag"
+                                                                                            style="color:#d00"></i> Flag</a>
                             </td>
                             <td class="vt">
                                 <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
-                                   onclick="toggleDiv('{{ questions['qid'] }}');"><i class="icon-comment" style="color:#a4c639"></i> Comment</a>
+                                   onclick="toggleDiv('{{ questions['qid'] }}');"><i class="icon-comment"
+                                                                                     style="color:#a4c639"></i> Comment</a>
                             </td>
                         {% else %}
                             <td class="vt">
@@ -284,44 +289,47 @@
             <div class="content"> {{ comment['comment'] }}</div>
             -
             <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }}</a>
-            {{ comment['tstamp'] }}&nbsp;<a title="edit" href="/edit/ce-{{ questions['qid'] }}-{{ comment['cid'] }}"><i class="icon-edit"></i></a>
+            {{ comment['tstamp'] }}&nbsp;<a title="edit" href="/edit/ce-{{ questions['qid'] }}-{{ comment['cid'] }}"><i
+                class="icon-edit"></i></a>
+            <a title="Flag for inappropriate comment" id="qcf-{{ questions['qid'] }}-{{ comment['cid'] }}" class="flag"
+               style="color:#d00" href="/flag/{{ questions['qid'] }}-{{ comment['cid'] }}"><i class="icon-flag"></i></a>
         </div>
     {% endfor %}
     {% if user_id is defined %}
-    <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
-          aciton="/postcomment">
-        {% from "macros.html" import render_field %}
-        {{ form.csrf_token }}
-        <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}">
-            <div id="wmd-button-bar-{{ questions['qid'] }}" class="wmd-bar"></div>
-            <div class="control-group">
-                <label for="answer" class="control-label"></label>
+        <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
+              aciton="/postcomment">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}">
+                <div id="wmd-button-bar-{{ questions['qid'] }}" class="wmd-bar"></div>
+                <div class="control-group">
+                    <label for="answer" class="control-label"></label>
 
+                    <div class="controls">
+
+                        <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
+                                  name="comment" id="wmd-input-{{ questions['qid'] }}" class="wmd-input"></textarea>
+                    </div>
+                </div>
+                <div id="insertImageDialog-{{ questions['qid'] }}" title="&nbsp;Insert Image or File">
+                    <h6>From the web</h6>
+
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
+                </div>
+                <div id="wmd-preview-{{ questions['qid'] }}" class="wmd-panel wmd-preview"></div>
+                <input type="hidden" name="element" value="{{ questions['qid'] }}">
+
+                <div style="clear:both;"></div>
                 <div class="controls">
-
-                    <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
-                              name="comment" id="wmd-input-{{ questions['qid'] }}" class="wmd-input"></textarea>
+                    <input type="submit" value="Post comment" class="btn btn-primary">
                 </div>
             </div>
-            <div id="insertImageDialog-{{ questions['qid'] }}" title="&nbsp;Insert Image or File">
-                <h6>From the web</h6>
-
-                <p>
-                    <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-                </p>
-                <h6>From your computer (Max. 2MB)</h6>
-                <span class="loading-small"></span>
-                <input type="file" name="file" id="file" data-action="/image_upload"/>
-            </div>
-            <div id="wmd-preview-{{ questions['qid'] }}" class="wmd-panel wmd-preview"></div>
-            <input type="hidden" name="element" value="{{ questions['qid'] }}">
-
-            <div style="clear:both;"></div>
-            <div class="controls">
-                <input type="submit" value="Post comment" class="btn btn-primary">
-            </div>
-        </div>
-    </form>
+        </form>
     {% endif %}
     <div class="answers">
         <div class="answer-header"></div>
@@ -361,14 +369,16 @@
                             {% else %}
                                 {% if answer['best'] == False %}
                                     <span class="icon-stack">
-                                        <a class="accept-answer ok" title="This is the best answer so OP selects this." href="#"
+                                        <a class="accept-answer ok" title="This is the best answer so OP selects this."
+                                           href="#"
                                            id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
                                             <i class="icon-ok icon-large"></i>
                                         </a>
                                     </span>
                                 {% else %}
                                     <span class="icon-stack">
-                                        <a class="accepted-answer ok" title="This is the best answer so OP selects this." href="#"
+                                        <a class="accepted-answer ok"
+                                           title="This is the best answer so OP selects this." href="#"
                                            id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
                                             <i class="icon-ok icon-large"></i>
                                         </a>
@@ -384,17 +394,21 @@
                             <tr>
                                 {% if user_id is defined %}
                                     <td class="vt">
-                                        <a href="/edit/ae-{{ questions['qid'] }}-{{ answer['aid'] }}" class="suggest-edit-post"
+                                        <a href="/edit/ae-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           class="suggest-edit-post"
                                            title=""><i class="icon-edit"></i> Edit</a>
                                     </td>
                                     <td class="vt">
-                                        <a href="/flag/{{ answer['aid'] }}" class="suggest-edit-post"
-                                           title=""><i class="icon-flag" style="color:#d00"></i> Flag</a>
+                                        <a title="Flag for inappropriate comment"
+                                           id="qaf-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           href="/flag/{{ questions['qid'] }}-{{ answer['aid'] }}" class="flag"
+                                                ><i class="icon-flag" style="color:#d00"></i> Flag</a>
                                     </td>
                                     <td class="vt">
                                         <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
                                            id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');"><i class="icon-comment" style="color:#a4c639"></i> Comment</a>
+                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');"><i
+                                                class="icon-comment" style="color:#a4c639"></i> Comment</a>
                                     </td>
                                 {% else %}
                                     <td class="vt">
@@ -429,46 +443,53 @@
                     <div class="content">{{ comment['comment'] }}</div>
                     -
                     <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
-                    {{ comment['tstamp'] }}&nbsp;<a title="edit" href="/edit/ce-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i class="icon-edit"></i></a>
+                    {{ comment['tstamp'] }}&nbsp;<a title="Edit"
+                                                    href="/edit/ce-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i
+                        class="icon-edit"></i></a>
+                    <a title="Flag for inappropriate comment" class="flag" style="color:#d00"
+                       id="qac-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"
+                       href="/flag/{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i
+                            class="icon-flag"></i></a>
                 </div>
             {% endfor %}
             {% if user_id is defined %}
-            <form class="comment-form" id="f-{{ questions['qid'] }}-{{ answer['aid'] }}" method="post"
-                  aciton="/postcomment">
-                {% from "macros.html" import render_field %}
-                {{ form.csrf_token }}
-                <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}-{{ answer['aid'] }}">
-                    <div id="wmd-button-bar-{{ questions['qid'] }}-{{ answer['aid'] }}" class="wmd-bar"></div>
-                    <div class="control-group">
-                        <label for="answer" class="control-label"></label>
+                <form class="comment-form" id="f-{{ questions['qid'] }}-{{ answer['aid'] }}" method="post"
+                      aciton="/postcomment">
+                    {% from "macros.html" import render_field %}
+                    {{ form.csrf_token }}
+                    <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}-{{ answer['aid'] }}">
+                        <div id="wmd-button-bar-{{ questions['qid'] }}-{{ answer['aid'] }}" class="wmd-bar"></div>
+                        <div class="control-group">
+                            <label for="answer" class="control-label"></label>
 
+                            <div class="controls">
+
+                                <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
+                                          name="comment" id="wmd-input-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                          class="wmd-input"></textarea>
+                            </div>
+                        </div>
+                        <div id="insertImageDialog-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                             title="&nbsp;Insert Image or File">
+                            <h6>From the web</h6>
+
+                            <p>
+                                <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                            </p>
+                            <h6>From your computer (Max. 2MB)</h6>
+                            <span class="loading-small"></span>
+                            <input type="file" name="file" id="file" data-action="/image_upload"/>
+                        </div>
+                        <div id="wmd-preview-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                             class="wmd-panel wmd-preview"></div>
+                        <input type="hidden" name="element" value="{{ questions['qid'] }}-{{ answer['aid'] }}">
+
+                        <div style="clear:both;"></div>
                         <div class="controls">
-
-                            <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
-                                      name="comment" id="wmd-input-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                                      class="wmd-input"></textarea>
+                            <input type="submit" value="Post comment" class="btn btn-primary">
                         </div>
                     </div>
-                    <div id="insertImageDialog-{{ questions['qid'] }}-{{ answer['aid'] }}" title="&nbsp;Insert Image or File">
-                        <h6>From the web</h6>
-
-                        <p>
-                            <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-                        </p>
-                        <h6>From your computer (Max. 2MB)</h6>
-                        <span class="loading-small"></span>
-                        <input type="file" name="file" id="file" data-action="/image_upload"/>
-                    </div>
-                    <div id="wmd-preview-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                         class="wmd-panel wmd-preview"></div>
-                    <input type="hidden" name="element" value="{{ questions['qid'] }}-{{ answer['aid'] }}">
-
-                    <div style="clear:both;"></div>
-                    <div class="controls">
-                        <input type="submit" value="Post comment" class="btn btn-primary">
-                    </div>
-                </div>
-            </form>
+                </form>
             {% endif %}
         {% endfor %}
     </div>
@@ -504,30 +525,32 @@
     {% endif %}
     </div>
     <div id="sidebar">
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ qcount }}</div>
-                <p>questions</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ acount }}</div>
-                <p>answers</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ ucount }}</div>
-                <p>users</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ tcount }}</div>
-                <p>tags</p>
-            </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular-tags</h4>
-                {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
-                {% endfor %}
-            </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ qcount }}</div>
+            <p>questions</p>
+        </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ acount }}</div>
+            <p>answers</p>
+        </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ ucount }}</div>
+            <p>users</p>
+        </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ tcount }}</div>
+            <p>tags</p>
+        </div>
+        <div id="popular-tags" class="module">
+            <h4 id="h-popular-tags">Popular-tags</h4>
+            {% for tag in tag_list %}
+                <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
+                   title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
+                <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
+                        class="item-multiplier-count">{{ tag['count'] }}</span></span>
+                <br/>
+            {% endfor %}
+        </div>
     </div>
     </div>
     <!--    <script type="text/javascript">
@@ -585,12 +608,12 @@
                 var editor = new Markdown.Editor(converter, null, { handler: help });
 
                 var $dialog = $('#insertImageDialog').dialog({
-                                                                 autoOpen: false,
-                                                                 closeOnEscape: false,
-                                                                 open: function (event, ui) {
-                                                                     $(".ui-dialog-titlebar-close").hide();
-                                                                 }
-                                                             });
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
                 var $loader = $('span.loading-small', $dialog);
                 var $url = $('input[type=text]', $dialog);
                 var $file = $('input[type=file]', $dialog);
@@ -639,10 +662,10 @@
 
                     // upload
                     $file.unbind('change').ajaxfileupload({
-                                                              action: $file.attr('data-action'),
-                                                              onStart: uploadStart,
-                                                              onComplete: uploadComplete
-                                                          });
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
 
                     // open the dialog
                     $dialog.dialog('open');
@@ -675,42 +698,50 @@
             });
             return false;
         });
-    $('.ok').click(function(){
-        id = '#' + $(this).attr('id');
-        //$(this).css("color", "#070");
-        $.getJSON('/answer_accepted', {
-            id : '#' + $(this).attr('id')
-        }, function (data) {
-            //alert(data.success);
-            $('.ok').each(function(){
-                $(this).css("color", "#333");
+        $('.ok').click(function () {
+            id = '#' + $(this).attr('id');
+            //$(this).css("color", "#070");
+            $.getJSON('/answer_accepted', {
+                id: '#' + $(this).attr('id')
+            }, function (data) {
+                //alert(data.success);
+                $('.ok').each(function () {
+                    $(this).css("color", "#333");
+                });
+                $(id).css("color", "#070");
             });
-            $(id).css("color", "#070");
+            return false;
         });
-        return false;
-    });
-    $('body').on("click", ".starred", function(){
-        id = '#' + $(this).attr('id');
-        $.getJSON('/favorited', {
-            id : '#' + $(this).attr('id')
-        }, function (data) {
-            $(id).removeClass('starred');
-            $(id).addClass('unstarred');
+        $('body').on("click", ".starred", function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/favorited', {
+                id: '#' + $(this).attr('id')
+            }, function (data) {
+                $(id).removeClass('starred');
+                $(id).addClass('unstarred');
+            });
+            return false;
         });
-        return false;
-    });
-    $('body').on("click", ".unstarred", function(){
-        id = '#' + $(this).attr('id');
-        $.getJSON('/favorited', {
-            id : '#' + $(this).attr('id')
-        }, function (data) {
-            $(id).removeClass('unstarred');
-            $(id).addClass('starred');
+        $('body').on("click", ".unstarred", function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/favorited', {
+                id: '#' + $(this).attr('id')
+            }, function (data) {
+                $(id).removeClass('unstarred');
+                $(id).addClass('starred');
+            });
+            return false;
         });
-        return false;
-    });
+        $('.flag').click(function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/flag', {
+                id: '#' + $(this).attr('id')
+            }, function (data) {
+            });
+            return false;
+        });
     </script>
-<script type="text/javascript">var switchTo5x=true;</script>
-<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
-<script type="text/javascript">stLight.options({publisher: "ur-49fb3c1c-f817-275f-74b6-3363921b7b06", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+    <script type="text/javascript">var switchTo5x = true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">stLight.options({publisher: "ur-49fb3c1c-f817-275f-74b6-3363921b7b06", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
 {% endblock %}

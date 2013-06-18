@@ -225,3 +225,9 @@ def filter_by(email):
         return user
     else:
         return None
+
+def flag(id):
+
+
+
+    return jsonify({"success": True})

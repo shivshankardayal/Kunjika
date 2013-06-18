@@ -37,9 +37,9 @@ DONE
 16. Simple count of questions, answers, tags and users.
 17. Popular tags display on main page in side bar.
 18. Code attachments also .zip source attachments up to 2MB.
-19. Atom feed for questions(update proper time).
-20. Google custom search integration.
-21. OpenID integration.(take care of GET of create_profile)
+19. Atom feed for questions(update proper time)..
+20. OpenID integration.(take care of GET of create_profile)
+21. Email notification at registration.
 
 Postponed for later
 ===================
@@ -53,4 +53,3 @@ Postponed for later
 
 Removed features
 ================
-1.  Email verification.

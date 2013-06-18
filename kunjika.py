@@ -338,8 +338,10 @@ def ask():
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
 
-@kunjika.route('/create_profile', methods=['POST'])
+@kunjika.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
+    if request.args.get('email') is None:
+        return redirect('/')
     document = None
     profileForm = ProfileForm(request.form)
     if g.user is not None and g.user.is_authenticated():
@@ -824,6 +826,9 @@ def answer_accepted():
 def favorited():
     return utility.handle_favorite(request.args.get('id'))
 
+@kunjika.route('/flag')
+def flag():
+    return utility.flag(request.args.get('id'))
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():
