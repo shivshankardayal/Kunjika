@@ -13,43 +13,35 @@
     <div class="container">
         <div class="" id="loginModal">
             <div class="modal-header">
-                <h3>Have an Account?</h3>
+                <h3>Create Your Profile</h3>
             </div>
             <div class="modal-body">
                 <div class="well">
                     <ul class="nav nav-tabs">
-                        <li>
-                            <a href="#login" data-toggle="tab">Login</a>
-                        </li>
                         <li class="active">
-                            <a href="#create" data-toggle="tab">Create Account</a>
-                        </li>
-                        <li>
-                            <a href="#openid" data-toggle="tab">OpenID Login</a>
+                            <a href="#create" data-toggle="tab">Create Profile</a>
                         </li>
                     </ul>
                     <div id="myTabContent" class="tab-content">
                     <div class="tab-pane active in" id="create">
-                        <form class="form-horizontal" id="tab" method="post" action="/questions">
+                        <form class="form-horizontal" id="tab" method="post" action="/create_profile">
                             <fieldset>
                                 <div id="legend">
                                     <legend class="">
-                                        Register
+                                        Create Profile
                                     </legend>
                                 </div>
                                 {% from "macros.html" import render_field %}
                                 {{ form.csrf_token }}
-                                {{ render_field(form.email1, class="input-xlarge") }}
+                                {{ render_field(form.email2, class="input-xlarge") }}
                                 <div class="control-group">
                                     <div class="controls">
-                                        <input type="button" name="check_acailability" class="btn btn-info"
+                                        <input type="button" name="check_availability" class="btn btn-info"
                                                id="check_availability" value="Check Availability">
 
                                         <div id="availability_result"></div>
                                     </div>
                                 </div>
-                                {{ render_field(form.password, class="input-xlarge") }}
-                                {{ render_field(form.confirm, class="input-xlarge") }}
                                 {{ render_field(form.fname, class="input-xlarge") }}
                                 {{ render_field(form.lname, class="input-xlarge") }}
                                 <label class="control-label">ReCaptcha</label>
@@ -62,7 +54,7 @@
                                 <div class="control-group">
                                     <div class="controls">
                                         <button class="btn btn-primary">
-                                            Create Account
+                                            Create Profile
                                         </button>
                                     </div>
                                 </div>
@@ -74,56 +66,6 @@
                             </fieldset>
                         </form>
                     </div>
-                        <div class="tab-pane fade" id="login">
-                            <form class="form-horizontal" action='/login' method="post">
-                                <fieldset>
-                                    <div id="legend">
-                                        <legend class="">
-                                            Login
-                                        </legend>
-                                    </div>
-                                    {% from "macros.html" import render_field %}
-                                    {{ loginForm.csrf_token }}
-                                    {{ render_field(loginForm.email, class="input-xlarge") }}
-                                    {{ render_field(loginForm.password, class="input-xlarge") }}
-                                    <div class="control-group">
-                                        <!-- Button -->
-                                        <div class="controls">
-                                            <button class="btn btn-success">
-                                                Login
-                                            </button>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
-                        <div class="tab-pane fade" id="openid">
-                            <form class="form-horizontal" id="tab" method="post" action="/openid_login">
-                                <fieldset>
-                                    <div id="legend">
-                                        <legend class="">
-                                            OpenID Login
-                                        </legend>
-                                    </div>
-                                    <p style="padding-left: 40px">Make sure you have associated an email with your openid else login will fail.</p>
-                                    {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
-                                    {% from "macros.html" import render_field %}
-                                    {{ openidForm.csrf_token }}
-                                    {{ render_field(openidForm.openid, class="input-xlarge") }}
-                                    {{ render_field(openidForm.googleid, class="input-xlarge") }}
-                                    {{ render_field(openidForm.yahooid, class="input-xlarge") }}
-                                    <div class="control-group">
-                                        <!-- Button -->
-                                        <div class="controls">
-                                            <button class="btn btn-success">
-                                                Login
-                                            </button>
-                                            <input type=hidden name=next value="{{ next }}">
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>

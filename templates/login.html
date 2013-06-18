@@ -105,6 +105,7 @@
                                         OpenID Login
                                     </legend>
                                 </div>
+                                <p style="padding-left: 40px">Make sure you have associated an email with your openid else login will fail.</p>
                                 {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
                                 {% from "macros.html" import render_field %}
                                 {{ openidForm.csrf_token }}

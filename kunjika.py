@@ -98,8 +98,6 @@ kunjika.jinja_env.globals['url_for_other_page'] = utility.url_for_other_page
 @kunjika.before_request
 def before_request():
     g.user = current_user
-    if 'openid' in session:
-        g.user = utility.filter_by(openid=session['openid']).first()
 
 def get_user(uid):
     try:
@@ -340,20 +338,100 @@ def ask():
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
 
+@kunjika.route('/create_profile', methods=['POST'])
+def create_profile():
+    document = None
+    profileForm = ProfileForm(request.form)
+    if g.user is not None and g.user.is_authenticated():
+        return redirect(url_for('/'))
+    if profileForm.validate_on_submit() and request.method == 'POST':
+        data = {}
+        print profileForm.email2.data
+        view = urllib2.urlopen('http://localhost:8092/default/_design/dev_qa/_view/get_role?stale=false').read()
+        view = json.loads(view)
+        if len(view['rows']) == 0:
+            print "hello1"
+            data['email'] = profileForm.email2.data
+            data['role'] = 'admin'
+            data['fname'] = profileForm.fname.data
+            data['lname'] = profileForm.lname.data
+            data['name'] = data['fname'] + " " + data['lname']
+            data['rep'] = 0
+
+            cb.incr('count', 1)
+            did = cb.get('count').value
+            data['id'] = did
+            cb.add(str(did), data)
+            user = User(data['name'], data['id'])
+            login_user(user, remember=True)
+            g.user = user
+            try:
+                msg = Message("Registration at Kunjika")
+                msg.recipients = [data['email']]
+                msg.sender = admin
+                msg.html = "<p>Hi,<br/> Thanks for registering at kunjika. Congratulations on" \
+                           "being the first user. Since you are the first by default you are admin" \
+                           ".<br/>Best regards,<br/>Kunjika Team<p>"
+                mail.send(msg)
+
+                return redirect(url_for('questions'))
+            except:
+                return make_response("cant login")
+
+        document = urllib2.urlopen(
+            'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + profileForm.email2.data + '"&stale=false').read()
+        document = json.loads(document)
+        #print(document)
+        if len(document['rows']) == 0:
+            print "hello2"
+            data['email'] = profileForm.email2.data
+            data['fname'] = profileForm.fname.data
+            data['lname'] = profileForm.lname.data
+            data['name'] = data['fname'] + " " + data['lname']
+            data['rep'] = 0
+
+            cb.incr('count', 1)
+            did = cb.get('count').value
+            data['id'] = did
+            cb.add(str(did), data)
+            user = User(data['name'], did)
+            login_user(user, remember=True)
+            g.user = user
+            try:
+                msg = Message("Registration at Kunjika")
+                msg.recipients = [data['email']]
+                msg.sender = admin
+                msg.html = "<p>Hi,<br/> Thanks for registering at kunjika. If you have not " \
+                           "registered please email at " + admin + " .<br/>Best regards," \
+                                                                  "<br/> Admin<p>"
+                mail.send(msg)
+
+                return redirect(url_for('questions'))
+            except:
+                return make_response("cant login")
+    return render_template('create_profile.html', form=profileForm,
+                           title="Create Profile", lpage=True, next=oid.get_next_url())
+
 @oid.after_login
 def create_or_login(resp):
     session['openid'] = resp.identity_url
-    print "hello" + resp.identity_url
-    print resp.email
-    print resp.fullname
-    print resp.nickname
-    user = utility.filter_by(openid=resp.identity_url)
+    user = utility.filter_by(resp.email)
     if user is not None:
         flash(u'Successfully signed in')
+
         g.user = user
-        print oid.get_next_url()
-        return redirect(oid.get_next_url())
-    print oid.get_next_url()
+        print user
+        session[user['id']] = user['id']
+        session['logged_in'] = True
+        if 'role' in user:
+            user['admin'] = True
+        user = User(user['name'], user['id'])
+        try:
+            login_user(user, remember=True)
+            g.user = user
+            return redirect(url_for('questions'))
+        except:
+            return make_response("cant login")
     return redirect(url_for('create_profile', next=oid.get_next_url(),
                             name=resp.fullname or resp.nickname,
                             email=resp.email))
@@ -373,15 +451,15 @@ def openid_login():
         openid = request.form.get('openid')
         googleid = request.form.get('googleid')
         yahooid = request.form.get('yahooid')
-        print openid
-        print yahooid
-        print googleid
-        if openid:
-            return oid.try_login(openid, ask_for=['email', 'fullname', 'nickname'])
-        if yahooid:
-            return oid.try_login('https://me.yahoo.com', ask_for=['email', 'fullname', 'nickname'])
+        #print openid
+        #print yahooid
+        #print googleid
         if googleid:
             return oid.try_login('https://www.google.com/accounts/o8/id', ask_for=['email', 'fullname', 'nickname'])
+        elif yahooid:
+            return oid.try_login('https://me.yahoo.com', ask_for=['email', 'fullname', 'nickname'])
+        elif openid:
+            return oid.try_login(openid, ask_for=['email', 'fullname', 'nickname'])
     return render_template('openid.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
                            lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
 
@@ -466,7 +544,7 @@ def register():
             'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + registrationForm.email1.data + '"&stale=false').read()
         document = json.loads(document)
         #print(document)
-        if document['total_rows'] is 0:
+        if len(document['rows']) == 0:
             data['email'] = registrationForm.email1.data
             data['password'] = passwd_hash
             data['fname'] = registrationForm.fname.data
@@ -486,7 +564,7 @@ def register():
                 msg = Message("Registration at Kunjika")
                 msg.recipients = [data['email']]
                 msg.sender = admin
-                msg.html = "<p>Hi,<br/> Thanks for registering at kunjika. If you have not" \
+                msg.html = "<p>Hi,<br/> Thanks for registering at kunjika. If you have not " \
                            "registered please email at " + admin + " .<br/>Best regards," \
                                                                   "<br/> Admin<p>"
                 mail.send(msg)

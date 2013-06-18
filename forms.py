@@ -36,3 +36,10 @@ class AnswerForm(Form):
 
 class CommentForm(Form):
     comment = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
+
+class ProfileForm(Form):
+    fname = TextField('First Name', [validators.Length(min=2, max=32), validators.Required()])
+    lname = TextField('Last Name', [validators.Length(min=2, max=32), validators.Required()])
+    email2 = TextField('Email', [validators.Length(min=5, max=48),validators.Required(),
+                                 validators.Email(message='Either email is invalid or already registered.')])
+    recaptcha = RecaptchaField(validators.Required())

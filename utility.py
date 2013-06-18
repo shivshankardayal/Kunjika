@@ -5,6 +5,7 @@ import urllib2
 import json
 from time import strftime, localtime
 from flask import url_for, request
+from models import User
 
 def generate_url(title):
     length = len(title)
@@ -213,3 +214,14 @@ def get_popular_tags():
         tags.append(i['value'])
 
     return tags
+
+def filter_by(email):
+
+    user = urllib2.urlopen(
+                'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"').read()
+    user = json.loads(user)
+    if len(user['rows']) == 1:
+        user = user['rows'][0]['value']
+        return user
+    else:
+        return None
