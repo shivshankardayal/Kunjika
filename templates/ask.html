@@ -14,7 +14,7 @@
     <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link href="/static/css/prettify.css" rel="stylesheet">
-<!--<link href="/static/css/googlecode.css" rel="stylesheet">-->
+    <!--<link href="/static/css/googlecode.css" rel="stylesheet">-->
     <link href="/static/css/token-input.css" rel="stylesheet">
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
@@ -22,67 +22,71 @@
     <script type="text/javascript" src="/static/js/prettify.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
-<!--    <script type="text/javascript" src="/static/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>-->
+    <!--    <script type="text/javascript" src="/static/js/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>-->
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
-      <h3>Please ask you question</h3>
-        <div class="mainbar" id="mainbar">
-            <form class="ask-form" method="post" aciton="/ask">
-                {% from "macros.html" import render_field %}
-                {{ form.csrf_token }}
-                {{ render_field(form.question, class="question input-x-large span10", style="margin-left:25px;", placeholder="Please ask your question here?") }}
-                <div class="wmd-panel">
-                    <div id="wmd-button-bar"></div>
-                    {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
-                    <div id="insertImageDialog" title="&nbsp;Insert Image or File">
-                        <h6>From the web</h6>
+    <h3>Please ask you question</h3>
+    <div class="mainbar" id="mainbar">
+        <form class="ask-form" method="post" aciton="/ask">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            {{ render_field(form.question, class="question input-x-large span10", style="margin-left:25px;", placeholder="Please ask your question here?") }}
+            <div class="wmd-panel">
+                <div id="wmd-button-bar"></div>
+                {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
+                <div id="insertImageDialog" title="&nbsp;Insert Image or File">
+                    <h6>From the web</h6>
 
-                        <p>
-                            <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-                        </p>
-                        <h6>From your computer (Max. 2MB)</h6>
-                        <span class="loading-small"></span>
-                        <input type="file" name="file" id="file" data-action="/image_upload"/>
-                    </div>
-                    <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-                    <div style="clear:both;"></div>
-                    {{ render_field(form.tags, class="input-xlarge span10", id="kunjika-tags", style="margin-left:45px; margin-top=30px;", placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
-                    <div class="controls">
-                        <button class="btn btn-primary">
-                            Ask Question?
-                        </button>
-                    </div>
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
                 </div>
-            </form>
+                <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+                <div style="clear:both;"></div>
+                {{ render_field(form.tags, class="input-xlarge span10", id="kunjika-tags", style="margin-left:45px; margin-top=30px;", placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
+                <div class="controls">
+                    <button class="btn btn-primary">
+                        Ask Question?
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="sidebar">
+    <div class="count">
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ qcount }}</div>
+            <p>questions</p>
         </div>
-        <div id="sidebar">
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ qcount }}</div>
-                <p>questions</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ acount }}</div>
-                <p>answers</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ ucount }}</div>
-                <p>users</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ tcount }}</div>
-                <p>tags</p>
-            </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular-tags</h4>
-                {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
-                {% endfor %}
-            </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ acount }}</div>
+            <p>answers</p>
         </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ ucount }}</div>
+            <p>users</p>
+        </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ tcount }}</div>
+            <p>tags</p>
+        </div>
+    </div>
+        <div id="popular-tags" class="module">
+            <h4 id="h-popular-tags">Popular-tags</h4>
+            {% for tag in tag_list %}
+                <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
+                   title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
+                <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
+                        class="item-multiplier-count">{{ tag['count'] }}</span></span>
+                <br/>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block page_footer %}
@@ -95,25 +99,25 @@
         </div>
     </div>
     </div>
-<!--    <script type="text/javascript">
-        $("document").ready(function () {
-            //hljs.selected_languages = hljs.LANGUAGES;
-            $("textarea").each(function () {
-                $(this).keypress(function () {
-                    window.clearTimeout(hljs.Timeout);
-                    hljs.Timeout = window.setTimeout(function () {
-                        hljs.initHighlighting.called = false;
-                        hljs.initHighlighting();
+    <!--    <script type="text/javascript">
+            $("document").ready(function () {
+                //hljs.selected_languages = hljs.LANGUAGES;
+                $("textarea").each(function () {
+                    $(this).keypress(function () {
+                        window.clearTimeout(hljs.Timeout);
+                        hljs.Timeout = window.setTimeout(function () {
+                            hljs.initHighlighting.called = false;
+                            hljs.initHighlighting();
 
-                    }, 200);
+                        }, 200);
+                    });
                 });
+                window.setTimeout(function () {
+                    hljs.initHighlighting.called = false;
+                    hljs.initHighlighting();
+                }, 200);
             });
-            window.setTimeout(function () {
-                hljs.initHighlighting.called = false;
-                hljs.initHighlighting();
-            }, 200);
-        });
-    </script>-->
+        </script>-->
     <script type="text/javascript">
         (function () {
             if ($('#wmd-input').length > 0) {
@@ -126,14 +130,14 @@
                     highlighter: "prettify"
                 });
                 /*converter.hooks.chain("preBlockGamut", function (text, rbg) {
-                    return text.replace(/^ {0,3}""" *\n((?:.*?\n)+?) {0,3}""" *$/gm, function (whole, inner) {
-                        return "<blockquote>" + rbg(inner) + "</blockquote>\n";
-                    });
-                });
+                 return text.replace(/^ {0,3}""" *\n((?:.*?\n)+?) {0,3}""" *$/gm, function (whole, inner) {
+                 return "<blockquote>" + rbg(inner) + "</blockquote>\n";
+                 });
+                 });
 
-                converter.hooks.chain("preConversion", function (text) {
-                    return text.replace(/\b(a\w*)/gi, "*$1*");
-                });*/
+                 converter.hooks.chain("preConversion", function (text) {
+                 return text.replace(/\b(a\w*)/gi, "*$1*");
+                 });*/
 
                 var editor = new Markdown.Editor(converter, null, { handler: help });
 

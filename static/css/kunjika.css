@@ -71,14 +71,34 @@
     margin: 0 10px 20px 0;
     width: 728px;
     display:table;
+    border:1px solid;
+    -moz-box-shadow: 5px 5px 5px 5px #888;
+    -webkit-box-shadow: 5px 5px 5px 5px #888;
+    box-shadow: 5px 5px 5px 5px #888;
+    padding: 10px;
 }
+
 
 #sidebar, .sidebar {
     float: right;
-    margin: 0 0 60px;
+    margin: 0 0 60px 0px;
     overflow: hidden;
-    padding-top: 15px;
+    margin-left: 10px;
     width: 220px;
+}
+
+.count {
+    border:1px solid;
+    padding-top: 15px;
+    margin-bottom: 15px;
+    background-color: #fafafa;
+}
+
+#popular-tags {
+    border:1px solid;
+    padding-top: 15px;
+    margin-bottom: 15px;
+    background-color: #fafafa;
 }
 
 #feed-link {
