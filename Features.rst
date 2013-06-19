@@ -3,7 +3,6 @@ Features
 TODO
 ====
 1. More fields for user activity and profile.
-2. Banning/unbanning users.
 
 DONE
 ====
@@ -39,6 +38,7 @@ DONE
 20. OpenID integration.(take care of GET of create_profile)
 21. Email notification at registration.
 22. Flagging inappropriate questions, answers and comments.
+23. Banning/unbanning users.
 
 Postponed for later
 ===================
