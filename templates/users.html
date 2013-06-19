@@ -17,80 +17,93 @@
 {% block container %}
     <div class="row-fluid">
     <div id="mainbar" class="mainbar">
-    {% if pagination is not defined %}
-        <div class="userheader">
-            <h3>{{ name }}</h3>
+        {% if pagination is not defined %}
+            <div class="userheader">
+                <h3>{{ name }}</h3>
 
-            <div class="fr">
-                {% if logged_in is defined %}
-                    <a href="/users/edit/{{ user_id }}">edit</a>
-                {% endif %}
+                <div class="fr">
+                    {% if logged_in is defined %}
+                        <a href="/users/edit/{{ user_id }}">edit</a>
+                    {% endif %}
+                </div>
+                <div class="gravatar">
+                    <img src="{{ email | gravatar(size=100) }}"/>
+                    {% if session['admin'] is defined and user['role'] != 'admin' and user['banned'] == False %}
+                        <div id="ban">
+                            <button class="btn btn-danger" id={{ user_id }}>
+                                Ban User
+                            </button>
+                        </div>
+                    {% elif session['admin'] is defined and user['role'] != 'admin' and user['banned'] == True %}
+                        <div id="unban">
+                            <button class="btn btn-success" id="{{ user_id }}">
+                                Unban User
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-            <div class="gravatar">
-                <img src="{{ email | gravatar(size=100) }}"/>
-            </div>
-        </div>
-        <div class="data">
-            <table class="table-user">
-                <tbody>
-                <tr>
-                    <th>Personal Details</th>
-                    <td>First Name:</td>
-                    <td>{{ fname }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td>Last Name:</td>
-                    <td>{{ lname }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td>Email:</td>
-                    <td>{{ email }}</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        </div>
-    {% else %}
-        <div id="users">
-            <table>
-                {% set i = 0 %}
-                {% for user in users %}
-                {% if i < no_of_users %}
-                {% if (no_of_users - i) > 4 %}
-                    {% set k = 4 %}
-                {% else %}
-                    {% set k = no_of_users - i %}
-                {% endif %}
+            <div class="data">
+                <table class="table-user">
+                    <tbody>
                     <tr>
-                        {% for j in range(0, k) %}
-                            <td>
-                                <div class="user-info user-hover">
-                                    <div class="user-gravatar32">
-                                        <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name'] }}">
-                                            <img src="{{ users[j + i]['email'] | gravatar(size=48) }}" />
-                                        </a>
-                                    </div>
-                                    <div class="user-details">
-                                        <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name'] }}">{{ users[j + i]['name'] }}</a><br>
-                                        <span class="user-location">{{ users[j + i]['location'] }}</span><br>
-                                        <span class="reputation-score" dir="ltr">{{ users[j + i]['rep'] }}</span>
-                                    </div>
-                                    <div class="user-tags">
-                                    </div>
-                                </div>
-                            </td>
-                        {% endfor %}
-                    {% set i = i + 4 %}
+                        <th>Personal Details</th>
+                        <td>First Name:</td>
+                        <td>{{ fname }}</td>
                     </tr>
-                {% endif %}
-                {% endfor %}
-            </table>
-        {{ render_pagination(pagination) }}
-        </div>
-        </div>
-    {% endif %}
+                    <tr>
+                        <th></th>
+                        <td>Last Name:</td>
+                        <td>{{ lname }}</td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td>Email:</td>
+                        <td>{{ email }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div id="users">
+                <table>
+                    {% set i = 0 %}
+                    {% for user in users %}
+                        {% if i < no_of_users %}
+                            {% if (no_of_users - i) > 4 %}
+                                {% set k = 4 %}
+                            {% else %}
+                                {% set k = no_of_users - i %}
+                            {% endif %}
+                            <tr>
+                                {% for j in range(0, k) %}
+                                    <td>
+                                        <div class="user-info user-hover">
+                                            <div class="user-gravatar32">
+                                                <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name'] }}">
+                                                    <img src="{{ users[j + i]['email'] | gravatar(size=48) }}"/>
+                                                </a>
+                                            </div>
+                                            <div class="user-details">
+                                                <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name'] }}">{{ users[j + i]['name'] }}</a><br>
+                                                <span class="user-location">{{ users[j + i]['location'] }}</span><br>
+                                                    <span class="reputation-score"
+                                                          dir="ltr">{{ users[j + i]['rep'] }}</span>
+                                            </div>
+                                            <div class="user-tags">
+                                            </div>
+                                        </div>
+                                    </td>
+                                {% endfor %}
+                                {% set i = i + 4 %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+                {{ render_pagination(pagination) }}
+            </div>
+        {% endif %}
+    </div>
     <div id="sidebar">
         <div class="count">
             <div class="module" id="questions-count">
@@ -110,14 +123,38 @@
                 <p>tags</p>
             </div>
         </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular-tags</h4>
-                {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
-                {% endfor %}
-            </div>
+        <div id="popular-tags" class="module">
+            <h4 id="h-popular-tags">Popular-tags</h4>
+            {% for tag in tag_list %}
+                <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
+                   title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
+                <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
+                        class="item-multiplier-count">{{ tag['count'] }}</span></span>
+                <br/>
+            {% endfor %}
+        </div>
     </div>
     </div>
+    <script>
+    $('body').on("click", ".btn-success", function () {
+    id = $(this).attr('id');
+    $.getJSON('/ban', {
+    id: $(this).attr('id')
+    }, function (data) {
+    $(id).removeClass('btn-success');
+    $(id).addClass('btn-danger');
+    });
+    return false;
+    });
+    $('body').on("click", ".btn-danger", function () {
+    id = $(this).attr('id');
+    $.getJSON('/ban', {
+    id: $(this).attr('id')
+    }, function (data) {
+    $(id).removeClass('btn-danger');
+    $(id).addClass('btn-success');
+    });
+    return false;
+    });
+    </script>
 {% endblock %}

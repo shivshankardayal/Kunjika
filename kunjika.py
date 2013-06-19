@@ -265,7 +265,7 @@ def users(uid=None, uname=None):
         logged_in = True
         return render_template('users.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'],
                                lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
-                               upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                               upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user)
     return render_template('users.html', title=user['name'], lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
@@ -391,6 +391,7 @@ def create_profile():
             data['lname'] = profileForm.lname.data
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
+            data['banned'] = False
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -419,6 +420,8 @@ def create_or_login(resp):
     session['openid'] = resp.identity_url
     user = utility.filter_by(resp.email)
     if user is not None:
+        if user['banned'] == True:
+            return redirect(url_for('questionsyal'))
         flash(u'Successfully signed in')
 
         g.user = user
@@ -477,7 +480,8 @@ def login():
             document = urllib2.urlopen(
                 'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + loginForm.email.data + '"').read()
             document = json.loads(document)['rows'][0]['value']
-            #print(document)
+            if document['banned'] == True:
+                return redirect(url_for('questions'))
             if bcrypt.check_password_hash(document['password'], loginForm.password.data):
                 session[document['id']] = document['id']
                 session['logged_in'] = True
@@ -536,6 +540,7 @@ def register():
             did = cb.get('count').value
             data['id'] = did
             cb.add(str(did), data)
+            session['admin'] = True
             user = User(data['name'], data['id'])
             login_user(user, remember=True)
             g.user = user
@@ -553,6 +558,7 @@ def register():
             data['lname'] = registrationForm.lname.data
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
+            data['banned'] = False
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -1061,6 +1067,20 @@ def recent_feed():
                  url=make_external('http://localhost:5000/questions' + '/' + unicode(question['qid']) + "/" + question['content']['url']),
                  updated=datetime.datetime(2013, 05, 17))
     return feed.get_response()
+
+@kunjika.route('/ban')
+def ban():
+    user_id = request.args.get('id')
+
+    user = cb.get(user_id).value
+    if user['banned'] is False:
+        user['banned'] = True
+    else:
+        user['banned'] = False
+
+    cb.replace(user_id, user)
+
+    return jsonify({"success": True})
 
 if __name__ == '__main__':
     kunjika.run()
