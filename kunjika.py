@@ -266,8 +266,8 @@ def users(uid=None, uname=None):
         return render_template('users.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'],
                                lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
                                upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user)
-    return render_template('users.html', title=user['name'], lname=user['lname'], email=user['email'], gravatar=gravatar100, upage=True,
-                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+    return render_template('users.html', title=user['name'], user_id=user['id'], lname=user['lname'], name=user['name'],fname=user['fname'], email=user['email'], gravatar=gravatar100, upage=True,
+                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user)
 
 '''@kunjika.route('/unanswered/<uid>')
 def unanswered(uid=None):
@@ -535,6 +535,7 @@ def register():
             data['lname'] = registrationForm.lname.data
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
+            data['banned'] = False
 
             cb.incr('count', 1)
             did = cb.get('count').value
