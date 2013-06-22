@@ -340,13 +340,14 @@ def ask():
 
 @kunjika.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
-    if request.args.get('email') is None:
-        return redirect('/')
+    #if request.args.get('email') is None:
+    #    return redirect('/')
     document = None
     profileForm = ProfileForm(request.form)
     if g.user is not None and g.user.is_authenticated():
         return redirect(url_for('/'))
     if profileForm.validate_on_submit() and request.method == 'POST':
+        print "hello"
         data = {}
         print profileForm.email2.data
         view = urllib2.urlopen('http://localhost:8092/default/_design/dev_qa/_view/get_role?stale=false').read()
