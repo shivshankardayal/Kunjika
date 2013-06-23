@@ -180,6 +180,7 @@ def questions(tag=None, page=None, qid=None, url=None):
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
         elif g.user is not None and g.user.is_authenticated():
             answerForm = AnswerForm(request.form)
+            user = cb.get(str(g.user.id)).value
             if answerForm.validate_on_submit() and request.method == 'POST':
                 answer = {}
                 if 'answers' in questions_dict:
@@ -193,6 +194,8 @@ def questions(tag=None, page=None, qid=None, url=None):
                     questions_dict['acount'] += 1
 
                     questions_dict['answers'].append(answer)
+                    user['answers'].append(str(qid) + '-' + answer['aid'])
+                    user['acount'] += 1
 
                 else:
                     answer['aid'] = 1
@@ -206,8 +209,9 @@ def questions(tag=None, page=None, qid=None, url=None):
 
                     questions_dict['answers'] = []
                     questions_dict['answers'].append(answer)
+                    user['answers'].append(str(qid) + '-' + answer['aid'])
+                    user['acount'] = 1
 
-                user = cb.get(str(g.user.id)).value
                 user['rep'] += 4
                 cb.replace(str(g.user.id), user)
                 qb.replace(str(questions_dict['qid']), questions_dict)
@@ -325,9 +329,12 @@ def ask():
             user['rep'] += 1
             if not questions in user:
                 user['questions'] = []
+                user['answers'] = []
+                user['qcount'] = 1
                 user['questions'].append(question['qid'])
             else:
                 user['questions'].append(question['qid'])
+                user['qcount'] += 1
 
             cb.replace(str(g.user.id), user)
             add_tags(question['content']['tags'], question['qid'])
@@ -360,6 +367,7 @@ def create_profile():
             data['lname'] = profileForm.lname.data
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
+            data['banned'] = False
 
             cb.incr('count', 1)
             did = cb.get('count').value

@@ -17,6 +17,18 @@ def handle_vote(request):
     qid = 0
     aid = 0
 
+    user = kunjika.cb.get(str(g.user.id)).value
+
+    if 'votes' not in user:
+        user['votes'] = {}
+        user['votes']['up'] = 0
+        user['votes']['down'] = 0
+
+    if direction == 'up':
+        user['votes']['up'] += 1
+    else:
+        user['votes']['down'] += 1
+
     if len(id_list) == 2:
         qid = id_list[0]
         aid = id_list[1]
