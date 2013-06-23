@@ -16,182 +16,252 @@
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
-        <div id="mainbar" class="mainbar">
-            {% if pagination is not defined %}
-                <div class="userheader">
-                    <h3>{{ name }}</h3>
+    <div id="mainbar" class="mainbar">
+    {% if pagination is not defined %}
+        <div class="userheader">
+            <h3>{{ name }}</h3>
 
-                    <div class="fr">
-                        {% if g.user.id == user_id %}
-                            <a href="/users/edit/{{ user_id }}">edit</a>
-                        {% endif %}
+            <div class="fr">
+                {% if g.user.id == user_id %}
+                    <a href="/users/edit/{{ user_id }}">edit</a>
+                {% endif %}
+            </div>
+            <div class="gravatar">
+                <img src="{{ email | gravatar(size=100) }}"/>
+                {% if g.user.id == 1 and user['role'] != 'admin' and user['banned'] == False %}
+                    <div id="ban">
+                        <button class="btn btn-danger" id={{ user_id }}>
+                            Ban User
+                        </button>
                     </div>
-                    <div class="gravatar">
-                        <img src="{{ email | gravatar(size=100) }}"/>
-                        {% if g.user.id == 1 and user['role'] != 'admin' and user['banned'] == False %}
-                            <div id="ban">
-                                <button class="btn btn-danger" id={{ user_id }}>
-                                    Ban User
-                                </button>
-                            </div>
-                        {% elif g.user.id == 1 and user['role'] != 'admin' and user['banned'] == True %}
-                            <div id="unban">
-                                <button class="btn btn-success" id="{{ user_id }}">
-                                    Unban User
-                                </button>
-                            </div>
-                        {% endif %}
-                        <h4 style="margin-left:45px;padding-top: 15px">{{ user['rep'] }}</h4>
-                        <span class='user-rep'>reputation</span>
+                {% elif g.user.id == 1 and user['role'] != 'admin' and user['banned'] == True %}
+                    <div id="unban">
+                        <button class="btn btn-success" id="{{ user_id }}">
+                            Unban User
+                        </button>
                     </div>
-                </div>
-                <div class="data">
-                    <table class="table-user">
-                        <tbody>
-                        <tr>
-                            <th>Personal Details</th>
-                            <td>First Name:</td>
-                            <td>{{ fname }}</td>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <td>Last Name:</td>
-                            <td>{{ lname }}</td>
-                        </tr>
-                        {% if g.user.id == user_id or g.user.id == 1 %}
-                            <tr>
-                                <th></th>
-                                <td>Email:</td>
-                                <td>{{ email }}</td>
-                            </tr>
-                        {% endif %}
-                        <tr><td> </td></tr>
-                        <tr>
-                            <th>Biography:</th>
-                            <td>website:</td>
-                            <td>{{ user['website'] }}</td>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <td>location:</td>
-                            <td>{{ user['location'] }}</td>
-                        </tr>
-                        <tr>
-                            <th>Votes:</th>
-                            <td>Up:</td>
-                            <td>{{ user['votes']['up'] }}</td>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <td>Down:</td>
-                            <td>{{ user['votes']['down'] }}</td>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <td>Questions:</td>
-                            <td>{{ user['votes']['question'] }}</td>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <td>Answers:</td>
-                            <td>{{ user['votes']['answers'] }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="user-about-me note">
-                </div>
-                <div style="clear:both">
-                </div>
-                <div class="modal-body">
-                <div class="well">
-                    <ul class="nav nav-tabs">
-                        <li class="active">
-                            <a href="#questions" data-toggle="tab">Questions</a>
-                        </li>
-                        <li>
-                            <a href="#answers" data-toggle="tab">Answers</a>
-                        </li>
-                    </ul>
-                    <div id="questions" class="tab-content">
-                        <div class="tab-pane active in" id="questions">
-                        </div>
-                    </div>
-                    <div id="answers" class="tab-content">
-                        <div class="tab-pane fade" id="answers">
-                        </div>
-                    </div>
-                </div>
-                </div>
-            {% else %}
-                <div id="users">
-                    <table>
-                        {% set i = 0 %}
-                        {% for user in users %}
-                            {% if i < no_of_users %}
-                                {% if (no_of_users - i) > 4 %}
-                                    {% set k = 4 %}
-                                {% else %}
-                                    {% set k = no_of_users - i %}
-                                {% endif %}
-                                <tr>
-                                    {% for j in range(0, k) %}
-                                        <td>
-                                            <div class="user-info user-hover">
-                                                <div class="user-gravatar32">
-                                                    <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name'] }}">
-                                                        <img src="{{ users[j + i]['email'] | gravatar(size=48) }}"/>
-                                                    </a>
+                {% endif %}
+                <h4 style="margin-left:45px;padding-top: 15px">{{ user['rep'] }}</h4>
+                <span class='user-rep'>reputation</span>
+            </div>
+        </div>
+        <div class="data">
+            <table class="table-user">
+                <tbody>
+                <tr>
+                    <th>Personal Details</th>
+                    <td>First Name:</td>
+                    <td>{{ fname }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td>Last Name:</td>
+                    <td>{{ lname }}</td>
+                </tr>
+                {% if g.user.id == user_id or g.user.id == 1 %}
+                    <tr>
+                        <th></th>
+                        <td>Email:</td>
+                        <td>{{ email }}</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Biography:</th>
+                    <td>website:</td>
+                    <td>{{ user['website'] }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td>location:</td>
+                    <td>{{ user['location'] }}</td>
+                </tr>
+                <tr>
+                    <th>Votes:</th>
+                    <td>Up:</td>
+                    <td>{{ user['votes_count']['up'] }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td>Down:</td>
+                    <td>{{ user['votes_count']['down'] }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td>Questions:</td>
+                    <td>{{ user['votes_count']['question'] }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td>Answers:</td>
+                    <td>{{ user['votes_count']['answers'] }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="user-about-me note">
+        </div>
+        <div style="clear:both">
+        </div>
+        <div class="modal-body">
+            <div class="well">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#questions" data-toggle="tab">Questions</a>
+                    </li>
+                    <li>
+                        <a href="#answers" data-toggle="tab">Answers</a>
+                    </li>
+                </ul>
+                <div id="myTabContent" class="tab-content">
+                    <div class="tab-pane active in" id="questions">
+                        <div id="qsummary">
+                            {% if questions != None %}
+                                {% for question in questions %}
+                                    <div id="qsummary-{{ question['qid'] }}" class="qsummary narrow">
+                                        <div class="cp">
+                                            <div class="votes">
+                                                <div class="mini-counts">{{ question['votes'] }}</div>
+                                                <div>votes</div>
+                                            </div>
+                                            {% if question['acount'] == 0 %}
+                                                <div class="status unanswered">
+                                                    <div class="mini-counts">{{ question['acount' ] }}</div>
+                                                    <div>answers</div>
                                                 </div>
-                                                <div class="user-details">
-                                                    <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name'] }}">{{ users[j + i]['name'] }}</a><br>
-                                                    <span class="user-location">{{ users[j + i]['location'] }}</span><br>
+                                            {% else %}
+                                                <div class="status answered">
+                                                    <div class="mini-counts">{{ question['acount' ] }}</div>
+                                                    <div>answers</div>
+                                                </div>
+                                            {% endif %}
+                                            <div class="views">
+                                                <div class="mini-counts">{{ question['views'] }}</div>
+                                                <div>views</div>
+                                            </div>
+                                        </div>
+                                        <div class="summary-user">
+                                            <h4><a class="quesiton-hyperlink"
+                                                   href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}">{{ question['title'] }}</a>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+        <div style="clear:both"></div>
+                        {{ render_pagination(question_pagination) }}
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="answers">
+                        {% if answers != None and aids != None %}
+                            {% for question in answers %}
+                                <div id="qsummary-{{ question['qid'] }}" class="qsummary narrow">
+                                    <div class="cp">
+                                        <div class="votes">
+                                            <div class="mini-counts">{{ question['votes'] }}</div>
+                                            <div>votes</div>
+                                        </div>
+                                        {% if question['acount'] == 0 %}
+                                            <div class="status unanswered">
+                                                <div class="mini-counts">{{ question['acount' ] }}</div>
+                                                <div>answers</div>
+                                            </div>
+                                        {% else %}
+                                            <div class="status answered">
+                                                <div class="mini-counts">{{ question['acount' ] }}</div>
+                                                <div>answers</div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="views">
+                                            <div class="mini-counts">{{ question['views'] }}</div>
+                                            <div>views</div>
+                                        </div>
+                                    </div>
+                                    <div class="summary-user">
+                                        <h4><a class="quesiton-hyperlink"
+                                               href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}#answer-{{ aids[loop.index0] }}">{{ question['title'] }}</a>
+                                        </h4>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+        <div style="clear:both"></div>
+                    {{ render_pagination(answer_pagination) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div id="users">
+            <table>
+                {% set i = 0 %}
+                {% for user in users %}
+                    {% if i < no_of_users %}
+                        {% if (no_of_users - i) > 4 %}
+                            {% set k = 4 %}
+                        {% else %}
+                            {% set k = no_of_users - i %}
+                        {% endif %}
+                        <tr>
+                            {% for j in range(0, k) %}
+                                <td>
+                                    <div class="user-info user-hover">
+                                        <div class="user-gravatar32">
+                                            <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name'] }}">
+                                                <img src="{{ users[j + i]['email'] | gravatar(size=48) }}"/>
+                                            </a>
+                                        </div>
+                                        <div class="user-details">
+                                            <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name'] }}">{{ users[j + i]['name'] }}</a><br>
+                                            <span class="user-location">{{ users[j + i]['location'] }}</span><br>
                                                     <span class="reputation-score"
                                                           dir="ltr">{{ users[j + i]['rep'] }}</span>
-                                                </div>
-                                                <div class="user-tags">
-                                                </div>
-                                            </div>
-                                        </td>
-                                    {% endfor %}
-                                    {% set i = i + 4 %}
-                                </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </table>
-                    {{ render_pagination(pagination) }}
-                </div>
-            {% endif %}
-        </div>
-        <div id="sidebar">
-            <div class="count">
-                <div class="module" id="questions-count">
-                    <div class="summarycount al">{{ qcount }}</div>
-                    <p>questions</p>
-                </div>
-                <div class="module" id="questions-count">
-                    <div class="summarycount al">{{ acount }}</div>
-                    <p>answers</p>
-                </div>
-                <div class="module" id="questions-count">
-                    <div class="summarycount al">{{ ucount }}</div>
-                    <p>users</p>
-                </div>
-                <div class="module" id="questions-count">
-                    <div class="summarycount al">{{ tcount }}</div>
-                    <p>tags</p>
-                </div>
-            </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular-tags</h4>
-                {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
-                       title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
-                            class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
+                                        </div>
+                                        <div class="user-tags">
+                                        </div>
+                                    </div>
+                                </td>
+                            {% endfor %}
+                            {% set i = i + 4 %}
+                        </tr>
+                    {% endif %}
                 {% endfor %}
+            </table>
+            {{ render_pagination(pagination) }}
+        </div>
+    {% endif %}
+    </div>
+    <div id="sidebar">
+        <div class="count">
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ qcount }}</div>
+                <p>questions</p>
             </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ acount }}</div>
+                <p>answers</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ ucount }}</div>
+                <p>users</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ tcount }}</div>
+                <p>tags</p>
+            </div>
+        </div>
+        <div id="popular-tags" class="module">
+            <h4 id="h-popular-tags">Popular-tags</h4>
+            {% for tag in tag_list %}
+                <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
+                   title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
+                <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
+                        class="item-multiplier-count">{{ tag['count'] }}</span></span>
+                <br/>
+            {% endfor %}
         </div>
     </div>
     <script>

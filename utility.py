@@ -249,10 +249,15 @@ def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
         return None
 
     question_list = []
+    aids = []
     #let us get question ids and questions
     for aid in aid_list:
         qid = aid.split('-')[0]
+        single_aid = aid.split('-')[1]
+        print qid
+        print single_aid
         question = kunjika.qb.get(qid).value
         question_list.append(question)
+        aids.append(single_aid)
 
-    return question_list
+    return question_list, aids

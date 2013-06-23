@@ -267,7 +267,7 @@ def users(qpage, apage, uid=None, uname=None):
     if not questions and qpage != 1:
         abort(404)
     # answers is actually questions containing answers
-    answers = utility.get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, user['acount'])
+    answers, aids = utility.get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, user['acount'])
     if not answers and apage != 1:
         abort(404)
     question_pagination = utility.Pagination(qpage, USER_QUESTIONS_PER_PAGE, user['qcount'])
@@ -284,10 +284,12 @@ def users(qpage, apage, uid=None, uname=None):
         return render_template('users.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'],
                                lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
                                upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
-                               questions=questions, answers=answers)
+                               questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
+                               answer_pagination=answer_pagination)
     return render_template('users.html', title=user['name'], user_id=user['id'], lname=user['lname'], name=user['name'],fname=user['fname'], email=user['email'], gravatar=gravatar100, upage=True,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
-                           questions=questions, answers=answers)
+                           questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
+                           answer_pagination=answer_pagination)
 
 '''@kunjika.route('/unanswered/<uid>')
 def unanswered(uid=None):
@@ -343,14 +345,8 @@ def ask():
 
             user = cb.get(str(g.user.id)).value
             user['rep'] += 1
-            if not questions in user:
-                user['questions'] = []
-                user['answers'] = []
-                user['qcount'] = 1
-                user['questions'].append(question['qid'])
-            else:
-                user['questions'].append(question['qid'])
-                user['qcount'] += 1
+            user['questions'].append(question['qid'])
+            user['qcount'] += 1
 
             cb.replace(str(g.user.id), user)
             add_tags(question['content']['tags'], question['qid'])
@@ -384,13 +380,15 @@ def create_profile():
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
             data['banned'] = False
-            data['votes'] = {}
-            data['votes']['up'] = 0
-            data['votes']['down'] = 0
-            data['votes']['question'] = 0
-            data['votes']['answers'] = 0
+            data['votes_count'] = {}
+            data['votes_count']['up'] = 0
+            data['votes_count']['down'] = 0
+            data['votes_count']['question'] = 0
+            data['votes_count']['answers'] = 0
             data['acount'] = 0
             data['qcount'] = 0
+            data['questions'] = []
+            data['answers'] = []
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -424,13 +422,15 @@ def create_profile():
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
             data['banned'] = False
-            data['votes'] = {}
-            data['votes']['up'] = 0
-            data['votes']['down'] = 0
-            data['votes']['question'] = 0
-            data['votes']['answers'] = 0
+            data['votes_count'] = {}
+            data['votes_count']['up'] = 0
+            data['votes_count']['down'] = 0
+            data['votes_count']['question'] = 0
+            data['votes_count']['answers'] = 0
             data['acount'] = 0
             data['qcount'] = 0
+            data['questions'] = []
+            data['answers'] = []
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -575,13 +575,15 @@ def register():
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
             data['banned'] = False
-            data['votes'] = {}
-            data['votes']['up'] = 0
-            data['votes']['down'] = 0
-            data['votes']['question'] = 0
-            data['votes']['answers'] = 0
+            data['votes_count'] = {}
+            data['votes_count']['up'] = 0
+            data['votes_count']['down'] = 0
+            data['votes_count']['question'] = 0
+            data['votes_count']['answers'] = 0
             data['acount'] = 0
             data['qcount'] = 0
+            data['questions'] = []
+            data['answers'] = []
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -606,13 +608,15 @@ def register():
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
             data['banned'] = False
-            data['votes'] = {}
-            data['votes']['up'] = 0
-            data['votes']['down'] = 0
-            data['votes']['question'] = 0
-            data['votes']['answers'] = 0
+            data['votes_count'] = {}
+            data['votes_count']['up'] = 0
+            data['votes_count']['down'] = 0
+            data['votes_count']['question'] = 0
+            data['votes_count']['answers'] = 0
             data['acount'] = 0
             data['qcount'] = 0
+            data['questions'] = []
+            data['answers'] = []
 
             cb.incr('count', 1)
             did = cb.get('count').value
