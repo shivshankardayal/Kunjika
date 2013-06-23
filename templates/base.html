@@ -3,6 +3,8 @@
 <head>
     {% from "macros.html" import debugmin %}
     {% from "macros.html" import render_pagination %}
+    {% from "macros.html" import render_user_question_pagination %}
+    {% from "macros.html" import render_user_answer_pagination %}
     {% block head %}
         <title>{% block title %}{{ title }}{% endblock %}</title>
         {% block meta %}

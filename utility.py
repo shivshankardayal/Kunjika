@@ -204,6 +204,17 @@ def url_for_other_page(page):
     args['page'] = page
     return url_for(request.endpoint, **args)
 
+def url_for_other_user_question_page(page):
+    args = request.view_args.copy()
+    args['qpage'] = page
+    return url_for(request.endpoint, **args)
+
+def url_for_other_user_answer_page(page):
+    args = request.view_args.copy()
+    args['apage'] = page
+    return url_for(request.endpoint, **args)
+
+
 def get_popular_tags():
 
     tag_list = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_by_count?descending=true').read()

@@ -97,6 +97,8 @@ bcrypt = Bcrypt(kunjika)
 lm.anonymous_user = Anonymous
 
 kunjika.jinja_env.globals['url_for_other_page'] = utility.url_for_other_page
+kunjika.jinja_env.globals['url_for_other_user_question_page'] = utility.url_for_other_user_question_page
+kunjika.jinja_env.globals['url_for_other_user_answer_page'] = utility.url_for_other_user_answer_page
 
 @kunjika.before_request
 def before_request():
@@ -229,26 +231,11 @@ def questions(tag=None, page=None, qid=None, url=None):
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                    qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
-
-'''@kunjika.route('/tags/<tag>')
-def tags(tag=None):
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
-    acount = json.loads(acount)
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-    return render_template('tags.html')
-'''
-
 @kunjika.route('/users/<uid>', defaults={'qpage': 1, 'apage': 1})
 @kunjika.route('/users/<uid>/<uname>', defaults={'qpage': 1, 'apage': 1})
-@kunjika.route('/users/<uid>/<uname>/questions/<int:qpage>')
-@kunjika.route('/users/<uid>/<uname>/answers/<int:apage>')
-def users(qpage, apage, uid=None, uname=None):
+@kunjika.route('/users/<uid>/<uname>/<int:qpage>')
+@kunjika.route('/users/<uid>/<uname>/<int:apage>')
+def users(qpage=1, apage=1, uid=None, uname=None):
     tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
@@ -290,18 +277,6 @@ def users(qpage, apage, uid=None, uname=None):
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
                            questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
                            answer_pagination=answer_pagination)
-
-'''@kunjika.route('/unanswered/<uid>')
-def unanswered(uid=None):
-    tag_list = utility.get_popular_tags()
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
-    acount = json.loads(acount)
-    acount = acount['rows'][0]['value']
-    return render_template('unanswered.html', qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
-'''
 
 @kunjika.route('/ask', methods=['GET', 'POST'])
 def ask():
