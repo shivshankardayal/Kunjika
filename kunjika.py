@@ -44,6 +44,9 @@ QUESTIONS_PER_PAGE = kunjika.config['QUESTIONS_PER_PAGE']
 TAGS_PER_PAGE = kunjika.config['TAGS_PER_PAGE']
 USERS_PER_PAGE = kunjika.config['USERS_PER_PAGE']
 
+USER_QUESTIONS_PER_PAGE = kunjika.config['USER_QUESTIONS_PER_PAGE']
+USER_ANSWERS_PER_PAGE = kunjika.config['USER_ANSWERS_PER_PAGE']
+
 oid = OpenID(kunjika, '/tmp')
 
 mail = Mail(kunjika)
@@ -194,7 +197,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     questions_dict['acount'] += 1
 
                     questions_dict['answers'].append(answer)
-                    user['answers'].append(str(qid) + '-' + answer['aid'])
+                    user['answers'].append(str(qid) + '-' + str(answer['aid']))
                     user['acount'] += 1
 
                 else:
@@ -209,7 +212,7 @@ def questions(tag=None, page=None, qid=None, url=None):
 
                     questions_dict['answers'] = []
                     questions_dict['answers'].append(answer)
-                    user['answers'].append(str(qid) + '-' + answer['aid'])
+                    user['answers'].append(str(qid) + '-' + str(answer['aid']))
                     user['acount'] = 1
 
                 user['rep'] += 4
@@ -241,9 +244,11 @@ def tags(tag=None):
     return render_template('tags.html')
 '''
 
-@kunjika.route('/users/<uid>')
-@kunjika.route('/users/<uid>/<uname>')
-def users(uid=None, uname=None):
+@kunjika.route('/users/<uid>', defaults={'qpage': 1, 'apage': 1})
+@kunjika.route('/users/<uid>/<uname>', defaults={'qpage': 1, 'apage': 1})
+@kunjika.route('/users/<uid>/<uname>/questions/<int:qpage>')
+@kunjika.route('/users/<uid>/<uname>/answers/<int:apage>')
+def users(qpage, apage, uid=None, uname=None):
     tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
@@ -258,6 +263,15 @@ def users(uid=None, uname=None):
     if tcount > 0:
         tag_list = utility.get_popular_tags()
     user = cb.get(uid).value
+    questions = utility.get_user_questions_per_page(user, qpage, USER_QUESTIONS_PER_PAGE, user['qcount'])
+    if not questions and qpage != 1:
+        abort(404)
+    # answers is actually questions containing answers
+    answers = utility.get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, user['acount'])
+    if not answers and apage != 1:
+        abort(404)
+    question_pagination = utility.Pagination(qpage, USER_QUESTIONS_PER_PAGE, user['qcount'])
+    answer_pagination = utility.Pagination(apage, USER_ANSWERS_PER_PAGE, user['acount'])
     #user = json.loads(user)
     gravatar100 = Gravatar(kunjika,
                            size=100,
@@ -269,9 +283,11 @@ def users(uid=None, uname=None):
         logged_in = True
         return render_template('users.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'],
                                lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
-                               upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user)
+                               upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
+                               questions=questions, answers=answers)
     return render_template('users.html', title=user['name'], user_id=user['id'], lname=user['lname'], name=user['name'],fname=user['fname'], email=user['email'], gravatar=gravatar100, upage=True,
-                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user)
+                           qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
+                           questions=questions, answers=answers)
 
 '''@kunjika.route('/unanswered/<uid>')
 def unanswered(uid=None):
@@ -368,6 +384,13 @@ def create_profile():
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
             data['banned'] = False
+            data['votes'] = {}
+            data['votes']['up'] = 0
+            data['votes']['down'] = 0
+            data['votes']['question'] = 0
+            data['votes']['answers'] = 0
+            data['acount'] = 0
+            data['qcount'] = 0
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -401,6 +424,13 @@ def create_profile():
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
             data['banned'] = False
+            data['votes'] = {}
+            data['votes']['up'] = 0
+            data['votes']['down'] = 0
+            data['votes']['question'] = 0
+            data['votes']['answers'] = 0
+            data['acount'] = 0
+            data['qcount'] = 0
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -545,6 +575,13 @@ def register():
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
             data['banned'] = False
+            data['votes'] = {}
+            data['votes']['up'] = 0
+            data['votes']['down'] = 0
+            data['votes']['question'] = 0
+            data['votes']['answers'] = 0
+            data['acount'] = 0
+            data['qcount'] = 0
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -569,6 +606,13 @@ def register():
             data['name'] = data['fname'] + " " + data['lname']
             data['rep'] = 0
             data['banned'] = False
+            data['votes'] = {}
+            data['votes']['up'] = 0
+            data['votes']['down'] = 0
+            data['votes']['question'] = 0
+            data['votes']['answers'] = 0
+            data['acount'] = 0
+            data['qcount'] = 0
 
             cb.incr('count', 1)
             did = cb.get('count').value

@@ -226,3 +226,33 @@ def filter_by(email):
     else:
         return None
 
+
+def get_user_questions_per_page(user, qpage, USER_QUESTIONS_PER_PAGE, qcount):
+    if 'questions' in user:
+        qid_list = user['questions'][(qpage - 1)*USER_QUESTIONS_PER_PAGE:qpage*USER_QUESTIONS_PER_PAGE]
+    else:
+        return None
+
+    question_list = []
+
+    for qid in qid_list:
+        question = kunjika.qb.get(str(qid)).value
+        question_list.append(question)
+
+    return question_list
+
+def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
+    #the following is aid in the form of 'qid-aid'
+    if 'answers' in user:
+        aid_list = user['answers'][(apage - 1)*USER_ANSWERS_PER_PAGE:apage*USER_ANSWERS_PER_PAGE]
+    else:
+        return None
+
+    question_list = []
+    #let us get question ids and questions
+    for aid in aid_list:
+        qid = aid.split('-')[0]
+        question = kunjika.qb.get(qid).value
+        question_list.append(question)
+
+    return question_list

@@ -19,11 +19,6 @@ def handle_vote(request):
 
     user = kunjika.cb.get(str(g.user.id)).value
 
-    if 'votes' not in user:
-        user['votes'] = {}
-        user['votes']['up'] = 0
-        user['votes']['down'] = 0
-
     if direction == 'up':
         user['votes']['up'] += 1
     else:

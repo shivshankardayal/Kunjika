@@ -76,10 +76,52 @@
                             <td>location:</td>
                             <td>{{ user['location'] }}</td>
                         </tr>
+                        <tr>
+                            <th>Votes:</th>
+                            <td>Up:</td>
+                            <td>{{ user['votes']['up'] }}</td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>Down:</td>
+                            <td>{{ user['votes']['down'] }}</td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>Questions:</td>
+                            <td>{{ user['votes']['question'] }}</td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>Answers:</td>
+                            <td>{{ user['votes']['answers'] }}</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="user-about-me note">
+                </div>
+                <div style="clear:both">
+                </div>
+                <div class="modal-body">
+                <div class="well">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#questions" data-toggle="tab">Questions</a>
+                        </li>
+                        <li>
+                            <a href="#answers" data-toggle="tab">Answers</a>
+                        </li>
+                    </ul>
+                    <div id="questions" class="tab-content">
+                        <div class="tab-pane active in" id="questions">
+                        </div>
+                    </div>
+                    <div id="answers" class="tab-content">
+                        <div class="tab-pane fade" id="answers">
+                        </div>
+                    </div>
+                </div>
                 </div>
             {% else %}
                 <div id="users">

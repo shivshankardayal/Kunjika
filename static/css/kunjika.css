@@ -30,11 +30,18 @@
     color: rgb(160, 160, 160);
     font-style: italic;
     padding-right:10px;
+    padding: 3px 20px 3px 0px;
+    white-space: nowrap;
+    vertical-align: top;
 }
 
 .table-user td{
     padding-right:10px;
+    padding: 3px 20px 3px 0px;
+    white-space: nowrap;
+    vertical-align: top;
 }
+
 #wrap {
     min-height: 100%;
     height: auto !important;
