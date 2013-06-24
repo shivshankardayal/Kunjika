@@ -1077,6 +1077,28 @@ def ban():
 
     return jsonify({"success": True})
 
+@kunjika.route('/info/<string:tag>')
+def tag_info(tag):
+    tag_list = []
+    try:
+        qcount = qb.get('qcount').value
+        ucount = cb.get('count').value
+        tcount = tb.get('tcount').value
+        acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+        acount = json.loads(acount)
+        if len(acount['rows']) is not 0:
+            acount = acount['rows'][0]['value']
+        else:
+            acount = 0
+        if tcount > 0:
+            tag_list = utility.get_popular_tags()
+    except:
+        pass
+    if g.user is AnonymousUser:
+        return render_template('tag_info.html', title='Info', tag=tag, tagpage=True, tpage=True)
+    elif g.user is not None and g.user.is_authenticated():
+        return render_template('tag_info.html', title='Info', tag=tag, tagpage=True, tpage=True)
+    else:
+        return render_template('tag_info.html', title='Info', tag=tag, tagpage=True, tpage=True)
 if __name__ == '__main__':
     kunjika.run()
-

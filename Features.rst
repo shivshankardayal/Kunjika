@@ -2,7 +2,6 @@ Features
 ********
 TODO
 ====
-1. More fields for user activity and profile.
 
 DONE
 ====
