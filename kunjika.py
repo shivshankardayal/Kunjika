@@ -215,7 +215,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     questions_dict['answers'] = []
                     questions_dict['answers'].append(answer)
                     user['answers'].append(str(qid) + '-' + str(answer['aid']))
-                    user['acount'] = 1
+                    user['acount'] += 1
 
                 user['rep'] += 4
                 cb.replace(str(g.user.id), user)
@@ -233,9 +233,8 @@ def questions(tag=None, page=None, qid=None, url=None):
 
 @kunjika.route('/users/<uid>', defaults={'qpage': 1, 'apage': 1})
 @kunjika.route('/users/<uid>/<uname>', defaults={'qpage': 1, 'apage': 1})
-@kunjika.route('/users/<uid>/<uname>/qpage/<int:qpage>')
-@kunjika.route('/users/<uid>/<uname>/apage/<int:apage>')
-def users(qpage=1, apage=1, uid=None, uname=None):
+@kunjika.route('/users/<uid>/<uname>/<int:qpage>/<int:apage>')
+def users(qpage=None, apage=None, uid=None, uname=None):
     tag_list = []
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
@@ -332,6 +331,25 @@ def ask():
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
 
+def populate_user_fields(data, form):
+
+    data['email'] = form.email1.data
+    data['fname'] = form.fname.data
+    data['lname'] = form.lname.data
+    data['name'] = data['fname'] + " " + data['lname']
+    data['rep'] = 0
+    data['banned'] = False
+    data['votes_count'] = {}
+    data['votes_count']['up'] = 0
+    data['votes_count']['down'] = 0
+    data['votes_count']['question'] = 0
+    data['votes_count']['answers'] = 0
+    data['acount'] = 0
+    data['qcount'] = 0
+    data['questions'] = []
+    data['answers'] = []
+    data['votes'] = []
+
 @kunjika.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
     #if request.args.get('email') is None:
@@ -348,23 +366,8 @@ def create_profile():
         view = json.loads(view)
         if len(view['rows']) == 0:
             print "hello1"
-            data['email'] = profileForm.email2.data
             data['role'] = 'admin'
-            data['fname'] = profileForm.fname.data
-            data['lname'] = profileForm.lname.data
-            data['name'] = data['fname'] + " " + data['lname']
-            data['rep'] = 0
-            data['banned'] = False
-            data['votes_count'] = {}
-            data['votes_count']['up'] = 0
-            data['votes_count']['down'] = 0
-            data['votes_count']['question'] = 0
-            data['votes_count']['answers'] = 0
-            data['acount'] = 0
-            data['qcount'] = 0
-            data['questions'] = []
-            data['answers'] = []
-            data['votes'] = []
+            populate_user_fields(data, profileForm)
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -392,22 +395,7 @@ def create_profile():
         #print(document)
         if len(document['rows']) == 0:
             print "hello2"
-            data['email'] = profileForm.email2.data
-            data['fname'] = profileForm.fname.data
-            data['lname'] = profileForm.lname.data
-            data['name'] = data['fname'] + " " + data['lname']
-            data['rep'] = 0
-            data['banned'] = False
-            data['votes_count'] = {}
-            data['votes_count']['up'] = 0
-            data['votes_count']['down'] = 0
-            data['votes_count']['question'] = 0
-            data['votes_count']['answers'] = 0
-            data['acount'] = 0
-            data['qcount'] = 0
-            data['questions'] = []
-            data['answers'] = []
-            data['votes'] = []
+            populate_user_fields(data, profileForm)
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -544,24 +532,9 @@ def register():
         view = urllib2.urlopen('http://localhost:8092/default/_design/dev_qa/_view/get_role?stale=false').read()
         view = json.loads(view)
         if len(view['rows']) == 0:
-            data['email'] = registrationForm.email1.data
             data['password'] = passwd_hash
             data['role'] = 'admin'
-            data['fname'] = registrationForm.fname.data
-            data['lname'] = registrationForm.lname.data
-            data['name'] = data['fname'] + " " + data['lname']
-            data['rep'] = 0
-            data['banned'] = False
-            data['votes_count'] = {}
-            data['votes_count']['up'] = 0
-            data['votes_count']['down'] = 0
-            data['votes_count']['question'] = 0
-            data['votes_count']['answers'] = 0
-            data['acount'] = 0
-            data['qcount'] = 0
-            data['questions'] = []
-            data['answers'] = []
-            data['votes'] = []
+            populate_user_fields(data, registrationForm)
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -579,23 +552,8 @@ def register():
         document = json.loads(document)
         #print(document)
         if len(document['rows']) == 0:
-            data['email'] = registrationForm.email1.data
             data['password'] = passwd_hash
-            data['fname'] = registrationForm.fname.data
-            data['lname'] = registrationForm.lname.data
-            data['name'] = data['fname'] + " " + data['lname']
-            data['rep'] = 0
-            data['banned'] = False
-            data['votes_count'] = {}
-            data['votes_count']['up'] = 0
-            data['votes_count']['down'] = 0
-            data['votes_count']['question'] = 0
-            data['votes_count']['answers'] = 0
-            data['acount'] = 0
-            data['qcount'] = 0
-            data['questions'] = []
-            data['answers'] = []
-            data['votes'] = []
+            populate_user_fields(data, registrationForm)
 
             cb.incr('count', 1)
             did = cb.get('count').value

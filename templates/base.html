@@ -105,7 +105,7 @@
                                     <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a></li>
                                 {% endif %}
                                 {% if user_id is defined %}
-                                    <li class="active"><a href="/users/{{ user_id }}" class="login"><i
+                                    <li class="active"><a href="/users/{{ user_id }}/{{ name }}" class="login"><i
                                             class="icon-sigin"></i> {{ name }}</a></li>
                                     <li><a href="/logout" class="login"><i class="icon-signout"></i> Logout</a></li>
                                 {% else %}
