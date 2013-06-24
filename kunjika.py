@@ -233,8 +233,8 @@ def questions(tag=None, page=None, qid=None, url=None):
 
 @kunjika.route('/users/<uid>', defaults={'qpage': 1, 'apage': 1})
 @kunjika.route('/users/<uid>/<uname>', defaults={'qpage': 1, 'apage': 1})
-@kunjika.route('/users/<uid>/<uname>/<int:qpage>')
-@kunjika.route('/users/<uid>/<uname>/<int:apage>')
+@kunjika.route('/users/<uid>/<uname>/qpage/<int:qpage>')
+@kunjika.route('/users/<uid>/<uname>/apage/<int:apage>')
 def users(qpage=1, apage=1, uid=None, uname=None):
     tag_list = []
     qcount = qb.get('qcount').value
@@ -364,6 +364,7 @@ def create_profile():
             data['qcount'] = 0
             data['questions'] = []
             data['answers'] = []
+            data['votes'] = []
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -406,6 +407,7 @@ def create_profile():
             data['qcount'] = 0
             data['questions'] = []
             data['answers'] = []
+            data['votes'] = []
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -559,6 +561,7 @@ def register():
             data['qcount'] = 0
             data['questions'] = []
             data['answers'] = []
+            data['votes'] = []
 
             cb.incr('count', 1)
             did = cb.get('count').value
@@ -592,6 +595,7 @@ def register():
             data['qcount'] = 0
             data['questions'] = []
             data['answers'] = []
+            data['votes'] = []
 
             cb.incr('count', 1)
             did = cb.get('count').value
