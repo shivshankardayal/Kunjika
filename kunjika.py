@@ -801,7 +801,7 @@ def edits(element):
                 for tag in tags:
                     try:
                         tag = int(tag)
-                        tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_tag_by_id?key=' + str(tag)).read()
+                        tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?key=' + str(tag)).read()
                         tag = json.loads(tag)['rows'][0]['value']
                         tag_list.append(tag['tag'])
                     except:
@@ -1100,5 +1100,32 @@ def tag_info(tag):
         return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
     else:
         return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
+
+@kunjika.route('/edit/<string:tag>')
+def edit_tag(tag):
+    tag_list = []
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
+    acount = json.loads(acount)
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
+    tagForm = TagForm(request.form)
+    if g.user is not None and g.user.is_authenticated():
+        if tagForm.validate_on_submit() and request.method == 'POST':
+            tag['info'] = tagForm.info.data
+
+            return redirect(url_for('info'), tag=tag)
+
+        return render_template('edit_tag.html', title='Edit tag', form=tagForm, tpage=True, name=g.user.name,
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+    return redirect(url_for('login'))
+
 if __name__ == '__main__':
     kunjika.run()

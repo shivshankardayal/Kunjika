@@ -44,5 +44,5 @@ class ProfileForm(Form):
                                  validators.Email(message='Either email is invalid or already registered.')])
     recaptcha = RecaptchaField(validators.Required())
 
-class EditTagForm(Form):
+class TagForm(Form):
     info = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
