@@ -1095,10 +1095,10 @@ def tag_info(tag):
     except:
         pass
     if g.user is AnonymousUser:
-        return render_template('tag_info.html', title='Info', tag=tag, tagpage=True, tpage=True)
+        return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
     elif g.user is not None and g.user.is_authenticated():
-        return render_template('tag_info.html', title='Info', tag=tag, tagpage=True, tpage=True)
+        return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
     else:
-        return render_template('tag_info.html', title='Info', tag=tag, tagpage=True, tpage=True)
+        return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
 if __name__ == '__main__':
     kunjika.run()
