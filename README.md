@@ -21,3 +21,5 @@ from document based database. So one query for question, one for user and one
 for tag and it is done.
 
 It is almost done. Few features are remaining then I will release the alpha.
+
+I was busy last week. Development will resume tomorrow.
