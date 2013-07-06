@@ -3,7 +3,6 @@ Features
 TODO
 ====
 1.  Configurable no. of questions, answers, comments from one ip/min.
-2.  Stop DOS.
 3.  Stop brute force password attack.
 
 DONE
@@ -52,3 +51,4 @@ Postponed for later
 4. Feed for users.
 5. Sitemap generation
 6. Following questions, tags and users.
+7. Stop DOS.(This should not reach application and must be filtered at web server level or before).
