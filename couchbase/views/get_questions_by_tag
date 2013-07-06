@@ -1,5 +1,7 @@
 function (doc, meta) {
-  if(doc.email) {
-    emit(doc.rep, doc, null);
-  }
+    if(doc.content.tags) {
+        for(i=0; i<doc.content.tags.length; i++) {
+            emit([doc.content.tags[i], doc], null);
+        }
+    }
 }

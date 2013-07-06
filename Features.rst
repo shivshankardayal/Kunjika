@@ -3,7 +3,7 @@ Features
 TODO
 ====
 1.  Reset password.
-2.  Configurable no. of questions, answers, comments from one ip/sec.
+2.  Configurable no. of questions, answers, comments from one ip/min.
 3.  Stop DOS.
 4.  Stop brute force password attack.
 
