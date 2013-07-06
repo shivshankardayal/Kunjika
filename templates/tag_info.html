@@ -11,14 +11,28 @@
 {% endblock %}
 
 {% block css_site %}
+    <link href="/static/css/wmd.css" rel="stylesheet">
+    <link href="/static/css/prettify.css" rel="stylesheet">
+    <!--    <link href="/static/css/googlecode.css" rel="stylesheet">-->
+    <link href="/static/css/token-input.css" rel="stylesheet">
     <link href="/static/css/kunjika.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
+    <script type="text/javascript"
+            src="/static/js/prettify.js?lang=clj&amp;lbg=erlang&amp;lang=matlab&amp;lang=sql&amp;lang=vb&amp;lang=css&amp;lang=go&amp;lang=pascal&amp;lan=tcl&amp;lang=yaml&amp;lan=basic&amp;lang=dart&amp;lan=lua&amp;lang=scala&amp;lang=wiki&amp;lang=tex"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
 
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
     <div id="mainbar" class="mainbar">
-        <h2 style="border-bottom: 1px #777 dotted">Tag Info</h2>
-        <form action="/edit/{{ tag['tag'] }}" method="post">
+        <h2 style="border-bottom: 1px #777 dotted">Tag Info About {{ tag['tag'] }}</h2>
+        <div id="tag-info">{{ tag['info'] }}
+        </div>
+        <form action="/edit_tag/{{ tag['tag'] }}" method="post">
             <div class="controls">
                 <button class="btn btn-primary">
                     Edit this tag
@@ -27,4 +41,16 @@
         </form>
     </div>
     </div>
+    <script type="text/javascript">
+        var converter = new Markdown.Converter();
+        Markdown.Extra.init(converter, {
+            extensions: "all",
+            highlighter: "prettify"
+        });
+
+        var originalHTML = $("#tag-info").text();
+        var convertedHTML = converter.makeHtml(originalHTML);
+        alert(convertedHTML);
+        $("#tag-info").html(convertedHTML);
+    </script>
 {% endblock %}

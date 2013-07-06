@@ -28,7 +28,7 @@ DONE
 12. Making questions favorite for one user.
 13. Search on question title/contents using Google's custom search. Note that
     crawler crawls depending upon activity so new stuff wont reflect immediately.
-14. Simple tags display(allow editing excerpt).
+14. Simple tags display.(Allow editing of excerpt)
 15. Users page.
 16. Simple count of questions, answers, tags and users.
 17. Popular tags display on main page in side bar.
@@ -38,13 +38,13 @@ DONE
 21. Email notification at registration.
 22. Flagging inappropriate questions, answers and comments.
 23. Banning/unbanning users.
+24. Tag wiki implementation.
 
 Postponed for later
 ===================
 1. Search using Sphinx.
-2. Tag wiki implementation.
-3. Similar questions.
-4. Extra cloning of stackoverflow.
-5. Feed for users and questions.
-6. Sitemap generation
-7. Following questions, tags and users.
+2. Similar questions.
+3. Extra cloning of stackoverflow.
+4. Feed for users and questions.
+5. Sitemap generation
+6. Following questions, tags and users.

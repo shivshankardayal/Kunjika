@@ -10,8 +10,8 @@ from flaskext.gravatar import Gravatar
 from werkzeug import secure_filename, SharedDataMiddleware
 import os
 from os.path import basename
-from time import localtime, strftime, time
-import datetime
+from time import localtime, strftime, time, mktime
+from datetime import datetime
 from flask.ext.login import (LoginManager, current_user, login_required,
                              login_user, logout_user, UserMixin, AnonymousUser,
                              confirm_login, fresh_login_required)
@@ -217,6 +217,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     user['answers'].append(str(qid) + '-' + str(answer['aid']))
                     user['acount'] += 1
 
+                questions_dict['updated'] = int(time())
                 user['rep'] += 4
                 cb.replace(str(g.user.id), user)
                 qb.replace(str(questions_dict['qid']), questions_dict)
@@ -308,6 +309,7 @@ def ask():
             question['content']['url'] = url
             question['content']['op'] = str(g.user.id)
             question['content']['ts'] = int(time())
+            question['updated'] = question['content']['ts']
             question['content']['ip'] = request.remote_addr
             qb.incr('qcount', 1)
             question['qid'] = qb.get('qcount').value
@@ -686,6 +688,7 @@ def add_tags(tags_passed, qid):
             data['excerpt'] = ""
             data['tag'] = tag
             data['count'] = 1
+            data['info'] = ""
             data['qid'].append(qid)
             tb.incr('tcount', 1)
             tid = tb.get('tcount').value
@@ -708,6 +711,7 @@ def replace_tags(tags_passed, qid, current_tags):
                 data['excerpt'] = ""
                 data['tag'] = tag
                 data['count'] = 1
+                data['info'] = ""
                 data['qid'].append(qid)
                 tb.incr('tcount', 1)
                 tid = tb.get('tcount').value
@@ -780,6 +784,7 @@ def edits(element):
 
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1
+                question['updated'] = int(time())
                 qb.replace(qid, question)
 
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
@@ -789,6 +794,7 @@ def edits(element):
 
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1
+                question['updated'] = int(time())
                 qb.replace(qid, question)
 
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
@@ -807,6 +813,7 @@ def edits(element):
                     except:
                         tag_list.append(tag)
 
+                question['updated'] = int(time())
                 question['content']['tags'] = tag_list
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1
@@ -923,7 +930,7 @@ def postcomment():
             question['comments'].append(comment)
 
     #pprint(question)
-
+    question['updated'] = int(time())
     qb.replace(str(qid), question)
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
     #return '<div class="comment" id="c-' + str(comment['cid']) + '">' + request.form['comment'] +'<div>&mdash;</div>' \
@@ -1060,7 +1067,7 @@ def recent_feed():
                  content_type='html',
                  author='http://localhost:5000/users/' + unicode(question['content']['op']) + question['opname'],
                  url=make_external('http://localhost:5000/questions' + '/' + unicode(question['qid']) + "/" + question['content']['url']),
-                 updated=datetime.datetime(2013, 05, 17))
+                 updated=datetime.fromtimestamp(question['updated']))
     return feed.get_response()
 
 @kunjika.route('/ban')
@@ -1077,8 +1084,11 @@ def ban():
 
     return jsonify({"success": True})
 
+@kunjika.route('/info', methods=['GET', 'POST'])
 @kunjika.route('/info/<string:tag>')
-def tag_info(tag):
+def tag_info(tag=None):
+    if tag is None:
+        tag = request.args.get('tag')
     tag_list = []
     try:
         qcount = qb.get('qcount').value
@@ -1086,7 +1096,7 @@ def tag_info(tag):
         tcount = tb.get('tcount').value
         acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_dev/_view/get_acount').read()
         acount = json.loads(acount)
-        if len(acount['rows']) is not 0:
+        if len(acount['rows']) != 0:
             acount = acount['rows'][0]['value']
         else:
             acount = 0
@@ -1094,6 +1104,9 @@ def tag_info(tag):
             tag_list = utility.get_popular_tags()
     except:
         pass
+    tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
+    tag = json.loads(tag)
+    tag = tag['rows'][0]['value']
     if g.user is AnonymousUser:
         return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
     elif g.user is not None and g.user.is_authenticated():
@@ -1101,7 +1114,7 @@ def tag_info(tag):
     else:
         return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
 
-@kunjika.route('/edit/<string:tag>')
+@kunjika.route('/edit_tag/<string:tag>', methods=['POST'])
 def edit_tag(tag):
     tag_list = []
     qcount = qb.get('qcount').value
@@ -1116,14 +1129,19 @@ def edit_tag(tag):
 
     if tcount > 0:
         tag_list = utility.get_popular_tags()
+
+    tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
+    tag = json.loads(tag)
+    tag = tag['rows'][0]['value']
     tagForm = TagForm(request.form)
     if g.user is not None and g.user.is_authenticated():
         if tagForm.validate_on_submit() and request.method == 'POST':
             tag['info'] = tagForm.info.data
+            print "hello"
+            tb.replace(tag['tag'], tag)
+            return redirect(url_for('tag_info', tag=str(tag['tag'])))
 
-            return redirect(url_for('info'), tag=tag)
-
-        return render_template('edit_tag.html', title='Edit tag', form=tagForm, tpage=True, name=g.user.name,
+        return render_template('edit_tag.html', title='Edit tag', form=tagForm, tpage=True, name=g.user.name, tag=tag,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
 
