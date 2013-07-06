@@ -2,6 +2,10 @@ Features
 ********
 TODO
 ====
+1.  Reset password.
+2.  Configurable no. of questions, answers, comments from one ip/sec.
+3.  Stop DOS.
+4.  Stop brute force password attack.
 
 DONE
 ====
@@ -33,7 +37,7 @@ DONE
 16. Simple count of questions, answers, tags and users.
 17. Popular tags display on main page in side bar.
 18. Code attachments also .zip source attachments up to 2MB.
-19. Atom feed for questions(update proper time)..
+19. Atom feed for questions.
 20. OpenID integration.(take care of GET of create_profile)
 21. Email notification at registration.
 22. Flagging inappropriate questions, answers and comments.
@@ -45,6 +49,6 @@ Postponed for later
 1. Search using Sphinx.
 2. Similar questions.
 3. Extra cloning of stackoverflow.
-4. Feed for users and questions.
+4. Feed for users.
 5. Sitemap generation
 6. Following questions, tags and users.
