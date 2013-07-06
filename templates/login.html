@@ -9,6 +9,9 @@
         }
     </style>
 {% endblock %}
+{% block css_site %}
+    <link href="/static/css/kunjika.css" rel="stylesheet">
+{% endblock %}
 {% block container %}
     <div class="container">
     <div class="" id="loginModal">
@@ -47,6 +50,9 @@
                                         <button class="btn btn-success">
                                             Login
                                         </button>
+                                        <a class="reset-passwd" href="/reset_password">
+                                            Reset Password
+                                        </a>
                                     </div>
                                 </div>
                             </fieldset>

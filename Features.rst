@@ -2,10 +2,9 @@ Features
 ********
 TODO
 ====
-1.  Reset password.
-2.  Configurable no. of questions, answers, comments from one ip/min.
-3.  Stop DOS.
-4.  Stop brute force password attack.
+1.  Configurable no. of questions, answers, comments from one ip/min.
+2.  Stop DOS.
+3.  Stop brute force password attack.
 
 DONE
 ====
@@ -43,6 +42,7 @@ DONE
 22. Flagging inappropriate questions, answers and comments.
 23. Banning/unbanning users.
 24. Tag wiki implementation.
+25. Reset password.
 
 Postponed for later
 ===================

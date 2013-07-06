@@ -46,3 +46,15 @@ class ProfileForm(Form):
 
 class TagForm(Form):
     info = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
+
+class PasswordResetForm(Form):
+    password = PasswordField('Password', [
+        validators.Required(),
+        validators.EqualTo('confirm', message='Passwords must match'),
+        validators.Length(min=8, max=32)
+    ])
+    confirm = PasswordField('Confirm Password')
+
+class EmailForm(Form):
+    email = TextField('Email', [validators.Length(min=5, max=48),validators.Required(),
+                                 validators.Email(message='Email is invalid')])

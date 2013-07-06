@@ -604,3 +604,8 @@ pre.prettyprint {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.reset-passwd {
+    margin-left: 15px;
+    font-size: 12px;
+}
