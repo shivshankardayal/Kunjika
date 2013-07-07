@@ -314,7 +314,326 @@ https://github.com/jmcmanus/pagedown-extra
 Should you need more help the you can read it at http://daringfireball.net/projects/markdown/syntax
 
 &lt;a href="#math" id="math" class="markdown-help"&gt;Mathematics Reference&lt;/a&gt;
-            </div>
+
+Mardown itself does not have any Math support but we achieve that using MathJax. If you know
+LaTeX syntax then you can type Math easily. In this section we will go through primer.
+The delimiters are `\\(` and `\\)` for inline and `\\[` and `\\]` for equations. Note that
+preview does not show Math preview. You must submit to see the actual content. Much of
+following content comes from http://en.wikibooks.org/wiki/LaTeX/Mathematics with some modification.
+
+&lt;a href="#ops" id="ops" class="markdown-help"&gt;Mathematical Operators&lt;/a&gt;
+
+An operator is a function that is written as a word: e.g. trigonometric functions (sin, cos, tan),
+logarithms and exponentials (log, exp). LaTeX has many of these defined as commands:
+
+Following
+
+    \\( \cos (2\theta) = \cos^2 \theta - \sin^2 \theta \\)
+
+will render like
+
+\\( \cos (2\theta) = \cos^2 \theta - \sin^2 \theta \\)
+
+For certain operators such as limits, the subscript is placed underneath the operator:
+
+    \\(\lim_{x \to \infty} \exp(-x) = 0\\)
+
+will render as
+
+\\(\lim_{x \to \infty} \exp(-x) = 0\\)
+
+The same can be rendered as equation which will be slightly different. For example,
+
+    \\[\lim_{x \to \infty} \exp(-x) = 0\\]
+
+will render as
+
+\\[\lim_{x \to \infty} \exp(-x) = 0\\]
+
+For the modular operator there are two commands: \bmod and \pmod:
+
+    \\(a \bmod b \\)
+
+    \\(x \equiv a \pmod b\\)
+
+    \\[a \bmod b \\]
+
+    \\[x \equiv a \pmod b\\]
+
+will render as
+
+\\(a \bmod b \\)
+
+\\(x \equiv a \pmod b\\)
+
+\\[a \bmod b \\]
+
+\\[x \equiv a \pmod b\\]
+
+&lt;a href="#pi" id="pi" class="markdown-help"&gt;Powers and Indices&lt;/a&gt;
+
+Powers and indices are equivalent to superscripts and subscripts in normal text mode.
+The caret (^) character is used to raise something, and the underscore (_) is for
+lowering. If more than one expression is raised or lowered, they should be grouped
+using curly braces ({ and }). An underscore (_) can be used with a vertical bar (|) to
+denote evaluation using subscript notation in mathematics:
+
+    \\(k_{n+1} = n^2 + k_n^2 - k_{n-1}\\)
+
+    \\[k_{n+1} = n^2 + k_n^2 - k_{n-1}\\]
+
+    \\(f(n) = n^5 + 4n^2 + 2 |_{n=17}\\)
+
+    \\[f(n) = n^5 + 4n^2 + 2 |_{n=17}\\]
+
+will render like
+
+\\(k_{n+1} = n^2 + k_n^2 - k_{n-1}\\)
+
+\\[k_{n+1} = n^2 + k_n^2 - k_{n-1}\\]
+
+\\(f(n) = n^5 + 4n^2 + 2 |_{n=17}\\)
+
+\\[f(n) = n^5 + 4n^2 + 2 |_{n=17}\\]
+
+&lt;a href="#fb" id="fb" class="markdown-help"&gt;Fractions and Binomials&lt;/a&gt;
+
+A fraction is created using the \frac{numerator}{denominator} command. Likewise, the binomial
+coefficient (aka the Choose function) may be written using the \binom command.
+
+    \\(\frac{n!}{k!(n-k)!} = \binom{n}{k}\\)
+
+    \\[\frac{n!}{k!(n-k)!} = \binom{n}{k}\\]
+
+will render as
+
+\\(\frac{n!}{k!(n-k)!} = \binom{n}{k}\\)
+
+\\[\frac{n!}{k!(n-k)!} = \binom{n}{k}\\]
+
+ It is also possible to use the \choose command
+
+    \\(\frac{n!}{k!(n-k)!} = {n \choose k}\\)
+
+will render as
+
+\\(\frac{n!}{k!(n-k)!} = {n \choose k}\\)
+
+Fractions can also contain fractions like
+
+    \\[\frac{\frac{1}{x}+\frac{1}{y}}{y-z}\\]
+
+will render as
+
+\\[\frac{\frac{1}{x}+\frac{1}{y}}{y-z}\\]
+
+Note that when appearing inside another fraction, or in inline text \tfrac{a}{b}, a fraction
+is noticeably smaller than in displayed mathematics. The \tfrac and \dfrac commands force the
+use of the respective styles, \textstyle and \displaystyle. Similarly, the \tbinom and
+\dbinom commands typeset the binomial coefficient.
+
+Another way to write fractions is to use the \over command
+
+    \\[{n! \over k!(n-k)!} = {n \choose k}\\]
+
+will render as
+
+\\[{n! \over k!(n-k)!} = {n \choose k}\\]
+
+For relatively simple fractions, it may be more aesthetically pleasing to use powers and indices:
+
+    \\[^3/_7\\]
+
+will render as
+
+\\[^3/_7\\]
+
+Continued fractions should be written using \cfrac command
+
+    \\[x = a_0 + \cfrac{1}{a_1
+              + \cfrac{1}{a_2
+              + \cfrac{1}{a_3 + \cfrac{1}{a_4} } } }\\]
+will render as
+
+\\[x = a_0 + \cfrac{1}{a_1
+          + \cfrac{1}{a_2
+          + \cfrac{1}{a_3 + \cfrac{1}{a_4} } } }\\]
+
+To make multiplication visually similar to a fraction, a nested array can be used, for
+example multiplication of numbers written one below the other.
+
+    \\[
+    \frac{
+        \begin{array}[b]{r}
+          \left( x_1 x_2 \right)\\
+          \times \left( x'_1 x'_2 \right)
+        \end{array}
+      }{
+        \left( y_1y_2y_3y_4 \right)
+      }\\]
+
+will render as
+
+\\[
+\frac{
+    \begin{array}[b]{r}
+      \left( x_1 x_2 \right)\\
+      \times \left( x'_1 x'_2 \right)
+    \end{array}
+  }{
+    \left( y_1y_2y_3y_4 \right)
+  }\\]
+
+&lt;a href="#sq" id="sq" class="markdown-help"&gt;Square Root&lt;/a&gt;
+
+The \sqrt command creates a square root surrounding an expression. It accepts an optional argument specified in square brackets ([ and ]) to change magnitude:
+
+    \\[\sqrt{\frac{a}{b}}\\]
+
+    \\[\sqrt[n]{1+x+x^2+x^3+\ldots}\\]
+
+will render like
+
+\\[\sqrt{\frac{a}{b}}\\]
+
+\\[\sqrt[n]{1+x+x^2+x^3+\ldots}\\]
+
+&lt;a href="#si" id="si" class="markdown-help"&gt;Sum and Integral&lt;/a&gt;
+
+The \sum and \int commands insert the sum and integral symbols respectively, with limits
+specified using the caret (^) and underscore (_). The typical notation for sums is:
+
+    \\[\sum_{i=1}^{10} t_i\\]
+
+will render as
+
+\\[\sum_{i=1}^{10} t_i\\]
+
+The limits for the integrals follow the same notation. It's also important to represent the
+integration variables with an upright d, which in math mode is obtained through the
+\mathrm{} command, and with a small space separating it from the integrand, which is
+attained with the \, command.
+
+    \\[\int_0^\infty \mathrm{e}^{-x}\,\mathrm{d}x\\]
+
+will render as
+
+\\[\int_0^\infty \mathrm{e}^{-x}\,\mathrm{d}x\\]
+
+There are many other "big" commands which operate in a similar manner:
+
+    | Script       | Symbol          | Script       | Symbol           | Script       | Symbol          |
+    | ---------    | ------          | ---------    | ------           | ---------    | ------          |
+    |  \sum        | \\(\sum\\)      |  \prod       | \\(\prod\\)      |  \coprod     | \\(\coprod\\)   |
+    | \bigcup      | \\(\bigcup\\)   |  \bigcap     | \\(\bigcap\\)    |  \bigodot    | \\(\bigodot\\)  |
+    | \bigsqcup    | \\(\bigsqcup\\) |  \bigvee     | \\(\bigvee\\)    |  \biguplus   | \\(\biguplus\\) |
+    | \int         | \\(\int\\)      |  \oint       | \\(\oint\\)      |  \iint       | \\(\iint\\)     |
+    | \iiint       | \\(\iiint\\)    |  \iiiint     | \\(\iiiint\\)    |  \idotsint   | \\(\idotsint\\) |
+
+will render like
+
+| Script       | Symbol          | Script       | Symbol           | Script       | Symbol          |
+| ---------    | ------          | ---------    | ------           | ---------    | ------          |
+|  \sum        | \\(\sum\\)      |  \prod       | \\(\prod\\)      |  \coprod     | \\(\coprod\\)   |
+| \bigcup      | \\(\bigcup\\)   |  \bigcap     | \\(\bigcap\\)    |  \bigodot    | \\(\bigodot\\)  |
+| \bigsqcup    | \\(\bigsqcup\\) |  \bigvee     | \\(\bigvee\\)    |  \biguplus   | \\(\biguplus\\) |
+| \int         | \\(\int\\)      |  \oint       | \\(\oint\\)      |  \iint       | \\(\iint\\)     |
+| \iiint       | \\(\iiint\\)    |  \iiiint     | \\(\iiiint\\)    |  \idotsint   | \\(\idotsint\\) |
+
+The \substack command allows the use of \\ to write the limits over multiple lines:
+
+    \\[\sum_{\substack{
+       0&lt;i&lt;m \\
+       0&lt;j&lt;n
+      }}
+     P(i,j)\\]
+
+will render as
+
+\\[\sum_{\substack{
+   0&amp;lt;i&amp;lt;m \\\\
+   0&amp;lt;j&amp;lt;n
+  }}
+ P(i,j)\\]
+
+If you want the limits of an integral to be specified above and below the symbol (like the sum), use the \limits command:
+
+    \\[\int\limits_a^b\\]
+
+will render as
+
+\\[\int\limits_a^b\\]
+
+&lt;a href="#bbd" id="bbd" class="markdown-help"&gt;Brackets, Braces and Delimiters&lt;/a&gt;
+
+The use of delimiters such as brackets soon becomes important when dealing with anything but
+the most trivial equations. Without them, formulas can become ambiguous. Also, special types
+of mathematical structures, such as matrices, typically rely on delimiters to enclose them.
+
+There are a variety of delimiters available for use in LaTeX:
+
+    \\[ ( a ), [ b ], \{ c \}, | d |, \ | e \ |,
+    \langle f \rangle, \lfloor g \rfloor,
+    \lceil h \rceil, \ulcorner i \urcorner\\]
+
+will render as
+
+\\[ ( a ), [ b ], \{ c \}, | d |, \| e \|,
+\langle f \rangle, \lfloor g \rfloor,
+\lceil h \rceil, \ulcorner i \urcorner\\]
+
+Note that there is no space between backslash and bar for e in preformatted text.
+
+Very often mathematical features will differ in size, in which case the delimiters
+surrounding the expression should vary accordingly. This can be done automatically
+using the \left, \right, and \middle commands. If a delimiter on only one side of
+an expression is required, then an invisible delimiter on the other side may be
+denoted using a period (.).Any of the previous delimiters may
+be used in combination with these:
+
+    \\[\left(\frac{x^2}{y^3}\right)\\]
+
+    \\[P\left(A=2\middle|\frac{A^2}{B}>4\right)\\]
+
+    \\[\left.\frac{x^3}{3}\right|_0^1\\]
+
+will render as
+
+\\[\left(\frac{x^2}{y^3}\right)\\]
+
+\\[P\left(A=2\middle|\frac{A^2}{B}>4\right)\\]
+
+\\[\left.\frac{x^3}{3}\right|_0^1\\]
+
+In certain cases, the sizing produced by the \left and \right commands may not be desirable,
+or you may simply want finer control over the delimiter sizes. In this case, the \big, \Big,
+\bigg and \Bigg modifier commands may be used:
+
+    \\[( \big( \Big( \bigg( \Bigg(\\]
+
+will render as
+
+\\[( \big( \Big( \bigg( \Bigg(\\]
+
+These commands are primarily useful when dealing with nested delimiters. For example, when
+typesetting
+
+    \\[\frac{\mathrm d}{\mathrm d x} \left( k g(x) \right)\\]
+
+will render as
+
+\\[\frac{\mathrm d}{\mathrm d x} \left( k g(x) \right)\\]
+
+we notice that the \left and \right commands produce the same size delimiters as those nested
+within it. This can be difficult to read. To fix this, we write
+
+    \\[\frac{\mathrm d}{\mathrm d x} \big( k g(x) \big)\\]
+
+will render as
+
+\\[\frac{\mathrm d}{\mathrm d x} \big( k g(x) \big)\\]
+    </div>
+
         </div>
         <div id="sidebar">
             <div id="scroller-anchor"></div>
@@ -346,6 +665,18 @@ Should you need more help the you can read it at http://daringfireball.net/proje
                             Markdown Reference Page</a></li>
                         <li><a title="" href="#math">
                             Mathematics Support</a></li>
+                        <li><a title="" href="#ops">
+                            Operators</a></li>
+                        <li><a title="" href="#pi">
+                            Powers and Indices</a></li>
+                        <li><a title="" href="#fb">
+                            Fractions and Binomials</a></li>
+                        <li><a title="" href="#sq">
+                            Square Root</a></li>
+                        <li><a title="" href="#si">
+                            Sum and Integrals</a></li>
+                        <li><a title="" href="#bbd">
+                            Brackets, Braces and Delimiters</a></li>
                     </ul>
                 </div>
             </div>

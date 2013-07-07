@@ -639,10 +639,10 @@ pre.prettyprint {
 }
 
 td, th {
-    padding-left: 7px;
-    padding-right: 7px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding-left: 7px!important;
+    padding-right: 7px!important;
+    padding-top: 2px!important;
+    padding-bottom: 2px!important;
 }
 
 table {
