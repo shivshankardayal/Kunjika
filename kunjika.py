@@ -35,6 +35,8 @@ kunjika = Flask(__name__)
 kunjika.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 kunjika.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 kunjika.config.from_object('config')
+DB_URL = kunjika.config['DB_URL']
+HOST_URL = kunjika.config['HOST_URL']
 kunjika.debug = True
 kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
@@ -134,7 +136,7 @@ def questions(tag=None, page=None, qid=None, url=None):
         qcount = qb.get('qcount').value
         ucount = cb.get('count').value
         tcount = tb.get('tcount').value
-        acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_qa/_view/get_acount').read()
+        acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
         acount = json.loads(acount)
         if len(acount['rows']) is not 0:
             acount = acount['rows'][0]['value']
@@ -180,9 +182,9 @@ def questions(tag=None, page=None, qid=None, url=None):
                                    pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     else:
         questions_dict = question.get_question_by_id(qid, questions_dict)
-        if request.referrer == "http://localhost:5000/questions":
+        if request.referrer == HOST_URL + "questions":
             questions_dict['views'] += 1
-        elif request.host_url != "http://localhost:5000/":
+        elif request.host_url != HOST_URL + "":
             questions_dict['views'] += 1
         if g.user is AnonymousUser:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
@@ -266,7 +268,7 @@ def users(qpage=None, apage=None, uid=None, uname=None):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -310,7 +312,7 @@ def ask():
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -417,7 +419,7 @@ def create_profile():
         print "hello"
         data = {}
         print profileForm.email2.data
-        view = urllib2.urlopen('http://localhost:8092/default/_design/dev_qa/_view/get_role?stale=false').read()
+        view = urllib2.urlopen(DB_URL + 'default/_design/dev_qa/_view/get_role?stale=false').read()
         view = json.loads(view)
         if len(view['rows']) == 0:
             print "hello1"
@@ -445,7 +447,7 @@ def create_profile():
                 return make_response("cant login")
 
         document = urllib2.urlopen(
-            'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + profileForm.email2.data + '"&stale=false').read()
+            DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + profileForm.email2.data + '"&stale=false').read()
         document = json.loads(document)
         #print(document)
         if len(document['rows']) == 0:
@@ -537,7 +539,7 @@ def login():
         try:
             #document = json.loads(document)
             document = urllib2.urlopen(
-                'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + loginForm.email.data + '"').read()
+                DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + loginForm.email.data + '"').read()
             document = json.loads(document)['rows'][0]['value']
             if document['banned'] is True:
                 flash('Your acount is banned possibly because you abused the system. Contact ' + admin +
@@ -607,7 +609,7 @@ def register():
         passwd_hash = bcrypt.generate_password_hash(registrationForm.password.data)
 
         data = {}
-        view = urllib2.urlopen('http://localhost:8092/default/_design/dev_qa/_view/get_role?stale=false').read()
+        view = urllib2.urlopen(DB_URL + 'default/_design/dev_qa/_view/get_role?stale=false').read()
         view = json.loads(view)
         if len(view['rows']) == 0:
             data['password'] = passwd_hash
@@ -626,7 +628,7 @@ def register():
             return redirect(url_for('questions'))
 
         document = urllib2.urlopen(
-            'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + registrationForm.email1.data + '"&stale=false').read()
+            DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + registrationForm.email1.data + '"&stale=false').read()
         document = json.loads(document)
         #print(document)
         if len(document['rows']) == 0:
@@ -666,7 +668,7 @@ def check_email():
 
     try:
         document = urllib2.urlopen(
-            'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
+            DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
         document = json.loads(document)
         if len(document['rows']) != 0:
             return '0'
@@ -725,7 +727,7 @@ def image_upload():
 
             if saved is True:
                 data['success'] = "true"
-                data['imagePath'] = "http://localhost:5000/uploads/" + filename
+                data['imagePath'] = HOST_URL + "uploads/" + filename
             else:
                 data['success'] = "false"
                 data['mesage'] = "Invalid image file"
@@ -744,7 +746,7 @@ def get_tags(q=None, qid=None):
 
         tags_list = []
         for i in tags:
-            tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(i) + '"').read()
+            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(i) + '"').read()
             #print tag
             tag = json.loads(tag)['rows'][0]['value']
             tags_list.append({"id": tag['tid'], "name": tag['tag']})
@@ -799,7 +801,7 @@ def replace_tags(tags_passed, qid, current_tags):
 
     for tag in current_tags:
         if tag not in tags_passed:
-            tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(tag) + '"').read()
+            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(tag) + '"').read()
             #print tag
             tag = json.loads(tag)['rows'][0]['value']
             tag['qid'].remove(int(qid))
@@ -818,7 +820,7 @@ def edits(element):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -885,7 +887,7 @@ def edits(element):
                 for tag in tags:
                     try:
                         tag = int(tag)
-                        tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?key=' + str(tag)).read()
+                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + str(tag)).read()
                         tag = json.loads(tag)['rows'][0]['value']
                         tag_list.append(tag['tag'])
                     except:
@@ -1048,7 +1050,7 @@ def unanswered(page):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -1058,7 +1060,7 @@ def unanswered(page):
         tag_list = utility.get_popular_tags()
     skip = (page - 1) * QUESTIONS_PER_PAGE
     questions = urllib2.urlopen(
-        'http://localhost:8092/questions/_design/dev_qa/_view/get_unanswered?limit=' +
+        DB_URL + 'questions/_design/dev_qa/_view/get_unanswered?limit=' +
         str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
     questions = json.loads(questions)
     count = questions['total_rows']
@@ -1095,7 +1097,7 @@ def show_users(page):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -1127,7 +1129,7 @@ def show_tags(page):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -1156,7 +1158,7 @@ def make_external(url):
 def recent_feed():
     feed = AtomFeed('Recent Questions',
                     feed_url=request.url, url=request.url_root)
-    questions = urllib2.urlopen('http://localhost:8092/questions/_design/dev_qa/_view/get_questions?limit=' + str(50)).read()
+    questions = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_questions?limit=' + str(50)).read()
     questions = json.loads(questions)['rows']
 
     question_list = []
@@ -1167,8 +1169,8 @@ def recent_feed():
     for question in question_list:
         feed.add(question['title'], unicode(question['content']['description']),
                  content_type='html',
-                 author='http://localhost:5000/users/' + unicode(question['content']['op']) + question['opname'],
-                 url=make_external('http://localhost:5000/questions' + '/' + unicode(question['qid']) + "/" + question['content']['url']),
+                 author=HOST_URL + 'users/' + unicode(question['content']['op']) + question['opname'],
+                 url=make_external(HOST_URL + 'questions' + '/' + unicode(question['qid']) + "/" + question['content']['url']),
                  updated=datetime.fromtimestamp(question['updated']))
     return feed.get_response()
 
@@ -1196,7 +1198,7 @@ def tag_info(tag=None):
         qcount = qb.get('qcount').value
         ucount = cb.get('count').value
         tcount = tb.get('tcount').value
-        acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_qa/_view/get_acount').read()
+        acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
         acount = json.loads(acount)
         if len(acount['rows']) != 0:
             acount = acount['rows'][0]['value']
@@ -1206,7 +1208,7 @@ def tag_info(tag=None):
             tag_list = utility.get_popular_tags()
     except:
         pass
-    tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
+    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
     tag = json.loads(tag)
     tag = tag['rows'][0]['value']
     if g.user is AnonymousUser:
@@ -1222,7 +1224,7 @@ def edit_tag(tag):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen('http://localhost:8092/questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -1232,7 +1234,7 @@ def edit_tag(tag):
     if tcount > 0:
         tag_list = utility.get_popular_tags()
 
-    tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
+    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
     tag = json.loads(tag)
     tag = tag['rows'][0]['value']
     tagForm = TagForm(request.form)
@@ -1256,7 +1258,7 @@ def reset_password(token=None):
         if emailForm.validate_on_submit() and request.method == 'POST':
             email = emailForm.email.data
             document = urllib2.urlopen(
-                'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
+                DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
             document = json.loads(document)
             if document['rows'][0]['value']['email'] == email and\
                             'password' in document['rows'][0]['value']:
@@ -1266,7 +1268,7 @@ def reset_password(token=None):
                 msg.sender = admin
                 msg.html = "<p>Hi,<br/>A password reset request has been initiated " \
                            "by you. You can reset your password at " \
-                           "<a href='http://localhost:5000/reset_password/" + token + "'>http://localhost:5000/reset_password/" + token + "</a>." \
+                           "<a href=HOST_URL + 'reset_password/" + token + "'>" + HOST_URL + "reset_password/" + token + "</a>." \
                            "However, if you have not raised this request no need to change " \
                            "your password just send an email to " + admin + ". Note that this " \
                            "token is only valid for 1 day. <br/>Best regards," \
@@ -1283,7 +1285,7 @@ def reset_password(token=None):
             try:
                 email = s.unsign(token, max_age=1)
                 document = urllib2.urlopen(
-                    'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
+                    DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
                 document = json.loads(document)['rows'][0]['value']
 
             except:

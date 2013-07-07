@@ -5,7 +5,6 @@ import urllib2
 import json
 from time import strftime, localtime
 from flask import url_for, request
-from models import User
 
 def generate_url(title):
     length = len(title)
@@ -134,7 +133,7 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
 
     skip = (page - 1) * QUESTIONS_PER_PAGE
     questions = urllib2.urlopen(
-                'http://localhost:8092/questions/_design/dev_qa/_view/get_questions?limit=' +
+                kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions?limit=' +
                 str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
 
     questions = json.loads(questions)
@@ -155,7 +154,7 @@ def get_tags_per_page(page, TAGS_PER_PAGE, count):
 
     skip = (page - 1) * TAGS_PER_PAGE
     tags = urllib2.urlopen(
-                'http://localhost:8092/tags/_design/dev_qa/_view/get_by_count?limit=' +
+                kunjika.DB_URL + 'tags/_design/dev_qa/_view/get_by_count?limit=' +
                 str(TAGS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
     tags = json.loads(tags)
 
@@ -170,7 +169,7 @@ def get_users_per_page(page, USERS_PER_PAGE, count):
 
     skip = (page - 1) * USERS_PER_PAGE
     users = urllib2.urlopen(
-                'http://localhost:8092/default/_design/dev_qa/_view/get_by_reputation?limit=' +
+                kunjika.DB_URL + 'default/_design/dev_qa/_view/get_by_reputation?limit=' +
                 str(USERS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
     users = json.loads(users)
 
@@ -185,7 +184,7 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
 
     skip = (page - 1) * QUESTIONS_PER_PAGE
     tag = urllib2.quote(tag, '')
-    tag = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_doc_from_tag?&key=' + '"' + tag + '"').read()
+    tag = urllib2.urlopen(kunjika.DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?&key=' + '"' + tag + '"').read()
     tag = json.loads(tag)['rows'][0]['value']
     question_list = []
     for qid in tag['qid']:
@@ -217,7 +216,7 @@ def url_for_other_user_answer_page(page):
 
 def get_popular_tags():
 
-    tag_list = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_by_count?descending=true').read()
+    tag_list = urllib2.urlopen(kunjika.DB_URL + 'tags/_design/dev_qa/_view/get_by_count?descending=true').read()
     tag_list = json.loads(tag_list)['rows']
 
     tags = []
@@ -229,7 +228,7 @@ def get_popular_tags():
 def filter_by(email):
 
     user = urllib2.urlopen(
-                'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"').read()
+                kunjika.DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"').read()
     user = json.loads(user)
     if len(user['rows']) == 1:
         user = user['rows'][0]['value']

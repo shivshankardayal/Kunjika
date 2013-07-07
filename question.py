@@ -1,4 +1,4 @@
-from kunjika import kunjika, qb, cb
+from kunjika import qb, cb, DB_URL
 import urllib2
 import json
 from time import localtime, strftime
@@ -29,7 +29,7 @@ def get_question_by_id(qid, question):
     return question
 
 def get_questions():
-    questions = urllib2.urlopen("http://localhost:8092/questions/_design/dev_qa/_view/get_questions?descending=true&limit=20&stale=false").read()
+    questions = urllib2.urlopen(DB_URL + "/_design/dev_qa/_view/get_questions?descending=true&limit=20&stale=false").read()
     questions = json.loads(questions)
     #print questions
     question_list = []

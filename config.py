@@ -53,3 +53,6 @@ ANSWERS_PER_DAY = 50
 COMMENTS_PER_MIN = 5
 COMMENTS_PER_HR = 20
 COMMENTS_PER_DAY = 50
+
+DB_URL = 'http://localhost:8092/'
+HOST_URL = 'http://localhost:5000/'
