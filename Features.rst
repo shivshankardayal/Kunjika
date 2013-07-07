@@ -3,7 +3,7 @@ Features
 TODO
 ====
 1.  Configurable no. of questions, answers, comments from one ip/min.
-3.  Stop brute force password attack.
+2.  Stop brute force password attack.
 
 DONE
 ====
@@ -42,6 +42,7 @@ DONE
 23. Banning/unbanning users.
 24. Tag wiki implementation.
 25. Reset password.
+26. Complete Markdown help with MathJax coverage and some detailed documentation on how to use MathJax.
 
 Postponed for later
 ===================
