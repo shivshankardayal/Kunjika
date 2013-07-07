@@ -126,6 +126,9 @@ def load_user(uid):
 @kunjika.route('/questions/tagged/<string:tag>', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions/tagged/<string:tag>/page/<int:page>')
 def questions(tag=None, page=None, qid=None, url=None):
+    if not g.user.is_authenticated() and qid is None and page is None:
+        flash('First time here. Consider joining and helping community.', 'info')
+
     tag_list = []
     try:
         qcount = qb.get('qcount').value
@@ -534,9 +537,11 @@ def login():
         try:
             #document = json.loads(document)
             document = urllib2.urlopen(
-                'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + loginForm.email.data + '"').read()
+                'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + loginForm.email.data + '"').read()
             document = json.loads(document)['rows'][0]['value']
             if document['banned'] is True:
+                flash('Your acount is banned possibly because you abused the system. Contact ' + admin +
+                      'for more info.', 'error')
                 return redirect(url_for('questions'))
             if bcrypt.check_password_hash(document['password'], loginForm.password.data):
                 session[document['id']] = document['id']
@@ -546,7 +551,7 @@ def login():
                 user = User(document['name'], document['id'])
                 try:
                     login_user(user, remember=True)
-                    #print "hello"
+                    flash('You have successfully logged in.', 'success')
                     g.user = user
                     return redirect(url_for('questions'))
                 except:
@@ -555,6 +560,7 @@ def login():
             else:
                 try:
                     user = sb.get(document['email'])
+                    flash('Either email or password is wrong.', 'error')
                     user['login_attemps'] += 1
                     sb.replace(user['email'], user, ttl=600)
                     if user['login_attempts'] == kunjika.config['MAX_FAILED_LOGINS']:
@@ -567,10 +573,11 @@ def login():
                                                                   "<br/> Admin<p>"
                         mail.send(msg)
                 except:
-                    user = dict
+                    user = {}
                     user['email'] = document['email']
                     user['login_attempts'] = 1
                     sb.add(user['email'], user, ttl=600)
+                    flash('Either email or password is wrong.', 'error')
 
                 render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
                                 lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
@@ -635,6 +642,7 @@ def register():
             try:
                 login_user(user, remember=True)
                 g.user = user
+                flash('Thanks for registration. We hope you enjoy your stay here too.', 'success')
                 msg = Message("Registration at Kunjika")
                 msg.recipients = [data['email']]
                 msg.sender = admin

@@ -648,3 +648,10 @@ td, th {
 table {
     width: auto!important;
 }
+
+.centered-seven-fifty-px {
+    text-align: center;
+    width: 750px!important;
+    display: table;
+    margin: 0 auto;
+}

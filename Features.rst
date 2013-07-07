@@ -2,7 +2,6 @@ Features
 ********
 TODO
 ====
-1. Flash messages for user feedback.
 
 DONE
 ====
@@ -47,6 +46,7 @@ DONE
     This feature is needed to abuse from automated spam. It is done in a very bad now but can be
     improved easily later. For now it should work for normal operating conditions on a normal QA
     forum.
+29. Flash messages for user feedback.
 
 Postponed for later
 ===================
