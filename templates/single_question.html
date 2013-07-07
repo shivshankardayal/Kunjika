@@ -581,10 +581,11 @@
             });
             </script>-->
     <script type="text/javascript">
-        var converter = new Markdown.Converter();
+        var converter = new Markdown.getSanitizingConverter();
         Markdown.Extra.init(converter, {
             extensions: "all",
-            highlighter: "prettify"
+            highlighter: "prettify",
+            table_class: "table-bordered table"
         });
 
         var originalHTML = $("#q-desc").text();
@@ -610,7 +611,8 @@
                 }
                 Markdown.Extra.init(converter, {
                     extensions: "all",
-                    highlighter: "prettify"
+                    highlighter: "prettify",
+                    table_class: "table-bordered table"
                 });
 
                 var editor = new Markdown.Editor(converter, null, { handler: help });

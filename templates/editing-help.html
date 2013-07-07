@@ -31,13 +31,14 @@
             <div class="subheader">
                 <h3>Markdown help</h3>
             </div>
-            <div id="help">### Code and Preformatted Text ###
-You need to fence the code with three backticks for code for example, following will produce following
+            <div id="help">&lt;a href="#code" id="code" class="markdown-help"&gt;Code and Preformatted Text&lt;/a&gt;
+
+You need to fence the code with three backticks for code for example, following
 
     ```
     #include &lt;stdio.h&gt;
     ```
-which will render like
+will render like
 
 ```c
 #include &lt;stdio.h&gt;
@@ -45,6 +46,274 @@ which will render like
 
 while for preformatted text you need to indent the code with four space like
 
+        #include &lt;stdio.h&gt;
+
+will render like
+
+    #include &lt;stdio.h&gt;
+
+Markdown and HTML are ignored in both the above cases.
+
+&lt;a href="#code-spans" id="code-spans" class="markdown-help"&gt;Code Spans&lt;/a&gt;
+
+You ca use backtick to create inline `&lt;code&gt;` span. For example,
+
+    `#include &lt;stdio.h&gt;`
+
+will render as `#include &lt;stdio.h&gt;`. If the code contains backticks then you need to use
+multiple backticks for this.For example,
+
+    ``This code contains backticks.(`)``
+
+will render as ``This code contains backticks.(`)``.
+
+&lt;a href="#linebreaks" id="linebreaks" class="markdown-help"&gt;Linebreaks&lt;/a&gt;
+
+You need to hit `Enter` or `Return` key twice i.e. leave a blank line between two lines to
+enforce a line break. For example,
+
+    First line
+
+    Second line
+
+will render as
+
+First line
+
+Second line
+
+&lt;a href="#ib" id="ib" class="markdown-help"&gt;Italics and Bolds&lt;/a&gt;
+
+`*This is italics*` and so is `_this_`. As rendered here *This is italics* and _this_.
+
+Similarly, `**This is italics**` and so is `__this__`. As rendered here **This is bold** and __this__.
+
+Combining both, `***This is italics and bold***` and so is `___this___`. As rendered here
+***This is italics and bold*** and ___this___.
+
+&lt;a href="#links" id="links" class="markdown-help"&gt;Links&lt;/a&gt;
+
+Following are three ways to write links:
+
+    This is an inline link to [libreprogramming](http://libreprogramming.org/).
+    This is  a reference-style link to [libreprogramming][1].
+    This is a very readable link to [libreprogramming.org][libreprogramming].
+
+    [1]: http://libreprogramming.org/
+    [libreprogramming]: http://libreprogramming.org/
+
+The above will render as:
+
+This is an inline link to [libreprogramming](http://libreprogramming.org/).
+This is a reference-style link to [libreprogramming][1].
+This is a very readable link to [libreprogramming.org][libreprogramming].
+
+[1]: http://libreprogramming.org/
+[libreprogramming]: http://libreprogramming.org/
+
+The definitions at bottom like `1` and `libreprogramming` can be any unique string and are
+case-insensitive.
+
+You can also have simple links like `http://libreprogramming.org/` which will appear as
+http://libreprogramming.org/. You can also force URLs with angular brackets like
+`&lt;http://some_url&gt;` will render like http://some_url.
+
+You can also have title for links for describing them. Make these strings as descriptive as
+possible for others to understand about it. For example,
+
+
+    This is an inline link to [libreprogramming](http://libreprogramming.org/ "First title").
+    This is  a reference-style link to [libreprogramming][1].
+    This is a very readable link to [libreprogramming.org][libreprogramming].
+
+    [1]: http://libreprogramming.org/ (Second title)
+    [libreprogramming]: http://libreprogramming.org/ "Third title"
+
+The above will render as:
+
+This is an inline link to [libreprogramming](http://libreprogramming.org/ "First title").
+This is a reference-style link to [libreprogramming][1].
+This is a very readable link to [libreprogramming.org][libreprogramming].
+
+[1]: http://libreprogramming.org/ (Second title)
+[libreprogramming]: http://libreprogramming.org/ "Third title"
+
+&lt;a href="#headers" id="headers" class="markdown-help"&gt;Headers&lt;/a&gt;
+
+Following
+
+    # Heading1 #
+    ## Heading2 ##
+    ### Heading3 ###
+    #### Heading4 ####
+    ##### Heading5 #####
+    ###### Heading6 ######
+    Heading1
+    ========
+    Heading2
+    --------
+
+will render like
+
+# Heading1 #
+## Heading2 ##
+### Heading3 ###
+#### Heading4 ####
+##### Heading5 #####
+###### Heading6 ######
+Heading1
+========
+Heading2
+--------
+
+&lt;a href="#hr" id="hr" class="markdown-help"&gt;Horizontal Rule&lt;/a&gt;
+
+Putting more than three hyphens, asterisks, or underscores will render a horizontal line.
+Following:
+
+    ***
+
+    ____
+
+    -----
+
+will render line
+
+***
+
+____
+
+-----
+
+&lt;a href="#lists" id="lists" class="markdown-help"&gt;Simple Lists&lt;/a&gt;
+
+Following will render an unordered list or bulleted list. You can use `-, +` or `*` to have these.
+
+    - First item
+    + Second item
+    * Third item
+
+- First item
++ Second item
+* Third item
+
+To create an ordered or numbered list use numbers. Markdown will keep track of these numbers.
+
+    1. First item
+    5. Second item
+    3. Third item
+
+The above will render like following:
+
+1. First item
+5. Second item
+3. Third item
+
+You can also nest lists arbitrarily keeping same notation for same level preferably.
+
+    1. First item
+        2. Second item
+            - Third item
+        4. Fourth item
+            * Fifth item
+
+will render like following
+
+1.  First item
+    2. Second item
+        - Third item
+    4. Fourth item
+        * Fifth item
+
+You can have paragraphs, blockquotes and preformatted text in lists. Following:
+
+    1.  First item of list.
+
+        A paragraph in list
+    2.  Second item of list.
+
+        > Use extra line and indent the &lt;'s four spaces.
+    3.  Third item in list.
+
+                Indent four mode spaces to get preformtted text.
+
+will render as
+
+1.  First item of list.
+
+    A paragraph in list
+2.  Second item of list.
+
+    > Use extra line and indent the &lt;'s four spaces.
+3.  Third item in list.
+
+            Indent four mode spaces to get preformtted text.
+
+&lt;a href="#bq" id="bq" class="markdown-help"&gt;Blockquotes&lt;/a&gt;
+
+You need to use &gt; to have a block quote. You do not need to put &gt; on a blank line.
+To nest just use more &gt;s. You can also have lists in blockquotes. Following:
+
+    > First line.
+    > Second line after which there is a blank line.
+    >
+    > Third line.
+    > > More indentation.
+    > > > >Even more indentation.
+
+    > - An item in list
+    > + Another item in list
+    >   * One more as nested item
+
+will render like
+
+> First line.
+> Second line after which there is a blank line.
+>
+> Third line.
+> > More indentation.
+> > > >Even more indentation.
+
+> - An item in list
+> + Another item in list
+>   * One more as nested item
+
+&lt;a href="#iu" id="iu" class="markdown-help"&gt;Images and Uploads&lt;/a&gt;
+
+Images and uplaods are allowed which you can do through GUI. Images are like links
+but have ! mark in front of them. Uploads have also the same which you need to manually
+remove to make them a link. You can also link to existing URLs on web. Typically, you should
+not rescale manually by using inline image attributes of HTML as they will have rescaled
+rendering automatically.
+
+&lt;a href="#tables" id="tables" class="markdown-help"&gt;Tables&lt;/a&gt;
+
+Following
+
+    | Item      | Value | Qty |
+    | --------- | -----:|:--: |
+    | Computer  | $1600 | 5   |
+    | Phone     |   $12 | 12  |
+    | Pipe      |    $1 |234  |
+
+will render as a table as shown below
+
+| Item        |  Value  |  Qty  |
+| ----------- | -------:|:----: |
+| Computer    | $1600   |   5   |
+| Phone       |   $12   |   12  |
+| Pipe        |    $1   |  234  |
+
+&lt;a href="#html" id="html" class="markdown-help"&gt;Inline HTML&lt;/a&gt;
+
+You can also you some inline HTML as allowed by pagedown-extra. You can read the docs at
+https://github.com/jmcmanus/pagedown-extra
+
+&lt;a href="#ref" id="ref" class="markdown-help"&gt;Markdown Reference&lt;/a&gt;
+
+Should you need more help the you can read it at http://daringfireball.net/projects/markdown/syntax
+
+&lt;a href="#math" id="math" class="markdown-help"&gt;Mathematics Reference&lt;/a&gt;
             </div>
         </div>
         <div id="sidebar">
@@ -53,34 +322,30 @@ while for preformatted text you need to indent the code with four space like
                 <div class="module newuser" id="toc">
                     <ul>
                         <li class=""><a title="" href="#code">Code and Preformatted Text</a></li>
+                        <li class=""><a title="" href="#code-spans">Code Span</a></li>
                         <li><a title="" href="#linebreaks">
                             Linebreaks</a></li>
-                        <li><a title="" href="#italics-bold">
+                        <li><a title="" href="#ib">
                             Italics and Bold</a></li>
                         <li><a title="" href="#links">Links</a></li>
-                        <li><a title="" href="#bare-urls">
-                            Bare URLs</a></li>
                         <li><a title="" href="#headers">
                             Headers</a></li>
-                        <li><a title="" href="#horizontal-rules">
+                        <li><a title="" href="#hr">
                             Horizontal Rules</a></li>
-                        <li><a title="" href="#simple-lists">
+                        <li><a title="" href="#lists">
                             Simple lists</a></li>
-                        <li><a title="Advanced lists: Nesting" href="#advanced-lists">Advanced lists</a></li>
-                        <li><a title="" href="#simple-blockquotes">
+                        <li><a title="" href="#bq">
                             Simple blockquotes</a></li>
-                        <li><a title="Advanced blockquotes: Nesting" href="#advanced-blockquotes">Advanced
-                            blockquotes</a></li>
-                        <li><a title="" href="#images">
-                            Images</a></li>
+                        <li><a title="" href="#iu">
+                            Images and Uploads</a></li>
+                        <li><a title="" href="#tables">
+                            Tables</a></li>
                         <li><a title="" href="#html">
                             Inline HTML</a></li>
-                        <li><a title="" href="#need-more-detail">
-                            Need More Detail?</a></li>
-                        <li><a title="" href="#tags">Tags</a></li>
-                        <li><a title="" href="#spoilers">Spoilers</a></li>
-                        <li><a title="" href="#syntax-highlighting">Syntax highlighting for code</a></li>
-                        <li><a title="" href="#comment-formatting">Comment formatting</a></li>
+                        <li><a title="" href="#ref">
+                            Markdown Reference Page</a></li>
+                        <li><a title="" href="#math">
+                            Mathematics Support</a></li>
                     </ul>
                 </div>
             </div>
@@ -91,7 +356,8 @@ while for preformatted text you need to indent the code with four space like
         var converter = new Markdown.Converter();
         Markdown.Extra.init(converter, {
             extensions: "all",
-            highlighter: "prettify"
+            highlighter: "prettify",
+            table_class: "table-bordered table"
         });
 
         var originalHTML = $("#help").text();

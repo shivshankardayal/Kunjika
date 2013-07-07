@@ -90,14 +90,12 @@
 }
 
 .count {
-    border:1px solid;
     padding-top: 15px;
     margin-bottom: 15px;
     background-color: #fff8c4;
 }
 
 #popular-tags {
-    border:1px solid;
     padding-top: 15px;
     margin-bottom: 15px;
     background-color: #fff8c4;
@@ -621,6 +619,10 @@ pre.prettyprint {
     padding-top: 8px;
 }
 
+#toc {
+    position: fixed;
+}
+
 #toc ul {
     list-style-type: none;
 }
@@ -630,4 +632,19 @@ pre.prettyprint {
     border-bottom:1px solid #ccc;
     clear:both;
     padding-bottom:20px;
+}
+
+.markdown-help {
+    font-size: 20px;
+}
+
+td, th {
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+table {
+    width: auto!important;
 }

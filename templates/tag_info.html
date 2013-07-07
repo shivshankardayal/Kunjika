@@ -29,8 +29,7 @@
     <div class="row-fluid">
     <div id="mainbar" class="mainbar">
         <h2 style="border-bottom: 1px #777 dotted">Tag Info About {{ tag['tag'] }}</h2>
-        <div id="tag-info">{{ tag['info'] }}
-        </div>
+        <div id="tag-info">{{ tag['info'] }}</div>
         <form action="/edit_tag/{{ tag['tag'] }}" method="post">
             <div class="controls">
                 <button class="btn btn-primary">
@@ -41,7 +40,7 @@
     </div>
     </div>
     <script type="text/javascript">
-        var converter = new Markdown.Converter();
+        var converter = new Markdown.getSanitizingConverter();
         Markdown.Extra.init(converter, {
             extensions: "all",
             highlighter: "prettify"

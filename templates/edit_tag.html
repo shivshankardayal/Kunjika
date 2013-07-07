@@ -104,7 +104,8 @@
                 }
                 Markdown.Extra.init(converter, {
                     extensions: "all",
-                    highlighter: "prettify"
+                    highlighter: "prettify",
+                    table_class: "table-bordered table"
                 });
 
                 var editor = new Markdown.Editor(converter, null, { handler: help });
