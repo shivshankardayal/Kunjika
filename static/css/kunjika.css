@@ -93,14 +93,14 @@
     border:1px solid;
     padding-top: 15px;
     margin-bottom: 15px;
-    background-color: #fafafa;
+    background-color: #fff8c4;
 }
 
 #popular-tags {
     border:1px solid;
     padding-top: 15px;
     margin-bottom: 15px;
-    background-color: #fafafa;
+    background-color: #fff8c4;
 }
 
 #feed-link {
@@ -608,4 +608,26 @@ pre.prettyprint {
 .reset-passwd {
     margin-left: 15px;
     font-size: 12px;
+}
+
+#scroller {
+    margin-top: 5px;
+}
+
+.newuser {
+    background-color: rgb(255, 247, 227);
+    color: rgb(68, 68, 68);
+    border-radius: 5px 5px 5px 5px;
+    padding-top: 8px;
+}
+
+#toc ul {
+    list-style-type: none;
+}
+
+.subheader{
+    margin-bottom:10px;
+    border-bottom:1px solid #ccc;
+    clear:both;
+    padding-bottom:20px;
 }

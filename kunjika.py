@@ -1197,5 +1197,10 @@ def reset_password(token=None):
     else:
         return redirect(url_for('questions'))
 
+@kunjika.route('/editing-help')
+def editing_help():
+    return render_template('editing-help.html', title='Markdown Editor Help', name=g.user.name,
+                           user_id=g.user.id)
+
 if __name__ == '__main__':
     kunjika.run()

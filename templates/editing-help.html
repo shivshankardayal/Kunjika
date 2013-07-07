@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - Kunjika{% endblock %}
+{% block css_bootstrap %}
+    {{ super() }}
+    {# TODO: probably remove this and let the user set it manually? #}
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+{% endblock %}
+
+{% block css_site %}
+    <link href="/static/css/wmd.css" rel="stylesheet">
+    <link href="/static/css/prettify.css" rel="stylesheet">
+    <!--    <link href="/static/css/googlecode.css" rel="stylesheet">-->
+    <link href="/static/css/token-input.css" rel="stylesheet">
+    <link href="/static/css/kunjika.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
+    <script type="text/javascript"
+            src="/static/js/run_prettify.js?lang=clj&amp;lbg=erlang&amp;lang=matlab&amp;lang=sql&amp;lang=vb&amp;lang=css&amp;lang=go&amp;lang=pascal&amp;lan=tcl&amp;lang=yaml&amp;lan=basic&amp;lang=dart&amp;lan=lua&amp;lang=scala&amp;lang=wiki&amp;lang=tex"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+{% endblock %}
+{% block container %}
+    <div class="row-fluid">
+        <div id="mainbar" class="mainbar">
+            <div class="subheader">
+                <h3>Markdown help</h3>
+            </div>
+            <div id="help">### Code and Preformatted Text ###
+You need to fence the code with three backticks for code for example, following will produce following
+
+    ```
+    #include &lt;stdio.h&gt;
+    ```
+which will render like
+
+```c
+#include &lt;stdio.h&gt;
+```
+
+while for preformatted text you need to indent the code with four space like
+
+            </div>
+        </div>
+        <div id="sidebar">
+            <div id="scroller-anchor"></div>
+            <div style="position: relative; width: 220px;" id="scroller">
+                <div class="module newuser" id="toc">
+                    <ul>
+                        <li class=""><a title="" href="#code">Code and Preformatted Text</a></li>
+                        <li><a title="" href="#linebreaks">
+                            Linebreaks</a></li>
+                        <li><a title="" href="#italics-bold">
+                            Italics and Bold</a></li>
+                        <li><a title="" href="#links">Links</a></li>
+                        <li><a title="" href="#bare-urls">
+                            Bare URLs</a></li>
+                        <li><a title="" href="#headers">
+                            Headers</a></li>
+                        <li><a title="" href="#horizontal-rules">
+                            Horizontal Rules</a></li>
+                        <li><a title="" href="#simple-lists">
+                            Simple lists</a></li>
+                        <li><a title="Advanced lists: Nesting" href="#advanced-lists">Advanced lists</a></li>
+                        <li><a title="" href="#simple-blockquotes">
+                            Simple blockquotes</a></li>
+                        <li><a title="Advanced blockquotes: Nesting" href="#advanced-blockquotes">Advanced
+                            blockquotes</a></li>
+                        <li><a title="" href="#images">
+                            Images</a></li>
+                        <li><a title="" href="#html">
+                            Inline HTML</a></li>
+                        <li><a title="" href="#need-more-detail">
+                            Need More Detail?</a></li>
+                        <li><a title="" href="#tags">Tags</a></li>
+                        <li><a title="" href="#spoilers">Spoilers</a></li>
+                        <li><a title="" href="#syntax-highlighting">Syntax highlighting for code</a></li>
+                        <li><a title="" href="#comment-formatting">Comment formatting</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script type="text/javascript">
+        var converter = new Markdown.Converter();
+        Markdown.Extra.init(converter, {
+            extensions: "all",
+            highlighter: "prettify"
+        });
+
+        var originalHTML = $("#help").text();
+        var convertedHTML = converter.makeHtml(originalHTML);
+        $("#help").html(convertedHTML);
+    </script>
+{% endblock %}

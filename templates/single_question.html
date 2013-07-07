@@ -40,7 +40,7 @@
 
                 var converter = new Markdown.getSanitizingConverter();
                 var help = function () {
-                    window.open('http://stackoverflow.com/editing-help');
+                    window.open('http://localhost:5000/editing-help');
                 }
                 Markdown.Extra.init(converter, {
                     extensions: "all",
@@ -606,7 +606,7 @@
             if ($('#wmd-input').length > 0) {
                 var converter = new Markdown.getSanitizingConverter();
                 var help = function () {
-                    window.open('http://stackoverflow.com/editing-help');
+                    window.open('http://localhost:5000/editing-help');
                 }
                 Markdown.Extra.init(converter, {
                     extensions: "all",
