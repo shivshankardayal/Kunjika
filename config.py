@@ -38,3 +38,6 @@ USER_QUESTIONS_PER_PAGE = 1
 USER_ANSWERS_PER_PAGE = 1
 
 ADMIN_EMAIL='shivshankar.dayal@gmail.com'
+
+MAX_FAILED_LOGINS = 10
+RESET_PASSWORD = "some bad password"

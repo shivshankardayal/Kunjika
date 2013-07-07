@@ -2,8 +2,8 @@ Features
 ********
 TODO
 ====
-1.  Configurable no. of questions, answers, comments from one ip/min.
-2.  Stop brute force password attack.
+1.  Configurable no. of questions, answers, comments from one ip per min, hour and day etc.
+    This feature is needed to abuse from automated spam.
 
 DONE
 ====
@@ -43,6 +43,7 @@ DONE
 24. Tag wiki implementation.
 25. Reset password.
 26. Complete Markdown help with MathJax coverage and some detailed documentation on how to use MathJax.
+27. Stop brute force password attack.
 
 Postponed for later
 ===================
@@ -53,3 +54,6 @@ Postponed for later
 5. Sitemap generation
 6. Following questions, tags and users.
 7. Stop DOS.(This should not reach application and must be filtered at web server level or before).
+8. Memcached implementation is deferred as I do not see an immediate need for this because
+   of Couchbase architecture should provide quite quick response itself. Also, memcached server
+   replication etc is pain.

@@ -58,7 +58,7 @@ lm.init_app(kunjika)
 cb = Couchbase.connect("default")
 qb = Couchbase.connect("questions")
 tb = Couchbase.connect("tags")
-
+sb = Couchbase.connect("security")
 
 #Initialize count at first run. Later it is useless
 try:
@@ -486,7 +486,7 @@ def login():
             document = urllib2.urlopen(
                 'http://localhost:8092/default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + loginForm.email.data + '"').read()
             document = json.loads(document)['rows'][0]['value']
-            if document['banned'] == True:
+            if document['banned'] is True:
                 return redirect(url_for('questions'))
             if bcrypt.check_password_hash(document['password'], loginForm.password.data):
                 session[document['id']] = document['id']
@@ -503,6 +503,25 @@ def login():
                     return make_response("cant login")
 
             else:
+                try:
+                    user = sb.get(document['email'])
+                    user['login_attemps'] += 1
+                    sb.replace(user['email'], user, ttl=600)
+                    if user['login_attempts'] == kunjika.config['MAX_FAILED_LOGINS']:
+                        document['password'] = kunjika.config['RESET_PASSWORD']
+                        msg = Message("Account banned")
+                        msg.recipients = [user['email']]
+                        msg.sender = admin
+                        msg.html = "<p>Hi,<br/> Your account has been banned because more than " + kunjika.config['MAX_FAILED_LOGINS'] + " attempts " \
+                           "of login have failed in 10 minutes. Please reset your password to login. <br/>Best regards," \
+                                                                  "<br/> Admin<p>"
+                        mail.send(msg)
+                except:
+                    user = dict
+                    user['email'] = document['email']
+                    user['login_attempts'] = 1
+                    sb.add(user['email'], user, ttl=600)
+
                 render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
                                 lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
 
