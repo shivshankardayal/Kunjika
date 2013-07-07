@@ -2,8 +2,6 @@ Features
 ********
 TODO
 ====
-1.  Configurable no. of questions, answers, comments from one ip per min, hour and day etc.
-    This feature is needed to abuse from automated spam.
 
 DONE
 ====
@@ -44,6 +42,10 @@ DONE
 25. Reset password.
 26. Complete Markdown help with MathJax coverage and some detailed documentation on how to use MathJax.
 27. Stop brute force password attack.
+28. Configurable no. of questions, answers, comments from one user per min, hour and day etc.
+    This feature is needed to abuse from automated spam. It is done in a very bad now but can be
+    improved easily later. For now it should work for normal operating conditions on a normal QA
+    forum.
 
 Postponed for later
 ===================
