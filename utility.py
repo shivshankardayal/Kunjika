@@ -134,7 +134,7 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
 
     skip = (page - 1) * QUESTIONS_PER_PAGE
     questions = urllib2.urlopen(
-                'http://localhost:8092/questions/_design/dev_dev/_view/get_questions?limit=' +
+                'http://localhost:8092/questions/_design/dev_qa/_view/get_questions?limit=' +
                 str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
 
     questions = json.loads(questions)
