@@ -2,6 +2,7 @@ Features
 ********
 TODO
 ====
+1. Flash messages for user feedback.
 
 DONE
 ====

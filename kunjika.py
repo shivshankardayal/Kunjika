@@ -203,9 +203,9 @@ def questions(tag=None, page=None, qid=None, url=None):
 
                 except:
                     data = sb.get(user['email'])
-                    data['answers/min'] += 1
-                    data['answers/hr'] += 1
-                    data['answers/day'] += 1
+                    data['answers/min'] = 1
+                    data['answers/hr'] = 1
+                    data['answers/day'] = 1
                     sb.save(user['email'] + 'answers/min', data, ttl=60)
                     sb.save(user['email'] + 'answers/hr', data, ttl=3600)
                     sb.save(user['email'] + 'answers/day', data, ttl=86400)
@@ -974,9 +974,9 @@ def postcomment():
 
     except:
         data = sb.get(user['email'])
-        data['comments/min'] += 1
-        data['comments/hr'] += 1
-        data['comments/day'] += 1
+        data['comments/min'] = 1
+        data['comments/hr'] = 1
+        data['comments/day'] = 1
         sb.save(user['email'] + 'comments/min', data, ttl=60)
         sb.save(user['email'] + 'comments/hr', data, ttl=3600)
         sb.save(user['email'] + 'comments/day', data, ttl=86400)
