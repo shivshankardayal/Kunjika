@@ -655,3 +655,7 @@ table {
     display: table;
     margin: 0 auto;
 }
+
+.error {
+    color: #700;
+}

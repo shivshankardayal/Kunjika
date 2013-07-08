@@ -37,7 +37,8 @@ kunjika.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 kunjika.config.from_object('config')
 DB_URL = kunjika.config['DB_URL']
 HOST_URL = kunjika.config['HOST_URL']
-kunjika.debug = True
+MAIL_SERVER_IP  = kunjika.config['MAIL_SERVER_IP']
+kunjika.debug = kunjika.config['DEBUG_MODE']
 kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
 kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
@@ -102,6 +103,15 @@ kunjika.jinja_env.globals['url_for_other_page'] = utility.url_for_other_page
 kunjika.jinja_env.globals['url_for_other_user_question_page'] = utility.url_for_other_user_question_page
 kunjika.jinja_env.globals['url_for_other_user_answer_page'] = utility.url_for_other_user_answer_page
 
+if not kunjika.debug:
+    import logging
+    from logging.handlers import RotatingFileHandler
+    file_handler = RotatingFileHandler(kunjika.config['LOG_FILE'], mode='a',
+                                       maxBytes=kunjika.config['MAX_LOG_SIZE'],
+                                       backupCount=kunjika.config['BACKUP_COUNT'])
+    file_handler.setLevel(logging.WARNING)
+    kunjika.logger.addHandler(file_handler)
+
 @kunjika.before_request
 def before_request():
     g.user = current_user
@@ -112,7 +122,6 @@ def get_user(uid):
         return User(user_from_db['name'], user_from_db['id'])
     except NotFoundError:
         return None
-
 
 @lm.user_loader
 def load_user(uid):
@@ -128,8 +137,9 @@ def load_user(uid):
 @kunjika.route('/questions/tagged/<string:tag>', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions/tagged/<string:tag>/page/<int:page>')
 def questions(tag=None, page=None, qid=None, url=None):
-    if not g.user.is_authenticated() and qid is None and page is None:
+    if not g.user.is_authenticated() and 'displayed' not in session:
         flash('First time here. Consider joining and helping community.', 'info')
+        session['displayed'] = True
 
     tag_list = []
     try:
@@ -1304,6 +1314,44 @@ def reset_password(token=None):
 def editing_help():
     return render_template('editing-help.html', title='Markdown Editor Help', name=g.user.name,
                            user_id=g.user.id)
+
+from flask import render_template
+
+@kunjika.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@kunjika.errorhandler(410)
+def page_not_found(e):
+    return render_template('410.html'), 410
+
+@kunjika.errorhandler(403)
+def page_not_found(e):
+    return render_template('403.html'), 410
+
+@kunjika.errorhandler(400)
+def page_not_found(e):
+    return render_template('400.html'), 400
+
+@kunjika.errorhandler(401)
+def page_not_found(e):
+    return render_template('401.html'), 401
+
+@kunjika.errorhandler(405)
+def page_not_found(e):
+    return render_template('405.html'), 405
+
+@kunjika.errorhandler(500)
+def page_not_found(e):
+    return render_template('500.html'), 500
+
+@kunjika.errorhandler(502)
+def page_not_found(e):
+    return render_template('502.html'), 502
+
+@kunjika.errorhandler(503)
+def page_not_found(e):
+    return render_template('503.html'), 503
 
 if __name__ == '__main__':
     kunjika.run()

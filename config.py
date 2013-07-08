@@ -56,3 +56,10 @@ COMMENTS_PER_DAY = 50
 
 DB_URL = 'http://localhost:8092/'
 HOST_URL = 'http://localhost:5000/'
+MAIL_SERVER_IP = '127.0.0.1'
+
+DEBUG_MODE = True
+
+LOG_FILE = 'kunjika.log'
+MAX_LOG_SIZE = 10 * 1024 *1024
+BACKUP_COUNT = 0

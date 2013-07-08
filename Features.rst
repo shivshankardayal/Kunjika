@@ -47,6 +47,8 @@ DONE
     improved easily later. For now it should work for normal operating conditions on a normal QA
     forum.
 29. Flash messages for user feedback.
+30. Error pages are there.
+31. File based rotated logging.
 
 Postponed for later
 ===================
