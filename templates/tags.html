@@ -36,7 +36,7 @@
                                         class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
                                         class="item-multiplier-count">{{ tags[i+j]['count'] }}</span></span>
 
-                                    <div><a href="/info/{{ tag['tag'] }}">info</a></div>
+                                    <div><a href="/info/{{ tags[i+j]['tag'] }}">info</a></div>
                                     {% if 'excerpt' in tags[i+j] %}
                                     <div class="excerpt">{{ tags[i+j]['excerpt'] }}
                                     </div>
