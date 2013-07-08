@@ -58,7 +58,7 @@ DB_URL = 'http://localhost:8092/'
 HOST_URL = 'http://localhost:5000/'
 MAIL_SERVER_IP = '127.0.0.1'
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 LOG_FILE = '/Users/shiv/Kunjika/kunjika.log'
 MAX_LOG_SIZE = 10 * 1024 *1024
@@ -66,4 +66,4 @@ BACKUP_COUNT = 0
 
 UPLOAD_FOLDER = '/Users/shiv/Kunjika/uploads'
 
-GOOGLE_ANALYTICS_KEY = jhegsbkgkw
+GOOGLE_ANALYTICS_KEY = 'jhegsbkgkw'

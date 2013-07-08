@@ -221,13 +221,14 @@ def questions(tag=None, page=None, qid=None, url=None):
                         return redirect(url_for('questions'))
 
                 except:
-                    data = sb.get(user['email'])
-                    data['answers/min'] = 1
-                    data['answers/hr'] = 1
-                    data['answers/day'] = 1
-                    sb.save(user['email'] + 'answers/min', data, ttl=60)
-                    sb.save(user['email'] + 'answers/hr', data, ttl=3600)
-                    sb.save(user['email'] + 'answers/day', data, ttl=86400)
+                    data1 = {}
+                    data1['email'] = user['email']
+                    data1['answers/min'] = 1
+                    data1['answers/hr'] = 1
+                    data1['answers/day'] = 1
+                    sb.add(user['email'] + 'answers/min', data1, ttl=60)
+                    sb.add(user['email'] + 'answers/hr', data1, ttl=3600)
+                    sb.add(user['email'] + 'answers/day', data1, ttl=86400)
 
                 answer = {}
                 if 'answers' in questions_dict:
@@ -338,6 +339,30 @@ def ask():
     questionForm = QuestionForm(request.form)
     if g.user is not None and g.user.is_authenticated():
         if questionForm.validate_on_submit() and request.method == 'POST':
+            data1 = {}
+            try:
+                data = sb.get(user['email'])
+                data['questions/min'] += 1
+                data['questions/hr'] += 1
+                data['questions/day'] += 1
+                sb.replace(user['email'] + 'questions/min', data, ttl=60)
+                sb.replace(user['email'] + 'questions/hr', data, ttl=3600)
+                sb.replace(user['email'] + 'questions/day', data, ttl=86400)
+                if data['questions/min'] >= kunjika.config['QUESTIONS_PER_MIN'] or \
+                    data['questions/hr'] >= kunjika.config['QUESTIONS_PER_HR'] or \
+                    data['questions/day'] >= kunjika.config['QUESTIONS_PER_DAY']:
+
+                    return redirect(url_for('questions'))
+
+            except:
+                data1['email'] = user['email']
+                data1['questions/min'] = 1
+                data1['questions/hr'] = 1
+                data1['questions/day'] = 1
+                sb.add(user['email'] + 'questions/min', data1, ttl=60)
+                sb.add(user['email'] + 'questions/hr', data1, ttl=3600)
+                sb.add(user['email'] + 'questions/day', data1, ttl=86400)
+
             question = {}
             question['content'] = {}
             title = questionForm.question.data
@@ -360,30 +385,6 @@ def ask():
             question['views'] = 0
 
             user = cb.get(str(g.user.id)).value
-
-            try:
-                data = sb.get(user['email'])
-                data['questions/min'] += 1
-                data['questions/hr'] += 1
-                data['questions/day'] += 1
-                sb.replace(user['email'] + 'questions/min', data, ttl=60)
-                sb.replace(user['email'] + 'questions/hr', data, ttl=3600)
-                sb.replace(user['email'] + 'questions/day', data, ttl=86400)
-                if data['questions/min'] >= kunjika.config['QUESTIONS_PER_MIN'] or \
-                    data['questions/hr'] >= kunjika.config['QUESTIONS_PER_HR'] or \
-                    data['questions/day'] >= kunjika.config['QUESTIONS_PER_DAY']:
-
-                    return redirect(url_for('questions'))
-
-            except:
-                data = dict
-                data['email'] = user['email']
-                data['questions/min'] = 1
-                data['questions/hr'] = 1
-                data['questions/day'] = 1
-                sb.save(user['email'] + 'questions/min', data, ttl=60)
-                sb.save(user['email'] + 'questions/hr', data, ttl=3600)
-                sb.save(user['email'] + 'questions/day', data, ttl=86400)
 
             user['rep'] += 1
             user['questions'].append(question['qid'])
@@ -997,13 +998,14 @@ def postcomment():
             return redirect(url_for('questions'))
 
     except:
-        data = sb.get(user['email'])
-        data['comments/min'] = 1
-        data['comments/hr'] = 1
-        data['comments/day'] = 1
-        sb.save(user['email'] + 'comments/min', data, ttl=60)
-        sb.save(user['email'] + 'comments/hr', data, ttl=3600)
-        sb.save(user['email'] + 'comments/day', data, ttl=86400)
+        data1 = {}
+        data1 = user['email']
+        data1['comments/min'] = 1
+        data1['comments/hr'] = 1
+        data1['comments/day'] = 1
+        sb.add(user['email'] + 'comments/min', data1, ttl=60)
+        sb.add(user['email'] + 'comments/hr', data1, ttl=3600)
+        sb.add(user['email'] + 'comments/day', data1, ttl=86400)
 
     if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
         return "Comment must be between 10 and 5000 characters."
