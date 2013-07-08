@@ -2,4 +2,4 @@
 
 virtualenv venv
 source venv/bin/activate
-pip install Flask Flask-WTF Flask-Bcrypt Flask-Gravatar Flask-Login couchbase itsangerous Flask-mail
+pip install --upgrade Flask Flask-WTF Flask-Bcrypt Flask-Gravatar Flask-Login couchbase itsdangerous Flask-mail

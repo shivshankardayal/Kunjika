@@ -1,5 +1,5 @@
 from flask.ext.login import (LoginManager, current_user, login_required,
-                            login_user, logout_user, UserMixin, AnonymousUser,
+                            login_user, logout_user, UserMixin, AnonymousUserMixin,
                             confirm_login, fresh_login_required)
 
 class User(UserMixin):
@@ -20,6 +20,6 @@ class User(UserMixin):
         return unicode(self.id)
 
 
-class Anonymous(AnonymousUser):
+class Anonymous(AnonymousUserMixin):
     name = u"Anonymous"
     id = -1

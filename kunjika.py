@@ -1,4 +1,5 @@
-from flask import Flask, session, render_template, abort, redirect, url_for, flash, make_response, request, g, jsonify
+from flask import (Flask, session, render_template, abort, redirect, url_for, flash,
+                   make_response, request, g, jsonify)
 import json
 from forms import *
 from flaskext.bcrypt import Bcrypt
@@ -12,9 +13,9 @@ import os
 from os.path import basename
 from time import localtime, strftime, time, mktime
 from datetime import datetime
-from flask.ext.login import (LoginManager, current_user, login_required,
-                             login_user, logout_user, UserMixin, AnonymousUser,
-                             confirm_login, fresh_login_required)
+from flask.ext.login import (LoginManager, current_user, login_required, login_user,
+                             logout_user, UserMixin, AnonymousUserMixin, confirm_login,
+                             fresh_login_required)
 from models import User, Anonymous
 import question
 import votes
@@ -200,7 +201,7 @@ def questions(tag=None, page=None, qid=None, url=None):
             questions_dict['views'] += 1
         elif request.host_url != HOST_URL + "":
             questions_dict['views'] += 1
-        if g.user is AnonymousUser:
+        if g.user is AnonymousUserMixin:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
         elif g.user is not None and g.user.is_authenticated():
             answerForm = AnswerForm(request.form)
@@ -316,7 +317,7 @@ def users(qpage=None, apage=None, uid=None, uname=None):
                                upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
                                questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
                                answer_pagination=answer_pagination)
-    return render_template('users.html', title=user['name'], user_id=user['id'], lname=user['lname'], name=user['name'],fname=user['fname'], email=user['email'], gravatar=gravatar100, upage=True,
+    return render_template('users.html', title=user['name'], user_id=user['id'], lname=user['lname'], name=user['name'], fname=user['fname'], email=user['email'], gravatar=gravatar100, upage=True,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
                            questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
                            answer_pagination=answer_pagination)
@@ -526,7 +527,7 @@ def openid_login():
 
     print g.user
 
-    if g.user is not AnonymousUser and g.user.is_authenticated():
+    if g.user is not AnonymousUserMixin and g.user.is_authenticated():
         return redirect(oid.get_next_url())
     if openidForm.validate_on_submit() and request.method == 'POST':
         openid = request.form.get('openid')
@@ -1227,7 +1228,7 @@ def tag_info(tag=None):
     tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
     tag = json.loads(tag)
     tag = tag['rows'][0]['value']
-    if g.user is AnonymousUser:
+    if g.user is AnonymousUserMixin:
         return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
     elif g.user is not None and g.user.is_authenticated():
         return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
