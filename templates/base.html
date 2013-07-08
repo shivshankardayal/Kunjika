@@ -203,16 +203,16 @@
         {% endblock %}
         {% block js_analytics %}
             {# Via HTML5BP. Asynchronous Google Analytics snippet. mathiasbynens.be/notes/async-analytics-snippet #}
-            <!--<script>
+            <script>
           {% block google_analytics %}
           {% if not DEBUG %}
-          var _gaq=[['_setAccount','{% block google_analytics_id %}UA-XXXXX-X{% endblock %}'],['_trackPageview']];
+          var _gaq=[['_setAccount','{% block google_analytics_id %}{{ config['GOOGLE_ANALYTICS_KEY'] }}{% endblock %}'],['_trackPageview']];
           (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
           g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
           s.parentNode.insertBefore(g,s)}(document,'script'));
           {% endif %}
           {% endblock %}
-          </script>-->
+          </script>
         {% endblock %}
 
 

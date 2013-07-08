@@ -27,12 +27,10 @@ from werkzeug.contrib.atom import AtomFeed
 from flask_openid import OpenID
 from itsdangerous import TimestampSigner
 
-UPLOAD_FOLDER = '/home/shiv/Kunjika/uploads'
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg'])
 
 kunjika = Flask(__name__)
-kunjika.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 kunjika.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 kunjika.config.from_object('config')
 DB_URL = kunjika.config['DB_URL']
@@ -105,12 +103,18 @@ kunjika.jinja_env.globals['url_for_other_user_answer_page'] = utility.url_for_ot
 
 if not kunjika.debug:
     import logging
-    from logging.handlers import RotatingFileHandler
+    from logging.handlers import RotatingFileHandler, SMTPHandler
     file_handler = RotatingFileHandler(kunjika.config['LOG_FILE'], mode='a',
                                        maxBytes=kunjika.config['MAX_LOG_SIZE'],
                                        backupCount=kunjika.config['BACKUP_COUNT'])
     file_handler.setLevel(logging.WARNING)
     kunjika.logger.addHandler(file_handler)
+
+    mail_handler = SMTPHandler(MAIL_SERVER_IP,
+                               kunjika.config['ADMIN_EMAIL'],
+                               kunjika.config['ADMIN_EMAIL'], 'Application Failed')
+    mail_handler.setLevel(logging.ERROR)
+    kunjika.logger.addHandler(mail_handler)
 
 @kunjika.before_request
 def before_request():

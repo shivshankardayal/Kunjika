@@ -60,6 +60,10 @@ MAIL_SERVER_IP = '127.0.0.1'
 
 DEBUG_MODE = True
 
-LOG_FILE = 'kunjika.log'
+LOG_FILE = '/Users/shiv/Kunjika/kunjika.log'
 MAX_LOG_SIZE = 10 * 1024 *1024
 BACKUP_COUNT = 0
+
+UPLOAD_FOLDER = '/Users/shiv/Kunjika/uploads'
+
+GOOGLE_ANALYTICS_KEY = jhegsbkgkw
