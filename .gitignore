@@ -8,3 +8,4 @@ venv/
 .project
 .pydevproject
 *.log
+docs/build/

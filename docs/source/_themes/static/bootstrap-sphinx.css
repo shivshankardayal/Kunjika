@@ -1,0 +1,15 @@
+/*
+* bootstrap-sphinx.css
+* ~~~~~~~~~~~~~~~~~~~~
+*
+* Sphinx stylesheet -- Twitter Bootstrap theme.
+*/
+
+body {
+  padding-top: 52px;
+}
+
+.navbar .brand {
+  color: #333;
+  text-shadow: #777 1px 1px 2px;
+}
