@@ -20,3 +20,15 @@ changed licensing term last I was informed so that is out of question. I write
 my books and give it for free for study at http://libreprogramming.org and
 Kunjika is meant to satisfy the needs for interaction between me and my
 readers(I prefer to call them my students).
+
+Kunjika uses Python, Flask, Couchbase for server side and css and jqeury for client
+side duties. Templating is done is Jinja2 as supported by Flask. Time to justify
+my choices. Well, there were not many. Of all scripting languages I am most
+proficient with Python so I chose it. Flask I chose because I could learn it
+faster then any other framework and it is not really a micro framework considering
+high quality extensions offered by great community of Flask. Since, I was writing
+an application and Flask does not tie you with a database like the ORM of Django
+does I chose Couchbase because of its features. Well, you may argue that an RDBMS
+will make application more acceptable in community but choosing an RDBMS makes
+development process slow even with matured ORMs like SQLAlchemy. Also, Couchbase
+is much more superior to any RDBMS in most of the areas for such a new database.

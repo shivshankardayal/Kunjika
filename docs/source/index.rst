@@ -13,6 +13,8 @@ Contents:
    :maxdepth: 4
 
    introduction
+   installation
+   configuration
 
 Indices and tables
 ==================

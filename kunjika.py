@@ -32,7 +32,7 @@ ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C'
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg'])
 
 kunjika = Flask(__name__)
-kunjika.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
+
 kunjika.config.from_object('config')
 DB_URL = kunjika.config['DB_URL']
 HOST_URL = kunjika.config['HOST_URL']
