@@ -22,3 +22,5 @@ for tag and it is done.
 
 It is almost done. Few features are remaining then I will release the alpha.
 
+I am working on documentation which you can read at http://libreprogramming.org/docs/kunjika/
+but it is not put there yet. Please wait for my notification.
