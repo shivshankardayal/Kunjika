@@ -293,7 +293,7 @@ def users(qpage=None, apage=None, uid=None, uname=None):
 
     if tcount > 0:
         tag_list = utility.get_popular_tags()
-    user = cb.get(uid).value
+    user = cb.get(str(uid)).value
     questions = utility.get_user_questions_per_page(user, qpage, USER_QUESTIONS_PER_PAGE, user['qcount'])
     if not questions and qpage != 1:
         abort(404)
