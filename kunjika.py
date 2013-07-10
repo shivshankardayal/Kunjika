@@ -339,6 +339,7 @@ def ask():
         tag_list = utility.get_popular_tags()
     questionForm = QuestionForm(request.form)
     if g.user is not None and g.user.is_authenticated():
+        user = cb.get(str(g.user.id)).value
         if questionForm.validate_on_submit() and request.method == 'POST':
             data1 = {}
             try:

@@ -18,7 +18,7 @@ started by installing pip, git, virtualenv, nginx, postfix and python-dev.
 
 .. code-block:: verbatim
 
-   sudo apt-get install python-pip git virtualenv nginx postfix python-dev
+   sudo apt-get install python-pip git python-virtualenv nginx postfix python-dev
 
 Now we may need to create **/var/www** directory as it may not be there. You can
 choose **internet site** for Postfix configuration window and then close port
