@@ -212,7 +212,7 @@
             if ($('#wmd-input').length > 0) {
                 var converter = new Markdown.getSanitizingConverter();
                 var help = function () {
-                    window.open('http://localhost:5000/editing-help');
+                    window.open('{{ config['HOST_URL'] }}/editing-help');
                 }
                 Markdown.Extra.init(converter, {
                     extensions: "all",
@@ -302,7 +302,7 @@
             var qid = lastPart.replace(/qe-/, '');
             $.getJSON('/get_tags/' + String(qid), {
             }, function (data) {
-                $("#token-input-kunjika-tags").tokenInput("http://localhost:5000/get_tags/", {
+                $("#token-input-kunjika-tags").tokenInput("{{ config['HOST_URL'] }}/get_tags/", {
                     theme: "kunjika",
                     allowFreeTagging: true,
                     tokenLimit: 5,
