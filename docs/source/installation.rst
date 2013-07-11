@@ -124,11 +124,12 @@ For uwsgi we need to create a upstart file. Just paste the following in **/etc/i
 
    respawn
 
-   exec uwsgi --master --processes 4 --die-on-term --uid 33 --gid 33 --socket /tmp/uwsgi.sock  --vhost --logto /var/log/uwsgi.log
+   exec uwsgi --master --processes 4 -b 8192 --die-on-term --uid 33 --gid 33 --socket /tmp/uwsgi.sock  --vhost --logto /var/log/uwsgi.log
 
 Note that uid 33 and gid 33 refers to www-data. You can see this in **/etc/passwd** file with which
 nginx runs. This is needed so that nginx can read/write to this socket. And of course you do not want
-to run uwsgi or nginx as root.
+to run uwsgi or nginx as root. The -b option is needed because google's response is greater than
+4096 which is default for uwsgi.
 
 Let us talk about main nginx.conf. The default file looks like following:
 
