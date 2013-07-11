@@ -990,7 +990,7 @@ def flag():
 def postcomment():
     #print request.form
     #print type(request.form['comment'])
-    user = cb.get(str(g.user.id))
+    user = cb.get(str(g.user.id)).value
     try:
         data = sb.get(user['email'])
         data['comments/min'] += 1
@@ -1007,7 +1007,7 @@ def postcomment():
 
     except:
         data1 = {}
-        data1 = user['email']
+        data1['email'] = user['email']
         data1['comments/min'] = 1
         data1['comments/hr'] = 1
         data1['comments/day'] = 1
