@@ -49,11 +49,12 @@ then install using dpkg.
 Now we need libcouchbase which we can install using instructions from `getting stared page at couchbase
 <http://www.couchbase.com/communities/c/getting-started>`_.
 
-Now we can install packages.
+Now we can install packages after which you change ownership of entire folder to www-data.
 
 .. code-block:: verbatim
 
    sudo sh install-packages.sh
+   sudo chown www-data:www-data .
 
 The above command will prepare venv and install all necessary packages.
 
@@ -102,6 +103,8 @@ following in one file say kunjika **/etc/nginx/sites-available**.
          uwsgi_param UWSGI_CALLABLE kunjika;
      }
    }
+
+   sudo ln -s /etc/nginx/sites-available/kunjika /etc/nginx/sites-enabled/kunjika
 
 You may also choose to run it on port 443 for ssh for which you will need ssl certificates.
 Free ssl certificates are available from `cacert <http://www.cacert.org/>`_. Just that you will

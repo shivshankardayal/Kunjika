@@ -14,3 +14,5 @@ Please note that you can use to implement a testing site but do not use in produ
 because a lot more features are to come and things will break compatibility.
 
 Happy seeking knowledge.
+
+It is online now. Documentation has some issues which I will fix soon.

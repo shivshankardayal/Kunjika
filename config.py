@@ -69,7 +69,7 @@ DB_URL = 'http://localhost:8092/'
 HOST_URL = 'http://localhost:5000/'
 MAIL_SERVER_IP = '127.0.0.1'
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 
 # log file path. You must edit these.
 LOG_FILE = '/home/shiv/Kunjika/kunjika.log'
