@@ -151,7 +151,7 @@ def questions(tag=None, page=None, qid=None, url=None):
         qcount = qb.get('qcount').value
         ucount = cb.get('count').value
         tcount = tb.get('tcount').value
-        acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
+        acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
         acount = json.loads(acount)
         if len(acount['rows']) is not 0:
             acount = acount['rows'][0]['value']
@@ -284,7 +284,7 @@ def users(qpage=None, apage=None, uid=None, uname=None):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -328,7 +328,7 @@ def ask():
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -838,7 +838,7 @@ def edits(element):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -1075,7 +1075,7 @@ def unanswered(page):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -1122,7 +1122,7 @@ def show_users(page):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -1154,7 +1154,7 @@ def show_tags(page):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -1223,7 +1223,7 @@ def tag_info(tag=None):
         qcount = qb.get('qcount').value
         ucount = cb.get('count').value
         tcount = tb.get('tcount').value
-        acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
+        acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
         acount = json.loads(acount)
         if len(acount['rows']) != 0:
             acount = acount['rows'][0]['value']
@@ -1249,7 +1249,7 @@ def edit_tag(tag):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
