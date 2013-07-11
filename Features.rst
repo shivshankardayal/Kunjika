@@ -2,6 +2,46 @@ Features
 ********
 TODO
 ====
+1.  Automatic upgrade check and 1-click site upgrade.
+2.  Automatic site and DB backup, with backup scheduling to remote or cloud server.
+3.  Ability to take site offline (maintenance mode).
+4.  Forum statistics (page views, active members, new members, etc) from the Admin page.
+5.  HTML fields to embed code, like Piwik Web Analytics, AdSense or any other display ad
+    integration into specific part of a the site or in template files.
+6.  Built-in firewall and IDS/IPS system.
+7.  Prevent remote access to core files except from a specified IP/user.
+8.  Banning IP/IP range.
+9.  Akismet or Defensio anti-spam integration.
+10. Built-in website scanner to scan template files for malware and unauthorized modifications,
+    with email notification to admin to report suspected modifications
+11. Backup core files to a locked down directory, with the ability to restore modified files
+    to the originals from this directory
+12. Login Security & Monitoring (notify admin when a user with admin privileges logs in, etc).
+13. Lock and Unlock core files from admin page.
+14. Admin can create an announcement post that is then broadcast by email to all registered
+    users. Give users the option to opt out of such messages from their profile page.
+14. jQuery lightbox integration.
+15. Visual notification of new questions/comments/answers when a user is browsing any part of
+    the forum. e.g "A new question/comment/answer has been posted, click here to read it." Or
+    "4 new questions/comments/answers have just been posted. Click here to read them."
+16. Create private discussion group.
+17. Related questions tag that embeds related questions at the end of a discussion.
+18. Continuous rendering of questions like discourse.org which can be configured from configuration.
+19. "Similar question" feature just like Stack Overflow.
+20. Option for members to complete their social network profiles on their profile page, and give
+    them the option to choose which one(s) to auto-post to. 
+21. Users can send invitation emails from their profile page.
+22. Chat, just like Stack Overflow, that only users with a certain reputation may participate
+    in, or any registered member can join.
+23. Admin can send bulk email or private messages to members.
+24. Users can receive an email when someone quotes them, replies to their posts, or mentions
+    their @username.
+25. Sending private messages between registered members, and email notification when a private
+    message is received.
+26. Automatic private message to users upon successful email activation.
+27. Blog module, with a liveblogging feature similar to ScribbleLive.
+28. WordPress module, to embed Kunjika forum in a WP site.
+29. Gallery module to enable creation of a gallery page (a blog for galleries).
 
 DONE
 ====
@@ -49,6 +89,7 @@ DONE
 29. Flash messages for user feedback.
 30. Error pages are there.
 31. File based rotated logging.
+32. Automatic private message to users upon registration.
 
 Postponed for later
 ===================
