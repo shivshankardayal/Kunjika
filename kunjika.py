@@ -435,7 +435,7 @@ def create_profile():
     if profileForm.validate_on_submit() and request.method == 'POST':
         print "hello"
         data = {}
-        print profileForm.email2.data
+        print profileForm.email1.data
         view = urllib2.urlopen(DB_URL + 'default/_design/dev_qa/_view/get_role?stale=false').read()
         view = json.loads(view)
         if len(view['rows']) == 0:
@@ -464,7 +464,7 @@ def create_profile():
                 return make_response("cant login")
 
         document = urllib2.urlopen(
-            DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + profileForm.email2.data + '"&stale=false').read()
+            DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + profileForm.email1.data + '"&stale=false').read()
         document = json.loads(document)
         #print(document)
         if len(document['rows']) == 0:
