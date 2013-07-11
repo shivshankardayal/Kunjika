@@ -293,7 +293,7 @@ def users(qpage=None, apage=None, uid=None, uname=None):
 
     if tcount > 0:
         tag_list = utility.get_popular_tags()
-    user = cb.get(uid).value
+    user = cb.get(str(uid)).value
     questions = utility.get_user_questions_per_page(user, qpage, USER_QUESTIONS_PER_PAGE, user['qcount'])
     if not questions and qpage != 1:
         abort(404)
@@ -497,6 +497,7 @@ def create_profile():
 def create_or_login(resp):
     session['openid'] = resp.identity_url
     user = utility.filter_by(resp.email)
+    print user
     if user is not None:
         if user['banned'] == True:
             return redirect(url_for('questionsyal'))
@@ -536,7 +537,7 @@ def openid_login():
         yahooid = request.form.get('yahooid')
         #print openid
         #print yahooid
-        #print googleid
+        print googleid
         if googleid:
             return oid.try_login('https://www.google.com/accounts/o8/id', ask_for=['email', 'fullname', 'nickname'])
         elif yahooid:
@@ -1337,9 +1338,9 @@ def page_not_found(e):
 def page_not_found(e):
     return render_template('403.html'), 410
 
-@kunjika.errorhandler(400)
-def page_not_found(e):
-    return render_template('400.html'), 400
+#@kunjika.errorhandler(400)
+#def page_not_found(e):
+#    return render_template('400.html'), 400
 
 @kunjika.errorhandler(401)
 def page_not_found(e):
