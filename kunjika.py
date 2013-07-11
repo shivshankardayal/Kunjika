@@ -900,20 +900,26 @@ def edits(element):
                 question['content']['description'] = form.description.data
                 tags = form.tags.data.split(',')
                 tag_list = []
+                #print tags
                 current_tags = question['content']['tags']
                 for tag in tags:
                     try:
                         tag = int(tag)
-                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + str(tag)).read()
+                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?key=' + str(tag)).read()
                         tag = json.loads(tag)['rows'][0]['value']
                         tag_list.append(tag['tag'])
                     except:
+                        print "hello"
                         tag_list.append(tag)
 
                 question['updated'] = int(time())
                 question['content']['tags'] = tag_list
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1
+                #print tag_list
+                #print question['content']['tags']
+                #print current_tags
+                #return redirect(url_for('questions'))
                 qb.replace(str(qid), question)
                 replace_tags(question['content']['tags'], question['qid'], current_tags)
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
