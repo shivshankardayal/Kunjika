@@ -91,8 +91,8 @@ def handle_favorite(idntfr):
         user['fav_q'] = []
         user['fav_q'].append(qid)
 
-    kunjika.cb.replace(qid, user)
-    kunjika.qb.replace(str(g.user.id), question)
+    kunjika.cb.replace(str(g.user.id), user)
+    kunjika.qb.replace(qid, question)
 
     return jsonify({"success": True})
 

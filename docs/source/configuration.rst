@@ -70,7 +70,7 @@ Given below is configuration file config.py which you can find in **/var/www/Kun
     COMMENTS_PER_HR = 20
     COMMENTS_PER_DAY = 50
 
-    #  You database URL, DNS and mail server IP. You must edit these.
+    #  You database URL, DNS and mail server IP. You must edit these. Ensure trailing slash.
     DB_URL = 'http://localhost:8092/'
     HOST_URL = 'http://localhost:5000/'
     MAIL_SERVER_IP = '127.0.0.1'
@@ -101,4 +101,6 @@ directory. You need to copy **get_by_reputation, get_id_from_email**
 and **get_role** to **default** view. **get_acount, get_questions, get_questions_by_tag**
 and **get_unanswered** to **questions** view. **get_by_count, get_doc_from_tag** and
 **get_tag_by_id** to **tags** view. As of now these view names are fixed which
-is subject to be a configurable value later.
+is subject to be a configurable value later. For **get_acount** view you need to use
+**_sum** function for reducing the map. Just put ``_sum`` in right hand side in your
+couchbase web ui.
