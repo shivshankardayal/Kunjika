@@ -983,7 +983,7 @@ def flag():
                'Flagger User ID: ' + str(flagged_user['id']) + '<br/>' \
                '<br/> Admin<p>'
     mail.send(msg)
-
+    flash('Thanks for flagging. Your feedback is appreciated.', 'info')
     return jsonify({"success": True})
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])

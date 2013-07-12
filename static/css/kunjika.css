@@ -76,7 +76,7 @@
 #mainbar, .mainbar {
     float: left;
     margin: 0 10px 20px 0;
-    width: 740px;
+    width: 768px;
     display:table;
 }
 
@@ -86,7 +86,7 @@
     margin: 0 0 60px 0px;
     overflow: hidden;
     margin-left: 10px;
-    width: 220px;
+    width: 300px;
 }
 
 .count {
