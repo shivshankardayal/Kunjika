@@ -188,6 +188,7 @@
 .summary {
     float: left;
     width: 630px;
+    margin-top: -6px;
 }
 
 .tags {
