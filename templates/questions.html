@@ -56,7 +56,6 @@
                             <h4><a class="quesiton-hyperlink"
                                    href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}">{{ question['title'] }}</a>
                             </h4>
-                        </div>
                         <div class="tags">
                             <i class="icon-tags" style="color:#a4c639;"></i>
                             {% for tag in question['content']['tags'] %}
@@ -69,6 +68,7 @@
                             </p>
                         </div>
                     </div>
+                        </div>
                 {% endfor %}
             </div>
             {{ render_pagination(pagination) }}
