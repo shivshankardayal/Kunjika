@@ -207,6 +207,7 @@ def questions(tag=None, page=None, qid=None, url=None):
             answerForm = AnswerForm(request.form)
             user = cb.get(str(g.user.id)).value
             if answerForm.validate_on_submit() and request.method == 'POST':
+		'''
                 try:
                     data = sb.get(user['email'])
                     data['answers/min'] += 1
@@ -230,7 +231,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     sb.add(user['email'] + 'answers/min', data1, ttl=60)
                     sb.add(user['email'] + 'answers/hr', data1, ttl=3600)
                     sb.add(user['email'] + 'answers/day', data1, ttl=86400)
-
+		'''
                 answer = {}
                 if 'answers' in questions_dict:
                     answer['aid'] = questions_dict['acount'] + 1
@@ -342,7 +343,9 @@ def ask():
         user = cb.get(str(g.user.id)).value
         if questionForm.validate_on_submit() and request.method == 'POST':
             data1 = {}
+	    '''
             try:
+		
                 data = sb.get(user['email'])
                 data['questions/min'] += 1
                 data['questions/hr'] += 1
@@ -364,6 +367,7 @@ def ask():
                 sb.add(user['email'] + 'questions/min', data1, ttl=60)
                 sb.add(user['email'] + 'questions/hr', data1, ttl=3600)
                 sb.add(user['email'] + 'questions/day', data1, ttl=86400)
+	    '''
 
             question = {}
             question['content'] = {}
@@ -992,6 +996,7 @@ def postcomment():
     #print request.form
     #print type(request.form['comment'])
     user = cb.get(str(g.user.id)).value
+    '''
     try:
         data = sb.get(user['email'])
         data['comments/min'] += 1
@@ -1015,7 +1020,7 @@ def postcomment():
         sb.add(user['email'] + 'comments/min', data1, ttl=60)
         sb.add(user['email'] + 'comments/hr', data1, ttl=3600)
         sb.add(user['email'] + 'comments/day', data1, ttl=86400)
-
+    '''
     if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
         return "Comment must be between 10 and 5000 characters."
     else:
@@ -1233,7 +1238,7 @@ def tag_info(tag=None):
             tag_list = utility.get_popular_tags()
     except:
         pass
-    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
+    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
     tag = json.loads(tag)
     tag = tag['rows'][0]['value']
     if g.user is AnonymousUserMixin:
