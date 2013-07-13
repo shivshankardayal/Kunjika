@@ -819,7 +819,7 @@ def replace_tags(tags_passed, qid, current_tags):
 
     for tag in current_tags:
         if tag not in tags_passed:
-            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(tag) + '"').read()
+            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
             #print tag
             tag = json.loads(tag)['rows'][0]['value']
             tag['qid'].remove(int(qid))
