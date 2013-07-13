@@ -184,7 +184,7 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
 
     skip = (page - 1) * QUESTIONS_PER_PAGE
     tag = urllib2.quote(tag, '')
-    tag = urllib2.urlopen(kunjika.DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?&key=' + '"' + tag + '"').read()
+    tag = urllib2.urlopen(kunjika.DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?&key=' + '"' + urllib2.quote(tag) + '"').read()
     tag = json.loads(tag)['rows'][0]['value']
     question_list = []
     for qid in tag['qid']:
