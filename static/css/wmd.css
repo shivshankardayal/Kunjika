@@ -9,7 +9,7 @@
 
 .wmd-input {
     height: 300px;
-    width: 100%;
+    width: 85%;
     border: 1px solid DarkGray;
     float: left;
     margin-right: 100px;
@@ -30,7 +30,7 @@
     padding-top: 10px;
     margin: 5px;
     border: 1px dashed #000;
-    max-width: 100%;
+    max-width: 85%;
     word-wrap: break-word;
 }
 
@@ -42,6 +42,7 @@
     margin-top: 10px;
     padding: 0px;
     height: 20px;
+    width: 85%;
 }
 
 .wmd-spacer {
