@@ -12,6 +12,7 @@
 
 {% block css_site %}
     <link href="/static/css/kunjika.css" rel="stylesheet">
+    <script src="/static/js/jquery.cookie.js"></script>
 
 {% endblock %}
 {% block container %}
@@ -150,8 +151,8 @@
                                     </div>
                                 {% endfor %}
                             {% endif %}
-        <div style="clear:both"></div>
-                        {{ render_user_question_pagination(question_pagination) }}
+                            <div style="clear:both"></div>
+                            {{ render_user_question_pagination(question_pagination) }}
                         </div>
                     </div>
 
@@ -188,8 +189,8 @@
                                 </div>
                             {% endfor %}
                         {% endif %}
-        <div style="clear:both"></div>
-                    {{ render_user_answer_pagination(answer_pagination) }}
+                        <div style="clear:both"></div>
+                        {{ render_user_answer_pagination(answer_pagination) }}
                     </div>
                 </div>
             </div>
@@ -285,5 +286,21 @@
             });
             return false;
         });
+  $(function() {
+        $('a[data-toggle="tab"]').on('shown', function(e){
+            //save the latest tab using a cookie:
+            $.cookie('last_tab', $(e.target).attr('href'));
+        });
+        //activate latest tab, if it exists:
+        var lastTab = $.cookie('last_tab');
+        if (lastTab) {
+            $('a[href=' + lastTab + ']').tab('show');
+        }
+        else
+        {
+            // Set the first tab if cookie do not exist
+            $('a[data-toggle="tab"]:first').tab('show');
+        }
+    });
     </script>
 {% endblock %}
