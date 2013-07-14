@@ -76,7 +76,7 @@
 #mainbar, .mainbar {
     float: left;
     margin: 0 10px 20px 0;
-    width: 768px;
+    width: 850px;
     display:table;
 }
 
@@ -182,7 +182,7 @@
 }
 
 .narrow .summary {
-    width: 570px;
+    width: 640px;
 }
 
 .summary {
@@ -299,10 +299,6 @@
 
 .mini-counts {
     margin-bottom: 8px;
-}
-
-.narrow .summary {
-    width: 570px;
 }
 
 .summary {
