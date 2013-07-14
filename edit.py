@@ -2,7 +2,7 @@ import kunjika
 from flask import Flask, render_template
 
 def handle_edit(element):
-    #print element
+    ##print element
     element = element[3:]
     arg_list = element.split('-')
     qid = 0

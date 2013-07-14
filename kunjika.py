@@ -6,7 +6,7 @@ from flaskext.bcrypt import Bcrypt
 from couchbase import Couchbase
 from couchbase.exceptions import *
 import urllib2
-from pprint import pprint
+from p#print import p#print
 from flaskext.gravatar import Gravatar
 from werkzeug import secure_filename, SharedDataMiddleware
 import os
@@ -130,7 +130,7 @@ def get_user(uid):
 
 @lm.user_loader
 def load_user(uid):
-    #print id
+    ##print id
     user = get_user(int(uid))
     return user
 
@@ -437,13 +437,13 @@ def create_profile():
     if g.user is not None and g.user.is_authenticated():
         return redirect(url_for('/'))
     if profileForm.validate_on_submit() and request.method == 'POST':
-        print "hello"
+        #print "hello"
         data = {}
-        print profileForm.email1.data
+        #print profileForm.email1.data
         view = urllib2.urlopen(DB_URL + 'default/_design/dev_qa/_view/get_role?stale=false').read()
         view = json.loads(view)
         if len(view['rows']) == 0:
-            print "hello1"
+            #print "hello1"
             data['role'] = 'admin'
             populate_user_fields(data, profileForm)
 
@@ -470,9 +470,9 @@ def create_profile():
         document = urllib2.urlopen(
             DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + profileForm.email1.data + '"&stale=false').read()
         document = json.loads(document)
-        #print(document)
+        ##print(document)
         if len(document['rows']) == 0:
-            print "hello2"
+            #print "hello2"
             populate_user_fields(data, profileForm)
 
             cb.incr('count', 1)
@@ -501,14 +501,14 @@ def create_profile():
 def create_or_login(resp):
     session['openid'] = resp.identity_url
     user = utility.filter_by(resp.email)
-    print user
+    #print user
     if user is not None:
         if user['banned'] == True:
             return redirect(url_for('questionsyal'))
         flash(u'Successfully signed in')
 
         g.user = user
-        print user
+        #print user
         session[user['id']] = user['id']
         session['logged_in'] = True
         if 'role' in user:
@@ -531,7 +531,7 @@ def openid_login():
     loginForm = LoginForm(request.form)
     openidForm = OpenIDForm(request.form)
 
-    print g.user
+    #print g.user
 
     if g.user is not AnonymousUserMixin and g.user.is_authenticated():
         return redirect(oid.get_next_url())
@@ -539,9 +539,9 @@ def openid_login():
         openid = request.form.get('openid')
         googleid = request.form.get('googleid')
         yahooid = request.form.get('yahooid')
-        #print openid
-        #print yahooid
-        print googleid
+        ##print openid
+        ##print yahooid
+        #print googleid
         if googleid:
             return oid.try_login('https://www.google.com/accounts/o8/id', ask_for=['email', 'fullname', 'nickname'])
         elif yahooid:
@@ -652,7 +652,7 @@ def register():
         document = urllib2.urlopen(
             DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + registrationForm.email1.data + '"&stale=false').read()
         document = json.loads(document)
-        #print(document)
+        ##print(document)
         if len(document['rows']) == 0:
             data['password'] = passwd_hash
             populate_user_fields(data, registrationForm)
@@ -759,7 +759,7 @@ def image_upload():
 
 @kunjika.route('/get_tags/<qid>', methods=['GET', 'POST'])
 def get_tags(q=None, qid=None):
-    #print request.args.get('q')
+    ##print request.args.get('q')
 
     if qid is not None:
         question = qb.get(str(qid)).value
@@ -769,10 +769,10 @@ def get_tags(q=None, qid=None):
         tags_list = []
         for i in tags:
             tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(i) + '"').read()
-            #print tag
+            ##print tag
             tag = json.loads(tag)['rows'][0]['value']
             tags_list.append({"id": tag['tid'], "name": tag['tag']})
-    #print tags_list
+    ##print tags_list
     return json.dumps(tags_list)
 
 
@@ -824,7 +824,7 @@ def replace_tags(tags_passed, qid, current_tags):
     for tag in current_tags:
         if tag not in tags_passed:
             tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
-            #print tag
+            ##print tag
             tag = json.loads(tag)['rows'][0]['value']
             tag['qid'].remove(int(qid))
             tag['count'] -= 1
@@ -851,7 +851,7 @@ def edits(element):
     if tcount > 0:
         tag_list = utility.get_popular_tags()
     #edit_list = edit.handle_edit(element)
-    #pprint(edit_list)
+    #p#print(edit_list)
 
     aid = 0
     cid = 0
@@ -905,7 +905,7 @@ def edits(element):
                 question['content']['description'] = form.description.data
                 tags = form.tags.data.split(',')
                 tag_list = []
-                #print tags
+                ##print tags
                 current_tags = question['content']['tags']
                 for tag in tags:
                     try:
@@ -914,16 +914,16 @@ def edits(element):
                         tag = json.loads(tag)['rows'][0]['value']
                         tag_list.append(tag['tag'])
                     except:
-                        print "hello"
+                        #print "hello"
                         tag_list.append(tag)
 
                 question['updated'] = int(time())
                 question['content']['tags'] = tag_list
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1
-                #print tag_list
-                #print question['content']['tags']
-                #print current_tags
+                ##print tag_list
+                ##print question['content']['tags']
+                ##print current_tags
                 #return redirect(url_for('questions'))
                 qb.replace(str(qid), question)
                 replace_tags(question['content']['tags'], question['qid'], current_tags)
@@ -951,7 +951,7 @@ def flag():
 
     question = qb.get(str(idntfr_list[1])).value
     op_id = 0
-    print idntfr_list
+    #print idntfr_list
     if idntfr_list[0] == '#qqf':
         op_id = question['content']['op']
     elif idntfr_list[0] == '#qcf':
@@ -964,14 +964,14 @@ def flag():
                 op_id = answer['poster']
     elif idntfr_list[0] == unicode('#qac'):
         for answer in question['answers']:
-            print "hello"
+            #print "hello"
             if unicode(answer['aid']) == idntfr_list[2]:
                 for comment in answer['comments']:
                     if unicode(comment['cid']) == idntfr_list[3]:
                         op_id = comment['poster']
-                        print op_id
+                        #print op_id
 
-    print op_id
+    #print op_id
 
     flagged_user = cb.get(str(op_id)).value
 
@@ -993,8 +993,8 @@ def flag():
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():
-    #print request.form
-    #print type(request.form['comment'])
+    ##print request.form
+    ##print type(request.form['comment'])
     user = cb.get(str(g.user.id)).value
     '''
     try:
@@ -1026,11 +1026,11 @@ def postcomment():
     else:
         elements = request.form['element'].split('-')
         qid = elements[0]
-        #print "qid = " + qid
+        ##print "qid = " + qid
         aid = 0
         if len(elements) == 2: # check if comment has been made on answers
             aid = elements[1]
-            #print "aid = ",  aid   # if it is on question aid will be zero
+            ##print "aid = ",  aid   # if it is on question aid will be zero
 
     question = qb.get(qid).value
     aid = int(aid)
@@ -1063,7 +1063,7 @@ def postcomment():
             comment['cid'] = 1
             question['comments'].append(comment)
 
-    #pprint(question)
+    #p#print(question)
     question['updated'] = int(time())
     qb.replace(str(qid), question)
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
@@ -1094,7 +1094,7 @@ def unanswered(page):
         str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
     questions = json.loads(questions)
     count = questions['total_rows']
-    #print questions
+    ##print questions
     questions_list = []
     for i in questions['rows']:
         questions_list.append(i['value'])
@@ -1271,7 +1271,7 @@ def edit_tag(tag):
     if g.user is not None and g.user.is_authenticated():
         if tagForm.validate_on_submit() and request.method == 'POST':
             tag['info'] = tagForm.info.data
-            print "hello"
+            #print "hello"
             tb.replace(tag['tag'], tag)
             return redirect(url_for('tag_info', tag=str(tag['tag'])))
 
@@ -1303,8 +1303,8 @@ def reset_password(token=None):
                            "your password just send an email to " + admin + ". Note that this " \
                            "token is only valid for 1 day. <br/>Best regards," \
                            "<br/> Admin</p>"
-                print type(token)
-                print type(email)
+                #print type(token)
+                #print type(email)
                 mail.send(msg)
             else:
                 return redirect(url_for('questions'))
@@ -1319,7 +1319,7 @@ def reset_password(token=None):
                 document = json.loads(document)['rows'][0]['value']
 
             except:
-                print "Either signature is bad or token has expired"
+                #print "Either signature is bad or token has expired"
                 return redirect(url_for('questions'))
             passwd_hash = bcrypt.generate_password_hash(passwordResetForm.password.data)
             document['password'] = passwd_hash

@@ -67,12 +67,12 @@ def handle_favorite(idntfr):
 
     qid = idntfr[3:]
 
-    print qid
+    #print qid
     question = kunjika.qb.get(qid).value
     user = kunjika.cb.get(str(g.user.id)).value
 
-    print question
-    print user
+    #print question
+    #print user
     if 'users_fav' in question:
         if g.user.id in question['users_fav']:
             question['users_fav'].remove(g.user.id)
@@ -137,7 +137,7 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
                 str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
 
     questions = json.loads(questions)
-    #print questions
+    ##print questions
     question_list = []
     for i in questions['rows']:
         question_list.append(i['value'])
@@ -264,8 +264,8 @@ def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
     for aid in aid_list:
         qid = aid.split('-')[0]
         single_aid = aid.split('-')[1]
-        print qid
-        print single_aid
+        #print qid
+        #print single_aid
         question = kunjika.qb.get(qid).value
         question_list.append(question)
         aids.append(single_aid)

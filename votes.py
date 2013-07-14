@@ -1,16 +1,16 @@
 import kunjika
 from flask import g, jsonify
-from pprint import pprint
+from p#print import p#print
 
 
 def handle_vote(request):
     id = request.args.get('id')
     vote_count = request.args.get('vote_count')
     direction = request.args.get('direction')
-    print id
-    print direction
-    id = id[3:]
     #print id
+    #print direction
+    id = id[3:]
+    ##print id
     vote_dict = {}
     vote_dict['id'] = id
 
@@ -154,7 +154,7 @@ def handle_vote(request):
             vote['id'] = id
             vote['value'] = 0
             if direction == 'up':
-                #pprint(answer)
+                #p#print(answer)
                 question['votes'] += 1
                 vote['value'] = 1
                 user['rep'] += 1
