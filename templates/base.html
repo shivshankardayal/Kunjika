@@ -103,45 +103,45 @@
                         <div class="nav-collapse collapse">
                             <ul class="nav">
                                 {% if qpage is defined %}
-                                    <li class="active"><a href="/questions"><i class="icon-question"></i> Questions</a>
+                                    <li class="active"><a href="/questions"><i class="icon-question"></i> <b>Questions</b></a>
                                     </li>
                                 {% else %}
-                                    <li><a href="/questions"><i class="icon-question"></i> Questions</a></li>
+                                    <li><a href="/questions"><i class="icon-question"></i> <b>Questions</b></a></li>
                                 {% endif %}
                                 {% if tpage is defined %}
-                                <li class="active"><a href="/tags"><i class="icon-tags"></i> Tags</a></li>
+                                <li class="active"><a href="/tags"><i class="icon-tags"></i> <b>Tags</b></a></li>
                                 {% else %}
-                                <li><a href="/tags"><i class="icon-tags"></i> Tags</a></li>
+                                <li><a href="/tags"><i class="icon-tags"></i> <b>Tags</b></a></li>
                                 {% endif %}
                                 {% if upage is defined %}
-                                    <li class="active"><a href="/users"><i class="icon-user"></i> Users</a></li>
+                                    <li class="active"><a href="/users"><i class="icon-user"></i> <b>Users</b></a></li>
                                 {% else %}
-                                    <li><a href="/users"><i class="icon-user"></i> Users</a></li>
+                                    <li><a href="/users"><i class="icon-user"></i> <b>Users</b></a></li>
                                 {% endif %}
                                 {% if unpage is defined %}
                                     <li class="active"><a href="/unanswered"><i class="icon-question-sign"></i>
-                                        Unanswered</a></li>
+                                        <b>Unanswered</b></a></li>
                                 {% else %}
                                     <li><a href="/unanswered"><i class="icon-question-sign"></i>
-                                        Unanswered</a></li>
+                                        <b>Unanswered</b></a></li>
                                 {% endif %}
                                 {% if apage is defined %}
-                                    <li class="active"><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a>
+                                    <li class="active"><a href="/ask" class="ask"><i class="icon-question-sign"></i> <b>Ask</b></a>
                                     </li>
                                 {% else %}
-                                    <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a></li>
+                                    <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> <b>Ask</b></a></li>
                                 {% endif %}
                                 {% if user_id is defined and g.user.is_authenticated() %}
                                     <li class="active"><a href="/users/{{ user_id }}/{{ name }}" class="login"><i
-                                            class="icon-sigin"></i> {{ name }}</a></li>
-                                    <li><a href="/logout" class="login"><i class="icon-signout"></i> Logout</a></li>
+                                            class="icon-sigin"></i> <b>{{ name }}</b></a></li>
+                                    <li><a href="/logout" class="login"><i class="icon-signout"></i> <b>Logout</b></a></li>
                                 {% else %}
-                                    <li><a href="/login" class="login"><i class="icon-signin"></i> Login</a></li>
+                                    <li><a href="/login" class="login"><i class="icon-signin"></i> <b>Login</b></a></li>
                                 {% endif %}
 
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                        Search
+                                        <b>Search</b>
                                         <b class="caret"></b>
                                     </a>
                                     <ul class="dropdown-menu">
