@@ -76,7 +76,7 @@
 #mainbar, .mainbar {
     float: left;
     margin: 0 10px 20px 0;
-    width: 850px;
+    width: 830px;
     display:table;
 }
 
@@ -303,7 +303,7 @@
 
 .summary {
     float: left;
-    width: 630px;
+    width: 620px;
 }
 
 .summary .question-hyperlink {
