@@ -6,7 +6,7 @@ from flaskext.bcrypt import Bcrypt
 from couchbase import Couchbase
 from couchbase.exceptions import *
 import urllib2
-from p#print import pprint
+from pprint import pprint
 from flaskext.gravatar import Gravatar
 from werkzeug import secure_filename, SharedDataMiddleware
 import os
