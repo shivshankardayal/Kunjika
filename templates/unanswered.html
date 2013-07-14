@@ -55,7 +55,6 @@
                             <h4><a class="question-hyperlink"
                                    href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}">{{ question['title'] }}</a>
                             </h4>
-                        </div>
                         <div class="tags">
                             <i class="icon-tags" style="color:#a4c639;"></i>
                             {% for tag in question['content']['tags'] %}
@@ -66,6 +65,7 @@
                             <p>Asked on {{ question['tstamp'] }} by <a
                                     href="/users/{{ question['content']['op'] }}/{{ question['opname'] }}">{{ question['opname'] }}</a>
                             </p>
+                        </div>
                         </div>
                     </div>
                     {% endif %}
