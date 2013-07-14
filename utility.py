@@ -143,6 +143,7 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
         question_list.append(i['value'])
 
     for i in question_list:
+        print i
         i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
 
         user = kunjika.cb.get(i['content']['op']).value
