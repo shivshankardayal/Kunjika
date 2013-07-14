@@ -203,7 +203,7 @@
         {% endblock %}
         {% block js_analytics %}
             {# Via HTML5BP. Asynchronous Google Analytics snippet. mathiasbynens.be/notes/async-analytics-snippet #}
-            <script>
+
           {% block google_analytics %}
           {% if not DEBUG %}
           <script>
@@ -218,7 +218,7 @@
 </script>
           {% endif %}
           {% endblock %}
-          </script>
+          
         {% endblock %}
 
 
