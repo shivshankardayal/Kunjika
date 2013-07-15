@@ -507,12 +507,14 @@ pre.prettyprint {
     color:#dd0;
     text-decoration: none;
     padding-top: 5px;
+    display: block;
 }
 
 .unstarred, .unstarred:hover{
     color:#333;
     text-decoration: none;
     padding-top: 5px;
+    display: block;
 }
 
 .tag-cell {
