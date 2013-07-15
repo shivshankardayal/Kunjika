@@ -69,7 +69,7 @@ def handle_favorite(idntfr):
 
     #print qid
     question = kunjika.qb.get(qid).value
-    user = kunjika.cb.get(str(g.user.id)).value
+    #user = kunjika.cb.get(str(g.user.id)).value
 
     #print question
     #print user
@@ -82,16 +82,17 @@ def handle_favorite(idntfr):
         question['users_fav'] = []
         question['users_fav'].append(g.user.id)
 
-    if 'fav_q' in user:
-        if qid in user['fav_q']:
-            user['fav_q'].remove(qid)
-        else:
-            user['fav_q'].append(qid)
-    else:
-        user['fav_q'] = []
-        user['fav_q'].append(qid)
+    # Issue #9
+    #if 'fav_q' in user:
+    #    if qid in user['fav_q']:
+    #       user['fav_q'].remove(qid)
+    #    else:
+    #        user['fav_q'].append(qid)
+    #else:
+    #    user['fav_q'] = []
+    #    user['fav_q'].append(qid)
 
-    kunjika.cb.replace(str(g.user.id), user)
+    #kunjika.cb.replace(str(g.user.id), user)
     kunjika.qb.replace(qid, question)
 
     return jsonify({"success": True})
@@ -238,36 +239,58 @@ def filter_by(email):
 
 
 def get_user_questions_per_page(user, qpage, USER_QUESTIONS_PER_PAGE, qcount):
-    if 'questions' in user:
-        qid_list = user['questions'][(qpage - 1)*USER_QUESTIONS_PER_PAGE:qpage*USER_QUESTIONS_PER_PAGE]
-    else:
-        return None
+    # Issue 9
 
+    #if 'questions' in user:
+    #    qid_list = user['questions'][(qpage - 1)*USER_QUESTIONS_PER_PAGE:qpage*USER_QUESTIONS_PER_PAGE]
+    #else:
+    #    return None
+
+    skip = (qpage - 1) * USER_QUESTIONS_PER_PAGE
     question_list = []
+    question_view = urllib2.urlopen(
+        kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_userid?key=' + '"' +str(user['id'])
+        + '"' + '&desending=true&skip=' + str(skip) + '&limit=' + str(USER_QUESTIONS_PER_PAGE)
+    ).read()
+    question_view = json.loads(question_view)
+    for element in question_view['rows']:
+        question_list.append(element['value'])
 
-    for qid in qid_list:
-        question = kunjika.qb.get(str(qid)).value
-        question_list.append(question)
+    #for qid in qid_list:
+    #    question = kunjika.qb.get(str(qid)).value
+    #    question_list.append(question)
 
     return question_list
 
 def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
     #the following is aid in the form of 'qid-aid'
-    if 'answers' in user:
-        aid_list = user['answers'][(apage - 1)*USER_ANSWERS_PER_PAGE:apage*USER_ANSWERS_PER_PAGE]
-    else:
-        return None
+    # Issue 9
+    #if 'answers' in user:
+    #    aid_list = user['answers'][(apage - 1)*USER_ANSWERS_PER_PAGE:apage*USER_ANSWERS_PER_PAGE]
+    #else:
+    #    return None
 
+    skip = (apage - 1)*USER_ANSWERS_PER_PAGE
     question_list = []
+    question_view = urllib2.urlopen(
+        kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_answers_by_userid?key=' +str(user['id'])
+        + '&desending=true&skip=' + str(skip) + '&limit=' + str(USER_ANSWERS_PER_PAGE)
+    ).read()
+    question_view = json.loads(question_view)
+    for element in question_view['rows']:
+        question_list.append(element['value'])
     aids = []
+    for question in question_list:
+        for answer in question['answers']:
+            aids.append(answer['aid'])
     #let us get question ids and questions
-    for aid in aid_list:
-        qid = aid.split('-')[0]
-        single_aid = aid.split('-')[1]
-        #print qid
-        #print single_aid
-        question = kunjika.qb.get(qid).value
-        question_list.append(question)
-        aids.append(single_aid)
+    #for aid in aid_list:
+    #    qid = aid.split('-')[0]
+    #    single_aid = aid.split('-')[1]
+    #    #print qid
+    #    #print single_aid
+    #    question = kunjika.qb.get(qid).value
+    #    question_list.append(question)
+    #    aids.append(single_aid)
 
     return question_list, aids

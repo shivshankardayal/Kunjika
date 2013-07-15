@@ -244,7 +244,8 @@ def questions(tag=None, page=None, qid=None, url=None):
                     questions_dict['acount'] += 1
 
                     questions_dict['answers'].append(answer)
-                    user['answers'].append(str(qid) + '-' + str(answer['aid']))
+                    # Isuue 9
+                    #user['answers'].append(str(qid) + '-' + str(answer['aid']))
                     user['acount'] += 1
 
                 else:
@@ -259,7 +260,8 @@ def questions(tag=None, page=None, qid=None, url=None):
 
                     questions_dict['answers'] = []
                     questions_dict['answers'].append(answer)
-                    user['answers'].append(str(qid) + '-' + str(answer['aid']))
+                    # Issue 9
+                    #user['answers'].append(str(qid) + '-' + str(answer['aid']))
                     user['acount'] += 1
 
                 questions_dict['updated'] = int(time())
@@ -393,7 +395,8 @@ def ask():
             user = cb.get(str(g.user.id)).value
 
             user['rep'] += 1
-            user['questions'].append(question['qid'])
+            #Isuue 9
+            #user['questions'].append(question['qid'])
             user['qcount'] += 1
 
             qb.add(str(question['qid']), question)
