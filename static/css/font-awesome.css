@@ -244,7 +244,8 @@ ul.icons-ul > li .icon-li {
 /* Stacked and layered icon */
 .icon-stack {
   position: relative;
-  display: inline-block;
+  /*ssd display: inline-block;*/
+  display: block;
   width: 2em;
   height: 2em;
   line-height: 2em;
