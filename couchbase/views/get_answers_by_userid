@@ -1,0 +1,7 @@
+function (doc, meta) {
+    if(doc.answers) {
+        for(i=0;i<doc.answers.length;i++) {
+            emit(doc.answers[i].poster, doc, null);
+        }
+    }
+}

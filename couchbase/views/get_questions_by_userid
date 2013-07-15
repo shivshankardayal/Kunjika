@@ -1,0 +1,5 @@
+function (doc, meta) {
+    if(doc.content) {
+        emit(doc.content.op, doc, null);
+    }
+}
