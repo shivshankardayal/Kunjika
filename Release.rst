@@ -8,7 +8,7 @@ to not have unknown signing autthority you need to import cacert's root certific
 in your browser. The site will be on by EST end of day today.
 
 I am working on documentation and will be available at
-`libreprogramming website <http://libreprogramming.org/docs/kunjika/>`_.
+`libreprogramming website <https://libreprogramming.org/docs/kunjika/>`_.
 
 Please note that you can use to implement a testing site but do not use in production
 because a lot more features are to come and things will break compatibility.

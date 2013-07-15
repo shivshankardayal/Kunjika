@@ -1,0 +1,1 @@
+The http part will be brought down tomorrow. Only https will be served. - 15 July 2013
