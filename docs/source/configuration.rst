@@ -98,7 +98,8 @@ You need to create 4 buckets. **default** which is needed when you create first 
 is used to store user info. **questions, security** and **tags** are others.
 All design documents should be **dev_qa** for views. The views are in ``couchbase/views``
 directory. You need to copy **get_by_reputation, get_id_from_email**
-and **get_role** to **default** view. **get_acount, get_questions, get_questions_by_tag**
+and **get_role** to **default** view. **get_acount, get_questions, get_questions_by_tag,
+get_answers_by_userid, get_questions_by_userid**
 and **get_unanswered** to **questions** view. **get_by_count, get_doc_from_tag** and
 **get_tag_by_id** to **tags** view. As of now these view names are fixed which
 is subject to be a configurable value later. For **get_acount** view you need to use
