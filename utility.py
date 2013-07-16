@@ -44,20 +44,36 @@ def accept_answer(idntfr):
 
     question = kunjika.qb.get(qid).value
 
-    voter = kunjika.cb.get(g.user.id)
+    voter = kunjika.cb.get(str(g.user.id)).value
 
     if int(question['content']['op']) != g.user.id:
         return jsonify({"success": False})
     for answer in question['answers']:
         if answer['aid'] != int(aid):
-            if answer['best'] is True:
-                answer['poster']['rep'] -= 10
+            if answer['best'] == True:
+                receiver = kunjika.cb.get(str(answer['poster'])).value
+                receiver['rep'] -= 10
                 voter['rep'] -= 2
-            answer['best'] = False
+                kunjika.cb.replace(str(answer['poster']), receiver)
+                kunjika.cb.replace(str(voter['id']), voter)
+                answer['best'] = False
+
         else:
-            answer['best'] = True
-            answer['poster']['rep'] += 10
-            voter['rep'] += 2
+            if answer['best'] != True:
+                answer['best'] = True
+                receiver = kunjika.cb.get(str(answer['poster'])).value
+                receiver['rep'] += 10
+                voter['rep'] += 2
+                kunjika.cb.replace(str(answer['poster']), receiver)
+                kunjika.cb.replace(str(voter['id']), voter)
+            else:
+                receiver = kunjika.cb.get(str(answer['poster'])).value
+                receiver['rep'] -= 10
+                voter['rep'] -= 2
+                kunjika.cb.replace(str(answer['poster']), receiver)
+                kunjika.cb.replace(str(voter['id']), voter)
+                answer['best'] = False
+
 
     kunjika.qb.replace(qid, question)
 
