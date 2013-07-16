@@ -1344,7 +1344,7 @@ def editing_help():
 @kunjika.route('/sticky')
 def stikcy():
     if g.user.id == 1:
-        qid=request.args.get('id')
+        qid=request.args.get('id')[2:]
         print qid
         question = qb.get(str(qid)).value
         if 'sticky' not in question:

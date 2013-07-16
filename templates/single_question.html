@@ -237,18 +237,18 @@
                                    id="qqf-{{ questions['qid'] }}" class="flag" title=""><i class="icon-flag"
                                                                                             style="color:#d00"></i> Flag</a>
                             </td>
+                        {% if g.user.id == 1 %}
+                            <td class="vt">
+                                <a href="/sticky/{{ questions['qid'] }}" id="s-{{ questions['qid'] }}"
+                                   class="sticky suggest-edit-post"><i class="icon-pushpin"
+                                                                                     ></i> Sticky/Unsticky</a>
+                            </td>
+                        {% endif %}
                             <td class="vt">
                                 <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
                                    onclick="toggleDiv('{{ questions['qid'] }}');"><i class="icon-comment"
                                                                                      style="color:#a4c639"></i> Comment</a>
                             </td>
-                        {% if g.user.id == 1 %}
-                            <td class="vt">
-                                <a href="/sticky/{{ questions['qid'] }}" id="{{ questions['qid'] }}"
-                                   class="sticky suggest-edit-post"><i class="icon-pushpin"
-                                                                                     ></i> Sticky/Unsticky</a>
-                            </td>
-                        {% endif %}
                         {% else %}
                             <td class="vt">
                             </td>
