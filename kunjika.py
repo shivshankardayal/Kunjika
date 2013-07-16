@@ -1343,20 +1343,23 @@ def editing_help():
 
 @kunjika.route('/sticky')
 def stikcy():
-    qid=request.args.get('id')
-    print qid
-    question = qb.get(str(qid)).value
-    if 'sticky' not in question:
-        question['sticky'] = True
-    elif question['sticky'] is False:
-        question['sticky'] = True
+    if g.user.id == 1:
+        qid=request.args.get('id')
+        print qid
+        question = qb.get(str(qid)).value
+        if 'sticky' not in question:
+            question['sticky'] = True
+        elif question['sticky'] is False:
+            question['sticky'] = True
+        else:
+            question['sticky'] = False
+
+        qb.replace(str(qid), question)
+        print "questions stickied"
+
+        return jsonify({"success": True})
     else:
-        question['sticky'] = False
-
-    qb.replace(str(qid), question)
-    print "questions stickied"
-
-    return jsonify({"success": True})
+        return jsonify({"success": False})
 
 @kunjika.errorhandler(404)
 def page_not_found(e):
