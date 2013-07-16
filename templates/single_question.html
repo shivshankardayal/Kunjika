@@ -242,6 +242,13 @@
                                    onclick="toggleDiv('{{ questions['qid'] }}');"><i class="icon-comment"
                                                                                      style="color:#a4c639"></i> Comment</a>
                             </td>
+                        {% if g.user.id == 1 %}
+                            <td class="vt">
+                                <a href="/sticky/{{ questions['qid'] }}" id="{{ questions['qid'] }}"
+                                   class="sticky suggest-edit-post"><i class="icon-pushpin"
+                                                                                     ></i> Sticky/Unsticky</a>
+                            </td>
+                        {% endif %}
                         {% else %}
                             <td class="vt">
                             </td>
@@ -748,6 +755,14 @@
             id = '#' + $(this).attr('id');
             $.getJSON('/flag', {
                 id: '#' + $(this).attr('id'),
+                url: $(location).attr('href')
+            }, function (data) {
+            });
+            return false;
+        });
+        $('.sticky').click(function () {
+            $.getJSON('/sticky', {
+                id: $(this).attr('id'),
                 url: $(location).attr('href')
             }, function (data) {
             });

@@ -1341,7 +1341,22 @@ def editing_help():
     return render_template('editing-help.html', title='Markdown Editor Help', name=g.user.name,
                            user_id=g.user.id)
 
-from flask import render_template
+@kunjika.route('/sticky')
+def stikcy():
+    qid=request.args.get('id')
+    print qid
+    question = qb.get(str(qid)).value
+    if 'sticky' not in question:
+        question['sticky'] = True
+    elif question['sticky'] is False:
+        question['sticky'] = True
+    else:
+        question['sticky'] = False
+
+    qb.replace(str(qid), question)
+    print "questions stickied"
+
+    return jsonify({"success": True})
 
 @kunjika.errorhandler(404)
 def page_not_found(e):
