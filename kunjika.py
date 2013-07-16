@@ -241,6 +241,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     answer['votes'] = 0
                     answer['ip'] = request.remote_addr
                     answer['best'] = False
+                    answer['votes_list'] = []
                     questions_dict['acount'] += 1
 
                     questions_dict['answers'].append(answer)
@@ -256,6 +257,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     answer['votes'] = 0
                     answer['ip'] = request.remote_addr
                     answer['best'] = False
+                    answer['votes_list'] = []
                     questions_dict['acount'] = 1
 
                     questions_dict['answers'] = []
@@ -391,6 +393,7 @@ def ask():
             question['votes'] = 0
             question['acount'] = 0
             question['views'] = 0
+            question['votes_list'] = []
 
             user = cb.get(str(g.user.id)).value
 
