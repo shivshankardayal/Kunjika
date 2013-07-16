@@ -94,7 +94,7 @@ def handle_vote(request):
                 return jsonify({'vote_count': answer['votes']})
             else:
                 answer['votes'] -= 1
-                votes['value'] = -1
+                vote['value'] = -1
                 user['rep'] -= 1
                 receiver['rep'] -= 2
                 user['votes_count']['down'] += 1
@@ -171,7 +171,7 @@ def handle_vote(request):
                 return jsonify({'vote_count': question['votes']})
             elif direction == 'down':
                 question['votes'] -= 1
-                votes['value'] -= 1
+                vote['value'] = -1
                 user['rep'] -= 1
                 receiver['rep'] -= 2
                 user['votes_count']['down'] += 1
