@@ -1391,10 +1391,6 @@ def create_poll(form, options):
     return render_template('create_poll.html', title='Create Poll', form=form, options=choices, ppage=True, name=g.user.name,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
-class ChoiceForm(Form):
-    tags = TextField('Tags', [validators.Length(min=1, max=100), validators.Required()])
-    question = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
-    option = RadioField('What type of poll do you want?', choices=[('Single choice', 'Single Choice'), ('Multiple choice', 'Multiple choice')])
 
 @kunjika.route('/poll', methods=['GET', 'POST'])
 def poll():
@@ -1416,37 +1412,101 @@ def poll():
 
     pollForm = PollForm(request.form)
 
-
+    class ChoiceForm(Form):
+        tags = TextField('Tags', [validators.Length(min=1, max=100), validators.Required()])
+        question = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
+        option = RadioField('What type of poll do you want?', choices=[('Single choice', 'Single Choice'), ('Multiple choice', 'Multiple choice')])
+        description = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
+        option_1 = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
+        option_2 = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
+        option_3 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_4 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_5 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_6 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_7 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_8 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_9 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_10 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
 
     questionForm = ChoiceForm(request.form)
-    flag = False
+
+    choices = []
 
     if g.user is not None and g.user.is_authenticated():
         user = cb.get(str(g.user.id)).value
         if pollForm.validate_on_submit() and request.method == 'POST':
+            for i in range(0, int(pollForm.poll_answers.data)):
+                choices.append(str(i+1))
 
-            try:
-                for i in range (0, int(pollForm.poll_answers.data)):
-                    setattr(ChoiceForm, 'option_' + str(i), TextField('Option ' + str(i), [validators.Length(min=4, max=200), validators.Required()]))
-                    flag = True
-                questionForm = ChoiceForm(request.POST)
-            except:
-                redirect(url_for('questions'))
-            if flag is True:
-                choices = []
-                for i in range(0, int(pollForm.poll_answers.data)):
-                    choices.append(str(i+1))
+            return render_template('create_poll.html', title='Create Poll', form=questionForm, options=choices, ppage=True, name=g.user.name,
+                       user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
-                return render_template('create_poll.html', title='Create Poll', form=questionForm, options=choices, ppage=True, name=g.user.name,
-                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+        if questionForm.validate_on_submit() and request.method == 'POST':
 
-        elif questionForm.validate_on_submit() and request.method == 'POST':
-            print "hello"
-            print questionForm.question.data
-            print questionForm.option.data
-            print questionForm.tags.data
-            print questionForm.option_1.data
-            print questionForm.option_2.data
+            title =  questionForm.question.data
+            option =  questionForm.option.data
+            option_1 =  questionForm.option_1.data
+            option_2 =  questionForm.option_2.data
+
+            question = {}
+            question['content'] = {}
+            question['content']['description'] = questionForm.description.data
+            question['content']['tags'] = []
+            question['content']['tags'] = questionForm.tags.data.split(',')
+            question['title'] = title
+
+            if option == 'Single choice':
+                question['content']['sc'] = True
+            else:
+                question['content']['mc'] = True
+
+            question['content']['options'] = []
+            question['content']['options'].append(option_1)
+            question['content']['options'].append(option_2)
+
+            if questionForm.option_3.data != "":
+                question['content']['options'].append(questionForm.option_3.data)
+                if questionForm.option_4.data != "":
+                    question['content']['options'].append(questionForm.option_4.data)
+                    if questionForm.option_5.data != "":
+                        question['content']['options'].append(questionForm.option_5.data)
+                        if questionForm.option_6.data != "":
+                            question['content']['options'].append(questionForm.option_6.data)
+                            if questionForm.option_7.data != "":
+                                question['content']['options'].append(questionForm.option_7.data)
+                                if questionForm.option_8.data != "":
+                                    question['content']['options'].append(questionForm.option_8.data)
+                                    if questionForm.option_9.data != "":
+                                        question['content']['options'].append(questionForm.option_9.data)
+                                        if questionForm.option_10.data != "":
+                                            question['content']['options'].append(questionForm.option_10.data)
+
+            url = utility.generate_url(title)
+
+            question['content']['url'] = url
+            question['content']['op'] = str(g.user.id)
+            question['content']['ts'] = int(time())
+            question['updated'] = question['content']['ts']
+            question['content']['ip'] = request.remote_addr
+            qb.incr('qcount', 1)
+            question['qid'] = qb.get('qcount').value
+            question['votes'] = 0
+            question['acount'] = 0
+            question['views'] = 0
+            question['votes_list'] = []
+
+            user = cb.get(str(g.user.id)).value
+
+            user['rep'] += 1
+            user['qcount'] += 1
+
+            qb.add(str(question['qid']), question)
+
+            cb.replace(str(g.user.id), user)
+
+            add_tags(question['content']['tags'], question['qid'])
+
+            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
 
         return render_template('poll.html', title='Poll', form=pollForm, ppage=True, name=g.user.name,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)

@@ -29,7 +29,7 @@
     <div class="row-fluid">
     <h3>Please ask you question</h3>
     <div class="mainbar" id="mainbar">
-        <form class="ask-form" method="post" aciton="/ask">
+        <form class="ask-form" method="post" aciton="/poll">
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
             <p>What type of poll or multiple choice question do you want?</p>
@@ -42,11 +42,26 @@
             {% endfor %}
             </table>
             {{ render_field(form.question, class="question input-x-large span8", style="margin-left:25px;", placeholder="Please ask your question here?") }}
+            <div class="wmd-panel">
+                <div id="wmd-button-bar"></div>
+                {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
+                <div id="insertImageDialog" title="&nbsp;Insert Image or File">
+                    <h6>From the web</h6>
+
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
+                </div>
+                <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+                <div style="clear:both;"></div>
             {% for i in options %}
                 <div class="control-group">
                     <label class="control-label" for="Option {{ i }}">Option {{ i }}</label>
                     <div class="controls">
-                        <input class="question input-x-large span8" id="option_{{ i }}" name="Option_{{ i }}" placeholder="Please put your choice here?" style="margin-left:25px;" value="" type="text">
+                        <input class="question input-x-large span8" id="option_{{ i }}" name="option_{{ i }}" placeholder="Please put your choice here?" style="margin-left:25px;" value="" type="text">
                     </div>
                 </div>
             {% endfor %}
@@ -55,6 +70,7 @@
                 <button class="btn btn-primary">
                     Ask your question.
                 </button>
+            </div>
             </div>
         </form>
     </div>

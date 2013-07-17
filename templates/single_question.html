@@ -219,6 +219,29 @@
             </td>
             <td class="post">
                 <div class="q-desc" id="q-desc">{{ questions['content']['description'] }}</div>
+                {% if 'sc' in questions['content'] %}
+                    <table class="poll">
+                        <tbody>
+                        {% for option in questions['content']['options'] %}
+                            <tr>
+                                <td><input id="option" name="option" value="Single choice" type="radio"></td>
+                                <td><label for="option">{{ option }}</label></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% elif 'mc' in questions['content'] %}
+                    <table class="poll">
+                        <tbody>
+                        {% for option in questions['content']['options'] %}
+                            <tr>
+                                <td><input id="option" name="option" value="Multiple choice" type="checkbox"></td>
+                                <td><label for="option">{{ option }}</label></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
                 <div class="post-tags"><i class="icon-tags" style="color:#a4c639;"></i>
                     {% for tag in questions['content']['tags'] %}
                         <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
