@@ -372,6 +372,29 @@
             <h4>Know someone who can share his knowledge or you want to share it with others?</h4>
         </div>
         <h6>{{ questions['acount'] }} answers</h6>
+        {% if 'sc' in questions['content'] and g.user.is_authenticated() %}
+            <table class="poll">
+                <tbody>
+                {% for option in questions['content']['options'] %}
+                    <tr>
+                        <td><input id="option" name="option" value="Single choice" type="radio"></td>
+                        <td><label for="option">{{ option }}</label></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% elif 'mc' in questions['content'] and g.user.is_authenticated() %}
+            <table class="poll">
+                <tbody>
+                {% for option in questions['content']['options'] %}
+                    <tr>
+                        <td><input id="option" name="option" value="Multiple choice" type="checkbox"></td>
+                        <td><label for="option">{{ option }}</label></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
         {% for answer in questions['answers'] %}
             <table>
                 <tr class="hr">
@@ -530,8 +553,9 @@
                 </form>
             {% endif %}
         {% endfor %}
+    {% endif %}
     </div>
-    {% if user_id is defined %}
+    {% if user_id is defined and 'sc' not in questions['content'] and 'mc' not in questions['content'] %}
         <h3>Your answer</h3>
         <form class="answer-form" method="post"
               aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
