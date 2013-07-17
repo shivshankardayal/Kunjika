@@ -500,7 +500,7 @@ pre.prettyprint {
 .accepted-answer, .accepted-answer:hover {
     text-decoration:none;
     pointer: hand;
-    color: #070;
+    color: #0a0;
 }
 
 .starred, .starred:hover{
@@ -661,4 +661,18 @@ td, th {
 
 .error {
     color: #700;
+}
+
+#poll_answers {
+    margin-left: 10px;
+    width: 60px;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    margin: 0px;
+}
+
+
+label {
+    margin-bottom: 0px;
 }

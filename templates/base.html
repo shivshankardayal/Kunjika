@@ -98,7 +98,7 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="brand" href="#">Kunjika</a>
+                        <a class="brand" href="/">Kunjika</a>
 
                         <div class="nav-collapse collapse">
                             <ul class="nav">
@@ -131,6 +131,12 @@
                                 {% else %}
                                     <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> <b>Ask</b></a></li>
                                 {% endif %}
+                                {% if ppage is defined %}
+                                    <li class="active"><a href="/poll" class="poll"><i class="icon-group"></i> <b>Poll</b></a>
+                                    </li>
+                                {% else %}
+                                    <li><a href="/poll" class="poll"><i class="icon-group"></i> <b>Poll</b></a></li>
+                                {% endif %}
                                 {% if user_id is defined and g.user.is_authenticated() %}
                                     <li class="active"><a href="/users/{{ user_id }}/{{ name }}" class="login"><i
                                             class="icon-sigin"></i> <b>{{ name }}</b></a></li>
@@ -138,10 +144,10 @@
                                 {% else %}
                                     <li><a href="/login" class="login"><i class="icon-signin"></i> <b>Login</b></a></li>
                                 {% endif %}
-
+                                <li><a href="/recent-questions.atom" class="ask"><i class="icon-rss-sign"></i> <b>Feed</b></a></li>
                                 <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                        <b>Search</b>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-search"></i>
+                                        <b> Search</b>
                                         <b class="caret"></b>
                                     </a>
                                     <ul class="dropdown-menu">

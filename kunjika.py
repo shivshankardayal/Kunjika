@@ -27,6 +27,8 @@ from urlparse import urljoin
 from werkzeug.contrib.atom import AtomFeed
 from flask_openid import OpenID
 from itsdangerous import TimestampSigner
+from flask_wtf import (Form, BooleanField, TextField, PasswordField, validators, RecaptchaField, TextAreaField,
+                        RadioField, SelectField, HiddenField)
 
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg'])
@@ -1190,7 +1192,7 @@ def show_tags(page):
 def make_external(url):
     return urljoin(request.url_root, url)
 
-@kunjika.route('/recent_questions.atom')
+@kunjika.route('/recent-questions.atom')
 def recent_feed():
     feed = AtomFeed('Recent Questions',
                     feed_url=request.url, url=request.url_root)
@@ -1212,17 +1214,21 @@ def recent_feed():
 
 @kunjika.route('/ban')
 def ban():
-    user_id = request.args.get('id')
+    #just allow admin this
+    if g.user.id == 1:
+        user_id = request.args.get('id')
 
-    user = cb.get(user_id).value
-    if user['banned'] is False:
-        user['banned'] = True
+        user = cb.get(str(user_id)).value
+        if user['banned'] is False:
+            user['banned'] = True
+        else:
+            user['banned'] = False
+
+        cb.replace(user_id, user)
+
+        return jsonify({"success": True})
     else:
-        user['banned'] = False
-
-    cb.replace(user_id, user)
-
-    return jsonify({"success": True})
+        return jsonify({"success": False})
 
 @kunjika.route('/info', methods=['GET', 'POST'])
 @kunjika.route('/info/<string:tag>')
@@ -1360,6 +1366,91 @@ def stikcy():
         return jsonify({"success": True})
     else:
         return jsonify({"success": False})
+
+def create_poll(form, options):
+    tag_list = []
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
+    acount = json.loads(acount)
+    print "hello"
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
+    choices = []
+    for i in range(0, options):
+        choices.append(str(i+1))
+    if form.validate_on_submit() and request.method == 'POST':
+        print "render"
+    print options
+    return render_template('create_poll.html', title='Create Poll', form=form, options=choices, ppage=True, name=g.user.name,
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+
+class ChoiceForm(Form):
+    tags = TextField('Tags', [validators.Length(min=1, max=100), validators.Required()])
+    question = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
+    option = RadioField('What type of poll do you want?', choices=[('Single choice', 'Single Choice'), ('Multiple choice', 'Multiple choice')])
+
+@kunjika.route('/poll', methods=['GET', 'POST'])
+def poll():
+
+    tag_list = []
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
+    acount = json.loads(acount)
+
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
+
+    pollForm = PollForm(request.form)
+
+
+
+    questionForm = ChoiceForm(request.form)
+    flag = False
+
+    if g.user is not None and g.user.is_authenticated():
+        user = cb.get(str(g.user.id)).value
+        if pollForm.validate_on_submit() and request.method == 'POST':
+
+            try:
+                for i in range (0, int(pollForm.poll_answers.data)):
+                    setattr(ChoiceForm, 'option_' + str(i), TextField('Option ' + str(i), [validators.Length(min=4, max=200), validators.Required()]))
+                    flag = True
+                questionForm = ChoiceForm(request.POST)
+            except:
+                redirect(url_for('questions'))
+            if flag is True:
+                choices = []
+                for i in range(0, int(pollForm.poll_answers.data)):
+                    choices.append(str(i+1))
+
+                return render_template('create_poll.html', title='Create Poll', form=questionForm, options=choices, ppage=True, name=g.user.name,
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+
+        elif questionForm.validate_on_submit() and request.method == 'POST':
+            print "hello"
+            print questionForm.question.data
+            print questionForm.option.data
+            print questionForm.tags.data
+            print questionForm.option_1.data
+            print questionForm.option_2.data
+
+        return render_template('poll.html', title='Poll', form=pollForm, ppage=True, name=g.user.name,
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+    return redirect(url_for('login'))
 
 @kunjika.errorhandler(404)
 def page_not_found(e):

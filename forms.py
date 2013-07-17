@@ -1,4 +1,5 @@
-from flask_wtf import Form, BooleanField, TextField, PasswordField, validators, RecaptchaField, TextAreaField
+from flask_wtf import (Form, BooleanField, TextField, PasswordField, validators, RecaptchaField, TextAreaField,
+                        RadioField, SelectField)
 
 class RegistrationForm(Form):
     password = PasswordField('Password', [
@@ -58,3 +59,8 @@ class PasswordResetForm(Form):
 class EmailForm(Form):
     email = TextField('Email', [validators.Length(min=5, max=48),validators.Required(),
                                  validators.Email(message='Email is invalid')])
+
+class PollForm(Form):
+    poll_answers = SelectField('How many choices do you want?' , choices=[('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'), \
+                                                                    ('6', '6'), ('7', '7'),  ('8', '8'), ('9', '9'), \
+                                                                    ('10', '10')])
