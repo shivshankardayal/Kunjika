@@ -206,9 +206,9 @@ def questions(tag=None, page=None, qid=None, url=None):
         if g.user is AnonymousUserMixin:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
         elif g.user is not None and g.user.is_authenticated():
+            user = cb.get(str(g.user.id)).value
             if 'mc' not in questions_dict['content'] and 'sc' not in questions_dict['content']:
                 answerForm = AnswerForm(request.form)
-                user = cb.get(str(g.user.id)).value
                 if answerForm.validate_on_submit() and request.method == 'POST':
                     '''
                     try:
@@ -280,6 +280,34 @@ def questions(tag=None, page=None, qid=None, url=None):
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+            elif 'sc' in questions_dict['content']:
+                class PollForm(Form):
+                    pass
+                choices = []
+                for option in questions_dict['content']['options']:
+                    choices.append((option, option))
+
+                setattr(PollForm, 'radio', RadioField('radio', choices=choices))
+                answerForm=PollForm(request.form)
+                return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
+                                       form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
+                                       qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+            elif 'mc' in questions_dict['content']:
+                class PollForm(Form):
+                    pass
+                options = []
+                i = 0
+                for option in questions_dict['content']['options']:
+                    i += 1
+                    setattr(PollForm, option + str(i), BooleanField(option))
+                    options.append(option)
+                answerForm=PollForm(request.form)
+                return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
+                                       form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
+                                       qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
+                                       options=i, field_names=options)
+
+
         else:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                    qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)

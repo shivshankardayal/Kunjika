@@ -348,24 +348,26 @@
         <div class="subheader answer-subheader">
             <h4>Know someone who can share his knowledge or you want to share it with others?</h4>
         </div>
-        <h6>{{ questions['acount'] }} answers</h6>
+
         {% if 'sc' in questions['content'] and g.user.is_authenticated() %}
+            <h3>Current Votes</h3>
             <table class="poll">
                 <tbody>
                 {% for option in questions['content']['options'] %}
                     <tr>
-                        <td><input id="option" name="option" value="{{ option }}" type="radio"></td>
+                        <td>Option {{ loop.index }}.</td>
                         <td><label for="option">{{ option }}</label></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
         {% elif 'mc' in questions['content'] and g.user.is_authenticated() %}
+            <h3>Current Votes</h3>
             <table class="poll">
                 <tbody>
                 {% for option in questions['content']['options'] %}
                     <tr>
-                        <td><input id="option" name="option" value="{{ value }}" type="checkbox"></td>
+                        <td>Option {{ loop.index }}.</td>
                         <td><label for="option">{{ option }}</label></td>
                     </tr>
                 {% endfor %}
@@ -373,6 +375,7 @@
             </table>
         {% else %}
         {% for answer in questions['answers'] %}
+            <h6>{{ questions['acount'] }} answers</h6>
             <table>
                 <tr class="hr">
                     <td class="votes">
@@ -560,6 +563,54 @@
                     </button>
                 </div>
             </div>
+        </form>
+    {% elif user_id is defined and 'sc' in questions['content'] %}
+        <h3>Your vote</h3>
+        <form class="answer-form" method="post"
+              aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <table class="poll">
+            <tbody>
+            {% for subfield in form.radio %}
+                <tr>
+                    <td>{{ subfield }}</td>
+                    <td>{{ subfield.label }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+        <br/>
+        <div class="controls">
+            <button class="btn btn-primary">
+                Post vote
+            </button>
+        </div>
+        </form>
+    {% elif user_id is defined and 'mc' in questions['content'] %}
+        <h3>Your vote</h3>
+        <form class="answer-form" method="post"
+              aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <table class="poll">
+            <tbody>
+            {% for i in range(1, options) %}
+                <div class="control-group">
+                    <label class="control-label mc1" for="Option {{ i }}">Option {{ i }}</label>
+                    <div class="controls mc2">
+                        <input class="question" id="option{{ i }}" name="option{{ i }}" type="checkbox" style="margin-left:10px;margin-top:-3px" value="{{ field_names[i-1] }}" type="text"> {{ field_names[i-1] }}
+                    </div>
+                </div>
+            {% endfor %}
+            </tbody>
+            </table>
+        <br/>
+        <div class="controls">
+            <button class="btn btn-primary">
+                Post vote
+            </button>
+        </div>
         </form>
     {% endif %}
     </div>

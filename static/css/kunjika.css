@@ -672,7 +672,11 @@ input[type="radio"], input[type="checkbox"] {
     margin: 0px;
 }
 
+.mc1, .mc2 {
+    display: inline;
+}
 
 label {
     margin-bottom: 0px;
+    font-size: 12px;
 }
