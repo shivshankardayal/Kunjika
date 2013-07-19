@@ -206,79 +206,80 @@ def questions(tag=None, page=None, qid=None, url=None):
         if g.user is AnonymousUserMixin:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
         elif g.user is not None and g.user.is_authenticated():
-            answerForm = AnswerForm(request.form)
-            user = cb.get(str(g.user.id)).value
-            if answerForm.validate_on_submit() and request.method == 'POST':
-		'''
-                try:
-                    data = sb.get(user['email'])
-                    data['answers/min'] += 1
-                    data['answers/hr'] += 1
-                    data['answers/day'] += 1
-                    sb.replace(user['email'] + 'answers/min', data, ttl=60)
-                    sb.replace(user['email'] + 'answers/hr', data, ttl=3600)
-                    sb.replace(user['email'] + 'answers/day', data, ttl=86400)
-                    if data['answers/min'] >= kunjika.config['ANSWERS_PER_MIN'] or \
-                        data['answers/hr'] >= kunjika.config['ANSWERS_PER_HR'] or \
-                        data['answers/day'] >= kunjika.config['ANSWERS_PER_DAY']:
+            if 'mc' not in questions_dict['content'] and 'sc' not in questions_dict['content']:
+                answerForm = AnswerForm(request.form)
+                user = cb.get(str(g.user.id)).value
+                if answerForm.validate_on_submit() and request.method == 'POST':
+                    '''
+                    try:
+                        data = sb.get(user['email'])
+                        data['answers/min'] += 1
+                        data['answers/hr'] += 1
+                        data['answers/day'] += 1
+                        sb.replace(user['email'] + 'answers/min', data, ttl=60)
+                        sb.replace(user['email'] + 'answers/hr', data, ttl=3600)
+                        sb.replace(user['email'] + 'answers/day', data, ttl=86400)
+                        if data['answers/min'] >= kunjika.config['ANSWERS_PER_MIN'] or \
+                            data['answers/hr'] >= kunjika.config['ANSWERS_PER_HR'] or \
+                            data['answers/day'] >= kunjika.config['ANSWERS_PER_DAY']:
 
-                        return redirect(url_for('questions'))
+                            return redirect(url_for('questions'))
 
-                except:
-                    data1 = {}
-                    data1['email'] = user['email']
-                    data1['answers/min'] = 1
-                    data1['answers/hr'] = 1
-                    data1['answers/day'] = 1
-                    sb.add(user['email'] + 'answers/min', data1, ttl=60)
-                    sb.add(user['email'] + 'answers/hr', data1, ttl=3600)
-                    sb.add(user['email'] + 'answers/day', data1, ttl=86400)
-		'''
-                answer = {}
-                if 'answers' in questions_dict:
-                    answer['aid'] = questions_dict['acount'] + 1
-                    answer['answer'] = answerForm.answer.data
-                    answer['poster'] = g.user.id
-                    answer['ts'] = int(time())
-                    answer['votes'] = 0
-                    answer['ip'] = request.remote_addr
-                    answer['best'] = False
-                    answer['votes_list'] = []
-                    questions_dict['acount'] += 1
+                    except:
+                        data1 = {}
+                        data1['email'] = user['email']
+                        data1['answers/min'] = 1
+                        data1['answers/hr'] = 1
+                        data1['answers/day'] = 1
+                        sb.add(user['email'] + 'answers/min', data1, ttl=60)
+                        sb.add(user['email'] + 'answers/hr', data1, ttl=3600)
+                        sb.add(user['email'] + 'answers/day', data1, ttl=86400)
+                    '''
+                    answer = {}
+                    if 'answers' in questions_dict:
+                        answer['aid'] = questions_dict['acount'] + 1
+                        answer['answer'] = answerForm.answer.data
+                        answer['poster'] = g.user.id
+                        answer['ts'] = int(time())
+                        answer['votes'] = 0
+                        answer['ip'] = request.remote_addr
+                        answer['best'] = False
+                        answer['votes_list'] = []
+                        questions_dict['acount'] += 1
 
-                    questions_dict['answers'].append(answer)
-                    # Isuue 9
-                    #user['answers'].append(str(qid) + '-' + str(answer['aid']))
-                    user['acount'] += 1
+                        questions_dict['answers'].append(answer)
+                        # Isuue 9
+                        #user['answers'].append(str(qid) + '-' + str(answer['aid']))
+                        user['acount'] += 1
 
-                else:
-                    answer['aid'] = 1
-                    answer['answer'] = answerForm.answer.data
-                    answer['poster'] = g.user.id
-                    answer['ts'] = int(time())
-                    answer['votes'] = 0
-                    answer['ip'] = request.remote_addr
-                    answer['best'] = False
-                    answer['votes_list'] = []
-                    questions_dict['acount'] = 1
+                    else:
+                        answer['aid'] = 1
+                        answer['answer'] = answerForm.answer.data
+                        answer['poster'] = g.user.id
+                        answer['ts'] = int(time())
+                        answer['votes'] = 0
+                        answer['ip'] = request.remote_addr
+                        answer['best'] = False
+                        answer['votes_list'] = []
+                        questions_dict['acount'] = 1
 
-                    questions_dict['answers'] = []
-                    questions_dict['answers'].append(answer)
-                    # Issue 9
-                    #user['answers'].append(str(qid) + '-' + str(answer['aid']))
-                    user['acount'] += 1
+                        questions_dict['answers'] = []
+                        questions_dict['answers'].append(answer)
+                        # Issue 9
+                        #user['answers'].append(str(qid) + '-' + str(answer['aid']))
+                        user['acount'] += 1
 
-                questions_dict['updated'] = int(time())
-                user['rep'] += 4
-                cb.replace(str(g.user.id), user)
-                qb.replace(str(questions_dict['qid']), questions_dict)
+                    questions_dict['updated'] = int(time())
+                    user['rep'] += 4
+                    cb.replace(str(g.user.id), user)
+                    qb.replace(str(questions_dict['qid']), questions_dict)
 
-                return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
 
-            qb.replace(str(questions_dict['qid']), questions_dict)
-            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
-                                   form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
-                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                    #ssd seems useless qb.replace(str(questions_dict['qid']), questions_dict)
+                return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
+                                       form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
+                                       qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         else:
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                    qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
@@ -911,6 +912,10 @@ def edits(element):
         else:
             if form.validate_on_submit():
                 question['content']['description'] = form.description.data
+                title = form.question.data
+                url = utility.generate_url(title)
+                question['content']['url'] = url
+                question['title'] = title
                 tags = form.tags.data.split(',')
                 tag_list = []
                 ##print tags
