@@ -63,6 +63,7 @@ cb = Couchbase.connect("default")
 qb = Couchbase.connect("questions")
 tb = Couchbase.connect("tags")
 sb = Couchbase.connect("security")
+pb = Couchbase.connect("polls")
 
 #Initialize count at first run. Later it is useless
 try:
@@ -276,7 +277,6 @@ def questions(tag=None, page=None, qid=None, url=None):
 
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
 
-                    #ssd seems useless qb.replace(str(questions_dict['qid']), questions_dict)
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
@@ -289,6 +289,56 @@ def questions(tag=None, page=None, qid=None, url=None):
 
                 setattr(PollForm, 'radio', RadioField('radio', choices=choices))
                 answerForm=PollForm(request.form)
+                if answerForm.validate_on_submit() and request.method == 'POST':
+
+                    vote = {}
+                    questions_dict['acount'] += 1
+                    poll_id = str(questions_dict['qid']) + '-' + str(g.user.id)
+
+                    vote['qid'] = str(questions_dict['qid'])
+                    vote['uid'] = str(g.user.id)
+
+                    i = 0
+                    for choice in choices:
+                        i += 1
+                        if i == 1 and choice[0] == str(answerForm.radio.data):
+                            vote['option1'] = True
+                        elif i == 2 and choice[0] == str(answerForm.radio.data):
+                            vote['option2'] = True
+                        elif i == 3 and choice[0] == str(answerForm.radio.data):
+                            vote['option3'] = True
+                        elif i == 4 and choice[0] == str(answerForm.radio.data):
+                            vote['option4'] = True
+                        elif i == 5 and choice[0] == str(answerForm.radio.data):
+                            vote['option5'] = True
+                        elif i == 6 and choice[0] == str(answerForm.radio.data):
+                            vote['option6'] = True
+                        elif i == 7 and choice[0] == str(answerForm.radio.data):
+                            vote['option7'] = True
+                        elif i == 8 and choice[0] == str(answerForm.radio.data):
+                            vote['option8'] = True
+                        elif i == 9 and choice[0] == str(answerForm.radio.data):
+                            vote['option9'] = True
+                        elif i == 10 and choice[0] == str(answerForm.radio.data):
+                            vote['option10'] = True
+
+                    if 'poll_votes' in user:
+                        user['poll_votes'] += 1
+                    else:
+                        user['poll_votes'] = 1
+
+                    questions_dict['updated'] = int(time())
+                    user['rep'] += 4
+
+                    try:
+                        pb.add(poll_id, vote)
+                        cb.replace(str(g.user.id), user)
+                        qb.replace(str(questions_dict['qid']), questions_dict)
+                    except:
+                        flash('You have already voted on this question', 'error')
+
+                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
@@ -299,9 +349,61 @@ def questions(tag=None, page=None, qid=None, url=None):
                 i = 0
                 for option in questions_dict['content']['options']:
                     i += 1
-                    setattr(PollForm, option + str(i), BooleanField(option))
+                    setattr(PollForm, 'option' + str(i), BooleanField('option'+str(i)))
                     options.append(option)
+                i += 1
+                setattr(PollForm, 'option' + str(i), BooleanField('option'+str(i)))
+                options.append(option)
                 answerForm=PollForm(request.form)
+                if answerForm.validate_on_submit() and request.method == 'POST':
+                    i = 0
+                    vote = {}
+                    for option in questions_dict['content']['options']:
+                        i += 1
+                        if i == 1:
+                            vote['option1'] = answerForm.option1.data
+                        elif i == 2:
+                            vote['option2'] = answerForm.option2.data
+                        elif i == 3:
+                            vote['option3'] = answerForm.option3.data
+                        elif i == 4:
+                            vote['option4'] = answerForm.option4.data
+                        elif i == 5:
+                            vote['option5'] = answerForm.option5.data
+                        elif i == 6:
+                            vote['option6'] = answerForm.option6.data
+                        elif i == 7:
+                            vote['option7'] = answerForm.option7.data
+                        elif i == 8:
+                            vote['option8'] = answerForm.option8.data
+                        elif i == 9:
+                            vote['option9'] = answerForm.option9.data
+                        elif i == 10:
+                            vote['option10'] = answerForm.option10.data
+
+                    questions_dict['acount'] += 1
+
+                    if 'poll_votes' in user:
+                        user['poll_votes'] += 1
+                    else:
+                        user['poll_votes'] = 1
+
+                    poll_id = str(questions_dict['qid']) + '-' + str(g.user.id)
+
+                    vote['qid'] = str(questions_dict['qid'])
+                    vote['uid'] = str(g.user.id)
+                    questions_dict['updated'] = int(time())
+                    user['rep'] += 4
+
+                    try:
+                        pb.add(poll_id, vote)
+                        cb.replace(str(g.user.id), user)
+                        qb.replace(str(questions_dict['qid']), questions_dict)
+                    except:
+                        flash('You have already voted on this question', 'error')
+
+                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
@@ -425,6 +527,7 @@ def ask():
             question['acount'] = 0
             question['views'] = 0
             question['votes_list'] = []
+            question['opname'] = g.user.name
 
             user = cb.get(str(g.user.id)).value
 
@@ -940,10 +1043,11 @@ def edits(element):
         else:
             if form.validate_on_submit():
                 question['content']['description'] = form.description.data
-                title = form.question.data
-                url = utility.generate_url(title)
-                question['content']['url'] = url
-                question['title'] = title
+                # title editing disabled so that existing links do not break
+                #title = form.question.data
+                #url = utility.generate_url(title)
+                #question['content']['url'] = url
+                #question['title'] = title
                 tags = form.tags.data.split(',')
                 tag_list = []
                 ##print tags
@@ -1229,7 +1333,7 @@ def make_external(url):
 def recent_feed():
     feed = AtomFeed('Recent Questions',
                     feed_url=request.url, url=request.url_root)
-    questions = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_questions?limit=' + str(50)).read()
+    questions = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_questions?descending=true&limit=50&stale=false').read()
     questions = json.loads(questions)['rows']
 
     question_list = []
@@ -1239,10 +1343,10 @@ def recent_feed():
 
     for question in question_list:
         feed.add(question['title'], unicode(question['content']['description']),
-                 content_type='html',
-                 author=HOST_URL + 'users/' + unicode(question['content']['op']) + question['opname'],
-                 url=make_external(HOST_URL + 'questions' + '/' + unicode(question['qid']) + "/" + question['content']['url']),
-                 updated=datetime.fromtimestamp(question['updated']))
+             content_type='html',
+             author=HOST_URL + 'users/' + unicode(question['content']['op']) + question['opname'],
+             url=make_external(HOST_URL + 'questions' + '/' + unicode(question['qid']) + "/" + question['content']['url']),
+             updated=datetime.fromtimestamp(question['updated']))
     return feed.get_response()
 
 @kunjika.route('/ban')

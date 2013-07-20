@@ -54,7 +54,7 @@ Now we can install packages after which you change ownership of entire folder to
 .. code-block:: verbatim
 
    sudo sh install-packages.sh
-   sudo chown www-data:www-data .
+   sudo chown -R www-data:www-data .
 
 The above command will prepare venv and install all necessary packages.
 
