@@ -229,7 +229,7 @@ def questions(tag=None, page=None, qid=None, url=None):
             j += 1
             if j == 1:
                 option1_votes = urllib2.urlopen(
-                    DB_URL + 'polls/_design/dev_qa/_view/get_option1_votes?reduce=true'
+                    DB_URL + 'polls/_design/dev_qa/_view/get_option1_votes?key=' + '"' + qid + '"' + '&reduce=true'
                 ).read()
                 option1_votes = json.loads(option1_votes)
                 if len(option1_votes['rows']) != 0:
@@ -239,7 +239,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 votes.append((option1_votes, option))
             elif j == 2:
                 option2_votes = urllib2.urlopen(
-                    DB_URL + 'polls/_design/dev_qa/_view/get_option2_votes?reduce=true'
+                    DB_URL + 'polls/_design/dev_qa/_view/get_option2_votes?key=' + '"' + qid + '"' + '&reduce=true'
                 ).read()
                 option2_votes = json.loads(option2_votes)
                 if len(option2_votes['rows']) != 0:
@@ -251,7 +251,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 print option
             elif j == 3:
                 option3_votes = urllib2.urlopen(
-                    DB_URL + 'polls/_design/dev_qa/_view/get_option3_votes?reduce=true'
+                    DB_URL + 'polls/_design/dev_qa/_view/get_option3_votes?key=' + '"' + qid + '"' + '&reduce=true'
                 ).read()
                 option3_votes = json.loads(option3_votes)
                 if len(option3_votes['rows']) != 0:
@@ -261,7 +261,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 votes.append((option3_votes, option))
             elif j == 4:
                 option4_votes = urllib2.urlopen(
-                    DB_URL + 'polls/_design/dev_qa/_view/get_option4_votes?reduce=true'
+                    DB_URL + 'polls/_design/dev_qa/_view/get_option4_votes?key=' + '"' + qid + '"' + '&reduce=true'
                 ).read()
                 option4_votes = json.loads(option4_votes)
                 if len(option4_votes['rows']) != 0:
@@ -271,7 +271,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 votes.append((option4_votes, option))
             elif j == 5:
                 option5_votes = urllib2.urlopen(
-                    DB_URL + 'polls/_design/dev_qa/_view/get_option5_votes?reduce=true'
+                    DB_URL + 'polls/_design/dev_qa/_view/get_option5_votes?key=' + '"' + qid + '"' + '&reduce=true'
                 ).read()
                 option5_votes = json.loads(option5_votes)
                 if len(option5_votes['rows']) != 0:
@@ -281,7 +281,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 votes.append((option5_votes, option))
             elif j == 6:
                 option6_votes = urllib2.urlopen(
-                    DB_URL + 'polls/_design/dev_qa/_view/get_option6_votes?reduce=true'
+                    DB_URL + 'polls/_design/dev_qa/_view/get_option6_votes?key=' + '"' + qid + '"' + '&reduce=true'
                 ).read()
                 option6_votes = json.loads(option6_votes)
                 if len(option6_votes['rows']) != 0:
@@ -291,7 +291,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 votes.append((option6_votes, option))
             elif j == 7:
                 option7_votes = urllib2.urlopen(
-                    DB_URL + 'polls/_design/dev_qa/_view/get_option7_votes?reduce=true'
+                    DB_URL + 'polls/_design/dev_qa/_view/get_option7_votes?key=' + '"' + qid + '"' + '&reduce=true'
                 ).read()
                 option7_votes = json.loads(option7_votes)
                 if len(option7_votes['rows']) != 0:
@@ -301,7 +301,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 votes.append((option7_votes, option))
             elif j == 8:
                 option8_votes = urllib2.urlopen(
-                    DB_URL + 'polls/_design/dev_qa/_view/get_option8_votes?reduce=true'
+                    DB_URL + 'polls/_design/dev_qa/_view/get_option8_votes?key=' + '"' + qid + '"' + '&reduce=true'
                 ).read()
                 option8_votes = json.loads(option8_votes)
                 if len(option8_votes['rows']) != 0:
@@ -311,7 +311,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 votes.append((option8_votes, option))
             elif j == 9:
                 option9_votes = urllib2.urlopen(
-                    DB_URL + 'polls/_design/dev_qa/_view/get_option9_votes?reduce=true'
+                    DB_URL + 'polls/_design/dev_qa/_view/get_option9_votes?key=' + '"' + qid + '"' + '&reduce=true'
                 ).read()
                 option9_votes = json.loads(option9_votes)
                 if len(option9_votes['rows']) != 0:
@@ -321,7 +321,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 votes.append((option9_votes, option))
             elif j == 10:
                 option10_votes = urllib2.urlopen(
-                    DB_URL + 'polls/_design/dev_qa/_view/get_option10_votes?reduce=true'
+                    DB_URL + 'polls/_design/dev_qa/_view/get_option10_votes?key=' + '"' + qid + '"' + '&reduce=true'
                 ).read()
                 option10_votes = json.loads(option10_votes)
                 if len(option10_votes['rows']) != 0:
