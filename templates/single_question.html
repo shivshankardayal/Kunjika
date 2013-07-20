@@ -349,26 +349,28 @@
             <h4>Know someone who can share his knowledge or you want to share it with others?</h4>
         </div>
 
-        {% if 'sc' in questions['content'] and g.user.is_authenticated() %}
+        {% if 'sc' in questions['content'] %}
             <h3>Current Votes</h3>
             <table class="poll">
                 <tbody>
-                {% for option in questions['content']['options'] %}
+                {% for vote in votes %}
                     <tr>
                         <td>Option {{ loop.index }}.</td>
-                        <td><label for="option">{{ option }}</label></td>
+                        <td><label for="option">{{ vote[1] }}</label></td>
+                        <td>{{ vote[0] }} votes</td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-        {% elif 'mc' in questions['content'] and g.user.is_authenticated() %}
+        {% elif 'mc' in questions['content'] %}
             <h3>Current Votes</h3>
             <table class="poll">
                 <tbody>
-                {% for option in questions['content']['options'] %}
+                {% for vote in votes %}
                     <tr>
                         <td>Option {{ loop.index }}.</td>
-                        <td><label for="option">{{ option }}</label></td>
+                        <td><label for="option">{{ vote[1] }}</label></td>
+                        <td>{{ vote[0] }} votes</td>
                     </tr>
                 {% endfor %}
                 </tbody>
