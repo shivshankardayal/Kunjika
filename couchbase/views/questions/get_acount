@@ -3,3 +3,5 @@ function (doc, meta) {
               emit(doc, doc.acount, null);
                 }
 }
+
+reduce function is _sum 

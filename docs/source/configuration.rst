@@ -94,14 +94,18 @@ Given below is configuration file config.py which you can find in **/var/www/Kun
 
 Couchbase Bickets and Views
 ===========================
-You need to create 4 buckets. **default** which is needed when you create first view
-is used to store user info. **questions, security** and **tags** are others.
-All design documents should be **dev_qa** for views. The views are in ``couchbase/views``
-directory. You need to copy **get_by_reputation, get_id_from_email**
+You need to create 5 buckets. **default** which is needed when you create first view
+is used to store user info. **questions, security, polls** and **tags** are others.
+All design documents should be **dev_qa** for views. The views are in their respective
+directories. You need to copy **get_by_reputation, get_id_from_email**
 and **get_role** to **default** view. **get_acount, get_questions, get_questions_by_tag,
 get_answers_by_userid, get_questions_by_userid**
 and **get_unanswered** to **questions** view. **get_by_count, get_doc_from_tag** and
-**get_tag_by_id** to **tags** view. As of now these view names are fixed which
+**get_tag_by_id** to **tags** view. You should copy **get option1_votes** to
+**get_option10_votes** in **polls** view.
+As of now these view names are fixed which
 is subject to be a configurable value later. For **get_acount** view you need to use
 **_sum** function for reducing the map. Just put ``_sum`` in right hand side in your
-couchbase web ui.
+couchbase web ui. For all *get_option* views you have to use ``_count`` as reduce
+function. Comment out the lines in these views where reduction function lines are written.
+That is just to denote what is reduce function for that view.
