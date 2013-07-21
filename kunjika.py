@@ -45,6 +45,7 @@ from flask_openid import OpenID
 from itsdangerous import TimestampSigner
 from flask_wtf import (Form, BooleanField, TextField, PasswordField, validators, RecaptchaField, TextAreaField,
                         RadioField, SelectField, HiddenField)
+import pyes
 
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg'])
@@ -54,6 +55,7 @@ kunjika = Flask(__name__)
 kunjika.config.from_object('config')
 DB_URL = kunjika.config['DB_URL']
 HOST_URL = kunjika.config['HOST_URL']
+ES_URL = kunjika.config['ES_URL']
 MAIL_SERVER_IP  = kunjika.config['MAIL_SERVER_IP']
 kunjika.debug = kunjika.config['DEBUG_MODE']
 kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
@@ -80,6 +82,9 @@ qb = Couchbase.connect("questions")
 tb = Couchbase.connect("tags")
 sb = Couchbase.connect("security")
 pb = Couchbase.connect("polls")
+
+
+conn = pyes.ES(ES_URL +':9200')
 
 #Initialize count at first run. Later it is useless
 try:

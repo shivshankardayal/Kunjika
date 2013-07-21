@@ -84,7 +84,7 @@ COMMENTS_PER_DAY = 50
 DB_URL = 'http://localhost:8092/'
 HOST_URL = 'http://localhost:5000/'
 MAIL_SERVER_IP = '127.0.0.1'
-
+ES_URL = '127.0.0.1'
 DEBUG_MODE = True
 
 # log file path. You must edit these.
