@@ -218,8 +218,10 @@ def questions(tag=None, page=None, qid=None, url=None):
         questions_dict = question.get_question_by_id(qid, questions_dict)
 
         if request.referrer == HOST_URL + "questions":
+            print "hello"
             questions_dict['views'] += 1
         elif request.host_url != HOST_URL + "":
+            print "hello"
             questions_dict['views'] += 1
         choices = []
         votes = []
@@ -402,6 +404,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     qb.replace(str(questions_dict['qid']), questions_dict)
 
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+                qb.replace(str(questions_dict['qid']), questions_dict)
 
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
@@ -463,7 +466,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                         flash('You have already voted on this question', 'error')
 
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
-
+                qb.replace(str(questions_dict['qid']), questions_dict)
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, votes=votes)
@@ -528,7 +531,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                         flash('You have already voted on this question', 'error')
 
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
-
+                qb.replace(str(questions_dict['qid']), questions_dict)
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
@@ -536,6 +539,7 @@ def questions(tag=None, page=None, qid=None, url=None):
 
 
         else:
+            qb.replace(str(questions_dict['qid']), questions_dict)
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                    qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, votes=votes)
 
