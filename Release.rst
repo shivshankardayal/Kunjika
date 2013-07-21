@@ -1,3 +1,10 @@
+Release 0.2 Alpha
+-----------------
+Kunjika 0.2 alpha is being released today. Several bugs in 0.1 alpha release have
+been fixed and things seem much more stable now. RSS feed and Polls have been
+implemented. Few changes in navigation bar have been made. The design of database
+has been changed to scale well in case of large implementations.
+
 Release 0.1 Alpha
 -----------------
 

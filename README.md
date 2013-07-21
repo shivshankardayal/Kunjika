@@ -20,7 +20,7 @@ which provided nice replication, auto-sharding and memcached functionality apart
 from document based database. So one query for question, one for user and one
 for tag and it is done.
 
-Release 0.1 alpha is done. Please test while I am fixing bugs and working on new
+Release 0.2 alpha is done. Please test while I am fixing bugs and working on new
 features.
 
 I am working on documentation which you can read at http://libreprogramming.org/docs/kunjika/
