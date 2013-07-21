@@ -224,7 +224,7 @@ def questions(tag=None, page=None, qid=None, url=None):
         choices = []
         votes = []
         j = 0
-        if 'options' in questions_dict['content']['options']:
+        if 'options' in questions_dict['content']:
             for option in questions_dict['content']['options']:
                 choices.append((option, option))
                 j += 1
