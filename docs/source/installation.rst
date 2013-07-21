@@ -92,6 +92,7 @@ following in one file say kunjika **/etc/nginx/sites-available**.
  
      location /static {
          alias /var/www/Kunjika/static;
+         expires 365d;
      }
  
      location / {
