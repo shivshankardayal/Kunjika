@@ -680,3 +680,7 @@ label {
     margin-bottom: 0px;
     font-size: 12px;
 }
+
+.navbar .nav > li > a {
+  padding: 12px;
+}
