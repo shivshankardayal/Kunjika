@@ -47,6 +47,7 @@ from flask_wtf import Form, RecaptchaField
 from wtforms import (BooleanField, TextField, PasswordField, validators, TextAreaField, RadioField, SelectField,
                      HiddenField)
 import pyes
+import urllib
 
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg'])
@@ -779,7 +780,7 @@ def create_or_login(resp):
     #print user
     if user is not None:
         if user['banned'] == True:
-            return redirect(url_for('questionsyal'))
+            return redirect(url_for('questions'))
         flash(u'Successfully signed in')
 
         g.user = user
@@ -1042,10 +1043,14 @@ def get_tags(q=None, qid=None):
         tags = question['content']['tags']
 
         tags_list = []
+
         for i in tags:
-            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(i) + '"').read()
-            ##print tag
-            tag = json.loads(tag)['rows'][0]['value']
+            print i
+            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib.quote(str(i)) + '"').read()
+            tag = json.loads(tag)
+            print tag
+            tag = tag['rows'][0]['value']
+            print tag
             tags_list.append({"id": tag['tid'], "name": tag['tag']})
     ##print tags_list
     return json.dumps(tags_list)
@@ -1185,11 +1190,11 @@ def edits(element):
                 #question['title'] = title
                 tags = form.tags.data.split(',')
                 tag_list = []
-                ##print tags
+                print tags
                 current_tags = question['content']['tags']
                 for tag in tags:
                     try:
-                        tag = int(tag)
+                        #tag = int(tag)
                         tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?key=' + str(tag)).read()
                         tag = json.loads(tag)['rows'][0]['value']
                         tag_list.append(tag['tag'])

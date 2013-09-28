@@ -88,7 +88,7 @@ ES_URL = '127.0.0.1'
 DEBUG_MODE = True
 
 # log file path. You must edit these.
-LOG_FILE = '/opt/local/var/www/Kunjika/kunjika.log'
+LOG_FILE = '/var/www/Kunjika/kunjika.log'
 
 #  log file size
 MAX_LOG_SIZE = 10 * 1024 *1024
@@ -97,7 +97,7 @@ MAX_LOG_SIZE = 10 * 1024 *1024
 BACKUP_COUNT = 0
 
 # upload folder. You must edit these.
-UPLOAD_FOLDER = '/opt/local/var/www/Kunjika/uploads'
+UPLOAD_FOLDER = '/var/www/Kunjika/uploads'
 
 #  upload size. tune as you need
 MAX_CONTENT_LENGTH = 2 * 1024 * 1024
