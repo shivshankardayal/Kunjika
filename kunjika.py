@@ -43,8 +43,9 @@ from urlparse import urljoin
 from werkzeug.contrib.atom import AtomFeed
 from flask_openid import OpenID
 from itsdangerous import TimestampSigner
-from flask_wtf import (Form, BooleanField, TextField, PasswordField, validators, RecaptchaField, TextAreaField,
-                        RadioField, SelectField, HiddenField)
+from flask_wtf import Form, RecaptchaField
+from wtforms import (BooleanField, TextField, PasswordField, validators, TextAreaField, RadioField, SelectField,
+                     HiddenField)
 import pyes
 
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
