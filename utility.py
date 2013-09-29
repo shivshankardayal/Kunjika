@@ -22,7 +22,7 @@ from time import strftime, localtime
 from flask import url_for, request
 import pyes
 
-def search(query, page):
+def common_data():
     tag_list = []
     qcount = kunjika.qb.get('qcount').value
     ucount = kunjika.cb.get('count').value
@@ -36,6 +36,11 @@ def search(query, page):
 
     if tcount > 0:
         tag_list = get_popular_tags()
+
+    return (qcount, acount, tcount, ucount, tag_list)
+
+def search(query, page):
+    (qcount, acount, tcount, ucount, tag_list) = common_data()
 
     title_q=pyes.TermQuery('title', query)
     question_q=pyes.TermQuery('question', query)

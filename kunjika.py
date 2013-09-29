@@ -252,20 +252,8 @@ def questions(tag=None, page=None, qid=None, url=None):
         session['displayed'] = True
 
     tag_list = []
-    try:
-        qcount = qb.get('qcount').value
-        ucount = cb.get('count').value
-        tcount = tb.get('tcount').value
-        acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-        acount = json.loads(acount)
-        if len(acount['rows']) is not 0:
-            acount = acount['rows'][0]['value']
-        else:
-            acount = 0
-        if tcount > 0:
-            tag_list = utility.get_popular_tags()
-    except:
-        pass
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
+
     questions_dict = {}
     if tag is not None:
         questions_list = utility.get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag)
@@ -633,19 +621,8 @@ def questions(tag=None, page=None, qid=None, url=None):
 @kunjika.route('/users/<uid>/<uname>', defaults={'qpage': 1, 'apage': 1})
 @kunjika.route('/users/<uid>/<uname>/<int:qpage>/<int:apage>')
 def users(qpage=None, apage=None, uid=None, uname=None):
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-    acount = json.loads(acount)
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
 
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
     user = cb.get(str(uid)).value
     questions = utility.get_user_questions_per_page(user, qpage, USER_QUESTIONS_PER_PAGE, user['qcount'])
     if not questions and qpage != 1:
@@ -677,19 +654,7 @@ def users(qpage=None, apage=None, uid=None, uname=None):
 
 @kunjika.route('/ask', methods=['GET', 'POST'])
 def ask():
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-    acount = json.loads(acount)
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     questionForm = QuestionForm(request.form)
     if g.user is not None and g.user.is_authenticated():
         user = cb.get(str(g.user.id)).value
@@ -1212,18 +1177,7 @@ def vote_clicked():
 
 @kunjika.route('/edit/<element>', methods=['GET', 'POST'])
 def edits(element):
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-    acount = json.loads(acount)
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     #edit_list = edit.handle_edit(element)
     #p#print(edit_list)
 
@@ -1459,18 +1413,7 @@ def postcomment():
 @kunjika.route('/unanswered', defaults={'page': 1})
 @kunjika.route('/unanswered/page/<int:page>')
 def unanswered(page):
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-    acount = json.loads(acount)
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     skip = (page - 1) * QUESTIONS_PER_PAGE
     questions = urllib2.urlopen(
         DB_URL + 'questions/_design/dev_qa/_view/get_unanswered?limit=' +
@@ -1506,18 +1449,7 @@ def unanswered(page):
 @kunjika.route('/users/', defaults={'page': 1})
 @kunjika.route('/users/page/<int:page>')
 def show_users(page):
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-    acount = json.loads(acount)
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     count = cb.get('count').value
     users = utility.get_users_per_page(page, USERS_PER_PAGE, count)
     if not users and page != 1:
@@ -1611,20 +1543,7 @@ def tag_info(tag=None):
     if tag is None:
         tag = request.args.get('tag')
     tag_list = []
-    try:
-        qcount = qb.get('qcount').value
-        ucount = cb.get('count').value
-        tcount = tb.get('tcount').value
-        acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-        acount = json.loads(acount)
-        if len(acount['rows']) != 0:
-            acount = acount['rows'][0]['value']
-        else:
-            acount = 0
-        if tcount > 0:
-            tag_list = utility.get_popular_tags()
-    except:
-        pass
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
     tag = json.loads(tag)
     tag = tag['rows'][0]['value']
@@ -1637,19 +1556,7 @@ def tag_info(tag=None):
 
 @kunjika.route('/edit_tag/<string:tag>', methods=['POST'])
 def edit_tag(tag):
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-    acount = json.loads(acount)
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
 
     tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
     tag = json.loads(tag)
@@ -1724,19 +1631,7 @@ def editing_help():
 
 @kunjika.route('/search-help')
 def search_help():
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-    acount = json.loads(acount)
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     if g.user is not None and g.user.is_authenticated():
         user = cb.get(str(g.user.id)).value
     return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name,
@@ -1763,20 +1658,7 @@ def stikcy():
         return jsonify({"success": False})
 
 def create_poll(form, options):
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-    acount = json.loads(acount)
-    print "hello"
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     choices = []
     for i in range(0, options):
         choices.append(str(i+1))
@@ -1789,21 +1671,7 @@ def create_poll(form, options):
 
 @kunjika.route('/poll', methods=['GET', 'POST'])
 def poll():
-
-    tag_list = []
-    qcount = qb.get('qcount').value
-    ucount = cb.get('count').value
-    tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
-    acount = json.loads(acount)
-
-    if len(acount['rows']) is not 0:
-        acount = acount['rows'][0]['value']
-    else:
-        acount = 0
-
-    if tcount > 0:
-        tag_list = utility.get_popular_tags()
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
 
     pollForm = PollForm(request.form)
 
