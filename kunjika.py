@@ -1259,7 +1259,7 @@ def edits(element):
                 ##print current_tags
                 #return redirect(url_for('questions'))
                 qb.replace(str(qid), question)
-                es_conn.index({'title':title, 'description':question['content']['description'], 'qid':question['qid'],
+                es_conn.index({'title':question['title'], 'description':question['content']['description'], 'qid':question['qid'],
                                'position':question['qid']}, 'questions', 'questions-type', question['qid'])
                 es_conn.indices.refresh('questions')
 
@@ -1780,21 +1780,13 @@ def poll():
 def search(page=None):
     query=request.args.get('query')
     if query[0:6]=='title:':
-        title=query[6:]
-        q=pyes.TermQuery('title', title)
-        return utility.search_title(q, page)
-    elif query[0:16]=='description:':
-        description=query[11:]
-        q=pyes.TermQuery('description', description)
-        return utility.search_description(q, page)
+        return utility.search_title(query, page)
+    elif query[0:12]=='description:':
+        return utility.search_description(query, page)
     elif query[0:5]=='user:':
-        user=query[5:]
-        q=pyes.TermQuery('name', user)
-        return utility.search_user(q, page)
+        return utility.search_user(query, page)
     elif query[0:4]=='tag:':
-        tag=query[4:]
-        q=pyes.TermQuery('tag', tag)
-        return utility.search_tag(q, page)
+        return utility.search_tag(query, page)
     else:
         return utility.search(query, page)
 

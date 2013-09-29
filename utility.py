@@ -39,26 +39,12 @@ def common_data():
 
     return (qcount, acount, tcount, ucount, tag_list)
 
-def search(query, page):
+def common_rendering(results, query, page):
     (qcount, acount, tcount, ucount, tag_list) = common_data()
-
-    title_q=pyes.TermQuery('title', query)
-    question_q=pyes.TermQuery('question', query)
-    title_results=kunjika.es_conn.search(query=title_q)
-    question_results=kunjika.es_conn.search(query=question_q)
-
-    results=[]
-
-    for r in title_results:
-        results.append(r['qid'])
-    for r in question_results:
-        results.append(r['qid'])
-
     results_set = set(results)
     questions_list = []
 
     for qid in results_set:
-        print type(kunjika.qb.get(str(qid)).value)
         questions_list.append(kunjika.qb.get(str(qid)).value)
 
     for i in questions_list:
@@ -80,17 +66,121 @@ def search(query, page):
         return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[page-1*kunjika.QUESTIONS_PER_PAGE:page-1*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
                                 pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
 
-def search_title(query):
-    pass
+def search(query, page):
+    title_q=pyes.TermQuery('title', query)
+    question_q=pyes.TermQuery('question', query)
+    title_results=kunjika.es_conn.search(query=title_q)
+    question_results=kunjika.es_conn.search(query=question_q)
 
-def search_description(query):
-    pass
+    results=[]
 
-def search_user(query):
-    pass
+    for r in title_results:
+        results.append(r['qid'])
+    for r in question_results:
+        results.append(r['qid'])
 
-def search_tag(query):
-    pass
+    return common_rendering(results, query, page)
+
+def search_title(query, page):
+    title=query[6:]
+    q=pyes.TermQuery('title', title)
+    title_results=kunjika.es_conn.search(query=q)
+    results=[]
+
+    for r in title_results:
+        results.append(r['qid'])
+
+
+
+def search_description(query, page):
+    description=query[12:]
+    q=pyes.TermQuery('description', description)
+    question_results=kunjika.es_conn.search(query=q)
+
+    results=[]
+
+    for r in question_results:
+        results.append(r['qid'])
+
+    return common_rendering(results, query, page)
+
+def search_user(query, page):
+    (qcount, acount, tcount, ucount, tag_list) = common_data()
+    user=query[5:]
+    q=pyes.TermQuery('name', user)
+    question_results=kunjika.es_conn.search(query=q)
+
+    results=[]
+
+    for r in question_results:
+        results.append(r['uid'])
+
+    questions_list=[]
+
+    for uid in results:
+        question_view = urllib2.urlopen(
+            kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_userid?key=' + '"' +str(uid) + '"').read()
+        question_view = json.loads(question_view)
+        for element in question_view['rows']:
+            questions_list.append(element['value'])
+
+    for i in questions_list:
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+
+        user = kunjika.cb.get(i['content']['op']).value
+        i['opname'] = user['name']
+
+    pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))
+
+    if g.user is None:
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[page-1*kunjika.QUESTIONS_PER_PAGE:page-1*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+    elif g.user is not None and g.user.is_authenticated():
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[page-1*kunjika.QUESTIONS_PER_PAGE:page-1*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+                                name=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
+                                ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+    else:
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[page-1*kunjika.QUESTIONS_PER_PAGE:page-1*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+
+def search_tag(query, page):
+    (qcount, acount, tcount, ucount, tag_list) = common_data()
+    tag=query[4:]
+    q=pyes.TermQuery('tag', tag)
+    question_results=kunjika.es_conn.search(query=q)
+
+    results=[]
+
+    for r in question_results:
+        results.append(r['tag'])
+        print r['tag']
+
+    questions_list=[]
+    for tag in results:
+        question_view = urllib2.urlopen(
+            kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_tag?key=' + '"' + tag + '"').read()
+        question_view = json.loads(question_view)
+        for element in question_view['rows']:
+            questions_list.append(element['value'])
+
+    for i in questions_list:
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+
+        user = kunjika.cb.get(i['content']['op']).value
+        i['opname'] = user['name']
+
+    pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))
+
+    if g.user is None:
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[page-1*kunjika.QUESTIONS_PER_PAGE:page-1*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+    elif g.user is not None and g.user.is_authenticated():
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[page-1*kunjika.QUESTIONS_PER_PAGE:page-1*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+                                name=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
+                                ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+    else:
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[page-1*kunjika.QUESTIONS_PER_PAGE:page-1*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
 
 def generate_url(title):
     length = len(title)
