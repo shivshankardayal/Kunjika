@@ -86,7 +86,7 @@ sb = Couchbase.connect("security")
 pb = Couchbase.connect("polls")
 
 
-conn = pyes.ES(ES_URL +':9200')
+es_conn = pyes.ES(ES_URL +':9200')
 
 #Initialize count at first run. Later it is useless
 try:
@@ -105,6 +105,94 @@ try:
     tb.add('tcount', 0)
 except:
     pass
+
+# Initialize indices for different buckets
+try:
+     es_conn.indices.create_index("questions")
+except:
+    pass
+
+try:
+     es_conn.indices.create_index("users")
+except:
+    pass
+
+try:
+     es_conn.indices.delete_index("tags")
+except:
+    pass
+
+try:
+     es_conn.indices.create_index("tags")
+except:
+    pass
+
+try:
+     es_conn.indices.delete_index("polls")
+except:
+    pass
+
+questoins_mapping = {
+     'title': {
+         'boost': 1.0,
+         'index': 'analyzed',
+         'store': 'yes',
+         'type': 'string',
+         "term_vector": "with_positions_offsets"
+     },
+     'description': {
+         'boost': 1.0,
+         'index': 'analyzed',
+         'store': 'yes',
+         'type': 'string',
+         "term_vector": "with_positions_offsets"
+     },
+     'qid': {
+         'boost': 1.0,
+         'index': 'not_analyzed',
+         'store': 'yes',
+         'type': 'integer',
+         "term_vector": "with_positions_offsets"
+     }
+}
+
+users_mapping = {
+     'name': {
+         'boost': 1.0,
+         'index': 'analyzed',
+         'store': 'yes',
+         'type': 'string',
+         "term_vector": "with_positions_offsets"
+     },
+     'uid': {
+         'boost': 1.0,
+         'index': 'not_analyzed',
+         'store': 'yes',
+         'type': 'integer',
+         "term_vector": "with_positions_offsets"
+     }
+}
+
+tags_mapping = {
+     'tag': {
+         'boost': 1.0,
+         'index': 'analyzed',
+         'store': 'yes',
+         'type': 'string',
+         "term_vector": "with_positions_offsets"
+     },
+     'tid': {
+         'boost': 1.0,
+         'index': 'not_analyzed',
+         'store': 'yes',
+         'type': 'integer',
+         "term_vector": "with_positions_offsets"
+     }
+}
+
+es_conn.indices.put_mapping("quesitos-type", {'properties':questoins_mapping}, ["questions"])
+es_conn.indices.put_mapping("users-type", {'properties':users_mapping}, ["users"])
+es_conn.indices.put_mapping("tags-type", {'properties':tags_mapping}, ["tags"])
 
 gravatar32 = Gravatar(kunjika,
                       size=32,
@@ -618,7 +706,7 @@ def ask():
             data1 = {}
 	    '''
             try:
-		
+
                 data = sb.get(user['email'])
                 data['questions/min'] += 1
                 data['questions/hr'] += 1
@@ -671,7 +759,9 @@ def ask():
             #Isuue 9
             #user['questions'].append(question['qid'])
             user['qcount'] += 1
-
+            es_conn.index({'title':title, 'description':question['content']['description'], 'qid':question['qid'],
+                           'position':question['qid']}, 'questions', 'questions-type', question['qid'])
+            es_conn.indices.refresh('questions')
             qb.add(str(question['qid']), question)
 
             cb.replace(str(g.user.id), user)
@@ -729,6 +819,8 @@ def create_profile():
             cb.add(str(did), data)
             user = User(data['name'], data['id'])
             login_user(user, remember=True)
+            es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
+            es_conn.indices.refresh('users')
             g.user = user
             try:
                 msg = Message("Registration at Kunjika")
@@ -757,6 +849,9 @@ def create_profile():
             cb.add(str(did), data)
             user = User(data['name'], did)
             login_user(user, remember=True)
+            print data['name'] + ' ' + did
+            es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
+            es_conn.indices.refresh('users')
             g.user = user
             try:
                 msg = Message("Registration at Kunjika")
@@ -922,7 +1017,8 @@ def register():
             user = User(data['name'], data['id'])
             login_user(user, remember=True)
             g.user = user
-
+            es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
+            es_conn.indices.refresh('users')
             return redirect(url_for('questions'))
 
         document = urllib2.urlopen(
@@ -942,6 +1038,8 @@ def register():
             try:
                 login_user(user, remember=True)
                 g.user = user
+                es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
+                es_conn.indices.refresh('users')
                 flash('Thanks for registration. We hope you enjoy your stay here too.', 'success')
                 msg = Message("Registration at Kunjika")
                 msg.recipients = [data['email']]
@@ -1077,6 +1175,9 @@ def add_tags(tags_passed, qid):
             data['tid'] = tid
 
             tb.add(tag, data)
+            es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
+            es_conn.indices.refresh('tags')
+
 
 def replace_tags(tags_passed, qid, current_tags):
     for tag in tags_passed:
@@ -1100,6 +1201,8 @@ def replace_tags(tags_passed, qid, current_tags):
                 data['tid'] = tid
 
                 tb.add(tag, data)
+                es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
+                es_conn.indices.refresh('tags')
 
     for tag in current_tags:
         if tag not in tags_passed:
@@ -1211,6 +1314,10 @@ def edits(element):
                 ##print current_tags
                 #return redirect(url_for('questions'))
                 qb.replace(str(qid), question)
+                es_conn.index({'title':title, 'description':question['content']['description'], 'qid':question['qid'],
+                               'position':question['qid']}, 'questions', 'questions-type', question['qid'])
+                es_conn.indices.refresh('questions')
+
                 replace_tags(question['content']['tags'], question['qid'], current_tags)
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
     else:
