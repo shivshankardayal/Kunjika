@@ -118,17 +118,7 @@ except:
     pass
 
 try:
-     es_conn.indices.delete_index("tags")
-except:
-    pass
-
-try:
      es_conn.indices.create_index("tags")
-except:
-    pass
-
-try:
-     es_conn.indices.delete_index("polls")
 except:
     pass
 
@@ -215,6 +205,7 @@ lm.anonymous_user = Anonymous
 kunjika.jinja_env.globals['url_for_other_page'] = utility.url_for_other_page
 kunjika.jinja_env.globals['url_for_other_user_question_page'] = utility.url_for_other_user_question_page
 kunjika.jinja_env.globals['url_for_other_user_answer_page'] = utility.url_for_other_user_answer_page
+kunjika.jinja_env.globals['url_for_search_page'] = utility.url_for_search_page
 
 if not kunjika.debug:
     import logging
@@ -1733,8 +1724,23 @@ def editing_help():
 
 @kunjika.route('/search-help')
 def search_help():
-    return render_template('search-help.html', title='Search Help', name=g.user.name,
-                           user_id=g.user.id)
+    tag_list = []
+    qcount = qb.get('qcount').value
+    ucount = cb.get('count').value
+    tcount = tb.get('tcount').value
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
+    acount = json.loads(acount)
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
+    if tcount > 0:
+        tag_list = utility.get_popular_tags()
+    if g.user is not None and g.user.is_authenticated():
+        user = cb.get(str(g.user.id)).value
+    return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name,
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 @kunjika.route('/sticky')
 def stikcy():
@@ -1900,6 +1906,29 @@ def poll():
         return render_template('poll.html', title='Poll', form=pollForm, ppage=True, name=g.user.name,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
+
+@kunjika.route('/search', defaults={'page': 1})
+@kunjika.route('/search/<int:page>')
+def search(page=None):
+    query=request.args.get('query')
+    if query[0:6]=='title:':
+        title=query[6:]
+        q=pyes.TermQuery('title', title)
+        return utility.search_title(q, page)
+    elif query[0:16]=='description:':
+        description=query[11:]
+        q=pyes.TermQuery('description', description)
+        return utility.search_description(q, page)
+    elif query[0:5]=='user:':
+        user=query[5:]
+        q=pyes.TermQuery('name', user)
+        return utility.search_user(q, page)
+    elif query[0:4]=='tag:':
+        tag=query[4:]
+        q=pyes.TermQuery('tag', tag)
+        return utility.search_tag(q, page)
+    else:
+        return utility.search(query, page)
 
 @kunjika.errorhandler(404)
 def page_not_found(e):

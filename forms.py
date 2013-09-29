@@ -81,3 +81,6 @@ class PollForm(Form):
     poll_answers = SelectField('How many choices do you want?' , choices=[('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'), \
                                                                     ('6', '6'), ('7', '7'),  ('8', '8'), ('9', '9'), \
                                                                     ('10', '10')])
+
+class SearchForm(Form):
+    query = TextAreaField('', [validators.Length(min=20, max=1000), validators.Required()])

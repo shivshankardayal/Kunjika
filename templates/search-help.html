@@ -16,7 +16,9 @@
     <link href="/static/css/kunjika.css" rel="stylesheet">
 {% endblock %}
 {% block container %}
-    <div class="row-fluid" style="width:800px">
+    <div class="row-fluid">
+        <div id="mainbar" class="mainbar">
+            <h3>Search Help</h3>
             <p>In order to search efficiently please allow me to explain how searching works. You can search
                 for questions(title, description or both), tags and users. If you give know hint to search
                 then you simply type your query and search will be performed on question title and description.
@@ -27,5 +29,34 @@
 
                 Thanks for taking time to read this help.
             </p>
+        </div>
+        <div id="sidebar">
+            <div class="count">
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ qcount }}</div>
+                <p>questions</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ acount }}</div>
+                <p>answers</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ ucount }}</div>
+                <p>users</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ tcount }}</div>
+                <p>tags</p>
+            </div>
+            </div>
+            <div id="popular-tags" class="module">
+                <h4 id="h-popular-tags">Popular-tags</h4>
+                {% for tag in tag_list %}
+                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
+                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">{{ tag['count'] }}</span></span>
+                    <br/>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 {% endblock %}

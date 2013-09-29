@@ -14,12 +14,78 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see http://www.gnu.org/licenses/.
 import kunjika
-from flask import jsonify, g
+from flask import jsonify, g, render_template
 from math import ceil
 import urllib2
 import json
 from time import strftime, localtime
 from flask import url_for, request
+import pyes
+
+def search(query, page):
+    tag_list = []
+    qcount = kunjika.qb.get('qcount').value
+    ucount = kunjika.cb.get('count').value
+    tcount = kunjika.tb.get('tcount').value
+    acount = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
+    acount = json.loads(acount)
+    if len(acount['rows']) is not 0:
+        acount = acount['rows'][0]['value']
+    else:
+        acount = 0
+
+    if tcount > 0:
+        tag_list = get_popular_tags()
+
+    title_q=pyes.TermQuery('title', query)
+    question_q=pyes.TermQuery('question', query)
+    title_results=kunjika.es_conn.search(query=title_q)
+    question_results=kunjika.es_conn.search(query=question_q)
+
+    results=[]
+
+    for r in title_results:
+        results.append(r['qid'])
+    for r in question_results:
+        results.append(r['qid'])
+
+    results_set = set(results)
+    questions_list = []
+
+    for qid in results_set:
+        print type(kunjika.qb.get(str(qid)).value)
+        questions_list.append(kunjika.qb.get(str(qid)).value)
+
+    for i in questions_list:
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+
+        user = kunjika.cb.get(i['content']['op']).value
+        i['opname'] = user['name']
+
+    pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))
+
+    if g.user is None:
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[page-1*kunjika.QUESTIONS_PER_PAGE:page-1*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+    elif g.user is not None and g.user.is_authenticated():
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[page-1*kunjika.QUESTIONS_PER_PAGE:page-1*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+                                name=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
+                                ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+    else:
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[page-1*kunjika.QUESTIONS_PER_PAGE:page-1*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+
+def search_title(query):
+    pass
+
+def search_description(query):
+    pass
+
+def search_user(query):
+    pass
+
+def search_tag(query):
+    pass
 
 def generate_url(title):
     length = len(title)
@@ -245,6 +311,10 @@ def url_for_other_user_answer_page(page):
     args['apage'] = page
     return url_for(request.endpoint, **args)
 
+def url_for_search_page(page, query):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, query=query, **args)
 
 def get_popular_tags():
 

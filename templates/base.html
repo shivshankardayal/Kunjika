@@ -5,6 +5,7 @@
     {% from "macros.html" import render_pagination %}
     {% from "macros.html" import render_user_question_pagination %}
     {% from "macros.html" import render_user_answer_pagination %}
+    {% from "macros.html" import render_search_pagination %}
     {% block head %}
         <title>{% block title %}{{ title }}{% endblock %}</title>
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -170,9 +171,9 @@
 <gcse:search></gcse:search>
                                         </div>
                                         <div class="span6">
-                                            <form class="form-search">
-                                                <div style="margin-left: 20px; margin-top: -10px" class="input-append" action="/search" method="post">
-                                                    <input type="text" class="span2 search-query">
+                                            <form class="form-search" action="/search" method="get">
+                                                <div style="margin-left: 20px; margin-top: -10px" class="input-append">
+                                                    <input type="text" class="span2 search-query" id="query" name="query">
                                                     <button type="submit" class="btn">Kunjika Search</button>
                                                 </div>
                                             </form>
