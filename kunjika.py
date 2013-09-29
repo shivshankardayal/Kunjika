@@ -1731,6 +1731,11 @@ def editing_help():
     return render_template('editing-help.html', title='Markdown Editor Help', name=g.user.name,
                            user_id=g.user.id)
 
+@kunjika.route('/search-help')
+def search_help():
+    return render_template('search-help.html', title='Search Help', name=g.user.name,
+                           user_id=g.user.id)
+
 @kunjika.route('/sticky')
 def stikcy():
     if g.user.id == 1:

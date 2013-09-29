@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - Kunjika{% endblock %}
+{% block css_bootstrap %}
+    {{ super() }}
+    {# TODO: probably remove this and let the user set it manually? #}
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <META HTTP-EQUIV="Expires" CONTENT="-1">
+{% endblock %}
+
+{% block css_site %}
+    <link href="/static/css/kunjika.css" rel="stylesheet">
+{% endblock %}
+{% block container %}
+    <div class="row-fluid" style="width:800px">
+            <p>In order to search efficiently please allow me to explain how searching works. You can search
+                for questions(title, description or both), tags and users. If you give know hint to search
+                then you simply type your query and search will be performed on question title and description.
+                However, if you want to search on titles then you should search like <code>title:search query</code>
+                and for descriptions <code>description:search query</code> but if you want to search on tags or users
+                then possibly you can guess how to search. It is done using <code>tag:tag name</code> and
+                <code>user:user name</code>
+
+                Thanks for taking time to read this help.
+            </p>
+    </div>
+{% endblock %}
