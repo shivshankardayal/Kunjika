@@ -24,6 +24,11 @@
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
     <!--    <script type="text/javascript" src="/static/js/highlight.pack.js"></script>
         <script>hljs.initHighlightingOnLoad();</script>-->
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $("#question").parent().addClass("ui-widget");
+        });
+    </script>
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
