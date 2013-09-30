@@ -21,6 +21,7 @@ import json
 from time import strftime, localtime
 from flask import url_for, request
 import pyes
+import question
 
 def common_data():
     tag_list = []
@@ -67,8 +68,8 @@ def common_rendering(results, query, page):
                                 pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
 
 def search(query, page):
-    title_q=pyes.TermQuery('title', query)
-    question_q=pyes.TermQuery('question', query)
+    title_q=pyes.MatchQuery('title', query)
+    question_q=pyes.MatchQuery('question', query)
     title_results=kunjika.es_conn.search(query=title_q)
     question_results=kunjika.es_conn.search(query=question_q)
 
@@ -83,7 +84,7 @@ def search(query, page):
 
 def search_title(query, page):
     title=query[6:]
-    q=pyes.TermQuery('title', title)
+    q=pyes.MatchQuery('title', title)
     title_results=kunjika.es_conn.search(query=q)
     results=[]
 
@@ -94,7 +95,7 @@ def search_title(query, page):
 
 def search_description(query, page):
     description=query[12:]
-    q=pyes.TermQuery('description', description)
+    q=pyes.MatchQuery('description', description)
     question_results=kunjika.es_conn.search(query=q)
 
     results=[]
@@ -107,7 +108,7 @@ def search_description(query, page):
 def search_user(query, page):
     (qcount, acount, tcount, ucount, tag_list) = common_data()
     user=query[5:]
-    q=pyes.TermQuery('name', user)
+    q=pyes.MatchQuery('name', user)
     question_results=kunjika.es_conn.search(query=q)
 
     results=[]
@@ -146,7 +147,7 @@ def search_user(query, page):
 def search_tag(query, page):
     (qcount, acount, tcount, ucount, tag_list) = common_data()
     tag=query[4:]
-    q=pyes.TermQuery('tag', tag)
+    q=pyes.MatchQuery('tag', tag)
     question_results=kunjika.es_conn.search(query=q)
 
     results=[]
@@ -490,3 +491,20 @@ def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
     #    aids.append(single_aid)
 
     return question_list, aids
+
+def get_similar_questions(title, qid):
+    print title
+    title_q=pyes.MatchQuery('title', title)
+    title_results=kunjika.es_conn.search(query=title_q)
+
+    results=[]
+
+    for r in title_results:
+        #print r
+        if r['qid'] != qid:
+            question_dict = {}
+            question_dict = question.get_question_by_id(str(r['qid']), question_dict)
+            print question_dict
+            results.append([r['qid'], r['title'], question_dict['content']['url']])
+
+    return results[:10]

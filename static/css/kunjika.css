@@ -97,7 +97,7 @@
 
 #popular-tags {
     padding-top: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     background-color: #fff8c4;
 }
 
@@ -197,15 +197,15 @@
 }
 
 .post-tag {
-    background-color: #f7f7f7;
-    /*border-radius: 5px;*/
+    /*background-color: #f7f7f7;
+    border-radius: 5px;*/
     color: #08c !important;
     display: inline-block;
-    font-size: 11px;
+    font-size: 13px;
     line-height: 16px;
-    margin: 2px 6px 6px 0;
+    margin: 2px 0px 4px 0;
     overflow: visible;
-    padding: 0.4em .8em;
+    padding: 0.2em .2em;
     text-decoration: none;
     white-space: nowrap;
 }

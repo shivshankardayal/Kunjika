@@ -144,6 +144,9 @@
                                 {% if user_id is defined and g.user.is_authenticated() %}
                                     <li class="active"><a href="/users/{{ user_id }}/{{ name }}" class="login"><i
                                             class="icon-sigin"></i> <b>{{ name }}</b></a></li>
+                                {% if role == "admin" %}
+                                    <li><a href="/administration" class="administration"> <b>Administration</b></a></li>
+                                {% endif %}
                                     <li><a href="/logout" class="login"><i class="icon-signout"></i> <b>Logout</b></a></li>
                                 {% else %}
                                     <li><a href="/login" class="login"><i class="icon-signin"></i> <b>Login</b></a></li>

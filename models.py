@@ -19,9 +19,10 @@ from flask.ext.login import (LoginManager, current_user, login_required,
                             confirm_login, fresh_login_required)
 
 class User(UserMixin):
-    def __init__(self, name, id, active=True):
+    def __init__(self, name, id, role=None, active=True):
         self.name = name
         self.id = id
+        self.role = role
         self.active = active
     def is_authenticated(self):
         return True

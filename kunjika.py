@@ -229,7 +229,10 @@ def before_request():
 def get_user(uid):
     try:
         user_from_db = cb.get(str(uid)).value
-        return User(user_from_db['name'], user_from_db['id'])
+        if 'role' in user_from_db:
+            return User(user_from_db['name'], user_from_db['id'], user_from_db['role'])
+        else:
+            return User(user_from_db['name'], user_from_db['id'], None)
     except NotFoundError:
         return None
 
@@ -266,7 +269,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                                    pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         elif g.user is not None and g.user.is_authenticated():
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   name=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
+                                   name=g.user.name, role=g.user.role, user_id=g.user.id, pagination=pagination, qcount=qcount,
                                    ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         else:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
@@ -283,7 +286,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                                    pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         elif g.user is not None and g.user.is_authenticated():
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   name=g.user.name, user_id=g.user.id, pagination=pagination, qcount=qcount,
+                                   name=g.user.name, role=g.user.role, user_id=g.user.id, pagination=pagination, qcount=qcount,
                                    ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         else:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
@@ -300,6 +303,7 @@ def questions(tag=None, page=None, qid=None, url=None):
         choices = []
         votes = []
         j = 0
+        similar_questions = utility.get_similar_questions(questions_dict['title'], questions_dict['qid'])
         if 'options' in questions_dict['content']:
             for option in questions_dict['content']['options']:
                 choices.append((option, option))
@@ -481,8 +485,9 @@ def questions(tag=None, page=None, qid=None, url=None):
                 qb.replace(str(questions_dict['qid']), questions_dict)
 
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
-                                       form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
-                                       qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                                       form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
+                                       qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
+                                       similar_questions=similar_questions)
             elif 'sc' in questions_dict['content']:
                 class PollForm(Form):
                     pass
@@ -542,8 +547,9 @@ def questions(tag=None, page=None, qid=None, url=None):
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
                 qb.replace(str(questions_dict['qid']), questions_dict)
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
-                                       form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
-                                       qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, votes=votes)
+                                       form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
+                                       qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
+                                       votes=votes, similar_questions=similar_questions)
             elif 'mc' in questions_dict['content']:
                 class PollForm(Form):
                     pass
@@ -607,15 +613,16 @@ def questions(tag=None, page=None, qid=None, url=None):
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
                 qb.replace(str(questions_dict['qid']), questions_dict)
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
-                                       form=answerForm, name=g.user.name, user_id=unicode(g.user.id), gravatar=gravatar32,
+                                       form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                                       options=i, field_names=options, votes=votes)
+                                       options=i, field_names=options, votes=votes, similar_questions=similar_questions)
 
 
         else:
             qb.replace(str(questions_dict['qid']), questions_dict)
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
-                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, votes=votes)
+                                   qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
+                                   votes=votes, similar_questions=similar_questions)
 
 @kunjika.route('/users/<uid>', defaults={'qpage': 1, 'apage': 1})
 @kunjika.route('/users/<uid>/<uname>', defaults={'qpage': 1, 'apage': 1})
@@ -727,7 +734,7 @@ def ask():
 
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
 
-        return render_template('ask.html', title='Ask', form=questionForm, apage=True, name=g.user.name,
+        return render_template('ask.html', title='Ask', form=questionForm, apage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
 
@@ -1439,7 +1446,7 @@ def unanswered(page):
                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     elif g.user is not None and g.user.is_authenticated():
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
-                               name=g.user.name, user_id=g.user.id, pagination=pagination,
+                               name=g.user.name, role=g.user.role, user_id=g.user.id, pagination=pagination,
                                qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     else:
         return render_template('unanswered.html', title='Unanswered questions', unpage=True, questions=questions_list,
@@ -1461,9 +1468,9 @@ def show_users(page):
         return render_template('users.html', title='Users', gravatar32=gravatar32, logged_in=logged_in, upage=True,
                                pagination=pagination, users=users, no_of_users=no_of_users,
                                qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                               name=g.user.name, user_id=g.user.id)
+                               name=g.user.name, role=g.user.role, user_id=g.user.id)
     return render_template('users.html', title='Users', gravatar32=gravatar32, upage=True,
-                           pagination=pagination, users=users, no_of_users=no_of_users, name=g.user.name,
+                           pagination=pagination, users=users, no_of_users=no_of_users, name=g.user.name, role=g.user.role,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
@@ -1492,7 +1499,7 @@ def show_tags(page):
         logged_in = True
         return render_template('tags.html', title='Tags', logged_in=logged_in, tpage=True, pagination=pagination,
                                tags=tags, no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount,
-                               name=g.user.name, user_id=g.user.id, acount=acount, tag_list=tag_list)
+                               name=g.user.name, role=g.user.role, user_id=g.user.id, acount=acount, tag_list=tag_list)
     return render_template('tags.html', title='Tags', tpage=True, pagination=pagination, tags=tags,
                            no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
@@ -1569,7 +1576,7 @@ def edit_tag(tag):
             tb.replace(tag['tag'], tag)
             return redirect(url_for('tag_info', tag=str(tag['tag'])))
 
-        return render_template('edit_tag.html', title='Edit tag', form=tagForm, tpage=True, name=g.user.name, tag=tag,
+        return render_template('edit_tag.html', title='Edit tag', form=tagForm, tpage=True, name=g.user.name, role=g.user.role, tag=tag,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
 
@@ -1626,7 +1633,7 @@ def reset_password(token=None):
 
 @kunjika.route('/editing-help')
 def editing_help():
-    return render_template('editing-help.html', title='Markdown Editor Help', name=g.user.name,
+    return render_template('editing-help.html', title='Markdown Editor Help', name=g.user.name, role=g.user.role,
                            user_id=g.user.id)
 
 @kunjika.route('/search-help')
@@ -1634,7 +1641,7 @@ def search_help():
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     if g.user is not None and g.user.is_authenticated():
         user = cb.get(str(g.user.id)).value
-    return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name,
+    return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 @kunjika.route('/sticky')
@@ -1665,7 +1672,7 @@ def create_poll(form, options):
     if form.validate_on_submit() and request.method == 'POST':
         print "render"
     print options
-    return render_template('create_poll.html', title='Create Poll', form=form, options=choices, ppage=True, name=g.user.name,
+    return render_template('create_poll.html', title='Create Poll', form=form, options=choices, ppage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
@@ -1701,7 +1708,7 @@ def poll():
             for i in range(0, int(pollForm.poll_answers.data)):
                 choices.append(str(i+1))
 
-            return render_template('create_poll.html', title='Create Poll', form=questionForm, options=choices, ppage=True, name=g.user.name,
+            return render_template('create_poll.html', title='Create Poll', form=questionForm, options=choices, ppage=True, name=g.user.name, role=g.user.role,
                        user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
         if questionForm.validate_on_submit() and request.method == 'POST':
@@ -1771,7 +1778,7 @@ def poll():
 
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
 
-        return render_template('poll.html', title='Poll', form=pollForm, ppage=True, name=g.user.name,
+        return render_template('poll.html', title='Poll', form=pollForm, ppage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
 
