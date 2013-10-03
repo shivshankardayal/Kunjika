@@ -1797,6 +1797,10 @@ def search(page=None):
     else:
         return utility.search(query, page)
 
+@kunjika.route('/administration', methods=['GET', 'POST'])
+def administration():
+    pass
+
 @kunjika.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
