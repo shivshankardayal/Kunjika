@@ -96,8 +96,9 @@ def search_title(query, page):
 
     for r in title_results:
         results.append(r['qid'])
+        print str(r)
 
-
+    return common_rendering(results, query, page)
 
 def search_description(query, page):
     description=query[12:]

@@ -24,7 +24,7 @@
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
     <!--    <script type="text/javascript" src="/static/js/highlight.pack.js"></script>
         <script>hljs.initHighlightingOnLoad();</script>-->
-        <script type="text/javascript">
+    <script type="text/javascript">
         $(document).ready(function () {
             $("#question").parent().addClass("ui-widget");
         });
@@ -63,24 +63,24 @@
         </form>
     </div>
     <div id="sidebar">
-    <div class="count">
-        <div class="module" id="questions-count">
-            <div class="summarycount al">{{ qcount }}</div>
-            <p>questions</p>
+        <div class="count">
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ qcount }}</div>
+                <p>questions</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ acount }}</div>
+                <p>answers</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ ucount }}</div>
+                <p>users</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ tcount }}</div>
+                <p>tags</p>
+            </div>
         </div>
-        <div class="module" id="questions-count">
-            <div class="summarycount al">{{ acount }}</div>
-            <p>answers</p>
-        </div>
-        <div class="module" id="questions-count">
-            <div class="summarycount al">{{ ucount }}</div>
-            <p>users</p>
-        </div>
-        <div class="module" id="questions-count">
-            <div class="summarycount al">{{ tcount }}</div>
-            <p>tags</p>
-        </div>
-    </div>
         <div id="popular-tags" class="module">
             <h4 id="h-popular-tags">Popular Tags</h4>
             {% for tag in tag_list %}
@@ -133,7 +133,7 @@
                 Markdown.Extra.init(converter, {
                     extensions: "all",
                     highlighter: "prettify",
-            table_class: "table-bordered table"
+                    table_class: "table-bordered table"
                 });
                 /*converter.hooks.chain("preBlockGamut", function (text, rbg) {
                  return text.replace(/^ {0,3}""" *\n((?:.*?\n)+?) {0,3}""" *$/gm, function (whole, inner) {
@@ -223,6 +223,23 @@
                 tokenLimit: 5,
                 tokenDelimiter: ',',
                 preventDuplicates: true
+            });
+        });
+    </script>
+    <script>
+        $(function () {
+            var availableTags = [];
+            $("#question").keyup(function () {
+                value = $(this).value();
+                $.getJSON('/get_autocomplete', {
+                    val: value
+                }, function (data) {
+                    alert(data);
+                });
+                return false;
+            });
+            $("#question").autocomplete({
+                source: availableTags
             });
         });
     </script>
