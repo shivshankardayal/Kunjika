@@ -1797,6 +1797,10 @@ def search(page=None):
     else:
         return utility.search(query, page)
 
+@kunjika.route('/get_autocomplete', methods=['GET', 'POST'])
+def get_autocomplete():
+    return utility.get_autocomplete(request)
+
 @kunjika.route('/administration', methods=['GET', 'POST'])
 def administration():
     pass

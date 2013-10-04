@@ -227,19 +227,39 @@
         });
     </script>
     <script>
+        $(".ui-autocomplete").addClass("dropdown-menu");
+        $( ".selector" ).autocomplete({
+            _resizeMenu: function() {
+                this.menu.element.outerWidth( 500 );
+            }
+        });
+    </script>
+    <script>
         $(function () {
-            var availableTags = [];
             $("#question").keyup(function () {
-                value = $(this).value();
+                value = $(this).val();
                 $.getJSON('/get_autocomplete', {
                     val: value
                 }, function (data) {
-                    alert(data);
+                    availableTags = [];
+                    for(var i in data) {
+                        console.log(data[i]);
+                        for(var j in data[i]) {
+                            console.log(data[i][j].title);
+                            console.log(data[i][j].url);
+                            console.log(data[i][j].qid);
+                            availableTags.push({value: '/questions/' + data[i][j].qid + '/' + data[i][j].url, label:data[i][j].title})
+                        }
+                    }
+                    $("#question").autocomplete({
+                        source: availableTags,
+                        select: function (event, ui) {
+                            window.location.href = ui.item.value;
+                        }
+                    });
+                    $(".ui-menu").addClass("dropdown-menu");
                 });
                 return false;
-            });
-            $("#question").autocomplete({
-                source: availableTags
             });
         });
     </script>

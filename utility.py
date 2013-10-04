@@ -96,7 +96,7 @@ def search_title(query, page):
 
     for r in title_results:
         results.append(r['qid'])
-        print str(r)
+        #print str(r)
 
     return common_rendering(results, query, page)
 
@@ -513,3 +513,30 @@ def get_similar_questions(title, qid):
             results.append([r['qid'], r['title'], question_dict['content']['url']])
 
     return results[:10]
+
+def get_autocomplete(request):
+    #print request.args.get('val')
+    q=pyes.MatchQuery('title', request.args.get('val'))
+    title_results=kunjika.es_conn.search(query=q)
+    results=[]
+
+    for r in title_results:
+        results.append(r['qid'])
+
+    questions_list = []
+
+    if len(results) > 10:
+        for i in range(0, len(results)):
+            question = kunjika.qb.get(str(results[i])).value
+            questions_list.append({'title':question['title'], 'qid': question['qid'], 'url':question['content']['url']})
+            #print question['title'] + ' ' + question['content']['url'] + str(question['qid'])
+    else:
+        for i in range(0, len(results)):
+            question = kunjika.qb.get(str(results[i])).value
+            questions_list.append({'title':question['title'], 'qid': question['qid'], 'url':question['content']['url']})
+            #print question['title'] + ' ' + question['content']['url'] + str(question['qid'])
+
+    if len(results) > 10:
+        return jsonify({'data': questions_list[0:10]})
+    else:
+        return jsonify({'data':questions_list[0:len(results)]})
