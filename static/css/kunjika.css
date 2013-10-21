@@ -93,13 +93,13 @@
 .count {
     padding-top: 15px;
     margin-bottom: 15px;
-    background-color: #fff8c4;
+    /*background-color: #fff8c4;*/
 }
 
 #popular-tags {
     padding-top: 15px;
     margin-bottom: 10px;
-    background-color: #fff8c4;
+    /*background-color: #fff8c4;*/
 }
 
 #feed-link {
@@ -710,3 +710,7 @@ label {
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
     background-clip: padding-box;
 }*/
+
+.table {
+    width: auto;
+}

@@ -169,6 +169,7 @@
                 str += " &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
                 str += " " + responseJSON.ts + "</div>"
                 $(str).insertBefore('form.comment-form');
+                flash('Your comment has been successfully posted.', 'info')
             }
         });
     </script>
@@ -813,6 +814,7 @@
                     $(this).css("color", "#333");
                 });
                 $(id).css("color", "#070");
+                flash('Thanks for accepting this answer.', 'info')
             });
             return false;
         });
@@ -823,6 +825,7 @@
             }, function (data) {
                 $(id).removeClass('starred');
                 $(id).addClass('unstarred');
+                flash('You have un-favorited this question.', 'info')
             });
             return false;
         });
@@ -833,6 +836,7 @@
             }, function (data) {
                 $(id).removeClass('unstarred');
                 $(id).addClass('starred');
+                flash('You have favorited this question.', 'success')
             });
             return false;
         });
@@ -842,6 +846,7 @@
                 id: '#' + $(this).attr('id'),
                 url: $(location).attr('href')
             }, function (data) {
+                flash('Thanks for flagging. Admin has been emailed.', 'info')
             });
             return false;
         });
@@ -850,6 +855,7 @@
                 id: $(this).attr('id'),
                 url: $(location).attr('href')
             }, function (data) {
+                flash('Question has been made sticky.', 'success')
             });
             return false;
         });

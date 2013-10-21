@@ -38,6 +38,7 @@
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
             {{ render_field(form.question, class="question input-x-large span10", style="margin-left:25px;", placeholder="Please ask your question here?") }}
+            <div id="similar_questions" style="display:none"><p style="font-weight:bold; margin-left: 80px">Similar Questions<br/></p></div>
             <div class="wmd-panel">
                 <div id="wmd-button-bar"></div>
                 {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
@@ -241,6 +242,7 @@
                 $.getJSON('/get_autocomplete', {
                     val: value
                 }, function (data) {
+                    sq = "";
                     availableTags = [];
                     for(var i in data) {
                         console.log(data[i]);
@@ -248,7 +250,7 @@
                             console.log(data[i][j].title);
                             console.log(data[i][j].url);
                             console.log(data[i][j].qid);
-                            availableTags.push({value: '/questions/' + data[i][j].qid + '/' + data[i][j].url, label:data[i][j].title})
+                    /*        availableTags.push({value: '/questions/' + data[i][j].qid + '/' + data[i][j].url, label:data[i][j].title})
                         }
                     }
                     $("#question").autocomplete({
@@ -257,7 +259,13 @@
                             window.location.href = ui.item.value;
                         }
                     });
-                    $(".ui-menu").addClass("dropdown-menu");
+                    $(".ui-menu").addClass("dropdown-menu");*/
+                            $("#similar_questions").css("display", "inline");
+                            href = "/questions/" + data[i][j].qid + "/" + data[i][j].url;
+                            sq += '<a href="' + href + '">' + data[i][j].title + "</a><br/>";
+                        }
+                        $("#similar_questions").find("p").html("Similar quesitons<br/>" + sq);
+                    }
                 });
                 return false;
             });

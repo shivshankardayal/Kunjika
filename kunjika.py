@@ -113,12 +113,12 @@ except:
     pass
 
 try:
-     es_conn.indices.create_index("users")
+    es_conn.indices.create_index("users")
 except:
     pass
 
 try:
-     es_conn.indices.create_index("tags")
+    es_conn.indices.create_index("tags")
 except:
     pass
 
@@ -303,6 +303,7 @@ def questions(tag=None, page=None, qid=None, url=None):
         choices = []
         votes = []
         j = 0
+        print questions_dict['qid']
         similar_questions = utility.get_similar_questions(questions_dict['title'], questions_dict['qid'])
         if 'options' in questions_dict['content']:
             for option in questions_dict['content']['options']:
@@ -1332,7 +1333,7 @@ def flag():
                'Flagger User ID: ' + str(flagged_user['id']) + '<br/>' \
                '<br/> Admin<p>'
     mail.send(msg)
-    flash('Thanks for flagging. Your feedback is appreciated.', 'info')
+
     return jsonify({"success": True})
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
