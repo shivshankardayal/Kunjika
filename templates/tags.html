@@ -32,13 +32,13 @@
                         <tr>
                             {% for j in range(0, k) %}
                                 <td class="tag-cell">
-                                    <a href="/questions/tagged/{{ tags[i+j]['tag'] }}" class="post-tag" title="" rel="tag">{{ tags[i+j]['tag'] }}</a><span
-                                        class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
-                                        class="item-multiplier-count">{{ tags[i+j]['count'] }}</span></span>
+                                    <a href="/questions/tagged/{{ tags[i+j]['tag'] }}" class="post-tag" title="" rel="tag">{{ tags[i+j]['tag'] }}</a><span class="item-multiplier-x">×</span>&nbsp;<span
+                                        class="item-multiplier-count">{{ tags[i+j]['count'] }}</span>
 
-                                    <div><a href="/info/{{ tags[i+j]['tag'] }}">info</a></div>
+                                    <a href="/info/{{ tags[i+j]['tag'] }}">info</a>
                                     {% if 'excerpt' in tags[i+j] %}
                                     <div class="excerpt">{{ tags[i+j]['excerpt'] }}
+                                    {{ tags[i+j]['info'][:108] }}
                                     </div>
                                     {% endif %}
                                     <div>
