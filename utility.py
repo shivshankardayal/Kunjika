@@ -22,6 +22,7 @@ from time import strftime, localtime
 from flask import url_for, request
 import pyes
 import question
+from flask.ext.mail import Mail, Message
 
 def common_data():
     tag_list = []
@@ -540,3 +541,23 @@ def get_autocomplete(request):
         return jsonify({'data': questions_list[0:10]})
     else:
         return jsonify({'data':questions_list[0:len(results)]})
+
+
+def send_invites(request):
+    user = kunjika.cb.get(str(g.user.id)).value
+    print user
+    try:
+        email_list = request.form['email_list']
+        email_list = email_list.split(';')
+        msg = Message("Invitation to Kunjika from " + user['name'])
+        msg.recipients = email_list
+        msg.sender = user['email']
+        msg.html = "<p>Hi,<br/><br/> You have been invited to join Kunjika by " + user['name'] +\
+            "We would like you to join our family of friends. Please register yourself at " +\
+            kunjika.HOST_URL +\
+            " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+        kunjika.mail.send(msg)
+
+        return True
+    except:
+        return False

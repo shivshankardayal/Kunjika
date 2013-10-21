@@ -13,6 +13,7 @@
 {% block css_site %}
     <link href="/static/css/kunjika.css" rel="stylesheet">
     <script src="/static/js/jquery.cookie.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
 
 {% endblock %}
 {% block container %}
@@ -97,6 +98,11 @@
                     <th></th>
                     <td>Answers:</td>
                     <td>{{ user['votes_count']['answers'] }}</td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td class="invite"><p id="invite" class="btn btn-info"><i class="icon-envelope"></i> Invite Friends</p></td>
+                    <td></td>
                 </tr>
                 </tbody>
             </table>
@@ -301,5 +307,47 @@
             $('a[data-toggle="tab"]:first').tab('show');
         }
     });
+    $("#invite").on("click", function(){
+        $(".table-user").append('<tr><th></th><td><form id="invite" class="invite"  method="post"' +
+                'action="/send_invites"><input id="email_list"' +
+                'name="email_list" placeholder="Semicolon separated emails." type="text">' +
+                '</input><br/><button class="btn btn-primary" type="submit">Send Invites</button></form></td></td></th>');
+    });
+    function send_email(form) {
+
+    }
+    </script>
+        <script>
+        $(document).ready(function () {
+            var options = {
+                //target:        '#output1',   // target element(s) to be updated with server response
+                //beforeSubmit:  showRequest,  // pre-submit callback
+                success: showResponse,  // post-submit callback
+
+                // other available options:
+                url: '/send_invites',         // override for form's 'action' attribute
+                //type:      'post',        // 'get' or 'post', override for form's 'method' attribute
+                //dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
+                clearForm: true,        // clear all form fields after successful submit
+                resetForm: true        // reset the form after successful submit
+
+                // $.ajax options can be used here too, for example:
+                //timeout:   3000
+            };
+
+            // bind form using 'ajaxForm'
+            $('form.invite').ajaxForm(options);
+            function showResponse(responseText, statusText, xhr, $form) {
+                responseJSON = jQuery.parseJSON(responseText);
+                alert(responseJSON.success);
+                if(responseJSON.success == "true") {
+                    alert("hello")
+                    flash('Your invites were successfully sent.', 'success')
+                }
+                else {
+                    flash('Invites could not be sent. Please contact admin.')
+                }
+            }
+        });
     </script>
 {% endblock %}

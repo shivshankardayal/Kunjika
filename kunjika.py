@@ -1802,6 +1802,17 @@ def search(page=None):
 def get_autocomplete():
     return utility.get_autocomplete(request)
 
+
+@kunjika.route('/send_invites', methods=['GET', 'POST'])
+def send_invites():
+    res = utility.send_invites(request)
+    user = cb.get(str(g.user.id)).value
+    if res is True:
+        flash('Your invites were successfully sent.', 'success')
+    else:
+        flash('Your invites could not be sent.', 'error')
+    return redirect(url_for('users', uid=str(user['id'])))
+
 @kunjika.route('/administration', methods=['GET', 'POST'])
 def administration():
     pass

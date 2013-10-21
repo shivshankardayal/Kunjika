@@ -714,3 +714,16 @@ label {
 .table {
     width: auto;
 }
+
+.gsc-search-button {
+    margin-top:-15px;
+}
+
+.gsc-clear-button {
+    margin-top:-35px;
+}
+
+td.invite {
+    height:50px;
+    vertical-align: middle;
+}
