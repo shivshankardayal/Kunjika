@@ -99,11 +99,13 @@
                     <td>Answers:</td>
                     <td>{{ user['votes_count']['answers'] }}</td>
                 </tr>
+		{% if g.user.id == user_id %}
                 <tr>
                     <th></th>
                     <td class="invite"><p id="invite" class="btn btn-info"><i class="icon-envelope"></i> Invite Friends</p></td>
                     <td></td>
                 </tr>
+		{% endif %}
                 </tbody>
             </table>
         </div>
