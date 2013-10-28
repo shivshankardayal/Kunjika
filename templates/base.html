@@ -12,25 +12,25 @@
             {% if messages %}
                 {% for category, message in messages %}
                     {% if category == 'error' %}
-                    <div class="alert alert-error centered-seven-fifty-px">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        {{  message }}
-                    </div>
+                        <div class="alert alert-error centered-seven-fifty-px">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            {{ message }}
+                        </div>
                     {% elif category == 'success' %}
-                    <div class="alert alert-success centered-seven-fifty-px">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        {{  message }}
-                    </div>
+                        <div class="alert alert-success centered-seven-fifty-px">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            {{ message }}
+                        </div>
                     {% elif category == 'info' %}
-                    <div class="alert alert-info centered-seven-fifty-px">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        {{  message }}
-                    </div>
+                        <div class="alert alert-info centered-seven-fifty-px">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            {{ message }}
+                        </div>
                     {% elif category == 'block' %}
-                    <div class="alert alert-block centered-seven-fifty-px">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        {{  message }}
-                    </div>
+                        <div class="alert alert-block centered-seven-fifty-px">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            {{ message }}
+                        </div>
                     {% endif %}
                 {% endfor %}
             {% endif %}
@@ -70,6 +70,7 @@
                 tex2jax: {inlineMath: [['\\(','\\)'], ['\\[','\\]']]},
                 processEscapes: true
                 });
+
             </script>
             <script type="text/javascript" src="/static/js/bootstrap-flash.js">
             </script>
@@ -109,15 +110,16 @@
                         <div class="nav-collapse collapse">
                             <ul class="nav">
                                 {% if qpage is defined %}
-                                    <li class="active"><a href="/questions"><i class="icon-question"></i> <b>Questions</b></a>
+                                    <li class="active"><a href="/questions"><i class="icon-question"></i>
+                                        <b>Questions</b></a>
                                     </li>
                                 {% else %}
                                     <li><a href="/questions"><i class="icon-question"></i> <b>Questions</b></a></li>
                                 {% endif %}
                                 {% if tpage is defined %}
-                                <li class="active"><a href="/tags"><i class="icon-tags"></i> <b>Tags</b></a></li>
+                                    <li class="active"><a href="/tags"><i class="icon-tags"></i> <b>Tags</b></a></li>
                                 {% else %}
-                                <li><a href="/tags"><i class="icon-tags"></i> <b>Tags</b></a></li>
+                                    <li><a href="/tags"><i class="icon-tags"></i> <b>Tags</b></a></li>
                                 {% endif %}
                                 {% if upage is defined %}
                                     <li class="active"><a href="/users"><i class="icon-user"></i> <b>Users</b></a></li>
@@ -135,10 +137,12 @@
                                     <li class="active"><a href="/ask" class="ask"><i class="icon-question-sign"></i> <b>Ask</b></a>
                                     </li>
                                 {% else %}
-                                    <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> <b>Ask</b></a></li>
+                                    <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> <b>Ask</b></a>
+                                    </li>
                                 {% endif %}
                                 {% if ppage is defined %}
-                                    <li class="active"><a href="/poll" class="poll"><i class="icon-group"></i> <b>Poll</b></a>
+                                    <li class="active"><a href="/poll" class="poll"><i class="icon-group"></i>
+                                        <b>Poll</b></a>
                                     </li>
                                 {% else %}
                                     <li><a href="/poll" class="poll"><i class="icon-group"></i> <b>Poll</b></a></li>
@@ -147,52 +151,61 @@
                                     <!-- li class="active"><a href="/users/{{ user_id }}/{{ name }}" class="login"><i
                                             class="icon-sigin"></i> <b>{{ name }}</b></a></li-->
                                     <li class="dropdown active">
-                                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                                        <b>{{ name }}</b>
-                                        <b class="caret"></b>
-                                    </a>
+                                        <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                                            <b>{{ name }}</b>
+                                            <b class="caret"></b>
+                                        </a>
                                         <ul class="dropdown-menu">
                                             <li><a href="/users/{{ user_id }}/{{ name }}">Profile</a></li>
                                             <li><a href="/users/{{ user_id }}/{{ name }}/settings">Settings</a></li>
                                         </ul>
                                     </li>
-                                {% if role == "admin" %}
-                                    <li><a href="/administration" class="administration"> <b>Administration</b></a></li>
-                                {% endif %}
-                                    <li><a href="/logout" class="login"><i class="icon-signout"></i> <b>Logout</b></a></li>
+                                    {% if role == "admin" and adpage == True %}
+                                        <li class="active"><a href="/administration" class="administration"> <b>Administration</b></a>
+                                        </li>
+                                    {% elif role == "admin" and adpage != True %}
+                                        <li><a href="/administration" class="administration"> <b>Administration</b></a>
+                                        </li>
+                                    {% endif %}
+                                    <li><a href="/logout" class="login"><i class="icon-signout"></i> <b>Logout</b></a>
+                                    </li>
                                 {% else %}
                                     <li><a href="/login" class="login"><i class="icon-signin"></i> <b>Login</b></a></li>
                                 {% endif %}
-                                <li><a href="/recent-questions.atom" class="ask"><i class="icon-rss-sign"></i> <b>Feed</b></a></li>
+                                <li><a href="/recent-questions.atom" class="ask"><i class="icon-rss-sign"></i>
+                                    <b>Feed</b></a></li>
                                 <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-search"></i>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+                                            class="icon-search"></i>
                                         <b> Search</b>
                                         <b class="caret"></b>
                                     </a>
                                     <ul class="dropdown-menu">
                                         <div class="span6">
-<script>
-  (function() {
-    var cx = '000002629091691089689:h-fe73fdhdy';
-    var gcse = document.createElement('script');
-    gcse.type = 'text/javascript';
-    gcse.async = true;
-    gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-        '//www.google.com/cse/cse.js?cx=' + cx;
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(gcse, s);
-  })();
-</script>
-<gcse:search></gcse:search>
+                                            <script>
+                                                (function () {
+                                                    var cx = '000002629091691089689:h-fe73fdhdy';
+                                                    var gcse = document.createElement('script');
+                                                    gcse.type = 'text/javascript';
+                                                    gcse.async = true;
+                                                    gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                                                            '//www.google.com/cse/cse.js?cx=' + cx;
+                                                    var s = document.getElementsByTagName('script')[0];
+                                                    s.parentNode.insertBefore(gcse, s);
+                                                })();
+                                            </script>
+                                            <gcse:search></gcse:search>
                                         </div>
                                         <div class="span6">
                                             <form class="form-search" action="/search" method="get">
                                                 <div style="margin-left: 20px; margin-top: -10px" class="input-append">
-                                                    <input type="text" class="span2 search-query" id="query" name="query">
+                                                    <input type="text" class="span2 search-query" id="query"
+                                                           name="query">
                                                     <button type="submit" class="btn">Kunjika Search</button>
                                                 </div>
                                             </form>
-                                            <a href="/search-help" style="margin-top: -92px; margin-left: 340px" class="btn btn-success">Search Help</a>
+                                            <a href="/search-help" style="margin-top: -92px; margin-left: 340px"
+                                               class="btn btn-success">Search Help</a>
                                         </div>
                                     </ul>
                                 </li>
@@ -238,20 +251,27 @@
         {% block js_analytics %}
             {# Via HTML5BP. Asynchronous Google Analytics snippet. mathiasbynens.be/notes/async-analytics-snippet #}
 
-          {% block google_analytics %}
-          {% if not DEBUG %}
-          <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            {% block google_analytics %}
+                {% if not DEBUG %}
+                    <script>
+                        (function (i, s, o, g, r, a, m) {
+                            i['GoogleAnalyticsObject'] = r;
+                            i[r] = i[r] || function () {
+                                (i[r].q = i[r].q || []).push(arguments)
+                            }, i[r].l = 1 * new Date();
+                            a = s.createElement(o),
+                                    m = s.getElementsByTagName(o)[0];
+                            a.async = 1;
+                            a.src = g;
+                            m.parentNode.insertBefore(a, m)
+                        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-  ga('create', 'UA-17487464-5', 'libreprogramming.org');
-  ga('send', 'pageview');
+                        ga('create', 'UA-17487464-5', 'libreprogramming.org');
+                        ga('send', 'pageview');
 
-</script>
-          {% endif %}
-          {% endblock %}
+                    </script>
+                {% endif %}
+            {% endblock %}
 
         {% endblock %}
 

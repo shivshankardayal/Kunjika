@@ -28,13 +28,12 @@
         else if(err == "success") {
             box.removeClass("alert-error");
             box.addClass("alert-success");
-            box.removeClass("alert");
+            //box.removeClass("alert");
         }
         else {
-            alert("hello");
             box.removeClass("alert-error");
             box.removeClass("alert-success");
-            box.addClass("alert");
+            //box.addClass("alert");
         }
 
         box.find("p").html(msg);

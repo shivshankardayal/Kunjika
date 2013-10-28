@@ -103,3 +103,7 @@ class EditProfileForm(Form):
     website = TextField('Website', [validators.Length(min=2, max=160), validators.optional()])
     location = TextField('Location', [validators.Length(min=2, max=60), validators.optional()])
     about_me = TextAreaField('', [validators.Length(min=20, max=5000), validators.optional()])
+
+class BulkEmailForm(Form):
+    subject = TextField('Subject', [validators.Length(min=2, max=200), validators.optional()])
+    bulk_mail = TextAreaField('Body', [validators.Length(min=20, max=10000), validators.optional()])

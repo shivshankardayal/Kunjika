@@ -26,15 +26,11 @@
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
-    <div id="user-mainbar" class="user-mainbar">
+    <div id="mainbar" class="mainbar">
     {% if pagination is not defined %}
         <div class="userheader">
             <h3>{{ name }}</h3>
-            <div class="fr">
-                {% if g.user.id == user_id %}
-                    <a href="/users/{{ user_id }}/edit_profile" class="btn"><i class="icon-edit"></i>Edit</a>
-                {% endif %}
-            </div>
+            <!-- div class="fr"-->
             <div class="gravatar">
                 <img src="{{ email | gravatar(size=100) }}"/>
                 {% if g.user.id == 1 and user['role'] != 'admin' and user['banned'] == False %}
@@ -53,6 +49,11 @@
                 <h4 style="margin-left:45px;padding-top: 15px">{{ user['rep'] }}</h4>
                 <span class='user-rep'>reputation</span>
             </div>
+        </div>
+        <div class="edit-button">
+            {% if g.user.id == user_id %}
+                <a href="/users/{{ user_id }}/edit_profile" class="btn"><i class="icon-edit"></i>Edit</a>
+            {% endif %}
         </div>
         <div class="data">
             <table class="table-user">
@@ -249,7 +250,7 @@
         </div>
     {% endif %}
     </div>
-    <!--<div id="sidebar">
+    <div id="sidebar">
         <div class="count">
             <div class="module" id="questions-count">
                 <div class="summarycount al">{{ qcount }}</div>
@@ -277,7 +278,7 @@
                         class="item-multiplier-count">{{ tag['count'] }}</span></span>
                 <br/>
             {% endfor %}
-        </div-->
+        </div>
     </div>
     <script>
         $('body').on("click", ".btn-success", function () {
@@ -350,9 +351,8 @@
             $('form.invite').ajaxForm(options);
             function showResponse(responseText, statusText, xhr, $form) {
                 responseJSON = jQuery.parseJSON(responseText);
-                alert(responseJSON.success);
+                //alert(responseJSON.success);
                 if(responseJSON.success == "true") {
-                    alert("hello")
                     flash('Your invites were successfully sent.', 'success')
                 }
                 else {

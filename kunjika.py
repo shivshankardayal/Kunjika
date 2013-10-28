@@ -82,7 +82,7 @@ lm.init_app(kunjika)
 cb = Couchbase.connect("default")
 qb = Couchbase.connect("questions")
 tb = Couchbase.connect("tags")
-sb = Couchbase.connect("security")
+sb = Couchbase.connect("sundries")
 pb = Couchbase.connect("polls")
 
 
@@ -654,11 +654,11 @@ def users(qpage=None, apage=None, uid=None, uname=None):
                                lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
                                upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
                                questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
-                               answer_pagination=answer_pagination)
+                               answer_pagination=answer_pagination, role=g.user.role)
     return render_template('users.html', title=user['name'], user_id=user['id'], lname=user['lname'], name=user['name'], fname=user['fname'], email=user['email'], gravatar=gravatar100, upage=True,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
                            questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
-                           answer_pagination=answer_pagination)
+                           answer_pagination=answer_pagination, role=g.user.role)
 
 @kunjika.route('/ask', methods=['GET', 'POST'])
 def ask():
@@ -1819,11 +1819,40 @@ def send_invites():
 
 @kunjika.route('/administration', methods=['GET', 'POST'])
 def administration():
-    pass
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
+    form = BulkEmailForm(request.form)
+    user = cb.get(str(g.user.id)).value
+    print request.method
+
+    if g.user.id == 1:
+        if request.method == 'POST' and form.validate_on_submit():
+            document = urllib2.urlopen(DB_URL + 'default/_design/dev_qa/_view/get_id_from_email').read()
+            document = json.loads(document)
+            email_list = []
+            for row in document['rows']:
+                if row['value']['receive-email'] is True:
+                    email_list.append(row['value']['email'])
+            #print document
+            msg = Message(form.subject.data)
+            msg.recipients = email_list
+            msg.sender = (',').join(email_list)
+            msg.html = form.bulk_mail.data
+            try:
+                mail.send(msg)
+                print msg
+                flash('Email sent to all users.', 'success')
+            except:
+                flash('Email could not be sent.', 'error')
+            return redirect(url_for('users', uid=g.user.id))
+        return render_template('admin.html', form=form, user=user, name=g.user.name, role=g.user.role, adpage=True,
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+
+    return redirect(url_for('login'))
 
 
 @kunjika.route('/users/<uid>/edit_profile', methods=['GET', 'POST'])
 def edit_profile(uid=None):
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     form = EditProfileForm(request.form)
     user = cb.get(str(g.user.id)).value
 
@@ -1839,33 +1868,60 @@ def edit_profile(uid=None):
 
             return redirect(url_for('users', uid=g.user.id))
         return render_template('edit_profile.html', title='Edit Profile', form=form, user=user, name=g.user.name, role=g.user.role,
-                               user_id=g.user.id,)
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
     return redirect(url_for('users', uid=g.user.id ))
 
 
-@kunjika.route('/users/<uid>/settings', methods=['GET', 'POST'])
-def settings(uid=None):
+@kunjika.route('/users/<uid>/<uname>/settings', methods=['GET', 'POST'])
+def settings(uid=None, uname=None):
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     form = PasswordResetForm(request.form)
+
     user = cb.get(str(g.user.id)).value
 
     if (g.user.id == user['id']):
         if request.method == 'POST' and form.validate_on_submit() :
-            passwd = form.password.data
-            confirm = form.confirm.data
+            passwd = request.form['password']
+            confirm = request.form['confirm']
+
             if passwd == confirm:
-                passwd_hash = bcrypt.generate_password_hash(PasswordResetForm.password.data)
+                passwd_hash = bcrypt.generate_password_hash(passwd)
+                user['password'] = passwd_hash
+                try:
+                    cb.replace(str(g.user.id), user)
+                    flash('Your password was successfuly chnaged.', 'success')
+                except:
+                    flash('Your password could not be changed. Contact admin', 'error')
             else:
                 return render_template('settings.html', form=form, user=user, name=g.user.name, role=g.user.role,
-                                       user_id=g.user.id,)
-            user['password'] = passwd_hash
-            cb.replace(str(g.user.id), user)
-
-            return json.dumps({'success': True})
+                                       user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+            return redirect(url_for('users', uid=g.user.id, uname=user['name']))
         return render_template('settings.html', form=form, user=user, name=g.user.name, role=g.user.role,
-                               user_id=g.user.id,)
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
     return redirect(url_for('users', uid=g.user.id ))
+
+
+@kunjika.route('/notify')
+def notify():
+    notify = request.args.get('#id')
+    user = cb.get(str(g.user.id)).value
+
+    if user['receive-emails'] is False:
+        user['receive-emails'] = True
+        response = {'success': 'true'}
+    else:
+        user['receive-emails'] = False
+        response = {'success': 'false'}
+
+    try:
+        cb.replace(str(g.user.id), user)
+
+        return jsonify(response)
+    except:
+        return jsonify(response)
+
 
 @kunjika.errorhandler(404)
 def page_not_found(e):

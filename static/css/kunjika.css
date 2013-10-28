@@ -9,6 +9,10 @@
     margin:10px;
 }
 
+.edit-button {
+    margin: 10px 0px 10px 215px;
+}
+
 .gravatar{
     float:left;
     margin-right:10px;
@@ -23,7 +27,7 @@
 .data {
     line-height: 1.3;
     width: 322px;
-    float: left;
+    /*float: left;*/
 }
 
 .table-user th{
@@ -346,7 +350,7 @@
 
 .question {
     clear: both;
-    padding: 10px 0px 0px;
+    /*padding: 10px 0px 0px;*/
     width: 728px;
 }
 
@@ -592,9 +596,10 @@ pre.prettyprint {
 }
 
 .user-about-me {
+    margin-left: 215px;
     width: 360px;
     height: 225px;
-    float: right;
+    /*float: right;*/
     overflow-y: auto;
     padding: 10px;
     font-size: 12px;
@@ -733,4 +738,13 @@ td.invite {
 
 .table {
     width: auto;
+}
+
+.bemail {
+    margin-left: 60px;
+    margin-bottom: 20px;
+}
+
+#bulk_mail {
+    min-height: 300px;
 }

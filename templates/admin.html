@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Administration - Kunjika{% endblock %}
+{% block css_bootstrap %}
+    {{ super() }}
+    {# TODO: probably remove this and let the user set it manually? #}
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+{% endblock %}
+
+{% block css_site %}
+    <link href="/static/css/kunjika.css" rel="stylesheet">
+    <link href="/static/css/wmd.css" rel="stylesheet">
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+{% endblock %}
+{% block container %}
+    <div class="row-fluid">
+        <div id="mainbar" class="mainbar">
+            <div class="userheader">
+                <h4>Send Bulk Email</h4>
+                <form class="ask-form" method="post" aciton="/administration">
+                    {% from "macros.html" import render_field %}
+                    {{ form.csrf_token }}
+                    {{ render_field(form.subject, class="question input-x-large span8", style="margin-left:25px;") }}
+                    {{ render_field(form.bulk_mail, class="question input-x-large span8", style="margin-left:35px;") }}
+                    <div class="controls">
+                        <input type="submit" class="btn btn-primary bemail" value="Send Bulk email">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="sidebar">
+            <div class="count">
+                <div class="module" id="questions-count">
+                    <div class="summarycount al">{{ qcount }}</div>
+                    <p>questions</p>
+                </div>
+                <div class="module" id="questions-count">
+                    <div class="summarycount al">{{ acount }}</div>
+                    <p>answers</p>
+                </div>
+                <div class="module" id="questions-count">
+                    <div class="summarycount al">{{ ucount }}</div>
+                    <p>users</p>
+                </div>
+                <div class="module" id="questions-count">
+                    <div class="summarycount al">{{ tcount }}</div>
+                    <p>tags</p>
+                </div>
+            </div>
+            <div id="popular-tags" class="module">
+                <h4 id="h-popular-tags">Popular Tags</h4>
+                {% for tag in tag_list %}
+                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
+                       title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
+                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
+                            class="item-multiplier-count">{{ tag['count'] }}</span></span>
+                    <br/>
+                {% endfor %}
+            </div>
+            <div id="popular-tags" class="module">
+                <h4 id="h-popular-tags">Similar questions</h4>
+                {% for question in similar_questions %}
+                    <a href="/questions/{{ question[0] }}/{{ question[2] }}" class="post-tag"
+                       rel="tag">{{ question[1] }}</a>
+                    <!-- br/ -->
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
