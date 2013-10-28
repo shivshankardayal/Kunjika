@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% block title %}Edit your profile {{ user['name'] }} - Kunjika{% endblock %}
+{% block css_bootstrap %}
+    {{ super() }}
+    {# TODO: probably remove this and let the user set it manually? #}
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+{% endblock %}
+
+{% block css_site %}
+    <link href="/static/css/kunjika.css" rel="stylesheet">
+    <link href="/static/css/wmd.css" rel="stylesheet">
+    <link href="/static/css/prettify.css" rel="stylesheet">
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
+    <script type="text/javascript" src="/static/js/prettify.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
+
+{% endblock %}
+{% block container %}
+    <div class="row-fluid">
+        <div id="user-mainbar" class="user-mainbar">
+            <div class="userheader">
+                <h3>Edit your profile {{ name }}</h3>
+            </div>
+            <form class="form-horizontal span8" id="tab" method="post" action="/users/{{ user['id'] }}/edit_profile">
+                <fieldset>
+                    <div id="legend">
+                        <legend class="">
+                            Edit Profile
+                        </legend>
+                    </div>
+                {{ form.csrf_token }}
+                <div class="control-group">
+                    <label class="control-label" for="fname">First Name:</label>
+                    <div class="controls">
+                        <input class="fname input-x-large span6" id="fname" name="fname"
+                               style="margin-left:25px;" value="{{ user['fname'] }}" type="text">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="lname">Last Name:</label>
+                    <div class="controls">
+                        <input class="lname input-x-large span6" id="lname" name="lname"
+                               style="margin-left:25px;" value="{{ user['lname'] }}" type="text">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="website">Website:</label>
+                    <div class="controls">
+                        <input class="website input-x-large span6" id="website" name="website"
+                               style="margin-left:25px;" value="{{ user['website'] }}" type="text">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="location">Location:</label>
+                    <div class="controls">
+                        <input class="location input-x-large span6" id="location" name="location"
+                               style="margin-left:25px;" value="{{ user['location'] }}" type="text">
+                    </div>
+                </div>
+                <div class="wmd-panel">
+                    <div class="control-group">
+                        <label class="control-label" for="about-me">About me:</label>
+                        <div class="controls">
+                            <div id="wmd-button-bar" style="margin-left: 25px"></div>
+                            <textarea class="wmd-input" id="wmd-input" name="about_me"
+                                      placeholder="Please write about yourself here."
+                                      style="margin-left:25px;">{{ user['about-me'] }}</textarea>
+                        </div>
+                    </div>
+                    <div id="insertImageDialog" title="&nbsp;Insert Image or File">
+                        <h6>From the web</h6>
+
+                        <p>
+                            <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                        </p>
+                        <h6>From your computer (Max. 2MB)</h6>
+                        <span class="loading-small"></span>
+                        <input type="file" name="file" id="file" data-action="/image_upload"/>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="about-me-preview"></label>
+                        <div class="controls">
+                            <div id="wmd-preview" class="wmd-panel wmd-preview" style="margin-left:25px"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls">
+                <button class="btn btn-primary">
+                Edit Profie
+        </button>
+        </div>
+    <script>
+        $('body').on("click", ".btn-success", function () {
+            id = $(this).attr('id');
+            $.getJSON('/ban', {
+                id: $(this).attr('id')
+            }, function (data) {
+                //$(id).removeClass('btn-success');
+                //$(id).addClass('btn-danger');
+            });
+            return false;
+        });
+        $('body').on("click", ".btn-danger", function () {
+            id = $(this).attr('id');
+            $.getJSON('/ban', {
+                id: $(this).attr('id')
+            }, function (data) {
+                //$(id).removeClass('btn-danger');
+                //$(id).addClass('btn-success');
+            });
+            return false;
+        });
+        $(function () {
+            $('a[data-toggle="tab"]').on('shown', function (e) {
+                //save the latest tab using a cookie:
+                $.cookie('last_tab', $(e.target).attr('href'));
+            });
+            //activate latest tab, if it exists:
+            var lastTab = $.cookie('last_tab');
+            if (lastTab) {
+                $('a[href=' + lastTab + ']').tab('show');
+            }
+            else {
+                // Set the first tab if cookie do not exist
+                $('a[data-toggle="tab"]:first').tab('show');
+            }
+        });
+        $("#invite").on("click", function () {
+            if (!$('#invite-form').length) {
+                $(".table-user").append('<tr><th></th><td><form id="invite-form" class="invite"  method="post"' +
+                        'action="/send_invites"><input id="email_list"' +
+                        'name="email_list" placeholder="Semicolon separated emails." type="text">' +
+                        '</input><br/><button class="btn btn-primary" type="submit">Send Invites</button></form></td></td></th>');
+            }
+        });
+        function send_email(form) {
+
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            var options = {
+                //target:        '#output1',   // target element(s) to be updated with server response
+                //beforeSubmit:  showRequest,  // pre-submit callback
+                success: showResponse,  // post-submit callback
+
+                // other available options:
+                url: '/send_invites',         // override for form's 'action' attribute
+                //type:      'post',        // 'get' or 'post', override for form's 'method' attribute
+                //dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
+                clearForm: true,        // clear all form fields after successful submit
+                resetForm: true        // reset the form after successful submit
+
+                // $.ajax options can be used here too, for example:
+                //timeout:   3000
+            };
+
+            // bind form using 'ajaxForm'
+            $('form.invite').ajaxForm(options);
+            function showResponse(responseText, statusText, xhr, $form) {
+                responseJSON = jQuery.parseJSON(responseText);
+                alert(responseJSON.success);
+                if (responseJSON.success == "true") {
+                    alert("hello")
+                    flash('Your invites were successfully sent.', 'success')
+                }
+                else {
+                    flash('Invites could not be sent. Please contact admin.')
+                }
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        (function () {
+            if ($('#wmd-input').length > 0) {
+                var converter = new Markdown.getSanitizingConverter();
+                var help = function () {
+                    window.open('{{ config['HOST_URL'] }}editing-help');
+                }
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "prettify",
+                    table_class: "table-bordered table"
+                });
+
+                var editor = new Markdown.Editor(converter, null, { handler: help });
+
+                var $dialog = $('#insertImageDialog').dialog({
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+                var $loader = $('span.loading-small', $dialog);
+                var $url = $('input[type=text]', $dialog);
+                var $file = $('input[type=file]', $dialog);
+
+                editor.hooks.set('insertImageDialog', function (callback) {
+
+                    // dialog functions
+                    var dialogInsertClick = function () {
+                        callback($url.val().length > 0 ? $url.val() : null);
+                        dialogClose();
+                    };
+
+                    var dialogCancelClick = function () {
+                        dialogClose();
+                        callback(null);
+                    };
+
+                    var dialogClose = function () {
+                        // clean up inputs
+                        $url.val('');
+                        $file.val('');
+                        $dialog.dialog('close');
+                    };
+
+                    // set up dialog button handlers
+                    $dialog.dialog('option', 'buttons', {
+                        'Insert': dialogInsertClick,
+                        'Cancel': dialogCancelClick
+                    });
+
+                    var uploadStart = function () {
+                        $loader.show();
+                    };
+
+                    var uploadComplete = function (response) {
+                        $loader.hide();
+                        if (response.success) {
+                            callback(response.imagePath);
+                            dialogClose();
+                        } else {
+                            alert(response.message);
+                            $file.val('');
+                        }
+                        editor.refreshPreview();
+                    };
+
+                    // upload
+                    $file.unbind('change').ajaxfileupload({
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
+
+                    // open the dialog
+                    $dialog.dialog('open');
+
+                    return true; // tell the editor that we'll take care of getting the image url
+                });
+                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.run();
+            }
+        })();
+    </script>
+{% endblock %}

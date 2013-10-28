@@ -81,6 +81,13 @@
     display:table;
 }
 
+#user-mainbar, .user-mainbar {
+    float: left;
+    margin: 0 10px 20px 0;
+    width: 1130px;
+    display:table;
+}
+
 
 #sidebar, .sidebar {
     float: right;
@@ -585,7 +592,7 @@ pre.prettyprint {
 }
 
 .user-about-me {
-    width: 220px;
+    width: 360px;
     height: 225px;
     float: right;
     overflow-y: auto;
@@ -711,10 +718,6 @@ label {
     background-clip: padding-box;
 }*/
 
-.table {
-    width: auto;
-}
-
 .gsc-search-button {
     margin-top:-15px;
 }
@@ -726,4 +729,8 @@ label {
 td.invite {
     height:50px;
     vertical-align: middle;
+}
+
+.table {
+    width: auto;
 }

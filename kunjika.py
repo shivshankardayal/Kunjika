@@ -757,6 +757,9 @@ def populate_user_fields(data, form):
     data['questions'] = []
     data['answers'] = []
     data['votes'] = []
+    data['website'] = ''
+    data['location'] = ''
+    data['about-me'] = ''
 
 @kunjika.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
@@ -1471,7 +1474,7 @@ def show_users(page):
                                qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
                                name=g.user.name, role=g.user.role, user_id=g.user.id)
     return render_template('users.html', title='Users', gravatar32=gravatar32, upage=True,
-                           pagination=pagination, users=users, no_of_users=no_of_users, name=g.user.name, role=g.user.role,
+                           pagination=pagination, users=users, no_of_users=no_of_users, name=g.user.name,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 
@@ -1813,45 +1816,101 @@ def send_invites():
         flash('Your invites could not be sent.', 'error')
     return redirect(url_for('users', uid=str(user['id'])))
 
+
 @kunjika.route('/administration', methods=['GET', 'POST'])
 def administration():
     pass
+
+
+@kunjika.route('/users/<uid>/edit_profile', methods=['GET', 'POST'])
+def edit_profile(uid=None):
+    form = EditProfileForm(request.form)
+    user = cb.get(str(g.user.id)).value
+
+    if (g.user.id == user['id']):
+        if request.method == 'POST' and form.validate_on_submit() :
+            user['fname'] = form.fname.data
+            user['lname'] = form.lname.data
+            user['website'] = form.website.data
+            user['location'] = form.location.data
+            user['about-me'] = form.about_me.data
+
+            cb.replace(str(g.user.id), user)
+
+            return redirect(url_for('users', uid=g.user.id))
+        return render_template('edit_profile.html', title='Edit Profile', form=form, user=user, name=g.user.name, role=g.user.role,
+                               user_id=g.user.id,)
+
+    return redirect(url_for('users', uid=g.user.id ))
+
+
+@kunjika.route('/users/<uid>/settings', methods=['GET', 'POST'])
+def settings(uid=None):
+    form = PasswordResetForm(request.form)
+    user = cb.get(str(g.user.id)).value
+
+    if (g.user.id == user['id']):
+        if request.method == 'POST' and form.validate_on_submit() :
+            passwd = form.password.data
+            confirm = form.confirm.data
+            if passwd == confirm:
+                passwd_hash = bcrypt.generate_password_hash(PasswordResetForm.password.data)
+            else:
+                return render_template('settings.html', form=form, user=user, name=g.user.name, role=g.user.role,
+                                       user_id=g.user.id,)
+            user['password'] = passwd_hash
+            cb.replace(str(g.user.id), user)
+
+            return json.dumps({'success': True})
+        return render_template('settings.html', form=form, user=user, name=g.user.name, role=g.user.role,
+                               user_id=g.user.id,)
+
+    return redirect(url_for('users', uid=g.user.id ))
 
 @kunjika.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
+
 @kunjika.errorhandler(410)
 def page_not_found(e):
     return render_template('410.html'), 410
+
 
 @kunjika.errorhandler(403)
 def page_not_found(e):
     return render_template('403.html'), 410
 
+
 #@kunjika.errorhandler(400)
 #def page_not_found(e):
 #    return render_template('400.html'), 400
+
 
 @kunjika.errorhandler(401)
 def page_not_found(e):
     return render_template('401.html'), 401
 
+
 @kunjika.errorhandler(405)
 def page_not_found(e):
     return render_template('405.html'), 405
+
 
 @kunjika.errorhandler(500)
 def page_not_found(e):
     return render_template('500.html'), 500
 
+
 @kunjika.errorhandler(502)
 def page_not_found(e):
     return render_template('502.html'), 502
 
+
 @kunjika.errorhandler(503)
 def page_not_found(e):
     return render_template('503.html'), 503
+
 
 if __name__ == '__main__':
     kunjika.run()

@@ -144,8 +144,18 @@
                                     <li><a href="/poll" class="poll"><i class="icon-group"></i> <b>Poll</b></a></li>
                                 {% endif %}
                                 {% if user_id is defined and g.user.is_authenticated() %}
-                                    <li class="active"><a href="/users/{{ user_id }}/{{ name }}" class="login"><i
-                                            class="icon-sigin"></i> <b>{{ name }}</b></a></li>
+                                    <!-- li class="active"><a href="/users/{{ user_id }}/{{ name }}" class="login"><i
+                                            class="icon-sigin"></i> <b>{{ name }}</b></a></li-->
+                                    <li class="dropdown active">
+                                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                                        <b>{{ name }}</b>
+                                        <b class="caret"></b>
+                                    </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="/users/{{ user_id }}/{{ name }}">Profile</a></li>
+                                            <li><a href="/users/{{ user_id }}/{{ name }}/settings">Settings</a></li>
+                                        </ul>
+                                    </li>
                                 {% if role == "admin" %}
                                     <li><a href="/administration" class="administration"> <b>Administration</b></a></li>
                                 {% endif %}

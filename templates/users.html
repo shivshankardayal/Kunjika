@@ -12,19 +12,27 @@
 
 {% block css_site %}
     <link href="/static/css/kunjika.css" rel="stylesheet">
-    <script src="/static/js/jquery.cookie.js"></script>
-    <script src="http://malsup.github.com/jquery.form.js"></script>
+    <link href="/static/css/wmd.css" rel="stylesheet">
+    <link href="/static/css/prettify.css" rel="stylesheet">
+    <link href="/static/css/token-input.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
+    <script type="text/javascript"
+            src="/static/js/run_prettify.js?lang=clj&amp;lbg=erlang&amp;lang=matlab&amp;lang=sql&amp;lang=vb&amp;lang=css&amp;lang=go&amp;lang=pascal&amp;lan=tcl&amp;lang=yaml&amp;lan=basic&amp;lang=dart&amp;lan=lua&amp;lang=scala&amp;lang=wiki&amp;lang=tex"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
 
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
-    <div id="mainbar" class="mainbar">
+    <div id="user-mainbar" class="user-mainbar">
     {% if pagination is not defined %}
         <div class="userheader">
             <h3>{{ name }}</h3>
             <div class="fr">
                 {% if g.user.id == user_id %}
-                    <a href="/users/edit/{{ user_id }}" class="btn"><i class="icon-edit"></i>Edit</a>
+                    <a href="/users/{{ user_id }}/edit_profile" class="btn"><i class="icon-edit"></i>Edit</a>
                 {% endif %}
             </div>
             <div class="gravatar">
@@ -109,8 +117,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="user-about-me note">
-        </div>
+        <div class="user-about-me note" id="about-me">{{ user['about-me'] }}</div>
         <div style="clear:both">
         </div>
         <div class="modal-body">
@@ -242,7 +249,7 @@
         </div>
     {% endif %}
     </div>
-    <div id="sidebar">
+    <!--<div id="sidebar">
         <div class="count">
             <div class="module" id="questions-count">
                 <div class="summarycount al">{{ qcount }}</div>
@@ -270,7 +277,7 @@
                         class="item-multiplier-count">{{ tag['count'] }}</span></span>
                 <br/>
             {% endfor %}
-        </div>
+        </div-->
     </div>
     <script>
         $('body').on("click", ".btn-success", function () {
@@ -310,10 +317,12 @@
         }
     });
     $("#invite").on("click", function(){
-        $(".table-user").append('<tr><th></th><td><form id="invite" class="invite"  method="post"' +
+        if(!$('#invite-form').length) {
+            $(".table-user").append('<tr><th></th><td><form id="invite-form" class="invite"  method="post"' +
                 'action="/send_invites"><input id="email_list"' +
                 'name="email_list" placeholder="Semicolon separated emails." type="text">' +
                 '</input><br/><button class="btn btn-primary" type="submit">Send Invites</button></form></td></td></th>');
+        }
     });
     function send_email(form) {
 
@@ -351,5 +360,17 @@
                 }
             }
         });
+    </script>
+    <script type="text/javascript">
+        var converter = new Markdown.getSanitizingConverter();
+        Markdown.Extra.init(converter, {
+            extensions: "all",
+            highlighter: "prettify",
+            table_class: "table-bordered table"
+        });
+
+        var originalHTML = $("#about-me").text();
+        var convertedHTML = converter.makeHtml(originalHTML);
+        $("#about-me").html(convertedHTML);
     </script>
 {% endblock %}
