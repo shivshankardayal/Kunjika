@@ -29,7 +29,7 @@
             <div class="userheader">
                 <h3>Edit your profile {{ name }}</h3>
             </div>
-            <form class="form-horizontal span8" id="tab" method="post" action="/users/{{ user['id'] }}/edit_profile">
+            <form class="form-horizontal span10" id="tab" method="post" action="/users/{{ user['id'] }}/edit_profile">
                 <fieldset>
                     <div id="legend">
                         <legend class="">
@@ -41,7 +41,7 @@
                         <label class="control-label" for="fname">First Name:</label>
 
                         <div class="controls">
-                            <input class="fname input-x-large span6" id="fname" name="fname"
+                            <input class="fname input-x-large span8" id="fname" name="fname"
                                    style="margin-left:25px;" value="{{ user['fname'] }}" type="text">
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                         <label class="control-label" for="lname">Last Name:</label>
 
                         <div class="controls">
-                            <input class="lname input-x-large span6" id="lname" name="lname"
+                            <input class="lname input-x-large span8" id="lname" name="lname"
                                    style="margin-left:25px;" value="{{ user['lname'] }}" type="text">
                         </div>
                     </div>
@@ -57,7 +57,7 @@
                         <label class="control-label" for="website">Website:</label>
 
                         <div class="controls">
-                            <input class="website input-x-large span6" id="website" name="website"
+                            <input class="website input-x-large span8" id="website" name="website"
                                    style="margin-left:25px;" value="{{ user['website'] }}" type="text">
                         </div>
                     </div>
@@ -65,7 +65,7 @@
                         <label class="control-label" for="location">Location:</label>
 
                         <div class="controls">
-                            <input class="location input-x-large span6" id="location" name="location"
+                            <input class="location input-x-large span8" id="location" name="location"
                                    style="margin-left:25px;" value="{{ user['location'] }}" type="text">
                         </div>
                     </div>
@@ -98,13 +98,13 @@
                             </div>
                         </div>
                     </div>
-                </fieldset>
-            </form>
             <div class="controls">
                 <button class="btn btn-primary">
                     Edit Profie
                 </button>
             </div>
+                </fieldset>
+            </form>
         </div>
         <div id="sidebar">
             <div class="count">
