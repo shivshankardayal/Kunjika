@@ -108,13 +108,40 @@
                     <td>Answers:</td>
                     <td>{{ user['votes_count']['answers'] }}</td>
                 </tr>
-		{% if g.user.id == user_id %}
-                <tr>
-                    <th></th>
-                    <td class="invite"><p id="invite" class="btn btn-info"><i class="icon-envelope"></i> Invite Friends</p></td>
-                    <td></td>
-                </tr>
-		{% endif %}
+                {% if g.user.id == user_id %}
+                    <tr>
+                        <th></th>
+                        <td class="invite"><p id="invite" class="btn btn-info"><i class="icon-envelope"></i> Invite
+                            Friends</p>
+                        </td>
+                        <td class="create-group"><p id="group" class="btn btn-info"><i class="icon-group"></i> Create
+                            Group</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td class="invite">
+                            <form id="invite-form" class="invite" method="post"
+                                  action="/send_invites">
+                                <input id="email_list"
+                                       name="email_list"
+                                       placeholder="Semicolon separated emails." type="text" value="">
+                                <br/>
+                                <button class="btn btn-primary" type="submit">Send Invites</button>
+                            </form>
+                        </td>
+                        <td class="create-group">
+                            <form id="group-form" class="create-group" method="post"
+                                  action="/create_group">
+                                <input id="group-name"
+                                       name="group-name" placeholder="Put in group name."
+                                       type="text" value="">
+                                <br/>
+                                <button class="btn btn-primary" type="submit">Create Group</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endif %}
                 </tbody>
             </table>
         </div>
@@ -301,35 +328,31 @@
             });
             return false;
         });
-  $(function() {
-        $('a[data-toggle="tab"]').on('shown', function(e){
-            //save the latest tab using a cookie:
-            $.cookie('last_tab', $(e.target).attr('href'));
+        $(function () {
+            $('a[data-toggle="tab"]').on('shown', function (e) {
+                //save the latest tab using a cookie:
+                $.cookie('last_tab', $(e.target).attr('href'));
+            });
+            //activate latest tab, if it exists:
+            var lastTab = $.cookie('last_tab');
+            if (lastTab) {
+                $('a[href=' + lastTab + ']').tab('show');
+            }
+            else {
+                // Set the first tab if cookie do not exist
+                $('a[data-toggle="tab"]:first').tab('show');
+            }
         });
-        //activate latest tab, if it exists:
-        var lastTab = $.cookie('last_tab');
-        if (lastTab) {
-            $('a[href=' + lastTab + ']').tab('show');
+        $("#invite").on("click", function () {
+            $('#invite-form').slideToggle();
+        });
+        $("#group").on("click", function () {
+            $('#group-form').slideToggle();
+        });
+        function send_email(form) {
         }
-        else
-        {
-            // Set the first tab if cookie do not exist
-            $('a[data-toggle="tab"]:first').tab('show');
-        }
-    });
-    $("#invite").on("click", function(){
-        if(!$('#invite-form').length) {
-            $(".table-user").append('<tr><th></th><td><form id="invite-form" class="invite"  method="post"' +
-                'action="/send_invites"><input id="email_list"' +
-                'name="email_list" placeholder="Semicolon separated emails." type="text">' +
-                '</input><br/><button class="btn btn-primary" type="submit">Send Invites</button></form></td></td></th>');
-        }
-    });
-    function send_email(form) {
-
-    }
     </script>
-        <script>
+    <script>
         $(document).ready(function () {
             var options = {
                 //target:        '#output1',   // target element(s) to be updated with server response
@@ -352,7 +375,7 @@
             function showResponse(responseText, statusText, xhr, $form) {
                 responseJSON = jQuery.parseJSON(responseText);
                 //alert(responseJSON.success);
-                if(responseJSON.success == "true") {
+                if (responseJSON.success == "true") {
                     flash('Your invites were successfully sent.', 'success')
                 }
                 else {
@@ -372,5 +395,21 @@
         var originalHTML = $("#about-me").text();
         var convertedHTML = converter.makeHtml(originalHTML);
         $("#about-me").html(convertedHTML);
+    </script>
+    <script>
+        $('#group-name').keyup(function () {
+            value = $(this).val();
+            //alert(value);
+            $.getJSON('/check_group_name', {
+                val: value
+            }, function (data) {
+                if (data.success == 'true') {
+                    $('#group-name').css('color', "#070");
+                } else {
+                    $('#group-name').css('color', "#700");
+                }
+            });
+            return false;
+        });
     </script>
 {% endblock %}

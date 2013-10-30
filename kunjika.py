@@ -1945,6 +1945,20 @@ def invites():
         return jsonify(response)
 
 
+@kunjika.route('/check_group_name', methods=['GET','POST'])
+def check_group_name():
+    group_name = request.args.get('val')
+
+    try:
+        document = urllib2.urlopen(
+            DB_URL + 'default/_design/dev_qa/_view/get_doc_by_group_name?key=' + '"' + group_name + '"&stale=false&type=group').read()
+        document = json.loads(document)
+        if len(document['rows']) != 0:
+            return jsonify({'success': 'false'})
+    except:
+        return jsonify({'success': 'true'})
+
+
 @kunjika.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404

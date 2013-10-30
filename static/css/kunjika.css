@@ -731,9 +731,17 @@ label {
     margin-top:-35px;
 }
 
-td.invite {
+td.invite, td.create-group {
     height:50px;
     vertical-align: middle;
+}
+
+#invite-form, #group-form {
+    display: None;
+}
+
+#email_list, #group-name {
+    width: 160px;
 }
 
 .table {
