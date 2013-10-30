@@ -75,11 +75,18 @@
                 <legend class="">
                     Notification Settings
                 </legend>
-                <label class="checkbox" style="margin-left: 180px">
+                <label class="checkbox settings" style="margin-left: 180px">
                     {% if user['receive-emails'] == False %}
                         <input type="checkbox" id="notify"> Recieve Notification Emails
                     {% else %}
                         <input type="checkbox" id="notify" checked="checked"> Recieve Notification Emails
+                    {% endif %}
+                </label>
+                <label class="checkbox settings" style="margin-left: 180px">
+                    {% if user['receive-invites'] == False %}
+                        <input type="checkbox" id="invites"> Recieve Private Group Invites
+                    {% else %}
+                        <input type="checkbox" id="invites" checked="checked"> Recieve Private Group Invites
                     {% endif %}
                 </label>
             </div>
@@ -163,6 +170,21 @@
                     } else {
                         $('#notify').prop('checked', true);
                         flash('Thanks for opting for notifications.', 'success')
+                    }
+                });
+                return false;
+            });
+            $('#invites').click(function () {
+                $.getJSON('/invites', {
+                    id: $(this).attr('id'),
+                    url: $(location).attr('href')
+                }, function (data) {
+                    if (data.success == 'false') {
+                        $('#invites').prop('checked', false);
+                        flash('You will receive no more private group invites.', 'info')
+                    } else {
+                        $('#invites').prop('checked', true);
+                        flash('Thanks for opting for private group invites.', 'success')
                     }
                 });
                 return false;

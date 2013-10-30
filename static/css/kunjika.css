@@ -748,3 +748,7 @@ td.invite {
 #bulk_mail {
     min-height: 300px;
 }
+
+.settings {
+    margin: 7px 0px;
+}

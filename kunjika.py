@@ -760,6 +760,8 @@ def populate_user_fields(data, form):
     data['website'] = ''
     data['location'] = ''
     data['about-me'] = ''
+    data['receive-emails'] = True
+    data['receive-invites'] = True
 
 @kunjika.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
@@ -1913,6 +1915,26 @@ def notify():
         response = {'success': 'true'}
     else:
         user['receive-emails'] = False
+        response = {'success': 'false'}
+
+    try:
+        cb.replace(str(g.user.id), user)
+
+        return jsonify(response)
+    except:
+        return jsonify(response)
+
+
+@kunjika.route('/invites')
+def invites():
+    invites = request.args.get('#id')
+    user = cb.get(str(g.user.id)).value
+
+    if user['receive-invites'] is False:
+        user['receive-invites'] = True
+        response = {'success': 'true'}
+    else:
+        user['receive-invites'] = False
         response = {'success': 'false'}
 
     try:
