@@ -760,3 +760,12 @@ td.invite, td.create-group {
 .settings {
     margin: 7px 0px;
 }
+
+.group-cell {
+    width: 187px;
+    border-bottom: 1px dotted rgb(224, 224, 224);
+    padding-bottom: 12px;
+    padding-right: 6px;
+    padding-top: 6px;
+    vertical-align: top;
+}

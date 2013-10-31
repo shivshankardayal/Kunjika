@@ -81,7 +81,7 @@
                 <tr>
                     <th>Biography:</th>
                     <td>website:</td>
-                    <td>{{ user['website'] }}</td>
+                    <td>{{ user['website']|urlize }}</td>
                 </tr>
                 <tr>
                     <th></th>
@@ -407,6 +407,9 @@
                     $('#group-name').css('color', "#070");
                 } else {
                     $('#group-name').css('color', "#700");
+                }
+                if (value == '') {
+                    $('#group-name').css('color', "#333");
                 }
             });
             return false;

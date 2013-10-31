@@ -67,6 +67,7 @@ kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
 QUESTIONS_PER_PAGE = kunjika.config['QUESTIONS_PER_PAGE']
 TAGS_PER_PAGE = kunjika.config['TAGS_PER_PAGE']
 USERS_PER_PAGE = kunjika.config['USERS_PER_PAGE']
+GROUPS_PER_PAGE = kunjika.config['GROUPS_PER_PAGE']
 
 USER_QUESTIONS_PER_PAGE = kunjika.config['USER_QUESTIONS_PER_PAGE']
 USER_ANSWERS_PER_PAGE = kunjika.config['USER_ANSWERS_PER_PAGE']
@@ -202,6 +203,7 @@ bcrypt = Bcrypt(kunjika)
 
 lm.anonymous_user = Anonymous
 
+
 kunjika.jinja_env.globals['url_for_other_page'] = utility.url_for_other_page
 kunjika.jinja_env.globals['url_for_other_user_question_page'] = utility.url_for_other_user_question_page
 kunjika.jinja_env.globals['url_for_other_user_answer_page'] = utility.url_for_other_user_answer_page
@@ -241,6 +243,7 @@ def load_user(uid):
     ##print id
     user = get_user(int(uid))
     return user
+
 
 @kunjika.route('/', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions', defaults={'page': 1}, methods=['GET', 'POST'])
@@ -1816,7 +1819,7 @@ def send_invites():
         flash('Your invites were successfully sent.', 'success')
     else:
         flash('Your invites could not be sent.', 'error')
-    return redirect(url_for('users', uid=str(user['id'])))
+    return redirect(url_for('users', uid=str(g.user.id)))
 
 
 @kunjika.route('/administration', methods=['GET', 'POST'])
@@ -1951,12 +1954,48 @@ def check_group_name():
 
     try:
         document = urllib2.urlopen(
-            DB_URL + 'default/_design/dev_qa/_view/get_doc_by_group_name?key=' + '"' + group_name + '"&stale=false&type=group').read()
+            DB_URL + 'default/_design/dev_qa/_view/get_doc_by_group_name?key=' + '"' + group_name +
+            '"&stale=false&type=group&owner=' + str(g.user.id)).read()
         document = json.loads(document)
         if len(document['rows']) != 0:
             return jsonify({'success': 'false'})
     except:
         return jsonify({'success': 'true'})
+
+
+@kunjika.route('/create_group', methods=['GET', 'POST'])
+def create_group():
+    res = utility.create_group(request)
+    if res is True:
+        flash('Your group was successfully created.', 'success')
+    else:
+        flash('Your group could not be created. Please contact admin with group name.', 'error')
+    return redirect(url_for('users', uid=str(g.user.id)))
+
+
+@kunjika.route('/users/<uid>/<uname>/groups', defaults={'page': 1})
+@kunjika.route('/users/<uid>/<uname>/groups/page/<int:page>')
+def show_groups(page, uid, uname):
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
+    document = urllib2.urlopen(DB_URL +
+                               'sundries/_design/dev_qa/_view/get_doc_by_type?key="group-member"&reduce=false&member-id=' +
+                               str(g.user.id)).read()
+    document = json.loads(document)['rows']
+
+    groups = utility.get_groups_per_page(page, GROUPS_PER_PAGE, document)
+    if not groups and page != 1:
+        abort(404)
+    pagination = utility.Pagination(page, GROUPS_PER_PAGE, len(document))
+    no_of_groups = len(document)
+    if g.user is not None and g.user.is_authenticated() and uid==str(g.user.id):
+        logged_in = True
+        return render_template('groups.html', logged_in=logged_in, gpage=True, pagination=pagination,
+                               groups=groups, no_of_groups=no_of_groups, qcount=qcount, ucount=ucount, tcount=tcount,
+                               name=g.user.name, role=g.user.role, user_id=g.user.id, acount=acount, tag_list=tag_list)
+    return redirect(url_for('users', uid=g.user.id))
+
+
+
 
 
 @kunjika.errorhandler(404)

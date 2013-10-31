@@ -156,8 +156,10 @@
                                             <b class="caret"></b>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="/users/{{ user_id }}/{{ name }}">Profile</a></li>
-                                            <li><a href="/users/{{ user_id }}/{{ name }}/settings">Settings</a></li>
+                                            <li><a href="/users/{{ user_id }}/{{ name|urlencode }}">Profile</a></li>
+                                            <li><a href="/users/{{ user_id }}/{{ name|urlencode }}/settings">Settings</a></li>
+                                            <li><a href="/users/{{ user_id }}/{{ name|urlencode }}/groups">My Groups</a></li>
+                                            <li><a href="/users/{{ user_id }}/{{ name|urlencode }}/group_messages">Group Messages</a></li>
                                         </ul>
                                     </li>
                                     {% if role == "admin" and adpage == True %}
@@ -246,7 +248,7 @@
 
 
         {% block js_bootstrap %}
-            <!--script src="/static/js/bootstrap{{ debugmin() }}.js"></script -->
+            <script src="/static/js/bootstrap{{ debugmin() }}.js"></script>
         {% endblock %}
         {% block js_analytics %}
             {# Via HTML5BP. Asynchronous Google Analytics snippet. mathiasbynens.be/notes/async-analytics-snippet #}

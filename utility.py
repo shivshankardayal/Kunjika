@@ -23,6 +23,7 @@ from flask import url_for, request
 import pyes
 import question
 from flask.ext.mail import Mail, Message
+from uuid import uuid4
 
 def common_data():
     tag_list = []
@@ -365,6 +366,20 @@ def get_tags_per_page(page, TAGS_PER_PAGE, count):
 
     return tags_list
 
+
+def get_groups_per_page(page, GROUPS_PER_PAGE, document):
+
+    skip = (page - 1) * GROUPS_PER_PAGE
+    group_list = []
+    #print document
+    for row in document:
+        #print row['id']
+        group_list.append(kunjika.sb.get(row['id'].split(':')[1]).value)
+
+    print group_list
+    return group_list
+
+
 def get_users_per_page(page, USERS_PER_PAGE, count):
 
     skip = (page - 1) * USERS_PER_PAGE
@@ -545,7 +560,7 @@ def get_autocomplete(request):
 
 def send_invites(request):
     user = kunjika.cb.get(str(g.user.id)).value
-    print user
+    #print user
     try:
         email_list = request.form['email_list']
         email_list = email_list.split(';')
@@ -557,6 +572,29 @@ def send_invites(request):
             kunjika.HOST_URL +\
             " <br/><br/>Best regards,<br/>Kunjika Team<p>"
         kunjika.mail.send(msg)
+
+        return True
+    except:
+        return False
+
+def create_group(request):
+    try:
+        group_name = request.form['group-name']
+        group = {}
+        member = {}
+
+        group['group_name'] = group_name
+        group['id'] = str(uuid4())
+        group['owner'] = g.user.id
+        group['member_count'] = 1
+        group['type'] = 'private-group'
+
+        member['member-id'] = g.user.id
+        member['type'] = 'group-member'
+
+        kunjika.sb.add(group['id'], group)
+
+        kunjika.sb.add(str(member['member-id']) + ':' + str(group['id']), member)
 
         return True
     except:
