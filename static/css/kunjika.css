@@ -741,7 +741,7 @@ td.invite, td.create-group {
 }
 
 #email_list, #group-name {
-    width: 160px;
+    width: 187px;
 }
 
 .table {
@@ -762,8 +762,8 @@ td.invite, td.create-group {
 }
 
 .group-cell {
-    width: 187px;
-    border-bottom: 1px dotted rgb(224, 224, 224);
+    width: 205px;
+    /*border-bottom: 1px dotted rgb(224, 224, 224);*/
     padding-bottom: 12px;
     padding-right: 6px;
     padding-top: 6px;

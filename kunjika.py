@@ -109,16 +109,19 @@ except:
 
 # Initialize indices for different buckets
 try:
-     es_conn.indices.create_index("questions")
+    es_conn.indices.delete_index("questions")
+    es_conn.indices.create_index("questions")
 except:
     pass
 
 try:
+    es_conn.indices.delete_index("users")
     es_conn.indices.create_index("users")
 except:
     pass
 
 try:
+    es_conn.indices.delete_index("tags")
     es_conn.indices.create_index("tags")
 except:
     pass
@@ -810,6 +813,8 @@ def create_profile():
         document = urllib2.urlopen(
             DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + profileForm.email1.data + '"&stale=false').read()
         document = json.loads(document)
+        if 'id' in document['rows'][0]:
+            document = cb.get(document['rows'][0]['id']).value
         ##print(document)
         if len(document['rows']) == 0:
             #print "hello2"
@@ -905,7 +910,11 @@ def login():
             #document = json.loads(document)
             document = urllib2.urlopen(
                 DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + loginForm.email.data + '"').read()
-            document = json.loads(document)['rows'][0]['value']
+            document = json.loads(document)
+            print document
+            if 'id' in document['rows'][0]:
+                document = cb.get(document['rows'][0]['id']).value
+                print document
             if document['banned'] is True:
                 flash('Your acount is banned possibly because you abused the system. Contact ' + admin +
                       'for more info.', 'error')
@@ -996,8 +1005,11 @@ def register():
         document = urllib2.urlopen(
             DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + registrationForm.email1.data + '"&stale=false').read()
         document = json.loads(document)
-        ##print(document)
-        if len(document['rows']) == 0:
+        if len(document['rows']) != 0:
+            if 'id' in document['rows'][0]:
+                document = cb.get(document['rows'][0]['id']).value
+                print(document)
+        else:
             data['password'] = passwd_hash
             populate_user_fields(data, registrationForm)
 
@@ -1038,11 +1050,16 @@ def check_email():
         document = urllib2.urlopen(
             DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
         document = json.loads(document)
-        if len(document['rows']) != 0:
-            return '0'
+        if 'id' in document['rows'][0]:
+            try:
+                document = cb.get(document['rows'][0]['id']).value
+                return '0'
+            except:
+                '1'
+        else:
+            return '1'
     except:
         return '1'
-    return '1'
 
 @kunjika.route('/logout')
 def logout():
@@ -1600,8 +1617,10 @@ def reset_password(token=None):
             document = urllib2.urlopen(
                 DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
             document = json.loads(document)
-            if document['rows'][0]['value']['email'] == email and\
-                            'password' in document['rows'][0]['value']:
+            if 'id' in document['rows'][0]:
+                document = cb.get(document['rows'][0]['id']).value
+            if document['email'] == email and\
+                            'password' in document:
                 token = s.sign(email)
                 msg = Message("Password reset")
                 msg.recipients = [email]
@@ -1626,8 +1645,12 @@ def reset_password(token=None):
                 email = s.unsign(token, max_age=1)
                 document = urllib2.urlopen(
                     DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
-                document = json.loads(document)['rows'][0]['value']
 
+                if 'id' in document['rows'][0]:
+                    try:
+                        document = cb.get(document['rows'][0]['id']).value
+                    except:
+                        return redirect(url_for('questions'))
             except:
                 #print "Either signature is bad or token has expired"
                 return redirect(url_for('questions'))
@@ -1835,7 +1858,8 @@ def administration():
             document = json.loads(document)
             email_list = []
             for row in document['rows']:
-                if row['value']['receive-email'] is True:
+                each_doc = cb.get(row['id']).value
+                if each_doc['receive-email'] is True:
                     email_list.append(row['value']['email'])
             #print document
             msg = Message(form.subject.data)
@@ -1954,11 +1978,13 @@ def check_group_name():
 
     try:
         document = urllib2.urlopen(
-            DB_URL + 'default/_design/dev_qa/_view/get_doc_by_group_name?key=' + '"' + group_name +
+            DB_URL + 'sundries/_design/dev_qa/_view/get_doc_by_group_name?key=' + '"' + group_name +
             '"&stale=false&type=group&owner=' + str(g.user.id)).read()
         document = json.loads(document)
         if len(document['rows']) != 0:
             return jsonify({'success': 'false'})
+        else:
+            return jsonify({'success': 'true'})
     except:
         return jsonify({'success': 'true'})
 

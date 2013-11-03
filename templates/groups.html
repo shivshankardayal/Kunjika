@@ -32,11 +32,11 @@
                         <tr>
                             {% for j in range(0, k) %}
                                 <td class="group-cell">
-                                    <a href="/users/{{ user_id }}/{{ name|urlencode }}/groups/{{ groups[i+j]['group_name'] }}" class="post-tag" title="" rel="tag">{{ groups[i+j]['group_name'] }}</a><span class="item-multiplier-x">×</span>&nbsp;<span
-                                        class="item-multiplier-count">{{ group['member_count'] }} members</span>
+                                    <a class="btn btn-small btn-info" href="/users/{{ user_id }}/{{ name|urlencode }}/groups/{{ groups[i+j]['group_name'] }}" class="post-tag" title="" rel="tag">{{ groups[i+j]['group_name'] }}</a><span class="item-multiplier-x"> ×</span>&nbsp;<span
+                                        class="item-multiplier-count">{{ groups[i+j]['member_count'] }} <a href="/users/{{ user_id }}/{{ name|urlencode }}/groups/{{ groups[i+j]['group_name'] }}/members"> members</span>
                                 </td>
                             {% endfor %}
-                            {% set i = i + 7 %}
+                            {% set i = i + 4 %}
                         </tr>
                     {% endif %}
                 {% endfor %}

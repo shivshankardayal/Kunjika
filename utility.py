@@ -377,21 +377,24 @@ def get_groups_per_page(page, GROUPS_PER_PAGE, document):
         group_list.append(kunjika.sb.get(row['id'].split(':')[1]).value)
 
     print group_list
-    return group_list
+    groups = sorted(group_list, key=lambda k: k['member_count'], reverse=True)
+    return groups
 
 
 def get_users_per_page(page, USERS_PER_PAGE, count):
 
     skip = (page - 1) * USERS_PER_PAGE
-    users = urllib2.urlopen(
+    ids = urllib2.urlopen(
                 kunjika.DB_URL + 'default/_design/dev_qa/_view/get_by_reputation?limit=' +
                 str(USERS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
-    users = json.loads(users)
+    rows = json.loads(ids)['rows']
 
     users_list = []
 
-    for i in users['rows']:
-        users_list.append(i['value'])
+    for row in rows:
+
+        user = kunjika.cb.get(str(row['id'])).value
+        users_list.append(user)
 
     return users_list
 
@@ -448,11 +451,12 @@ def filter_by(email):
 
     user = urllib2.urlopen(
                 kunjika.DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"').read()
-    user = json.loads(user)
-    if len(user['rows']) == 1:
-        user = user['rows'][0]['value']
+    id = json.loads(user)['id']
+
+    try:
+        user = kunjika.cb.get(str(id)).value
         return user
-    else:
+    except:
         return None
 
 
