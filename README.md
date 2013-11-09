@@ -29,3 +29,6 @@ documentation is yet to be put there. The documentation is not update though.
 
 github is again home of Kunjika. 
 
+At present I am working on Couchbase optimization for Kunjika and I have
+decided that it will remain purely a QA platform with little or no social
+features.
