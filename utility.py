@@ -51,9 +51,9 @@ def common_rendering(results, query, page):
         questions_list.append(kunjika.qb.get(str(qid)).value)
 
     for i in questions_list:
-        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
 
-        user = kunjika.cb.get(i['content']['op']).value
+        user = kunjika.cb.get(i['op']).value
         i['opname'] = user['name']
 
     pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))
@@ -121,8 +121,8 @@ def search_user(query, page):
     question_results=kunjika.es_conn.search(query=q)
 
     results=[]
-
     for r in question_results:
+        print r
         results.append(r['uid'])
 
     questions_list=[]
@@ -130,14 +130,23 @@ def search_user(query, page):
     for uid in results:
         question_view = urllib2.urlopen(
             kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_userid?key=' + '"' +str(uid) + '"').read()
-        question_view = json.loads(question_view)
-        for element in question_view['rows']:
-            questions_list.append(element['value'])
+        question_view = json.loads(question_view)['rows']
+        print question_view
+        for row in question_view:
+            print row['value']
+            question = {}
+            question['qid'] = row['value'][0]
+            question['votes'] = row['value'][1]
+            question['acount'] = row['value'][2]
+            question['title'] = row['value'][3]
+            question['url'] = row['value'][4]
+            question['views'] = row['value'][5]
+            questions_list.append(question)
 
     for i in questions_list:
-        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
 
-        user = kunjika.cb.get(i['content']['op']).value
+        user = kunjika.cb.get(i['op']).value
         i['opname'] = user['name']
 
     pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))
@@ -168,14 +177,28 @@ def search_tag(query, page):
     for tag in results:
         question_view = urllib2.urlopen(
             kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_tag?key=' + '"' + tag + '"').read()
-        question_view = json.loads(question_view)
-        for element in question_view['rows']:
-            questions_list.append(element['value'])
+        question_view = json.loads(question_view)['rows']
+        #print question_view
+        for row in question_view:
+            print row['value']
+            question = {}
+            question['qid'] = row['value'][0]
+            question['votes'] = row['value'][1]
+            question['acount'] = row['value'][2]
+            question['title'] = row['value'][3]
+            question['url'] = row['value'][4]
+            question['views'] = row['value'][5]
+            question['ts'] = row['value'][6]
+            question['op'] = row['value'][7]
+            questions_list.append(question)
+
+        #for element in question_view['rows']:
+        #    questions_list.append(element['value'])
 
     for i in questions_list:
-        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
 
-        user = kunjika.cb.get(i['content']['op']).value
+        user = kunjika.cb.get(i['op']).value
         i['opname'] = user['name']
 
     pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))
@@ -337,19 +360,30 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
                 kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions?limit=' +
                 str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
 
-    questions = json.loads(questions)
-    ##print questions
-    question_list = []
-    for i in questions['rows']:
-        question_list.append(i['value'])
+    questions = json.loads(questions)['rows']
+    questions_list = []
+    #print question_view
+    for row in questions:
+        print row['value']
+        question = {}
+        question['qid'] = row['value'][0]
+        question['votes'] = row['value'][1]
+        question['acount'] = row['value'][2]
+        question['title'] = row['value'][3]
+        question['url'] = row['value'][4]
+        question['views'] = row['value'][5]
+        question['ts'] = row['value'][6]
+        question['op'] = row['value'][7]
+        question['tags'] = row['value'][8]
+        questions_list.append(question)
 
-    for i in question_list:
-        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+    for i in questions_list:
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
 
-        user = kunjika.cb.get(i['content']['op']).value
+        user = kunjika.cb.get(i['op']).value
         i['opname'] = user['name']
 
-    return question_list
+    return questions_list
 
 def get_tags_per_page(page, TAGS_PER_PAGE, count):
 
@@ -474,9 +508,18 @@ def get_user_questions_per_page(user, qpage, USER_QUESTIONS_PER_PAGE, qcount):
         kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_userid?key=' + '"' +str(user['id'])
         + '"' + '&desending=true&skip=' + str(skip) + '&limit=' + str(USER_QUESTIONS_PER_PAGE)
     ).read()
-    question_view = json.loads(question_view)
-    for element in question_view['rows']:
-        question_list.append(element['value'])
+    question_view = json.loads(question_view)['rows']
+    #print question_view
+    for row in question_view:
+        print row['value']
+        question = {}
+        question['qid'] = row['value'][0]
+        question['votes'] = row['value'][1]
+        question['acount'] = row['value'][2]
+        question['title'] = row['value'][3]
+        question['url'] = row['value'][4]
+        question['views'] = row['value'][5]
+        question_list.append(question)
 
     #for qid in qid_list:
     #    question = kunjika.qb.get(str(qid)).value
@@ -494,17 +537,24 @@ def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
 
     skip = (apage - 1)*USER_ANSWERS_PER_PAGE
     question_list = []
+    aids = []
     question_view = urllib2.urlopen(
-        kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_answers_by_userid?key=' +str(user['id'])
+        kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_ans_by_userid?key=' +str(user['id'])
         + '&desending=true&skip=' + str(skip) + '&limit=' + str(USER_ANSWERS_PER_PAGE)
     ).read()
-    question_view = json.loads(question_view)
-    for element in question_view['rows']:
-        question_list.append(element['value'])
-    aids = []
-    for question in question_list:
-        for answer in question['answers']:
-            aids.append(answer['aid'])
+    question_view = json.loads(question_view)['rows']
+    #print question_view
+    for row in question_view:
+        print row['value']
+        question = {}
+        question['qid'] = row['value'][0]
+        question['votes'] = row['value'][1]
+        question['acount'] = row['value'][2]
+        aids.append(row['value'][3])
+        question['title'] = row['value'][4]
+        question['url'] = row['value'][5]
+        question['views'] = row['value'][6]
+        question_list.append(question)
     #let us get question ids and questions
     #for aid in aid_list:
     #    qid = aid.split('-')[0]

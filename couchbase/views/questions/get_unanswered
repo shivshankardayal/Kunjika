@@ -1,5 +1,6 @@
 function (doc, meta) {
   if(doc.acount==0) {
-    emit(doc.content.ts, doc,null);
+    emit(doc.updated, [doc.qid, doc.votes, doc.acount, doc.title, doc.content.url, doc.views, doc.content.ts, doc.content.op, doc.content.tags],null);
   }
 }
+reduce function is _count

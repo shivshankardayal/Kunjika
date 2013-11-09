@@ -1,5 +1,5 @@
 function (doc, meta) {
-    if(doc.content) {
-        emit(doc.content.op, doc, null);
-    }
+  if(doc.content) {
+    emit(doc.content.op, [doc.qid, doc.votes, doc.acount, doc.title, doc.content.url, doc.views], null);
+  }
 }

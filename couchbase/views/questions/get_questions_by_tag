@@ -1,7 +1,7 @@
 function (doc, meta) {
-    if(doc.content.tags) {
-        for(i=0; i<doc.content.tags.length; i++) {
-            emit([doc.content.tags[i], doc], null);
-        }
+  if(doc.content.tags) {
+    for(i=0; i<doc.content.tags.length; i++) {
+      emit(doc.content.tags[i], [doc.qid, doc.votes, doc.acount, doc.title, doc.content.url, doc.views, doc.content.ts, doc.content.op], null);
     }
+  }
 }

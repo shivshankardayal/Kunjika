@@ -1,0 +1,10 @@
+function (doc, meta) {
+  if(doc.updated) {
+    if(doc.sticky && doc.sticky == true)
+      emit(doc.updated, [doc.qid, doc.votes, doc.acount, doc.title, doc.content.url, doc.views, doc.content.ts, doc.content.op, doc.content.tags], null);
+  }
+
+  if(doc.updated && !doc.sticky) {
+    emit(doc.updated, [doc.qid, doc.votes, doc.acount, doc.title, doc.content.url, doc.views, doc.content.ts, doc.content.op, doc.content.tags], null);
+  }
+}

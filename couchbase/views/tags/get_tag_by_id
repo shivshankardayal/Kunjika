@@ -1,5 +1,5 @@
 function (doc, meta) {
     if(doc.tid) {
-        emit(doc.tid, doc, null);
+        emit(doc.tid, null);
     }
 }

@@ -1,6 +1,6 @@
 function (doc, meta) {
       if(doc.acount) {
-              emit(doc, doc.acount, null);
+              emit(doc.acount, doc.acount, null);
                 }
 }
 

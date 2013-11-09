@@ -32,3 +32,7 @@ github is again home of Kunjika.
 At present I am working on Couchbase optimization for Kunjika and I have
 decided that it will remain purely a QA platform with little or no social
 features.
+
+I believe that keeping it minimalistic is best and very few new features will
+be introduced. The atom feed is the best way to watch the QA activity. In few
+days I will freeze the new features and do a final alpha release.

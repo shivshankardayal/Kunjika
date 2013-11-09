@@ -109,19 +109,19 @@ except:
 
 # Initialize indices for different buckets
 try:
-    es_conn.indices.delete_index("questions")
+    #es_conn.indices.delete_index("questions")
     es_conn.indices.create_index("questions")
 except:
     pass
 
 try:
-    es_conn.indices.delete_index("users")
+    #es_conn.indices.delete_index("users")
     es_conn.indices.create_index("users")
 except:
     pass
 
 try:
-    es_conn.indices.delete_index("tags")
+    #es_conn.indices.delete_index("tags")
     es_conn.indices.create_index("tags")
 except:
     pass
@@ -1277,8 +1277,10 @@ def edits(element):
                     try:
                         #tag = int(tag)
                         tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?key=' + str(tag)).read()
-                        tag = json.loads(tag)['rows'][0]['value']
+                        tid = json.loads(tag)['rows'][0]['id']
+                        tag = tb.get(str(tid)).value
                         tag_list.append(tag['tag'])
+
                     except:
                         #print "hello"
                         tag_list.append(tag)
@@ -1450,18 +1452,35 @@ def unanswered(page):
     skip = (page - 1) * QUESTIONS_PER_PAGE
     questions = urllib2.urlopen(
         DB_URL + 'questions/_design/dev_qa/_view/get_unanswered?limit=' +
-        str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
-    questions = json.loads(questions)
-    count = questions['total_rows']
-    ##print questions
+        str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true&reduce=false').read()
+    questions = json.loads(questions)['rows']
+    #print question_view
     questions_list = []
-    for i in questions['rows']:
-        questions_list.append(i['value'])
+    for row in questions:
+        print row['value']
+        question = {}
+        question['qid'] = row['value'][0]
+        question['votes'] = row['value'][1]
+        question['acount'] = row['value'][2]
+        question['title'] = row['value'][3]
+        question['url'] = row['value'][4]
+        question['views'] = row['value'][5]
+        question['ts'] = row['value'][6]
+        question['op'] = row['value'][7]
+        question['tags'] = row['value'][8]
+        questions_list.append(question)
+    count = urllib2.urlopen(
+        DB_URL + 'questions/_design/dev_qa/_view/get_unanswered?limit=' +
+        str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
+    count = json.loads(count)['rows'][0]['value']
+    ##print questions
+    #for i in questions['rows']:
+    #    questions_list.append(i['value'])
 
     for i in questions_list:
-        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(float(i['ts'])))
 
-        user = cb.get(i['content']['op']).value
+        user = cb.get(i['op']).value
         i['opname'] = user['name']
 
     if not questions_list and page != 1:
@@ -1673,7 +1692,9 @@ def search_help():
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     if g.user is not None and g.user.is_authenticated():
         user = cb.get(str(g.user.id)).value
-    return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name, role=g.user.role,
+        return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name,
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+    return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
 @kunjika.route('/sticky')

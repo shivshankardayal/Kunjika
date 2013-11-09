@@ -54,7 +54,7 @@
                         </div>
                         <div class="summary">
                             <h4><a class="question-hyperlink"
-                                   href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}">
+                                   href="/questions/{{ question['qid'] }}/{{ question['url'] }}">
                                 {% if 'sticky' in question and question['sticky'] == True %}
                                 <i class="icon-pushpin"></i> {{ question['title'] }}</a>
                                 {% else %}
@@ -63,13 +63,13 @@
                             </h4>
                         <div class="tags">
                             <i class="icon-tags" style="color:#a4c639;"></i>
-                            {% for tag in question['content']['tags'] %}
+                            {% for tag in question['tags'] %}
                                 <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
                             {% endfor %}
                         </div>
                         <div class="started">
                             <p>Asked on {{ question['tstamp'] }} by <a
-                                    href="/users/{{ question['content']['op'] }}/{{ question['opname'] }}">{{ question['opname'] }}</a>
+                                    href="/users/{{ question['op'] }}/{{ question['opname'] }}">{{ question['opname'] }}</a>
                             </p>
                         </div>
                     </div>
