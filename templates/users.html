@@ -114,9 +114,10 @@
                         <td class="invite"><p id="invite" class="btn btn-small btn-info"><i class="icon-envelope"></i> Invite
                             Friends</p>
                         </td>
-                        <td class="create-group"><p id="group" class="btn btn-small btn-info"><i class="icon-group"></i> Create
+                        <td></td>
+                        <!--td class="create-group"><p id="group" class="btn btn-small btn-info"><i class="icon-group"></i> Create
                             Group</p>
-                        </td>
+                        </td-->
                     </tr>
                     <tr>
                         <th></th>
@@ -130,7 +131,8 @@
                                 <button class="btn btn-small btn-primary" type="submit">Send Invites</button>
                             </form>
                         </td>
-                        <td class="create-group">
+                        <td></td>
+                        <!--td class="create-group">
                             <form id="group-form" class="create-group" method="post"
                                   action="/create_group">
                                 <input id="group-name"
@@ -139,7 +141,7 @@
                                 <br/>
                                 <button class="btn btn-small btn-primary" type="submit">Create Group</button>
                             </form>
-                        </td>
+                        </td-->
                     </tr>
                 {% endif %}
                 </tbody>
@@ -396,7 +398,7 @@
         var convertedHTML = converter.makeHtml(originalHTML);
         $("#about-me").html(convertedHTML);
     </script>
-    <script>
+    <!--script>
         $('#group-name').keyup(function () {
             value = $(this).val();
             //alert(value);
@@ -414,5 +416,5 @@
             });
             return false;
         });
-    </script>
+    </script-->
 {% endblock %}

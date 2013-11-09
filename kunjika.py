@@ -767,7 +767,7 @@ def populate_user_fields(data, form):
     data['location'] = ''
     data['about-me'] = ''
     data['receive-emails'] = True
-    data['receive-invites'] = True
+    #data['receive-invites'] = True
 
 @kunjika.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
@@ -1951,7 +1951,7 @@ def notify():
     except:
         return jsonify(response)
 
-
+'''
 @kunjika.route('/invites')
 def invites():
     invites = request.args.get('#id')
@@ -1970,7 +1970,6 @@ def invites():
         return jsonify(response)
     except:
         return jsonify(response)
-
 
 @kunjika.route('/check_group_name', methods=['GET','POST'])
 def check_group_name():
@@ -2020,7 +2019,7 @@ def show_groups(page, uid, uname):
                                name=g.user.name, role=g.user.role, user_id=g.user.id, acount=acount, tag_list=tag_list)
     return redirect(url_for('users', uid=g.user.id))
 
-
+'''
 
 
 

@@ -82,13 +82,13 @@
                         <input type="checkbox" id="notify" checked="checked"> Recieve Notification Emails
                     {% endif %}
                 </label>
-                <label class="checkbox settings" style="margin-left: 180px">
-                    {% if user['receive-invites'] == False %}
+                <!--label class="checkbox settings" style="margin-left: 180px">
+                    {#% if user['receive-invites'] == False %}
                         <input type="checkbox" id="invites"> Recieve Private Group Invites
-                    {% else %}
+                    { else }
                         <input type="checkbox" id="invites" checked="checked"> Recieve Private Group Invites
-                    {% endif %}
-                </label>
+                    { endif #}
+                </label-->
             </div>
         </div>
         <div id="sidebar">
@@ -174,7 +174,7 @@
                 });
                 return false;
             });
-            $('#invites').click(function () {
+            /*$('#invites').click(function () {
                 $.getJSON('/invites', {
                     id: $(this).attr('id'),
                     url: $(location).attr('href')
@@ -188,7 +188,7 @@
                     }
                 });
                 return false;
-            });
+            });*/
         });
     </script>
 {% endblock %}
