@@ -109,19 +109,19 @@ except:
 
 # Initialize indices for different buckets
 try:
-    #es_conn.indices.delete_index("questions")
+    es_conn.indices.delete_index("questions")
     es_conn.indices.create_index("questions")
 except:
     pass
 
 try:
-    #es_conn.indices.delete_index("users")
+    es_conn.indices.delete_index("users")
     es_conn.indices.create_index("users")
 except:
     pass
 
 try:
-    #es_conn.indices.delete_index("tags")
+    es_conn.indices.delete_index("tags")
     es_conn.indices.create_index("tags")
 except:
     pass
