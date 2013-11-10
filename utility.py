@@ -51,9 +51,9 @@ def common_rendering(results, query, page):
         questions_list.append(kunjika.qb.get(str(qid)).value)
 
     for i in questions_list:
-        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
 
-        user = kunjika.cb.get(i['op']).value
+        user = kunjika.cb.get(i['content']['op']).value
         i['opname'] = user['name']
 
     pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))

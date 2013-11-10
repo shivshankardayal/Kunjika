@@ -884,7 +884,6 @@ def openid_login():
     if g.user is not AnonymousUserMixin and g.user.is_authenticated():
         return redirect(oid.get_next_url())
     if openidForm.validate_on_submit() and request.method == 'POST':
-        openid = request.form.get('openid')
         googleid = request.form.get('googleid')
         yahooid = request.form.get('yahooid')
         ##print openid
@@ -894,8 +893,6 @@ def openid_login():
             return oid.try_login('https://www.google.com/accounts/o8/id', ask_for=['email', 'fullname', 'nickname'])
         elif yahooid:
             return oid.try_login('https://me.yahoo.com', ask_for=['email', 'fullname', 'nickname'])
-        elif openid:
-            return oid.try_login(openid, ask_for=['email', 'fullname', 'nickname'])
     return render_template('openid.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
                            lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
 

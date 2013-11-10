@@ -115,7 +115,6 @@
                                 {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
                                 {% from "macros.html" import render_field %}
                                 {{ openidForm.csrf_token }}
-                                {{ render_field(openidForm.openid, class="input-xlarge") }}
                                 {{ render_field(openidForm.googleid, class="input-xlarge") }}
                                 {{ render_field(openidForm.yahooid, class="input-xlarge") }}
                                 <div class="control-group">

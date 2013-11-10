@@ -42,7 +42,6 @@ class LoginForm(Form):
 
 
 class OpenIDForm(Form):
-    openid = TextField('OpenID', [validators.Length(min=2, max=64), validators.Optional()])
     googleid = TextField('GoogleID', [validators.Length(min=2, max=64), validators.Optional()])
     yahooid = TextField('YahooID', [validators.Length(min=2, max=64), validators.Optional()])
 
