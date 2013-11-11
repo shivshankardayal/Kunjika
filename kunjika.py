@@ -48,6 +48,7 @@ from wtforms import (BooleanField, TextField, PasswordField, validators, TextAre
                      HiddenField)
 import pyes
 import urllib
+from couchbase.views.iterator import View, Query
 
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg'])
@@ -783,6 +784,7 @@ def create_profile():
         #print profileForm.email1.data
         view = urllib2.urlopen(DB_URL + 'default/_design/dev_qa/_view/get_role?stale=false').read()
         view = json.loads(view)
+
         if len(view['rows']) == 0:
             #print "hello1"
             data['role'] = 'admin'
@@ -1127,15 +1129,17 @@ def get_tags(q=None, qid=None):
         tags = question['content']['tags']
 
         tags_list = []
-
+        tids_list = []
         for i in tags:
             print i
             tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib.quote(str(i)) + '"').read()
-            tag = json.loads(tag)
-            print tag
-            tag = tag['rows'][0]['value']
-            print tag
-            tags_list.append({"id": tag['tid'], "name": tag['tag']})
+            tag = json.loads(tag)['rows'][0]['id']
+            tids_list.append(tag)
+
+        val_res = tb.get_multi(tids_list)
+        tags = []
+        for tid in tids_list:
+            tags_list.append({"id": val_res[str(tid)].value['tid'], "name": val_res[str(tid)].value['tag']})
     ##print tags_list
     return json.dumps(tags_list)
 
@@ -1194,7 +1198,8 @@ def replace_tags(tags_passed, qid, current_tags):
         if tag not in tags_passed:
             tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
             ##print tag
-            tag = json.loads(tag)['rows'][0]['value']
+            tid = json.loads(tag)['rows'][0]['id']
+            tag = tb.get(tid).value
             tag['qid'].remove(int(qid))
             tag['count'] -= 1
 
@@ -1553,12 +1558,12 @@ def recent_feed():
     feed = AtomFeed('Recent Questions',
                     feed_url=request.url, url=request.url_root)
     questions = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_questions?descending=true&limit=50&stale=false').read()
-    questions = json.loads(questions)['rows']
+    rows = json.loads(questions)['rows']
 
+    q = Query(descending=True, limit=50)
     question_list = []
-    for i in questions:
-        question_list.append(i['value'])
-
+    for result in View(qb, "dev_qa", "get_questions", include_docs=True, query=q):
+        question_list.append(result.doc.value)
 
     for question in question_list:
         feed.add(question['title'], unicode(question['content']['description']),
@@ -1594,8 +1599,8 @@ def tag_info(tag=None):
     tag_list = []
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
-    tag = json.loads(tag)
-    tag = tag['rows'][0]['value']
+    tid = json.loads(tag)['rows'][0]['id']
+    tag = tb.get(tid).value
     if g.user is AnonymousUserMixin:
         return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
     elif g.user is not None and g.user.is_authenticated():
@@ -1608,8 +1613,8 @@ def edit_tag(tag):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
 
     tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
-    tag = json.loads(tag)
-    tag = tag['rows'][0]['value']
+    tid = json.loads(tag)['rows'][0]['id']
+    tag = tb.get(tid).value
     tagForm = TagForm(request.form)
     if g.user is not None and g.user.is_authenticated():
         if tagForm.validate_on_submit() and request.method == 'POST':

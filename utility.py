@@ -360,30 +360,26 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
                 kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions?limit=' +
                 str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
 
-    questions = json.loads(questions)['rows']
+    rows = json.loads(questions)['rows']
+    qids_list = []
     questions_list = []
-    #print question_view
-    for row in questions:
-        print row['value']
-        question = {}
-        question['qid'] = row['value'][0]
-        question['votes'] = row['value'][1]
-        question['acount'] = row['value'][2]
-        question['title'] = row['value'][3]
-        question['url'] = row['value'][4]
-        question['views'] = row['value'][5]
-        question['ts'] = row['value'][6]
-        question['op'] = row['value'][7]
-        question['tags'] = row['value'][8]
-        questions_list.append(question)
+    for row in rows:
+        #print row['id']
+        qids_list.append(str(row['id']))
+
+    val_res = kunjika.qb.get_multi(qids_list)
+    for id in qids_list:
+        questions_list.append(val_res[str(id)].value)
+
 
     for i in questions_list:
-        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
 
-        user = kunjika.cb.get(i['op']).value
+        user = kunjika.cb.get(i['content']['op']).value
         i['opname'] = user['name']
 
     return questions_list
+
 
 def get_tags_per_page(page, TAGS_PER_PAGE, count):
 
@@ -391,12 +387,16 @@ def get_tags_per_page(page, TAGS_PER_PAGE, count):
     tags = urllib2.urlopen(
                 kunjika.DB_URL + 'tags/_design/dev_qa/_view/get_by_count?limit=' +
                 str(TAGS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
-    tags = json.loads(tags)
-
+    rows = json.loads(tags)['rows']
+    tids_list = []
     tags_list = []
 
-    for i in tags['rows']:
-        tags_list.append(i['value'])
+    for row in rows:
+        tids_list.append(str(row['id']))
+
+    val_res = kunjika.tb.get_multi(tids_list)
+    for id in tids_list:
+        tags_list.append(val_res[str(id)].value)
 
     return tags_list
 
@@ -437,10 +437,17 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
     skip = (page - 1) * QUESTIONS_PER_PAGE
     tag = urllib2.quote(tag, '')
     tag = urllib2.urlopen(kunjika.DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?&key=' + '"' + tag + '"').read()
-    tag = json.loads(tag)['rows'][0]['value']
+    tag = json.loads(tag)['rows'][0]['id']
+    tag = kunjika.tb.get(tag).value
     question_list = []
+    qids_list = []
     for qid in tag['qid']:
-        question_list.append(kunjika.qb.get(str(qid)).value)
+        qids_list.append(str(qid))
+
+    val_res = kunjika.qb.get_multi(qids_list)
+
+    for qid in qids_list:
+        question_list.append(val_res[qid].value)
 
     for i in question_list:
         i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
@@ -473,13 +480,18 @@ def url_for_search_page(page, query):
 def get_popular_tags():
 
     tag_list = urllib2.urlopen(kunjika.DB_URL + 'tags/_design/dev_qa/_view/get_by_count?descending=true').read()
-    tag_list = json.loads(tag_list)['rows']
+    rows = json.loads(tag_list)['rows']
+    tids_list = []
+    tags_list = []
 
-    tags = []
-    for i in tag_list:
-        tags.append(i['value'])
+    for row in rows:
+        tids_list.append(str(row['id']))
 
-    return tags
+    val_res = kunjika.tb.get_multi(tids_list)
+    for id in tids_list:
+        tags_list.append(val_res[str(id)].value)
+
+    return tags_list
 
 def filter_by(email):
 
