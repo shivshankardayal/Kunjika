@@ -110,24 +110,24 @@ except:
 
 # Initialize indices for different buckets
 try:
-    es_conn.indices.delete_index("questions")
+    #es_conn.indices.delete_index("questions")
     es_conn.indices.create_index("questions")
 except:
     pass
 
 try:
-    es_conn.indices.delete_index("users")
+    #es_conn.indices.delete_index("users")
     es_conn.indices.create_index("users")
 except:
     pass
 
 try:
-    es_conn.indices.delete_index("tags")
+    #es_conn.indices.delete_index("tags")
     es_conn.indices.create_index("tags")
 except:
     pass
 
-questoins_mapping = {
+questions_mapping = {
      'title': {
          'boost': 1.0,
          'index': 'analyzed',
@@ -185,7 +185,7 @@ tags_mapping = {
      }
 }
 
-es_conn.indices.put_mapping("quesitos-type", {'properties':questoins_mapping}, ["questions"])
+es_conn.indices.put_mapping("questions-type", {'properties':questions_mapping}, ["questions"])
 es_conn.indices.put_mapping("users-type", {'properties':users_mapping}, ["users"])
 es_conn.indices.put_mapping("tags-type", {'properties':tags_mapping}, ["tags"])
 
@@ -1191,8 +1191,8 @@ def replace_tags(tags_passed, qid, current_tags):
                 data['tid'] = tid
 
                 tb.add(tag, data)
-                es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
-                es_conn.indices.refresh('tags')
+            es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
+            es_conn.indices.refresh('tags')
 
     for tag in current_tags:
         if tag not in tags_passed:
@@ -1452,6 +1452,7 @@ def postcomment():
 def unanswered(page):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     skip = (page - 1) * QUESTIONS_PER_PAGE
+    '''
     questions = urllib2.urlopen(
         DB_URL + 'questions/_design/dev_qa/_view/get_unanswered?limit=' +
         str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true&reduce=false').read()
@@ -1471,18 +1472,33 @@ def unanswered(page):
         question['op'] = row['value'][7]
         question['tags'] = row['value'][8]
         questions_list.append(question)
+    '''
+
+    q = Query(descending=True, limit=50)
+    questions_list = []
+    count = 0
+    for result in View(qb, "dev_qa", "get_unanswered", include_docs=True, query=q):
+        #print result
+        questions_list.append(result.doc.value)
+        count += 1
+
+    '''
+    q = Query(descending=True, limit=50)
+    for result in View(qb, "dev_qa", "get_unanswered", include_docs=True, query=q):
+        print result
     count = urllib2.urlopen(
         DB_URL + 'questions/_design/dev_qa/_view/get_unanswered?limit=' +
         str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
     count = json.loads(count)['rows'][0]['value']
+    '''
     ##print questions
     #for i in questions['rows']:
     #    questions_list.append(i['value'])
 
     for i in questions_list:
-        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(float(i['ts'])))
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(float(i['content']['ts'])))
 
-        user = cb.get(i['op']).value
+        user = cb.get(i['content']['op']).value
         i['opname'] = user['name']
 
     if not questions_list and page != 1:
@@ -1557,8 +1573,6 @@ def make_external(url):
 def recent_feed():
     feed = AtomFeed('Recent Questions',
                     feed_url=request.url, url=request.url_root)
-    questions = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_questions?descending=true&limit=50&stale=false').read()
-    rows = json.loads(questions)['rows']
 
     q = Query(descending=True, limit=50)
     question_list = []

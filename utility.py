@@ -24,6 +24,8 @@ import pyes
 import question
 from flask.ext.mail import Mail, Message
 from uuid import uuid4
+from couchbase.views.iterator import View
+from couchbase.views.params import Query
 
 def common_data():
     tag_list = []
@@ -141,6 +143,8 @@ def search_user(query, page):
             question['title'] = row['value'][3]
             question['url'] = row['value'][4]
             question['views'] = row['value'][5]
+            question['ts'] = row['value'][6]
+            question['op'] = row['value'][7]
             questions_list.append(question)
 
     for i in questions_list:
@@ -175,30 +179,22 @@ def search_tag(query, page):
 
     questions_list=[]
     for tag in results:
-        question_view = urllib2.urlopen(
-            kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_tag?key=' + '"' + tag + '"').read()
-        question_view = json.loads(question_view)['rows']
+        #question_view = urllib2.urlopen(
+        #    kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_tag?key=' + '"' + tag + '"').read()
+        #question_view = json.loads(question_view)['rows']
         #print question_view
-        for row in question_view:
-            print row['value']
-            question = {}
-            question['qid'] = row['value'][0]
-            question['votes'] = row['value'][1]
-            question['acount'] = row['value'][2]
-            question['title'] = row['value'][3]
-            question['url'] = row['value'][4]
-            question['views'] = row['value'][5]
-            question['ts'] = row['value'][6]
-            question['op'] = row['value'][7]
-            questions_list.append(question)
+        q = Query(key=tag)
+        for result in View(kunjika.qb, "dev_qa", "get_questions_by_tag", include_docs=True, query=q):
+            #print result
+            questions_list.append(result.doc.value)
 
         #for element in question_view['rows']:
         #    questions_list.append(element['value'])
 
     for i in questions_list:
-        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
 
-        user = kunjika.cb.get(i['op']).value
+        user = kunjika.cb.get(i['content']['op']).value
         i['opname'] = user['name']
 
     pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))
