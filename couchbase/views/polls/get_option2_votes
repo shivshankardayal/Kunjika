@@ -1,6 +1,6 @@
 function (doc, meta) {
     if(doc.option2) {
-        emit(doc.qid, doc);
+        emit(doc.qid, null);
     }
 }
 
