@@ -47,6 +47,7 @@
         {% endblock %}
         {% block css_bootstrap_responsive %}
             <link href="/static/css/bootstrap-responsive{{ debugmin() }}.css" rel="stylesheet">
+			<!--link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"-->
             <link rel="stylesheet" href="/static/css/font-awesome.css">
             <!--[if IE 7]>
 	<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome-ie7.css">
@@ -97,7 +98,7 @@
     {% block body %}
 
         {% block navbar_wrapper %}
-            <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar navbar-fixed-top">
                 <div class="navbar-inner">
                     <div class="container-fluid">
                         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -110,47 +111,47 @@
                         <div class="nav-collapse collapse">
                             <ul class="nav">
                                 {% if qpage is defined %}
-                                    <li class="active"><a href="/questions"><i class="icon-question"></i>
+                                    <li><a href="/questions"><i class="icon-question"></i>
                                         <b>Questions</b></a>
                                     </li>
                                 {% else %}
-                                    <li><a href="/questions"><i class="icon-question"></i> <b>Questions</b></a></li>
+                                    <li><a href="/questions"><i class="icon-question"></i> Questions</a></li>
                                 {% endif %}
                                 {% if tpage is defined %}
-                                    <li class="active"><a href="/tags"><i class="icon-tags"></i> <b>Tags</b></a></li>
-                                {% else %}
                                     <li><a href="/tags"><i class="icon-tags"></i> <b>Tags</b></a></li>
+                                {% else %}
+                                    <li><a href="/tags"><i class="icon-tags"></i> Tags</a></li>
                                 {% endif %}
                                 {% if upage is defined %}
-                                    <li class="active"><a href="/users"><i class="icon-user"></i> <b>Users</b></a></li>
-                                {% else %}
                                     <li><a href="/users"><i class="icon-user"></i> <b>Users</b></a></li>
+                                {% else %}
+                                    <li><a href="/users"><i class="icon-user"></i> Users</a></li>
                                 {% endif %}
                                 {% if unpage is defined %}
-                                    <li class="active"><a href="/unanswered"><i class="icon-question-sign"></i>
+                                    <li><a href="/unanswered"><i class="icon-question-sign"></i>
                                         <b>Unanswered</b></a></li>
                                 {% else %}
                                     <li><a href="/unanswered"><i class="icon-question-sign"></i>
-                                        <b>Unanswered</b></a></li>
+                                        Unanswered</a></li>
                                 {% endif %}
                                 {% if apage is defined %}
-                                    <li class="active"><a href="/ask" class="ask"><i class="icon-question-sign"></i> <b>Ask</b></a>
+                                    <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> <b>Ask</b></a>
                                     </li>
                                 {% else %}
-                                    <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> <b>Ask</b></a>
+                                    <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a>
                                     </li>
                                 {% endif %}
                                 {% if ppage is defined %}
-                                    <li class="active"><a href="/poll" class="poll"><i class="icon-group"></i>
+                                    <li><a href="/poll" class="poll"><i class="icon-group"></i>
                                         <b>Poll</b></a>
                                     </li>
                                 {% else %}
-                                    <li><a href="/poll" class="poll"><i class="icon-group"></i> <b>Poll</b></a></li>
+                                    <li><a href="/poll" class="poll"><i class="icon-group"></i> Poll</a></li>
                                 {% endif %}
                                 {% if user_id is defined and g.user.is_authenticated() %}
                                     <!-- li class="active"><a href="/users/{{ user_id }}/{{ name }}" class="login"><i
                                             class="icon-sigin"></i> <b>{{ name }}</b></a></li-->
-                                    <li class="dropdown active">
+                                    <li class="dropdown">
                                         <a class="dropdown-toggle" href="#" data-toggle="dropdown">
                                             <b>{{ name }}</b>
                                             <b class="caret"></b>
@@ -163,23 +164,23 @@
                                         </ul>
                                     </li>
                                     {% if role == "admin" and adpage == True %}
-                                        <li class="active"><a href="/administration" class="administration"> <b>Administration</b></a>
-                                        </li>
-                                    {% elif role == "admin" and adpage != True %}
                                         <li><a href="/administration" class="administration"> <b>Administration</b></a>
                                         </li>
+                                    {% elif role == "admin" and adpage != True %}
+                                        <li><a href="/administration" class="administration"> Administration</a>
+                                        </li>
                                     {% endif %}
-                                    <li><a href="/logout" class="login"><i class="icon-signout"></i> <b>Logout</b></a>
+                                    <li><a href="/logout" class="login"><i class="icon-signout"></i> Logout</a>
                                     </li>
                                 {% else %}
-                                    <li><a href="/login" class="login"><i class="icon-signin"></i> <b>Login</b></a></li>
+                                    <li><a href="/login" class="login"><i class="icon-signin"></i> Login</a></li>
                                 {% endif %}
                                 <li><a href="/recent-questions.atom" class="ask"><i class="icon-rss-sign"></i>
-                                    <b>Feed</b></a></li>
+                                    Feed</a></li>
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
                                             class="icon-search"></i>
-                                        <b> Search</b>
+                                        Search
                                         <b class="caret"></b>
                                     </a>
                                     <ul class="dropdown-menu">
