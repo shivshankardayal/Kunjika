@@ -36,3 +36,6 @@ features.
 I believe that keeping it minimalistic is best and very few new features will
 be introduced. The atom feed is the best way to watch the QA activity. In few
 days I will freeze the new features and do a final beta release.
+
+I have frozen code of Kunjika. No new features will be put in  unless
+absolutely necessary. I am releasing version 0.3 alpha here.
