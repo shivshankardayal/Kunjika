@@ -1,3 +1,9 @@
+Release 0.3 Alpha
+-----------------
+Kunjika 0.3 alpha is being released today. Database performance optimizations
+are main part of this release. Some css changes have been done. iframe inclusion
+is possible now. Markdown no longer uses sanitizing converter.
+
 Release 0.2 Alpha
 -----------------
 Kunjika 0.2 alpha is being released today. Several bugs in 0.1 alpha release have

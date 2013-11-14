@@ -1,0 +1,883 @@
+{% extends "base.html" %}
+{% block title %}{{ questions['title'] }} - Kunjika{% endblock %}
+{% block css_bootstrap %}
+    {{ super() }}
+    {# TODO: probably remove this and let the user set it manually? #}
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+{% endblock %}
+
+{% block css_site %}
+    <link href="/static/css/wmd.css" rel="stylesheet">
+    <link href="/static/css/prettify.css" rel="stylesheet">
+    <!--    <link href="/static/css/googlecode.css" rel="stylesheet">-->
+    <link href="/static/css/token-input.css" rel="stylesheet">
+    <link href="/static/css/kunjika.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
+    <script type="text/javascript"
+            src="/static/js/prettify.js?lang=clj&amp;lbg=erlang&amp;lang=matlab&amp;lang=sql&amp;lang=vb&amp;lang=css&amp;lang=go&amp;lang=pascal&amp;lan=tcl&amp;lang=yaml&amp;lan=basic&amp;lang=dart&amp;lan=lua&amp;lang=scala&amp;lang=wiki&amp;lang=tex"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+    <!--    <script type="text/javascript" src="/static/js/highlight.pack.js"></script>
+            <script>hljs.initHighlightingOnLoad();</script>-->
+    <script>
+        function toggleDiv(divid) {
+            var objDiv = document.getElementById(divid);
+            var id = '#' + divid;
+            console.log('#' + divid);
+            $(id).toggle("slow");
+
+            if ($(id).hasClass('ran')) {
+
+            } else {
+                $(id).addClass('ran');
+
+                var converter = new Markdown.Converter();
+                var help = function () {
+                    window.open('{{ config['HOST_URL'] }}editing-help');
+                }
+                Markdown.Extra.init(converter, {
+        extensions: "all",
+                    highlighter: "prettify"
+                });
+                var editor = new Markdown.Editor(converter, '-' + divid, { handler: help });
+
+                var str = '#insertImageDialog' + '-' + divid;
+                //alert(str);
+                var $dialog = $(str).dialog({
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+                var $loader = $('span.loading-small', $dialog);
+                var $url = $('input[type=text]', $dialog);
+                var $file = $('input[type=file]', $dialog);
+
+                editor.hooks.set('insertImageDialog', function (callback) {
+
+                    // dialog functions
+                    var dialogInsertClick = function () {
+                        callback($url.val().length > 0 ? $url.val() : null);
+                        dialogClose();
+                    };
+
+                    var dialogCancelClick = function () {
+                        dialogClose();
+                        callback(null);
+                    };
+
+                    var dialogClose = function () {
+                        // clean up inputs
+                        $url.val('');
+                        $file.val('');
+                        $dialog.dialog('close');
+                    };
+
+                    // set up dialog button handlers
+                    $dialog.dialog('option', 'buttons', {
+                        'Insert': dialogInsertClick,
+                        'Cancel': dialogCancelClick
+                    });
+
+                    var uploadStart = function () {
+                        $loader.show();
+                    };
+
+                    var uploadComplete = function (response) {
+                        $loader.hide();
+                        if (response.success) {
+                            callback(response.imagePath);
+                            dialogClose();
+                        } else {
+                            alert(response.message);
+                            $file.val('');
+                        }
+                        editor.refreshPreview();
+                    };
+
+                    // upload
+                    $file.unbind('change').ajaxfileupload({
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
+
+                    // open the dialog
+                    $dialog.dialog('open');
+
+                    return true; // tell the editor that we'll take care of getting the image url
+                });
+                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.run();
+            }
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            var options = {
+                //target:        '#output1',   // target element(s) to be updated with server response
+                //beforeSubmit:  showRequest,  // pre-submit callback
+                success: showResponse,  // post-submit callback
+
+                // other available options:
+                url: '/postcomment',         // override for form's 'action' attribute
+                //type:      'post',        // 'get' or 'post', override for form's 'method' attribute
+                //dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
+                clearForm: true,        // clear all form fields after successful submit
+                resetForm: true        // reset the form after successful submit
+
+                // $.ajax options can be used here too, for example:
+                //timeout:   3000
+            };
+
+            // bind form using 'ajaxForm'
+            $('form.comment-form').ajaxForm(options);
+            //function showRequest(formData, jqForm, options) {
+            // formData is an array; here we use $.param to convert it to a string to display it
+            // but the form plugin does this for you automatically when it submits the data
+            //var queryString = $.param(formData);
+
+            // jqForm is a jQuery object encapsulating the form element.  To access the
+            // DOM element for the form do this:
+            // var formElement = jqForm[0];
+
+            //alert('About to submit: \n\n' + queryString);
+
+            // here we could return false to prevent the form from being submitted;
+            // returning anything other than false will allow the form submit to continue
+            //return true;
+            //}
+            function showResponse(responseText, statusText, xhr, $form) {
+                var converter = new Markdown.Converter();
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "prettify"
+                });
+
+                responseJSON = jQuery.parseJSON(responseText);
+                str = '<div class="comment" id="c-' + responseJSON.id + '">';
+                comment = converter.makeHtml(responseJSON.comment);
+                str += comment;
+                str += " &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
+                str += " " + responseJSON.ts + "</div>"
+                $(str).insertBefore('form.comment-form');
+                flash('Your comment has been successfully posted.', 'info')
+            }
+        });
+    </script>
+{% endblock %}
+{% block container %}
+    <div class="row-fluid">
+    <div id="mainbar" class="mainbar">
+    <div class="q-header">
+        <h3>{{ questions['title'] }}</h3>
+    </div>
+    <table>
+        <tr>
+            <td class="votes">
+                <div class="vote">
+                    <span class="icon-stack">
+                        <a class="voteup-on"
+                           title="This question shows research effort. It is useful and clear (click again to take back your vote)"
+                           href="#" id="v-{{ questions['qid'] }}">
+                            <i class="icon-thumbs-up icon-large"></i>
+                        </a>
+                    </span>
+
+                    <div class="mini-counts">{{ questions['votes'] }}</div>
+                    <div>votes</div>
+                    <span class="icon-stack">
+                        <a class="votedown-on"
+                           title="This question shows no research effort. It is not useful and unclear (click again to take back your vote)"
+                           href="#" id="v-{{ questions['qid'] }}">
+                            <i class="icon-thumbs-down icon-large"></i>
+                        </a>
+                    </span>
+                    <span class="icon-stack">
+                    {% if g.user.id in questions['users_fav'] %}
+                        <a class="starred"
+                           title="This question is of particular interest to you. Click to favorite it."
+                           href="#" id="f-{{ questions['qid'] }}">
+                            <i class="icon-star icon-large"></i>
+                        </a>
+                    {% else %}
+                        <a class="unstarred"
+                           title="This question is of particular interest to you. Click to favorite it."
+                           href="#" id="f-{{ questions['qid'] }}">
+                            <i class="icon-star icon-large"></i>
+                        </a>
+                    {% endif %}
+                    </span>
+                </div>
+            </td>
+            <td class="post">
+                <div class="q-desc" id="q-desc">{{ questions['content']['description'] }}</div>
+                <div class="post-tags"><i class="icon-tags" style="color:#a4c639;"></i>
+                    {% for tag in questions['content']['tags'] %}
+                        <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
+                    {% endfor %}
+                </div>
+                <table class="poster">
+                    <tbody>
+                    <tr>
+                        {% if user_id is defined %}
+                            <td class="vt">
+                                <a href="/edit/qe-{{ questions['qid'] }}" class="suggest-edit-post" title=""><i
+                                        class="icon-edit"></i> Edit</a>
+                            </td>
+                            <td class="vt">
+                                <a href="/flag/{{ questions['qid'] }}" title="Flag for inappropriate comment"
+                                   id="qqf-{{ questions['qid'] }}" class="flag" title=""><i class="icon-flag"
+                                                                                            style="color:#d00"></i> Flag</a>
+                            </td>
+                        {% if g.user.id == 1 %}
+                            <td class="vt">
+                                <a href="/sticky/{{ questions['qid'] }}" id="s-{{ questions['qid'] }}"
+                                   class="sticky suggest-edit-post"><i class="icon-pushpin"
+                                                                                     ></i> Sticky/Unsticky</a>
+                            </td>
+						<td class="vt">
+                          <a href="/close/{{ questions['qid'] }}" id="c-{{ questions['qid'] }}"
+                             class="close1">Close</a>
+                        </td>
+                        {% endif %}
+                            <td class="vt">
+                                <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
+                                   onclick="toggleDiv('{{ questions['qid'] }}');"><i class="icon-comment"
+                                                                                     style="color:#a4c639"></i> Comment</a>
+                            </td>
+                        {% else %}
+                            <td class="vt">
+                            </td>
+                        {% endif %}
+                        <td class="post-signature owner" align="right">
+                            <div class="user-info ">
+                                <div class="user-action-time">
+                                    Asked on <span title="2013-05-28 01:32:12Z"
+                                                   class="relativetime">{{ questions['tstamp'] }} </span>
+                                </div>
+                                <div class="user-gravatar32">
+                                    <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">
+                                        <div class=""><img
+                                                src="{{ questions['email']|gravatar }}"
+                                                alt="" height="32" width="32"></div>
+                                    </a>
+                                </div>
+                                <div class="user-details">
+                                    <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">{{ questions['opname'] }}</a><br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+    </table>
+    <br/>
+    <span style="padding-left:40px;" class='st_googleplus' displayText=''></span>
+    <span class='st_facebook' displayText=''></span>
+    <span class='st_twitter' displayText=''></span>
+    <span class='st_linkedin' displayText=''></span>
+    <span class='st_pinterest' displayText=''></span>
+    <span class='st_baidu' displayText=''></span>
+    <span class='st_blogger' displayText=''></span>
+    <span class='st_tumblr' displayText=''></span>
+    <span class='st_delicious' displayText=''></span>
+    <span class='st_reddit' displayText=''></span>
+    <span class='st_digg' displayText=''></span>
+    <span class='st_slashdot' displayText=''></span>
+    <span class='st_fblike' displayText=''></span>
+    <span class='st_fbrec' displayText=''></span>
+    <span class='st_plusone' displayText=''></span>
+    <span class='st_email' displayText='Email'></span>
+	<br/><br/>
+	{% if questions['close'] == True %}
+	<span class="close" style="float:None;">This question has been closed by Admin</span>
+	{% endif %}
+    {% for comment in questions['comments'] %}
+        <div class="comment" id="c-{{ comment['cid'] }}">
+            <div class="content"> {{ comment['comment'] }}</div>
+            -
+            <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }}</a>
+            {{ comment['tstamp'] }}&nbsp;
+            {% if user_id is defined %}
+            <a title="edit" href="/edit/ce-{{ questions['qid'] }}-{{ comment['cid'] }}"><i
+                class="icon-edit"></i></a>
+            <a title="Flag for inappropriate comment" id="qcf-{{ questions['qid'] }}-{{ comment['cid'] }}" class="flag"
+               style="color:#d00" href="/flag/{{ questions['qid'] }}-{{ comment['cid'] }}"><i class="icon-flag"></i></a>
+            {% endif %}
+        </div>
+    {% endfor %}
+    {% if user_id is defined and questions['close'] != True %}
+        <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
+              aciton="/postcomment">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}">
+                <div id="wmd-button-bar-{{ questions['qid'] }}" class="wmd-bar"></div>
+                <div class="control-group">
+                    <label for="answer" class="control-label"></label>
+
+                    <div class="controls">
+
+                        <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
+                                  name="comment" id="wmd-input-{{ questions['qid'] }}" class="wmd-input"></textarea>
+                    </div>
+                </div>
+                <div id="insertImageDialog-{{ questions['qid'] }}" title="&nbsp;Insert Image or File">
+                    <h6>From the web</h6>
+
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
+                </div>
+                <div id="wmd-preview-{{ questions['qid'] }}" class="wmd-panel wmd-preview"></div>
+                <input type="hidden" name="element" value="{{ questions['qid'] }}">
+
+                <div style="clear:both;"></div>
+                <div class="controls">
+                    <input type="submit" value="Post comment" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    {% endif %}
+    <div class="answers">
+        <div class="answer-header"></div>
+        <div class="subheader answer-subheader">
+            <h4>Know someone who can share his knowledge or you want to share it with others?</h4>
+        </div>
+
+        {% if 'sc' in questions['content'] %}
+            <h3>Current Votes</h3>
+            <table class="poll">
+                <tbody>
+                {% for vote in votes %}
+                    <tr>
+                        <td>Option {{ loop.index }}.</td>
+                        <td><label for="option">{{ vote[1] }}</label></td>
+                        <td>{{ vote[0] }} votes</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% elif 'mc' in questions['content'] %}
+            <h3>Current Votes</h3>
+            <table class="poll">
+                <tbody>
+                {% for vote in votes %}
+                    <tr>
+                        <td>Option {{ loop.index }}.</td>
+                        <td><label for="option">{{ vote[1] }}</label></td>
+                        <td>{{ vote[0] }} votes</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+        {% for answer in questions['answers'] %}
+            <h6>{{ questions['acount'] }} answers</h6>
+            <table>
+                <tr class="hr">
+                    <td class="votes">
+                        <div class="vote">
+                            <span class="icon-stack">
+                                <a class="voteup-on"
+                                   title="This answer shows research effort. It is useful and clear (click again to take back your vote)"
+                                   href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                    <i class="icon-thumbs-up icon-large"></i>
+                                </a>
+                            </span>
+
+                            <div class="mini-counts">{{ answer['votes'] }}</div>
+                            <div>votes</div>
+                            <span class="icon-stack">
+                                <a class="votedown-on"
+                                   title="This answer shows no research effort. It is not useful and unclear (click again to take back your vote)"
+                                   href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                    <i class="icon-thumbs-down icon-large"></i>
+                                </a>
+                            </span>
+                            <br/>
+                            {% if questions['content']['op'] != user_id %}
+                                {% if answer['best'] == True %}
+                                    <span class="icon-stack">
+                                        <i class="icon-ok icon-large accepted-answer"></i>
+                                    </span>
+                                {% endif %}
+                            {% else %}
+                                {% if answer['best'] == False %}
+                                    <span class="icon-stack">
+                                        <a class="accept-answer ok" title="This is the best answer so OP selects this."
+                                           href="#"
+                                           id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                            <i class="icon-ok icon-large"></i>
+                                        </a>
+                                    </span>
+                                {% else %}
+                                    <span class="icon-stack">
+                                        <a class="accepted-answer ok"
+                                           title="This is the best answer so OP selects this." href="#"
+                                           id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                            <i class="icon-ok icon-large"></i>
+                                        </a>
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['answer'] }}</div>
+                        <table class="poster">
+                            <tbody>
+                            <tr>
+                                {% if user_id is defined %}
+                                    <td class="vt">
+                                        <a href="/edit/ae-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           class="suggest-edit-post"
+                                           title=""><i class="icon-edit"></i> Edit</a>
+                                    </td>
+                                    <td class="vt">
+                                        <a title="Flag for inappropriate comment"
+                                           id="qaf-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           href="/flag/{{ questions['qid'] }}-{{ answer['aid'] }}" class="flag"
+                                                ><i class="icon-flag" style="color:#d00"></i> Flag</a>
+                                    </td>
+                                    <td class="vt">
+                                        <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');"><i
+                                                class="icon-comment" style="color:#a4c639"></i> Comment</a>
+                                    </td>
+                                {% else %}
+                                    <td class="vt">
+                                    </td>
+                                {% endif %}
+                                <td class="post-signature owner" align="right">
+                                    <div class="user-info ">
+                                        <div class="user-action-time">
+                                            Answered on <span title="2013-05-28 01:32:12Z"
+                                                              class="relativetime">{{ answer['tstamp'] }} </span>
+                                        </div>
+                                        <div class="user-gravatar32">
+                                            <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">
+                                                <div class=""><img
+                                                        src="{{ answer['email']|gravatar }}"
+                                                        alt="" height="32" width="32"></div>
+                                            </a>
+                                        </div>
+                                        <div class="user-details">
+                                            <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">{{ answer['opname'] }}</a><br>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            {% for comment in answer['comments'] %}
+                <div class="comment" id="c-{{ comment['cid'] }}">
+                    <div class="content">{{ comment['comment'] }}</div>
+                    -
+                    <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
+                    {{ comment['tstamp'] }}&nbsp;
+                    {% if user_id is defined %}
+                    <a title="Edit"
+                                                    href="/edit/ce-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i
+                        class="icon-edit"></i></a>
+                    <a title="Flag for inappropriate comment" class="flag" style="color:#d00"
+                       id="qac-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"
+                       href="/flag/{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i
+                            class="icon-flag"></i></a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if user_id is defined and questions['close'] != True %}
+                <form class="comment-form" id="f-{{ questions['qid'] }}-{{ answer['aid'] }}" method="post"
+                      aciton="/postcomment">
+                    {% from "macros.html" import render_field %}
+                    {{ form.csrf_token }}
+                    <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}-{{ answer['aid'] }}">
+                        <div id="wmd-button-bar-{{ questions['qid'] }}-{{ answer['aid'] }}" class="wmd-bar"></div>
+                        <div class="control-group">
+                            <label for="answer" class="control-label"></label>
+
+                            <div class="controls">
+
+                                <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
+                                          name="comment" id="wmd-input-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                          class="wmd-input"></textarea>
+                            </div>
+                        </div>
+                        <div id="insertImageDialog-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                             title="&nbsp;Insert Image or File">
+                            <h6>From the web</h6>
+
+                            <p>
+                                <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                            </p>
+                            <h6>From your computer (Max. 2MB)</h6>
+                            <span class="loading-small"></span>
+                            <input type="file" name="file" id="file" data-action="/image_upload"/>
+                        </div>
+                        <div id="wmd-preview-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                             class="wmd-panel wmd-preview"></div>
+                        <input type="hidden" name="element" value="{{ questions['qid'] }}-{{ answer['aid'] }}">
+
+                        <div style="clear:both;"></div>
+                        <div class="controls">
+                            <input type="submit" value="Post comment" class="btn btn-primary">
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    </div>
+    {% if user_id is defined and 'sc' not in questions['content'] and 'mc' not in questions['content'] and questions['close'] != True %}
+        <h3>Your answer</h3>
+        <form class="answer-form" method="post"
+              aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <div class="wmd-panel">
+                <div id="wmd-button-bar"></div>
+
+                {{ render_field(form.answer, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please post your answer here..") }}
+                <div id="insertImageDialog" title="&nbsp;Insert Image or File">
+                    <h6>From the web</h6>
+
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
+                </div>
+                <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+                <div style="clear:both;"></div>
+                <div class="controls">
+                    <button class="btn btn-primary">
+                        Post answer
+                    </button>
+                </div>
+            </div>
+        </form>
+    {% elif user_id is defined and 'sc' in questions['content'] %}
+        <h3>Your vote</h3>
+        <form class="answer-form" method="post"
+              aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <table class="poll">
+            <tbody>
+            {% for subfield in form.radio %}
+                <tr>
+                    <td>{{ subfield }}</td>
+                    <td>{{ subfield.label }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+        <br/>
+        <div class="controls">
+            <button class="btn btn-primary">
+                Post vote
+            </button>
+        </div>
+        </form>
+    {% elif user_id is defined and 'mc' in questions['content'] %}
+        <h3>Your vote</h3>
+        <form class="answer-form" method="post"
+              aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <table class="poll">
+            <tbody>
+            {% for i in range(1, options) %}
+                <div class="control-group">
+                    <label class="control-label mc1" for="Option {{ i }}">Option {{ i }}</label>
+                    <div class="controls mc2">
+                        <input class="question" id="option{{ i }}" name="option{{ i }}" type="checkbox" style="margin-left:10px;margin-top:-3px" value="{{ field_names[i-1] }}" type="text"> {{ field_names[i-1] }}
+                    </div>
+                </div>
+            {% endfor %}
+            </tbody>
+            </table>
+        <br/>
+        <div class="controls">
+            <button class="btn btn-primary">
+                Post vote
+            </button>
+        </div>
+        </form>
+    {% endif %}
+    </div>
+    <div id="sidebar">
+        <div class="count">
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ qcount }}</div>
+            <p>questions</p>
+        </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ acount }}</div>
+            <p>answers</p>
+        </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ ucount }}</div>
+            <p>users</p>
+        </div>
+        <div class="module" id="questions-count">
+            <div class="summarycount al">{{ tcount }}</div>
+            <p>tags</p>
+        </div>
+        </div>
+        <div id="popular-tags" class="module">
+            <h4 id="h-popular-tags">Popular Tags</h4>
+            {% for tag in tag_list %}
+                <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
+                   title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
+                <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
+                        class="item-multiplier-count">{{ tag['count'] }}</span></span>
+                <br/>
+            {% endfor %}
+        </div>
+        <div id="popular-tags" class="module">
+            <h4 id="h-popular-tags">Similar questions</h4>
+            {% for question in similar_questions %}
+                <a href="/questions/{{ question[0] }}/{{ question[2] }}" class="post-tag"
+                    rel="tag">{{ question[1] }}</a>
+                <!-- br/ -->
+            {% endfor %}
+        </div>
+    </div>
+    </div>
+    <!--    <script type="text/javascript">
+            $("document").ready(function () {
+            //hljs.selected_languages = hljs.LANGUAGES;
+            $("textarea").each(function () {
+            $(this).keypress(function () {
+            window.clearTimeout(hljs.Timeout);
+            hljs.Timeout = window.setTimeout(function () {
+            hljs.initHighlighting.called = false;
+            hljs.initHighlighting();
+
+            }, 200);
+            });
+            });
+            window.setTimeout(function () {
+            hljs.initHighlighting.called = false;
+            hljs.initHighlighting();
+            }, 200);
+            });
+            </script>-->
+    <script type="text/javascript">
+        var converter = new Markdown.Converter();
+        Markdown.Extra.init(converter, {
+            extensions: "all",
+            highlighter: "prettify",
+            table_class: "table-bordered table"
+        });
+
+        var originalHTML = $("#q-desc").text();
+        var convertedHTML = converter.makeHtml(originalHTML);
+        $("#q-desc").html(convertedHTML);
+        $(".answer").each(function () {
+            var originalHTML = $(this).text();
+            var convertedHTML = converter.makeHtml(originalHTML);
+            $(this).html(convertedHTML);
+        });
+        $(".content").each(function () {
+            var originalHTML = $(this).text();
+            var convertedHTML = converter.makeHtml(originalHTML);
+            $(this).html(convertedHTML);
+        });
+    </script>
+    <script type="text/javascript">
+        (function () {
+            if ($('#wmd-input').length > 0) {
+                var converter = new Markdown.getSanitizingConverter();
+                var help = function () {
+                    window.open('{{ config['HOST_URL'] }}editing-help');
+                }
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "prettify",
+                    table_class: "table-bordered table"
+                });
+
+                var editor = new Markdown.Editor(converter, null, { handler: help });
+
+                var $dialog = $('#insertImageDialog').dialog({
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+                var $loader = $('span.loading-small', $dialog);
+                var $url = $('input[type=text]', $dialog);
+                var $file = $('input[type=file]', $dialog);
+
+                editor.hooks.set('insertImageDialog', function (callback) {
+
+                    // dialog functions
+                    var dialogInsertClick = function () {
+                        callback($url.val().length > 0 ? $url.val() : null);
+                        dialogClose();
+                    };
+
+                    var dialogCancelClick = function () {
+                        dialogClose();
+                        callback(null);
+                    };
+
+                    var dialogClose = function () {
+                        // clean up inputs
+                        $url.val('');
+                        $file.val('');
+                        $dialog.dialog('close');
+                    };
+
+                    // set up dialog button handlers
+                    $dialog.dialog('option', 'buttons', {
+                        'Insert': dialogInsertClick,
+                        'Cancel': dialogCancelClick
+                    });
+
+                    var uploadStart = function () {
+                        $loader.show();
+                    };
+
+                    var uploadComplete = function (response) {
+                        $loader.hide();
+                        if (response.success) {
+                            callback(response.imagePath);
+                            dialogClose();
+                        } else {
+                            alert(response.message);
+                            $file.val('');
+                        }
+                        editor.refreshPreview();
+                    };
+
+                    // upload
+                    $file.unbind('change').ajaxfileupload({
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
+
+                    // open the dialog
+                    $dialog.dialog('open');
+
+                    return true; // tell the editor that we'll take care of getting the image url
+                });
+                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.run();
+            }
+        })();
+    </script>
+    <script>
+        $('.voteup-on').click(function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/vote_clicked', {
+                id: '#' + $(this).attr('id'),
+                direction: 'up'
+            }, function (data) {
+                $(id).parent().next().text(data.vote_count);
+            });
+            return false;
+        });
+        $('.votedown-on').click(function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/vote_clicked', {
+                id: '#' + $(this).attr('id'),
+                direction: 'down'
+            }, function (data) {
+                $(id).parent().siblings().first().text(data.vote_count);
+            });
+            return false;
+        });
+        $('.ok').click(function () {
+            id = '#' + $(this).attr('id');
+            //$(this).css("color", "#070");
+            $.getJSON('/answer_accepted', {
+                id: '#' + $(this).attr('id')
+            }, function (data) {
+                //alert(data.success);
+                $('.ok').each(function () {
+                    $(this).css("color", "#333");
+                });
+                $(id).css("color", "#070");
+                flash('Thanks for accepting this answer.', 'info')
+            });
+            return false;
+        });
+        $('body').on("click", ".starred", function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/favorited', {
+                id: '#' + $(this).attr('id')
+            }, function (data) {
+                $(id).removeClass('starred');
+                $(id).addClass('unstarred');
+                flash('You have un-favorited this question.', 'info')
+            });
+            return false;
+        });
+        $('body').on("click", ".unstarred", function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/favorited', {
+                id: '#' + $(this).attr('id')
+            }, function (data) {
+                $(id).removeClass('unstarred');
+                $(id).addClass('starred');
+                flash('You have favorited this question.', 'success')
+            });
+            return false;
+        });
+        $('.flag').click(function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/flag', {
+                id: '#' + $(this).attr('id'),
+                url: $(location).attr('href')
+            }, function (data) {
+                flash('Thanks for flagging. Admin has been emailed.', 'info')
+            });
+            return false;
+        });
+        $('.sticky').click(function () {
+            $.getJSON('/sticky', {
+                id: $(this).attr('id'),
+                url: $(location).attr('href')
+            }, function (data) {
+                flash('Question has been made sticky.', 'success')
+            });
+            return false;
+        });
+        $('.close1').click(function () {
+            $.getJSON('/close', {
+                id: $(this).attr('id'),
+                url: $(location).attr('href')
+            }, function (data) {
+                flash('Question has been closed/opened.', 'success')
+            });
+            return false;
+        });
+    </script>
+    <script type="text/javascript">var switchTo5x = true;</script>
+    <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">stLight.options({publisher: "ur-49fb3c1c-f817-275f-74b6-3363921b7b06", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+{% endblock %}

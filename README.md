@@ -37,6 +37,6 @@ I believe that keeping it minimalistic is best and very few new features will
 be introduced. The atom feed is the best way to watch the QA activity. In few
 days I will freeze the new features and do a final beta release.
 
-Few more feature are to be done and i.e. to put uploads in distributed filesystem
-and closing the questions etcetra but these will be done later. Database has been
-tuned for maximum performance and querying code should be changed for simplicity.
+few more feature are to be done and e.g. to put uploads in distributed filesystem.
+Database has been tuned for maximum performance and querying code should be changed
+for simplicity.
