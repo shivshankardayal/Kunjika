@@ -1,24 +1,8 @@
-# Copyright (c) 2013 Shiv Shankar Dayal
-# This file is part of Kunjika.
-#
-# Kunjika is free software: you can redistribute it and/or modify it
-# under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License,
-# or (at your option) any later version.
-#
-# Kunjika is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see http://www.gnu.org/licenses/.
-
 # CSRF section
 # Keep keys complex and never share. You must edit these.
 CSRF_ENABLED = True
-SECRET_KEY = 'you-will-never-guess'
-CSRF_SESSION_KEY="somethingimpossibletoguess"
+SECRET_KEY = 'yagyavalkyagayatri'
+CSRF_SESSION_KEY="yagyavalkyagayatri"
 
 # OpenID section
 # This is not used as of now.
@@ -37,8 +21,8 @@ DB_PORT = '8091'
 # reCaptcha seaction
 # Your google recaptcha keys. You must edit these.
 RECAPTCHA_USE_SSL = False
-RECAPTCHA_PUBLIC_KEY = '6Lc-t-ASAAAAAB0YkGtdwfWS4lJio8-aCf4IM1II'
-RECAPTCHA_PRIVATE_KEY = '6Lc-t-ASAAAAABjbkjOyZpnD1wZ4VEstwQUtQ3Pb'
+RECAPTCHA_PUBLIC_KEY = '6LcbQOQSAAAAAO01LgOi4IQZSwGhfrY4dLxTb7VU'
+RECAPTCHA_PRIVATE_KEY = '6LcbQOQSAAAAAFN6-_069S6hsX-fsiWSIJczYN-H'
 RECAPTCHA_OPTIONS = {'theme': 'white'}
 
 # google analytics key. You must edit these.
@@ -51,12 +35,11 @@ GOOGLE_ANALYTICS_KEY = 'jhegsbkgkw'
 MAX_COMMENT_LENGTH = 400
 MIN_COMMENT_LENGTH = 20
 
-QUESTIONS_PER_PAGE = 50
+QUESTIONS_PER_PAGE = 20
 TAGS_PER_PAGE = 40
 USERS_PER_PAGE = 40
-GROUPS_PER_PAGE = 40
-USER_QUESTIONS_PER_PAGE = 10
-USER_ANSWERS_PER_PAGE = 10
+USER_QUESTIONS_PER_PAGE = 5
+USER_ANSWERS_PER_PAGE = 5
 
 # You must edit these.
 ADMIN_EMAIL='shivshankar.dayal@gmail.com'
@@ -83,10 +66,11 @@ COMMENTS_PER_DAY = 50
 
 #  You database URL, DNS and mail server IP. You must edit these.
 DB_URL = 'http://localhost:8092/'
-HOST_URL = 'http://localhost:5000/'
+HOST_URL = 'http://kunjika.libreprogramming.org/'
 MAIL_SERVER_IP = '127.0.0.1'
-ES_URL = '127.0.0.1'
-DEBUG_MODE = True
+ES_URL = 'http://localhost:9200/'
+
+DEBUG_MODE = False
 
 # log file path. You must edit these.
 LOG_FILE = '/var/www/Kunjika/kunjika.log'
@@ -98,7 +82,7 @@ MAX_LOG_SIZE = 10 * 1024 *1024
 BACKUP_COUNT = 0
 
 # upload folder. You must edit these.
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = '/var/www/Kunjika/uploads'
 
 #  upload size. tune as you need
 MAX_CONTENT_LENGTH = 2 * 1024 * 1024

@@ -68,7 +68,7 @@ kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
 QUESTIONS_PER_PAGE = kunjika.config['QUESTIONS_PER_PAGE']
 TAGS_PER_PAGE = kunjika.config['TAGS_PER_PAGE']
 USERS_PER_PAGE = kunjika.config['USERS_PER_PAGE']
-GROUPS_PER_PAGE = kunjika.config['GROUPS_PER_PAGE']
+#GROUPS_PER_PAGE = kunjika.config['GROUPS_PER_PAGE']
 
 USER_QUESTIONS_PER_PAGE = kunjika.config['USER_QUESTIONS_PER_PAGE']
 USER_ANSWERS_PER_PAGE = kunjika.config['USER_ANSWERS_PER_PAGE']
@@ -84,7 +84,7 @@ lm.init_app(kunjika)
 cb = Couchbase.connect("default")
 qb = Couchbase.connect("questions")
 tb = Couchbase.connect("tags")
-sb = Couchbase.connect("sundries")
+sb = Couchbase.connect("security")
 pb = Couchbase.connect("polls")
 
 
@@ -658,15 +658,16 @@ def users(qpage=None, apage=None, uid=None, uname=None):
                            force_lower=False)
     if uid in session:
         logged_in = True
-        return render_template('users.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'],
-                               lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
-                               upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
-                               questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
-                               answer_pagination=answer_pagination, role=g.user.role)
+	if g.user.is_authenticated():
+	        return render_template('users.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \
+        	                       lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, \
+                	               upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user, \
+                        	       questions=questions, answers=answers, aids=aids, question_pagination=question_pagination, \
+					answer_pagination=answer_pagination, role=g.user.role) 
     return render_template('users.html', title=user['name'], user_id=user['id'], lname=user['lname'], name=user['name'], fname=user['fname'], email=user['email'], gravatar=gravatar100, upage=True,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
                            questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
-                           answer_pagination=answer_pagination, role=g.user.role)
+                           answer_pagination=answer_pagination)
 
 @kunjika.route('/ask', methods=['GET', 'POST'])
 def ask():

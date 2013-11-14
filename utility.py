@@ -524,18 +524,22 @@ def get_user_questions_per_page(user, qpage, USER_QUESTIONS_PER_PAGE, qcount):
     for row in question_view:
         print row['value']
         question = {}
+	question['content'] = {}
         question['qid'] = row['value'][0]
         question['votes'] = row['value'][1]
         question['acount'] = row['value'][2]
         question['title'] = row['value'][3]
         question['url'] = row['value'][4]
         question['views'] = row['value'][5]
+	question['content']['ts'] = row['value'][6]
+	question['content']['op'] = row['value'][7]
         question_list.append(question)
 
     #for qid in qid_list:
     #    question = kunjika.qb.get(str(qid)).value
     #    question_list.append(question)
 
+    print question_list
     return question_list
 
 def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
