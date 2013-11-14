@@ -127,6 +127,7 @@ try:
 except:
     pass
 
+
 questions_mapping = {
      'title': {
          'boost': 1.0,
@@ -1136,7 +1137,8 @@ def get_tags(q=None, qid=None):
             tag = json.loads(tag)['rows'][0]['id']
             tids_list.append(tag)
 
-        val_res = tb.get_multi(tids_list)
+        if len(tids_list) != 0:
+            val_res = tb.get_multi(tids_list)
         tags = []
         for tid in tids_list:
             tags_list.append({"id": val_res[str(tid)].value['tid'], "name": val_res[str(tid)].value['tag']})
@@ -1717,7 +1719,7 @@ def search_help():
 def stikcy():
     if g.user.id == 1:
         qid=request.args.get('id')[2:]
-        print qid
+        #print qid
         question = qb.get(str(qid)).value
         if 'sticky' not in question:
             question['sticky'] = True
@@ -1727,11 +1729,33 @@ def stikcy():
             question['sticky'] = False
 
         qb.replace(str(qid), question)
-        print "questions stickied"
+        #print "questions stickied"
 
         return jsonify({"success": True})
     else:
         return jsonify({"success": False})
+
+@kunjika.route('/close')
+def close():
+    if g.user.id == 1:
+        qid=request.args.get('id')[2:]
+        #print qid
+        question = qb.get(str(qid)).value
+        if 'close' not in question:
+            question['close'] = True
+        elif question['close'] is False:
+            question['close'] = True
+        else:
+            question['close'] = False
+
+        qb.replace(str(qid), question)
+        #print "questions stickied"
+
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False})
+
+
 
 def create_poll(form, options):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()

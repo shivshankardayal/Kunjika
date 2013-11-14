@@ -362,8 +362,9 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
     for row in rows:
         #print row['id']
         qids_list.append(str(row['id']))
+    if len(qids_list) != 0:
+        val_res = kunjika.qb.get_multi(qids_list)
 
-    val_res = kunjika.qb.get_multi(qids_list)
     for id in qids_list:
         questions_list.append(val_res[str(id)].value)
 
@@ -390,7 +391,8 @@ def get_tags_per_page(page, TAGS_PER_PAGE, count):
     for row in rows:
         tids_list.append(str(row['id']))
 
-    val_res = kunjika.tb.get_multi(tids_list)
+    if len(tids_list) != 0:
+        val_res = kunjika.tb.get_multi(tids_list)
     for id in tids_list:
         tags_list.append(val_res[str(id)].value)
 
@@ -422,7 +424,6 @@ def get_users_per_page(page, USERS_PER_PAGE, count):
     users_list = []
 
     for row in rows:
-
         user = kunjika.cb.get(str(row['id'])).value
         users_list.append(user)
 
@@ -440,7 +441,8 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
     for qid in tag['qid']:
         qids_list.append(str(qid))
 
-    val_res = kunjika.qb.get_multi(qids_list)
+    if len(qids_list) != 0:
+        val_res = kunjika.qb.get_multi(qids_list)
 
     for qid in qids_list:
         question_list.append(val_res[qid].value)
@@ -483,7 +485,8 @@ def get_popular_tags():
     for row in rows:
         tids_list.append(str(row['id']))
 
-    val_res = kunjika.tb.get_multi(tids_list)
+    if len(tids_list) != 0:
+        val_res = kunjika.tb.get_multi(tids_list)
     for id in tids_list:
         tags_list.append(val_res[str(id)].value)
 
@@ -583,7 +586,7 @@ def get_similar_questions(title, qid):
     results=[]
 
     for r in title_results:
-        #print r
+        print r
         if r['qid'] != qid:
             question_dict = {}
             question_dict = question.get_question_by_id(str(r['qid']), question_dict)

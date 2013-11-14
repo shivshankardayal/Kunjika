@@ -244,6 +244,10 @@
                                    class="sticky suggest-edit-post"><i class="icon-pushpin"
                                                                                      ></i> Sticky/Unsticky</a>
                             </td>
+						<td class="vt">
+                          <a href="/close/{{ questions['qid'] }}" id="c-{{ questions['qid'] }}"
+                             class="close1">Close</a>
+                        </td>
                         {% endif %}
                             <td class="vt">
                                 <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
@@ -294,6 +298,8 @@
     <span class='st_fbrec' displayText=''></span>
     <span class='st_plusone' displayText=''></span>
     <span class='st_email' displayText='Email'></span>
+	<br/><br/>
+	<span class="close" style="float:None;">This question has been closed by Admin</span>
     {% for comment in questions['comments'] %}
         <div class="comment" id="c-{{ comment['cid'] }}">
             <div class="content"> {{ comment['comment'] }}</div>
@@ -308,7 +314,7 @@
             {% endif %}
         </div>
     {% endfor %}
-    {% if user_id is defined %}
+    {% if user_id is defined and questions['close'] != True %}
         <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
               aciton="/postcomment">
             {% from "macros.html" import render_field %}
@@ -496,7 +502,7 @@
                     {% endif %}
                 </div>
             {% endfor %}
-            {% if user_id is defined %}
+            {% if user_id is defined and questions['close'] != True %}
                 <form class="comment-form" id="f-{{ questions['qid'] }}-{{ answer['aid'] }}" method="post"
                       aciton="/postcomment">
                     {% from "macros.html" import render_field %}
@@ -538,7 +544,7 @@
         {% endfor %}
     {% endif %}
     </div>
-    {% if user_id is defined and 'sc' not in questions['content'] and 'mc' not in questions['content'] %}
+    {% if user_id is defined and 'sc' not in questions['content'] and 'mc' not in questions['content'] and questions['close'] != True %}
         <h3>Your answer</h3>
         <form class="answer-form" method="post"
               aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
@@ -856,6 +862,15 @@
                 url: $(location).attr('href')
             }, function (data) {
                 flash('Question has been made sticky.', 'success')
+            });
+            return false;
+        });
+        $('.close1').click(function () {
+            $.getJSON('/close', {
+                id: $(this).attr('id'),
+                url: $(location).attr('href')
+            }, function (data) {
+                flash('Question has been closed/opened.', 'success')
             });
             return false;
         });
