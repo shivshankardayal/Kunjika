@@ -724,6 +724,7 @@ def ask():
             question['views'] = 0
             question['votes_list'] = []
             question['opname'] = g.user.name
+            question['close'] = False
 
             user = cb.get(str(g.user.id)).value
 
@@ -1741,11 +1742,9 @@ def close():
         qid=request.args.get('id')[2:]
         #print qid
         question = qb.get(str(qid)).value
-        if 'close' not in question:
+        if question['close'] == False:
             question['close'] = True
-        elif question['close'] is False:
-            question['close'] = True
-        else:
+        elif question['close'] == True:
             question['close'] = False
 
         qb.replace(str(qid), question)

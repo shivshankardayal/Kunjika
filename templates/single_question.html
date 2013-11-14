@@ -299,7 +299,9 @@
     <span class='st_plusone' displayText=''></span>
     <span class='st_email' displayText='Email'></span>
 	<br/><br/>
+	{% if questions['close'] == True %}
 	<span class="close" style="float:None;">This question has been closed by Admin</span>
+	{% endif %}
     {% for comment in questions['comments'] %}
         <div class="comment" id="c-{{ comment['cid'] }}">
             <div class="content"> {{ comment['comment'] }}</div>
