@@ -38,7 +38,7 @@
             } else {
                 $(id).addClass('ran');
 
-                var converter = new Markdown.getSanitizingConverter();
+                var converter = new Markdown.Converter();
                 var help = function () {
                     window.open('{{ config['HOST_URL'] }}editing-help');
                 }
@@ -676,7 +676,7 @@
             });
             </script>-->
     <script type="text/javascript">
-        var converter = new Markdown.getSanitizingConverter();
+        var converter = new Markdown.Converter();
         Markdown.Extra.init(converter, {
             extensions: "all",
             highlighter: "prettify",
