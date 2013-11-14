@@ -98,7 +98,7 @@ MAX_LOG_SIZE = 10 * 1024 *1024
 BACKUP_COUNT = 0
 
 # upload folder. You must edit these.
-UPLOAD_FOLDER = '/var/www/Kunjika/uploads'
+UPLOAD_FOLDER = 'uploads'
 
 #  upload size. tune as you need
 MAX_CONTENT_LENGTH = 2 * 1024 * 1024

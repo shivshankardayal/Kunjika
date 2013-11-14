@@ -356,6 +356,7 @@
 
 .q-desc {
     padding-top: 10px;
+	max-width: 728px;
 }
 
 .poster {
