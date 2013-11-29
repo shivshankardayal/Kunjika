@@ -1960,11 +1960,11 @@ def edit_profile(uid=None):
 
             cb.replace(str(g.user.id), user)
 
-            return redirect(url_for('users', uid=g.user.id))
+            return redirect(url_for('users', uid=g.user.id, uname=g.user.name))
         return render_template('edit_profile.html', title='Edit Profile', form=form, user=user, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
-    return redirect(url_for('users', uid=g.user.id ))
+    return redirect(url_for('users', uid=g.user.id, name=g.user.name ))
 
 
 @kunjika.route('/users/<uid>/<uname>/settings', methods=['GET', 'POST'])
