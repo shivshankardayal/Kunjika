@@ -490,7 +490,7 @@ def get_popular_tags():
     for id in tids_list:
         tags_list.append(val_res[str(id)].value)
 
-    return tags_list
+    return tags_list[:25]
 
 def filter_by(email):
 

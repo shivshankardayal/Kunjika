@@ -51,7 +51,8 @@ import urllib
 from couchbase.views.iterator import View, Query
 
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
-                          'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg'])
+                          'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg',
+                          'tar.gz', 'tar.bz2', 'tgz', 'tbz', 'doc', 'docx', 'odf', 'odt', 'ppt', 'pptx', 'djvu'])
 
 kunjika = Flask(__name__)
 
@@ -1666,7 +1667,7 @@ def reset_password(token=None):
                 msg.sender = admin
                 msg.html = "<p>Hi,<br/>A password reset request has been initiated " \
                            "by you. You can reset your password at " \
-                           "<a href=HOST_URL + 'reset_password/" + token + "'>" + HOST_URL + "reset_password/" + token + "</a>." \
+                           "<a href=" + HOST_URL + "reset_password/" + token + "'>" + HOST_URL + "reset_password/" + token + "</a>." \
                            "However, if you have not raised this request no need to change " \
                            "your password just send an email to " + admin + ". Note that this " \
                            "token is only valid for 1 day. <br/>Best regards," \
