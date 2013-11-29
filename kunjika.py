@@ -1667,7 +1667,7 @@ def reset_password(token=None):
                 msg.sender = admin
                 msg.html = "<p>Hi,<br/>A password reset request has been initiated " \
                            "by you. You can reset your password at " \
-                           "<a href=" + HOST_URL + "reset_password/" + token + "'>" + HOST_URL + "reset_password/" + token + "</a>." \
+                           "<a href=" + HOST_URL + "reset_password/" + token + ">" + HOST_URL + "reset_password/" + token + "</a>." \
                            "However, if you have not raised this request no need to change " \
                            "your password just send an email to " + admin + ". Note that this " \
                            "token is only valid for 1 day. <br/>Best regards," \
@@ -1682,21 +1682,24 @@ def reset_password(token=None):
         passwordResetForm = PasswordResetForm(request.form)
         if passwordResetForm.validate_on_submit() and request.method == 'POST':
             try:
-                email = s.unsign(token, max_age=1)
+                email = s.unsign(token, max_age=86400)
+
                 document = urllib2.urlopen(
                     DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
 
+		document = json.loads(document)
+		#print document
                 if 'id' in document['rows'][0]:
                     try:
-                        document = cb.get(document['rows'][0]['id']).value
+                        document = cb.get(str(document['rows'][0]['id'])).value
                     except:
                         return redirect(url_for('questions'))
+            	    passwd_hash = bcrypt.generate_password_hash(passwordResetForm.password.data)
+		    document['password'] = passwd_hash
+		    cb.replace(str(document['id']), document)
             except:
-                #print "Either signature is bad or token has expired"
+                print "Either signature is bad or token has expired"
                 return redirect(url_for('questions'))
-            passwd_hash = bcrypt.generate_password_hash(passwordResetForm.password.data)
-            document['password'] = passwd_hash
-            cb.replace(str(document['id']), document)
 
             return redirect(url_for('questions'))
         return render_template('reset_password.html', passwordResetForm=passwordResetForm, token=token, title="Reset Password")
