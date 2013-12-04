@@ -485,7 +485,7 @@ pre.prettyprint {
 }
 
 .votes{
-    padding-right:15px;
+    vertical-align: top;
 }
 
 .voteup-on, .voteup-on:hover{
