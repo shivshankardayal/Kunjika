@@ -637,7 +637,7 @@ def send_invites(request):
         msg.recipients = email_list
         msg.sender = user['email']
         msg.html = "<p>Hi,<br/><br/> You have been invited to join Kunjika by " + user['name'] +\
-            "We would like you to join our family of friends. Please register yourself at " +\
+            ". We would like you to join our family of friends. Please register yourself at " +\
             kunjika.HOST_URL +\
             " <br/><br/>Best regards,<br/>Kunjika Team<p>"
         kunjika.mail.send(msg)

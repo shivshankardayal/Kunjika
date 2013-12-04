@@ -1177,6 +1177,7 @@ def add_tags(tags_passed, qid):
 def replace_tags(tags_passed, qid, current_tags):
     for tag in tags_passed:
         if tag not in current_tags:
+	    tid = 0
             try:
                 document = tb.get(tag).value
                 document['count'] += 1
@@ -1196,8 +1197,8 @@ def replace_tags(tags_passed, qid, current_tags):
                 data['tid'] = tid
 
                 tb.add(tag, data)
-            es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
-            es_conn.indices.refresh('tags')
+                es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
+                es_conn.indices.refresh('tags')
 
     for tag in current_tags:
         if tag not in tags_passed:
