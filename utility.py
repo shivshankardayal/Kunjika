@@ -496,7 +496,7 @@ def filter_by(email):
 
     user = urllib2.urlopen(
                 kunjika.DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"').read()
-    id = json.loads(user)`['id']
+    id = json.loads(user)['rows'][0]['id']
 
     try:
         user = kunjika.cb.get(str(id)).value

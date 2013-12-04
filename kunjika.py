@@ -1309,7 +1309,8 @@ def edits(element):
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
     else:
         return render_template('edit.html', title='Edit', form=form, question=question, type=type, qid=qid,
-                               aid=int(aid), cid=int(cid), qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                               aid=int(aid), cid=int(cid), qcount=qcount, ucount=ucount, tcount=tcount,
+                               acount=acount, tag_list=tag_list, name=g.user.name, role=g.user.role, user_id=g.user.id)
 
 
 @kunjika.route('/answer_accepted')
