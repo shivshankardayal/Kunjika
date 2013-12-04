@@ -85,7 +85,7 @@ lm.init_app(kunjika)
 cb = Couchbase.connect("default")
 qb = Couchbase.connect("questions")
 tb = Couchbase.connect("tags")
-sb = Couchbase.connect("security")
+sb = Couchbase.connect("sundries")
 pb = Couchbase.connect("polls")
 
 

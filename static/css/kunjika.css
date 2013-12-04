@@ -597,8 +597,6 @@ text-align: center;
 }
 
 .user-about-me {
-    margin-left: 215px;
-    width: 360px;
     height: 225px;
     /*float: right;*/
     overflow-y: auto;
