@@ -86,7 +86,7 @@ lm.init_app(kunjika)
 cb = Couchbase.connect("default")
 qb = Couchbase.connect("questions")
 tb = Couchbase.connect("tags")
-sb = Couchbase.connect("sundries")
+sb = Couchbase.connect("security")
 pb = Couchbase.connect("polls")
 
 
@@ -241,7 +241,7 @@ def get_user(uid):
         if 'role' in user_from_db:
             return User(user_from_db['name'], user_from_db, user_from_db['id'], user_from_db['role'])
         else:
-            return User(user_from_db['name'], user_from_db['id'], None)
+            return User(user_from_db['name'], user_from_db, user_from_db['id'], None)
     except NotFoundError:
         return None
 
@@ -493,25 +493,26 @@ def questions(tag=None, page=None, qid=None, url=None):
                     qb.replace(str(questions_dict['qid']), questions_dict)
 
                     email_list = []
-                    email_list.append(int(questions_dict['content']['op']))
+                    email_list.append(str(questions_dict['content']['op']))
                     if 'comments' in questions_dict:
                         for comment in questions_dict['comments']:
-                            email_list.append(comment['poster'])
+                            email_list.append(str(comment['poster']))
                     if 'answers' in questions_dict:
-                        for answer in questions_dict:
-                            email_list.append(answer['poster'])
+                        for answer in questions_dict['answers']:
+                            email_list.append(str(answer['poster']))
                             if 'comments' in answer:
                                 for comment in questions_dict['comments']:
-                                    email_list.append(comment['poster'])
+                                    email_list.append(str(comment['poster']))
 
                     email_list = set(email_list)
-                    email_list = email_list - set(g.user.id)
+                    current_user_list = [g.user.id]
+                    email_list = email_list - set(current_user_list)
                     email_list = list(email_list)
 
                     email_users = cb.get_multi(email_list)
                     email_list = []
-                    for user in email_users:
-                        email_list.append(user['email'])
+                    for id in email_users:
+                        email_list.append(email_users[str(id)].value['email'])
 
                     try:
                         msg = Message("A new answer has been posted to a question where you have answered or commented")
@@ -520,9 +521,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                         msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
                         HOST_URL + "questions/" + str(questions_dict['qid']) + '/' + questions_dict['url'] + \
                         " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-                        thr = Thread(target = utility.send_async_email, args = [msg])
-                        thr.start()
-
+                        mail.send(msg)
                         pass
                     except:
                         pass
@@ -817,7 +816,7 @@ def create_profile():
     document = None
     profileForm = ProfileForm(request.form)
     if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('/'))
+        return redirect(url_for('questions'))
     if profileForm.validate_on_submit() and request.method == 'POST':
         #print "hello"
         data = {}
@@ -855,8 +854,8 @@ def create_profile():
         document = urllib2.urlopen(
             DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + profileForm.email1.data + '"&stale=false').read()
         document = json.loads(document)
-        if 'id' in document['rows'][0]:
-            document = cb.get(document['rows'][0]['id']).value
+        #if 'id' in document['rows'][0]:
+        #    document = cb.get(document['rows'][0]['id']).value
         ##print(document)
         if len(document['rows']) == 0:
             #print "hello2"
@@ -866,7 +865,7 @@ def create_profile():
             did = cb.get('count').value
             data['id'] = did
             cb.add(str(did), data)
-            user = User(data['name'], did)
+            user = User(data['name'], data, did)
             login_user(user, remember=True)
             print data['name'] + ' ' + did
             es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
@@ -884,6 +883,8 @@ def create_profile():
                 return redirect(url_for('questions'))
             except:
                 return make_response("cant login")
+        #else:
+        #  document = cb.get(document['rows'][0]['id']).value
     return render_template('create_profile.html', form=profileForm,
                            title="Create Profile", lpage=True, next=oid.get_next_url())
 
@@ -897,16 +898,17 @@ def create_or_login(resp):
             return redirect(url_for('questions'))
         flash(u'Successfully signed in')
 
-        g.user = user
         #print user
         session[user['id']] = user['id']
         session['logged_in'] = True
         if 'role' in user:
             user['admin'] = True
-        user = User(user['name'], user, user['id'])
+
+        g.user = User(user['name'], user, user['id'])
+        user = g.user   
+        #user = User(user['name'], user, user['id'])
         try:
             login_user(user, remember=True)
-            user = User(user['name'], user, user['id'])
             return redirect(url_for('questions'))
         except:
             return make_response("cant login")
@@ -1485,25 +1487,27 @@ def postcomment():
     question['updated'] = int(time())
     qb.replace(str(qid), question)
     email_list = []
-    email_list.append(int(questions['content']['op']))
+    email_list.append(str(question['content']['op']))
     if 'comments' in question:
         for comment in question['comments']:
-            email_list.append(comment['poster'])
+            email_list.append(str(comment['poster']))
     if 'answers' in question:
-        for answer in question:
-            email_list.append(answer['poster'])
+        for answer in question['answers']:
+            email_list.append(str(answer['poster']))
             if 'comments' in answer:
                 for comment in question['comments']:
-                    email_list.append(comment['poster'])
+                    email_list.append(str(comment['poster']))
 
     email_list = set(email_list)
-    email_list = email_list - set(g.user.id)
+    current_user_list = [g.user.id]
+    email_list = email_list - set(current_user_list)
     email_list = list(email_list)
 
     email_users = cb.get_multi(email_list)
     email_list = []
-    for user in email_users:
-        email_list.append(user['email'])
+
+    for id in email_users:
+      email_list.append(email_users[str(id)].value['email'])
 
     try:
         msg = Message("A new answer has been posted to a question where you have answered or commented")
@@ -1512,10 +1516,7 @@ def postcomment():
         msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
         HOST_URL + "questions/" + str(question['qid']) + '/' + question['url'] + \
         " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-        thr = Thread(target = utility.send_async_email, args = [msg])
-        thr.start()
-
-        pass
+        mail.send(msg)
     except:
         pass
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))

@@ -497,8 +497,10 @@ def filter_by(email):
 
     user = urllib2.urlopen(
                 kunjika.DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"').read()
-    id = json.loads(user)['rows'][0]['id']
-
+    try:
+      id = json.loads(user)['rows'][0]['id']
+    except:
+      return None
     try:
         user = kunjika.cb.get(str(id)).value
         return user
@@ -641,9 +643,7 @@ def send_invites(request):
             ". We would like you to join our family of friends. Please register yourself at " +\
             kunjika.HOST_URL +\
             " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-        thr = Thread(target = send_async_email, args = [msg])
-        thr.start()
-
+        kunjika.mail.send(msg)
         return True
     except:
         return False
