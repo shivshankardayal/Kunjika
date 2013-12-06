@@ -49,6 +49,7 @@ from wtforms import (BooleanField, TextField, PasswordField, validators, TextAre
 import pyes
 import urllib
 from couchbase.views.iterator import View, Query
+from threading import Thread
 
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg',
@@ -490,6 +491,36 @@ def questions(tag=None, page=None, qid=None, url=None):
                     user['rep'] += 4
                     cb.replace(str(g.user.id), user)
                     qb.replace(str(questions_dict['qid']), questions_dict)
+
+                    email_list = []
+                    email_list.append(int(questions_dict['content']['op']))
+                    if 'comments' in questions_dict:
+                        for comment in questions_dict['comments']:
+                            email_list.append(comment['poster'])
+                    if 'answers' in questions_dict:
+                        for answer in questions_dict:
+                            email_list.append(answer['poster'])
+                            if 'comments' in answer:
+                                for comment in questions_dict['comments']:
+                                    email_list.append(comment['poster'])
+
+                    email_list = set(email_list)
+                    email_list = email_list - set(g.user.id)
+                    email_list = list(email_list)
+
+                    try:
+                        msg = Message("A new answer has been posted to a question where you have answered or commented")
+                        msg.recipients = email_list
+                        msg.sender = admin
+                        msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
+                        HOST_URL + "questions/" + str(questions_dict['qid']) + '/' + questions_dict['url'] + \
+                        " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+                        thr = Thread(target = utility.send_async_email, args = [msg])
+                        thr.start()
+
+                        pass
+                    except:
+                        pass
 
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
                 qb.replace(str(questions_dict['qid']), questions_dict)
@@ -1376,7 +1407,8 @@ def flag():
 def postcomment():
     ##print request.form
     ##print type(request.form['comment'])
-    user = cb.get(str(g.user.id)).value
+    #user = cb.get(str(g.user.id)).value
+    user = g.user.user_doc
     '''
     try:
         data = sb.get(user['email'])
@@ -1447,6 +1479,34 @@ def postcomment():
     #p#print(question)
     question['updated'] = int(time())
     qb.replace(str(qid), question)
+    email_list = []
+    email_list.append(int(questions['content']['op']))
+    if 'comments' in question:
+        for comment in question['comments']:
+            email_list.append(comment['poster'])
+    if 'answers' in question:
+        for answer in question:
+            email_list.append(answer['poster'])
+            if 'comments' in answer:
+                for comment in question['comments']:
+                    email_list.append(comment['poster'])
+
+    email_list = set(email_list)
+    email_list = email_list - set(g.user.id)
+    email_list = list(email_list)
+    try:
+        msg = Message("A new answer has been posted to a question where you have answered or commented")
+        msg.recipients = email_list
+        msg.sender = admin
+        msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
+        HOST_URL + "questions/" + str(question['qid']) + '/' + question['url'] + \
+        " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+        thr = Thread(target = utility.send_async_email, args = [msg])
+        thr.start()
+
+        pass
+    except:
+        pass
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
     #return '<div class="comment" id="c-' + str(comment['cid']) + '">' + request.form['comment'] +'<div>&mdash;</div>' \
     #       '<a href="/users/"' + str(g.user.id) + '/' + g.user.name + '>' + g.user.name +'</a> ' + str(ts) +'</div>'

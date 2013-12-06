@@ -26,6 +26,7 @@ from flask.ext.mail import Mail, Message
 from uuid import uuid4
 from couchbase.views.iterator import View
 from couchbase.views.params import Query
+from threading import Thread
 
 def common_data():
     tag_list = []
@@ -640,7 +641,8 @@ def send_invites(request):
             ". We would like you to join our family of friends. Please register yourself at " +\
             kunjika.HOST_URL +\
             " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-        kunjika.mail.send(msg)
+        thr = Thread(target = send_async_email, args = [msg])
+        thr.start()
 
         return True
     except:
@@ -668,3 +670,6 @@ def create_group(request):
         return True
     except:
         return False
+
+def send_async_email(msg):
+    kunjika.mail.send(msg)
