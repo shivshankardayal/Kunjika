@@ -508,6 +508,11 @@ def questions(tag=None, page=None, qid=None, url=None):
                     email_list = email_list - set(g.user.id)
                     email_list = list(email_list)
 
+                    email_users = cb.get_multi(email_list)
+                    email_list = []
+                    for user in email_users:
+                        email_list.append(user['email'])
+
                     try:
                         msg = Message("A new answer has been posted to a question where you have answered or commented")
                         msg.recipients = email_list
@@ -1494,6 +1499,12 @@ def postcomment():
     email_list = set(email_list)
     email_list = email_list - set(g.user.id)
     email_list = list(email_list)
+
+    email_users = cb.get_multi(email_list)
+    email_list = []
+    for user in email_users:
+        email_list.append(user['email'])
+
     try:
         msg = Message("A new answer has been posted to a question where you have answered or commented")
         msg.recipients = email_list
