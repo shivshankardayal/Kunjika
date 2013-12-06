@@ -238,7 +238,7 @@ def get_user(uid):
     try:
         user_from_db = cb.get(str(uid)).value
         if 'role' in user_from_db:
-            return User(user_from_db['name'], user_from_db['id'], user_from_db['role'])
+            return User(user_from_db['name'], user_from_db, user_from_db['id'], user_from_db['role'])
         else:
             return User(user_from_db['name'], user_from_db['id'], None)
     except NotFoundError:
@@ -1600,7 +1600,8 @@ def ban():
     if g.user.id == 1:
         user_id = request.args.get('id')
 
-        user = cb.get(str(user_id)).value
+        #user = cb.get(str(user_id)).value
+        user = g.user.user_doc
         if user['banned'] is False:
             user['banned'] = True
         else:
@@ -1717,7 +1718,8 @@ def editing_help():
 def search_help():
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     if g.user is not None and g.user.is_authenticated():
-        user = cb.get(str(g.user.id)).value
+        #user = cb.get(str(g.user.id)).value
+        user = g.user.user_doc
         return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name,
@@ -1802,7 +1804,8 @@ def poll():
     choices = []
 
     if g.user is not None and g.user.is_authenticated():
-        user = cb.get(str(g.user.id)).value
+        #user = cb.get(str(g.user.id)).value
+        user = g.user.user_doc
         if pollForm.validate_on_submit() and request.method == 'POST':
             for i in range(0, int(pollForm.poll_answers.data)):
                 choices.append(str(i+1))
@@ -1864,7 +1867,8 @@ def poll():
             question['views'] = 0
             question['votes_list'] = []
 
-            user = cb.get(str(g.user.id)).value
+            #user = cb.get(str(g.user.id)).value
+            user = g.user.user_doc
 
             user['rep'] += 1
             user['qcount'] += 1
@@ -1904,7 +1908,7 @@ def get_autocomplete():
 @kunjika.route('/send_invites', methods=['GET', 'POST'])
 def send_invites():
     res = utility.send_invites(request)
-    user = cb.get(str(g.user.id)).value
+    #not needed user = cb.get(str(g.user.id)).value
     if res is True:
         flash('Your invites were successfully sent.', 'success')
     else:
@@ -1916,7 +1920,8 @@ def send_invites():
 def administration():
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     form = BulkEmailForm(request.form)
-    user = cb.get(str(g.user.id)).value
+    #user = cb.get(str(g.user.id)).value
+    user = g.user.user_doc
     print request.method
 
     if g.user.id == 1:
@@ -1950,7 +1955,8 @@ def administration():
 def edit_profile(uid=None):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     form = EditProfileForm(request.form)
-    user = cb.get(str(g.user.id)).value
+    #user = cb.get(str(g.user.id)).value
+    user = g.user.user_doc
 
     if (g.user.id == user['id']):
         if request.method == 'POST' and form.validate_on_submit() :
@@ -1974,7 +1980,8 @@ def settings(uid=None, uname=None):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     form = PasswordResetForm(request.form)
 
-    user = cb.get(str(g.user.id)).value
+    #user = cb.get(str(g.user.id)).value
+    user = g.user.user_doc
 
     if (g.user.id == user['id']):
         if request.method == 'POST' and form.validate_on_submit() :
@@ -2002,7 +2009,8 @@ def settings(uid=None, uname=None):
 @kunjika.route('/notify')
 def notify():
     notify = request.args.get('#id')
-    user = cb.get(str(g.user.id)).value
+    #user = cb.get(str(g.user.id)).value
+    user = g.user.user_doc
 
     if user['receive-emails'] is False:
         user['receive-emails'] = True
