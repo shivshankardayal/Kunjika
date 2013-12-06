@@ -903,7 +903,7 @@ def create_or_login(resp):
         session['logged_in'] = True
         if 'role' in user:
             user['admin'] = True
-        user = User(user['name'], user['id'])
+        user = User(user['name'], user, user['id'])
         try:
             login_user(user, remember=True)
             g.user = user
