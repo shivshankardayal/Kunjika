@@ -906,7 +906,7 @@ def create_or_login(resp):
         user = User(user['name'], user, user['id'])
         try:
             login_user(user, remember=True)
-            g.user = user
+            user = User(user['name'], user, user['id'])
             return redirect(url_for('questions'))
         except:
             return make_response("cant login")
