@@ -1511,7 +1511,7 @@ def postcomment():
     msg = Message("A new answer has been posted to a question where you have answered or commented")
     msg.recipients = email_list
     msg.sender = admin
-    msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
+    msg.html = "<p>Hi,<br/><br/> A new comment has been posted which you can read at " +\
     HOST_URL + "questions/" + str(question['qid']) + '/' + question['content']['url'] + \
     " <br/><br/>Best regards,<br/>Kunjika Team<p>"
     mail.send(msg)
@@ -1780,7 +1780,7 @@ def reset_password(token=None):
 
 @kunjika.route('/editing-help')
 def editing_help():
-    return render_template('editing-help.html', title='Markdown Editor Help', name=g.user.name, role=g.user.role,
+    return render_template('editing-help.html', title='Markdown Editor Help', name=g.user.name,
                            user_id=g.user.id)
 
 @kunjika.route('/search-help')
