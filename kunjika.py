@@ -505,7 +505,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                                     email_list.append(str(comment['poster']))
 
                     email_list = set(email_list)
-                    current_user_list = [g.user.id]
+                    current_user_list = [str(g.user.id)]
                     email_list = email_list - set(current_user_list)
                     email_list = list(email_list)
 
@@ -514,17 +514,13 @@ def questions(tag=None, page=None, qid=None, url=None):
                     for id in email_users:
                         email_list.append(email_users[str(id)].value['email'])
 
-                    try:
-                        msg = Message("A new answer has been posted to a question where you have answered or commented")
-                        msg.recipients = email_list
-                        msg.sender = admin
-                        msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
-                        HOST_URL + "questions/" + str(questions_dict['qid']) + '/' + questions_dict['url'] + \
-                        " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-                        mail.send(msg)
-                        pass
-                    except:
-                        pass
+                    msg = Message("A new answer has been posted to a question where you have answered or commented")
+                    msg.recipients = email_list
+                    msg.sender = admin
+                    msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
+                    HOST_URL + "questions/" + str(questions_dict['qid']) + '/' + questions_dict['content']['url'] + \
+                    " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+                    mail.send(msg)
 
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
                 qb.replace(str(questions_dict['qid']), questions_dict)
@@ -965,7 +961,7 @@ def login():
                 session['logged_in'] = True
                 if 'role' in document:
                     session['admin'] = True
-                user = User(document['name'], document['id'])
+                user = User(document['name'], document, document['id'])
                 try:
                     login_user(user, remember=True)
                     flash('You have successfully logged in.', 'success')
@@ -1499,7 +1495,7 @@ def postcomment():
                     email_list.append(str(comment['poster']))
 
     email_list = set(email_list)
-    current_user_list = [g.user.id]
+    current_user_list = [str(g.user.id)]
     email_list = email_list - set(current_user_list)
     email_list = list(email_list)
 
@@ -1509,16 +1505,17 @@ def postcomment():
     for id in email_users:
       email_list.append(email_users[str(id)].value['email'])
 
-    try:
-        msg = Message("A new answer has been posted to a question where you have answered or commented")
-        msg.recipients = email_list
-        msg.sender = admin
-        msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
-        HOST_URL + "questions/" + str(question['qid']) + '/' + question['url'] + \
-        " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-        mail.send(msg)
-    except:
-        pass
+    print email_list
+
+
+    msg = Message("A new answer has been posted to a question where you have answered or commented")
+    msg.recipients = email_list
+    msg.sender = admin
+    msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
+    HOST_URL + "questions/" + str(question['qid']) + '/' + question['content']['url'] + \
+    " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+    mail.send(msg)
+
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
     #return '<div class="comment" id="c-' + str(comment['cid']) + '">' + request.form['comment'] +'<div>&mdash;</div>' \
     #       '<a href="/users/"' + str(g.user.id) + '/' + g.user.name + '>' + g.user.name +'</a> ' + str(ts) +'</div>'
