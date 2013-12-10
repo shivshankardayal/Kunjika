@@ -434,13 +434,15 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
 
     skip = (page - 1) * QUESTIONS_PER_PAGE
     tag = urllib2.quote(tag, '')
-    tag = urllib2.urlopen(kunjika.DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?&key=' + '"' + tag + '"').read()
-    tag = json.loads(tag)['rows'][0]['id']
-    tag = kunjika.tb.get(tag).value
+    rows = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?&key=' + '"' + tag + '"').read()
+    #tag = json.loads(tag)['rows'][0]['id']
+    #tag = kunjika.tb.get(tag).value
+    rows = json.loads(rows)['rows']
     question_list = []
     qids_list = []
-    for qid in tag['qid']:
-        qids_list.append(str(qid))
+    for row in rows:
+        #print row
+        qids_list.append(str(row['id']))
 
     if len(qids_list) != 0:
         val_res = kunjika.qb.get_multi(qids_list)

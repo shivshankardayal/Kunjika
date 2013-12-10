@@ -1188,7 +1188,7 @@ def add_tags(tags_passed, qid):
         try:
             document = tb.get(tag).value
             document['count'] += 1
-            document['qid'].append(qid)
+            #document['qid'].append(qid)
             tb.replace(tag, document)
 
         except:
@@ -1198,7 +1198,7 @@ def add_tags(tags_passed, qid):
             data['tag'] = tag
             data['count'] = 1
             data['info'] = ""
-            data['qid'].append(qid)
+            #data['qid'].append(qid)
             tb.incr('tcount', 1)
             tid = tb.get('tcount').value
             data['tid'] = tid
@@ -1215,7 +1215,7 @@ def replace_tags(tags_passed, qid, current_tags):
             try:
                 document = tb.get(tag).value
                 document['count'] += 1
-                document['qid'].append(qid)
+                #document['qid'].append(qid)
                 tb.replace(tag, document)
 
             except:
@@ -1225,7 +1225,7 @@ def replace_tags(tags_passed, qid, current_tags):
                 data['tag'] = tag
                 data['count'] = 1
                 data['info'] = ""
-                data['qid'].append(qid)
+                #data['qid'].append(qid)
                 tb.incr('tcount', 1)
                 tid = tb.get('tcount').value
                 data['tid'] = tid
@@ -1240,7 +1240,7 @@ def replace_tags(tags_passed, qid, current_tags):
             ##print tag
             tid = json.loads(tag)['rows'][0]['id']
             tag = tb.get(tid).value
-            tag['qid'].remove(int(qid))
+            #tag['qid'].remove(int(qid))
             tag['count'] -= 1
 
             tb.replace(tag['tag'], tag)
