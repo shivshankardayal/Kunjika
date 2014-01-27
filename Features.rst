@@ -18,30 +18,22 @@ TODO
     to the originals from this directory
 12. Login Security & Monitoring (notify admin when a user with admin privileges logs in, etc).
 13. Lock and Unlock core files from admin page.
-14. Admin can create an announcement post that is then broadcast by email to all registered
-    users. Give users the option to opt out of such messages from their profile page.
 14. jQuery lightbox integration.
 15. Visual notification of new questions/comments/answers when a user is browsing any part of
     the forum. e.g "A new question/comment/answer has been posted, click here to read it." Or
     "4 new questions/comments/answers have just been posted. Click here to read them."
 16. Create private discussion group.
-17. Related questions tag that embeds related questions at the end of a discussion.
-18. Continuous rendering of questions like discourse.org which can be configured from configuration.
-19. "Similar question" feature just like Stack Overflow.
-20. Option for members to complete their social network profiles on their profile page, and give
+17. Continuous rendering of questions like discourse.org which can be configured from configuration.
+28. Option for members to complete their social network profiles on their profile page, and give
     them the option to choose which one(s) to auto-post to. 
-21. Users can send invitation emails from their profile page.
-22. Chat, just like Stack Overflow, that only users with a certain reputation may participate
+19. Chat, just like Stack Overflow, that only users with a certain reputation may participate
     in, or any registered member can join.
-23. Admin can send bulk email or private messages to members.
-24. Users can receive an email when someone quotes them, replies to their posts, or mentions
-    their @username.
-25. Sending private messages between registered members, and email notification when a private
+20. Sending private messages between registered members, and email notification when a private
     message is received.
-26. Automatic private message to users upon successful email activation.
-27. Blog module, with a liveblogging feature similar to ScribbleLive.
-28. WordPress module, to embed Kunjika forum in a WP site.
-29. Gallery module to enable creation of a gallery page (a blog for galleries).
+21. Automatic private message to users upon successful email activation.
+22. Blog module, with a liveblogging feature similar to ScribbleLive.
+23. WordPress module, to embed Kunjika forum in a WP site.
+24. Gallery module to enable creation of a gallery page (a blog for galleries).
 
 DONE
 ====
@@ -85,21 +77,31 @@ DONE
 28. Configurable no. of questions, answers, comments from one user per min, hour and day etc.
     This feature is needed to abuse from automated spam. It is done in a very bad now but can be
     improved easily later. For now it should work for normal operating conditions on a normal QA
-    forum.
+    forum. (This is held back even though code was written. It needs more testing in an automated fashion.)
 29. Flash messages for user feedback.
 30. Error pages are there.
 31. File based rotated logging.
 32. Automatic private message to users upon registration.
+19. "Similar question" feature just like Stack Overflow.
+20. Search using Elasticsearch.
+21. Similar questions.
+22. Following questions, tags and users. As of now if user is involved in a question you will get an email
+    if something happens in that question. For tags and users implementation will come as more content and
+    users come.
+23. Memcached implementation is not needed as couchbase is very fast for key based access and almost entire
+    code related to database has been changed for this.
+14. Admin can create an announcement post that is then broadcast by email to all registered
+    users. Give users the option to opt out of such messages from their profile page.
+23. Admin can send bulk email or private messages to members.
+24. Users can receive an email when someone quotes them, replies to their posts, or mentions
+    their @username. (@username is not done because sometimes last name is missing and anyway user involved in
+    a question will get an email.)
+17. Related questions tag that embeds related questions at the end of a discussion.
+21. Users can send invitation emails from their profile page.
 
 Postponed for later
 ===================
-1. Search using Sphinx.
-2. Similar questions.
-3. Extra cloning of stackoverflow.
-4. Feed for users.
-5. Sitemap generation
-6. Following questions, tags and users.
-7. Stop DOS.(This should not reach application and must be filtered at web server level or before).
-8. Memcached implementation is deferred as I do not see an immediate need for this because
-   of Couchbase architecture should provide quite quick response itself. Also, memcached server
-   replication etc is pain.
+1. Extra cloning of stackoverflow.
+2. Feed for users.
+3. Sitemap generation
+4. Stop DOS.(This should not reach application and must be filtered at web server level or before).
