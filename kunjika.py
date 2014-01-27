@@ -829,7 +829,7 @@ def create_profile():
             did = cb.get('count').value
             data['id'] = did
             cb.add(str(did), data)
-            user = User(data['name'], data['id'])
+            user = User(data['name'], data, data['id'])
             login_user(user, remember=True)
             es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
             es_conn.indices.refresh('users')
@@ -1032,7 +1032,7 @@ def register():
             data['id'] = did
             cb.add(str(did), data)
             session['admin'] = True
-            user = User(data['name'], data['id'])
+            user = User(data['name'], data, data['id'])
             login_user(user, remember=True)
             g.user = user
             es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
@@ -1055,7 +1055,7 @@ def register():
             data['id'] = did
             cb.add(str(did), data)
 
-            user = User(data['name'], did)
+            user = User(data['name'], data, did)
             try:
                 login_user(user, remember=True)
                 g.user = user
