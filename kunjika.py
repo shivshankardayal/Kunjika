@@ -314,10 +314,8 @@ def questions(tag=None, page=None, qid=None, url=None):
         questions_dict = question.get_question_by_id(qid, questions_dict)
 
         if request.referrer == HOST_URL + "questions":
-            print "hello"
             questions_dict['views'] += 1
         elif request.host_url != HOST_URL + "":
-            print "hello"
             questions_dict['views'] += 1
         choices = []
         votes = []
@@ -1204,7 +1202,7 @@ def add_tags(tags_passed, qid):
             data = {}
             data['qid'] = []
             data['excerpt'] = ""
-            data['tag'] = tag
+            data['tag'] = tag.lower()
             data['count'] = 1
             data['info'] = ""
             #data['qid'].append(qid)
@@ -1212,7 +1210,7 @@ def add_tags(tags_passed, qid):
             tid = tb.get('tcount').value
             data['tid'] = tid
 
-            tb.add(tag, data)
+            tb.add(tag.lower(), data)
             es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
             es_conn.indices.refresh('tags')
 
@@ -1231,7 +1229,7 @@ def replace_tags(tags_passed, qid, current_tags):
                 data = {}
                 data['qid'] = []
                 data['excerpt'] = ""
-                data['tag'] = tag
+                data['tag'] = tag.lower()
                 data['count'] = 1
                 data['info'] = ""
                 #data['qid'].append(qid)
@@ -1239,7 +1237,7 @@ def replace_tags(tags_passed, qid, current_tags):
                 tid = tb.get('tcount').value
                 data['tid'] = tid
 
-                tb.add(tag, data)
+                tb.add(tag.lower(), data)
                 es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
                 es_conn.indices.refresh('tags')
 
