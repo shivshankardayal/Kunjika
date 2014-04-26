@@ -328,7 +328,7 @@
 
                     <div class="controls">
 
-                        <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
+                        <textarea stlyle="margin-left:5px;" placeholder="Please post your comment here."
                                   name="comment" id="wmd-input-{{ questions['qid'] }}" class="wmd-input"></textarea>
                     </div>
                 </div>
@@ -385,8 +385,8 @@
                 </tbody>
             </table>
         {% else %}
+        <h6>{{ questions['acount'] }} answers</h6>
         {% for answer in questions['answers'] %}
-            <h6>{{ questions['acount'] }} answers</h6>
             <table>
                 <tr class="hr">
                     <td class="votes">
@@ -516,7 +516,7 @@
 
                             <div class="controls">
 
-                                <textarea stlyle="margin-left:5px;" placeholder="Please post your answer here.."
+                                <textarea stlyle="margin-left:5px;" placeholder="Please post your comment here."
                                           name="comment" id="wmd-input-{{ questions['qid'] }}-{{ answer['aid'] }}"
                                           class="wmd-input"></textarea>
                             </div>

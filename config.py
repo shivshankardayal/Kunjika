@@ -1,8 +1,8 @@
 # CSRF section
 # Keep keys complex and never share. You must edit these.
 CSRF_ENABLED = True
-SECRET_KEY = ''
-CSRF_SESSION_KEY=""
+SECRET_KEY = 'yagyavalkyagayatri'
+CSRF_SESSION_KEY="yagyavalkyagayatri"
 
 # OpenID section
 # This is not used as of now.
@@ -21,8 +21,8 @@ DB_PORT = '8091'
 # reCaptcha seaction
 # Your google recaptcha keys. You must edit these.
 RECAPTCHA_USE_SSL = False
-RECAPTCHA_PUBLIC_KEY = ''
-RECAPTCHA_PRIVATE_KEY = ''
+RECAPTCHA_PUBLIC_KEY = '6LcbQOQSAAAAAO01LgOi4IQZSwGhfrY4dLxTb7VU'
+RECAPTCHA_PRIVATE_KEY = '6LcbQOQSAAAAAFN6-_069S6hsX-fsiWSIJczYN-H'
 RECAPTCHA_OPTIONS = {'theme': 'white'}
 
 # google analytics key. You must edit these.
@@ -38,8 +38,8 @@ MIN_COMMENT_LENGTH = 20
 QUESTIONS_PER_PAGE = 20
 TAGS_PER_PAGE = 40
 USERS_PER_PAGE = 40
-USER_QUESTIONS_PER_PAGE = 5
-USER_ANSWERS_PER_PAGE = 5
+USER_QUESTIONS_PER_PAGE = 15
+USER_ANSWERS_PER_PAGE = 15
 
 # You must edit these.
 ADMIN_EMAIL='shivshankar.dayal@gmail.com'

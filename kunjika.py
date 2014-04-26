@@ -80,6 +80,15 @@ oid = OpenID(kunjika, '/tmp')
 mail = Mail(kunjika)
 admin = kunjika.config['ADMIN_EMAIL']
 
+kunjika.config.update(
+	DEBUG=True,
+	#EMAIL SETTINGS
+	MAIL_SERVER='smtp.gmail.com',
+	MAIL_PORT=465,
+	MAIL_USE_TLS=True,
+	MAIL_USERNAME = 'shivshankar.dayal@google.com',
+	MAIL_PASSWORD = 'Gannu25$'
+	)
 lm = LoginManager()
 lm.init_app(kunjika)
 
@@ -863,7 +872,7 @@ def create_profile():
             cb.add(str(did), data)
             user = User(data['name'], data, did)
             login_user(user, remember=True)
-            print data['name'] + ' ' + did
+            #print data['name'] + ' ' + did
             es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
             es_conn.indices.refresh('users')
             g.user = user
