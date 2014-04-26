@@ -375,6 +375,9 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
 
         user = kunjika.cb.get(i['content']['op']).value
         i['opname'] = user['name']
+        if i['views'] > 1000:
+           i['views'] /= 1000
+           i['views'] = str(i['views']) + 'K'
 
     return questions_list
 
