@@ -2102,6 +2102,15 @@ def notify():
     except:
         return jsonify(response)
 
+@kunjika.route('/tests')
+def tests():
+    try:
+        user = g.user.user_doc
+    except:
+        flash('You need to be logged in to take tests.', 'error')
+        return redirect(url_for('questions'))
+    return render_template('tests.html', title='Tests', user=user, name=g.user.name, role=g.user.role, user_id=g.user.id)
+
 '''
 @kunjika.route('/invites')
 def invites():

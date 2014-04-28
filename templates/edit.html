@@ -188,6 +188,9 @@
             </div>
             </div>
             <div id="popular-tags" class="module">
+                    <h3><a href="/tests">Tests</a></h3>
+            </div>
+            <div id="popular-tags" class="module">
                 <h4 id="h-popular-tags">Popular Tags</h4>
                 {% for tag in tag_list %}
                     <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
@@ -198,7 +201,6 @@
                 {% endfor %}
             </div>
         </div>
-
     </div>
 
     <!--script type="text/javascript">

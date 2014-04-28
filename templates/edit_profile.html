@@ -136,6 +136,9 @@
                 {% endfor %}
             </div>
             <div id="popular-tags" class="module">
+                <h3><a href="/tests">Tests</a></h3>
+            </div>
+            <div id="popular-tags" class="module">
                 <h4 id="h-popular-tags">Similar questions</h4>
                 {% for question in similar_questions %}
                     <a href="/questions/{{ question[0] }}/{{ question[2] }}" class="post-tag"

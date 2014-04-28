@@ -92,7 +92,9 @@
             <div class="summarycount al">{{ tcount }}</div>
             <p>tags</p>
         </div>
-    </div>
+        <div id="popular-tags" class="module">
+            <h3><a href="/tests">Tests</a></h3>
+        </div>
         <div id="popular-tags" class="module">
             <h4 id="h-popular-tags">Popular Tags</h4>
             {% for tag in tag_list %}
@@ -103,6 +105,7 @@
                 <br/>
             {% endfor %}
         </div>
+    </div>
     </div>
 {% endblock %}
 
