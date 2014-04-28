@@ -748,6 +748,7 @@ def ask():
             question['content']['description'] = questionForm.description.data
             question['content']['tags'] = []
             question['content']['tags'] = questionForm.tags.data.split(',')
+            question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
             question['title'] = title
 
             url = utility.generate_url(title)
@@ -955,10 +956,8 @@ def login():
             document = urllib2.urlopen(
                 DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + loginForm.email.data + '"').read()
             document = json.loads(document)
-            print document
             if 'id' in document['rows'][0]:
                 document = cb.get(document['rows'][0]['id']).value
-                print document
             if document['banned'] is True:
                 flash('Your acount is banned possibly because you abused the system. Contact ' + admin +
                       'for more info.', 'error')
@@ -973,7 +972,8 @@ def login():
                     login_user(user, remember=True)
                     flash('You have successfully logged in.', 'success')
                     g.user = user
-                    return redirect(url_for('questions'))
+                    referrer = request.args['next']
+                    return redirect(referrer)
                 except:
                     return make_response("cant login")
 
@@ -1003,16 +1003,16 @@ def login():
                                 lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
 
         except:
-            return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
+            return render_template('login.html', prev=request.referrer, form=registrationForm, loginForm=loginForm, openidForm=openidForm,
                                    title='Sign In', lpage=True,
                                    next=oid.get_next_url(), error=oid.fetch_error())
 
 
     else:
-        render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+        render_template('login.html', prev=request.referrer, form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
                         lpage=True, next=oid.get_next_url(),error=oid.fetch_error())
 
-    return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+    return render_template('login.html', prev=request.referrer, form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
                            lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
 
 
@@ -1196,13 +1196,13 @@ def add_tags(tags_passed, qid):
             document = tb.get(tag).value
             document['count'] += 1
             #document['qid'].append(qid)
-            tb.replace(tag, document)
+            tb.replace(tag.lower(), document)
 
         except:
             data = {}
             data['qid'] = []
             data['excerpt'] = ""
-            data['tag'] = tag.lower()
+            data['tag'] = tag
             data['count'] = 1
             data['info'] = ""
             #data['qid'].append(qid)
@@ -1210,7 +1210,7 @@ def add_tags(tags_passed, qid):
             tid = tb.get('tcount').value
             data['tid'] = tid
 
-            tb.add(tag.lower(), data)
+            tb.add(tag, data)
             es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
             es_conn.indices.refresh('tags')
 
@@ -1229,7 +1229,7 @@ def replace_tags(tags_passed, qid, current_tags):
                 data = {}
                 data['qid'] = []
                 data['excerpt'] = ""
-                data['tag'] = tag.lower()
+                data['tag'] = tag
                 data['count'] = 1
                 data['info'] = ""
                 #data['qid'].append(qid)
@@ -1237,7 +1237,7 @@ def replace_tags(tags_passed, qid, current_tags):
                 tid = tb.get('tcount').value
                 data['tid'] = tid
 
-                tb.add(tag.lower(), data)
+                tb.add(tag, data)
                 es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
                 es_conn.indices.refresh('tags')
 
