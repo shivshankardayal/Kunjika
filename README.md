@@ -42,3 +42,6 @@ Database has been tuned for maximum performance and querying code should be chan
 for simplicity.
 
 Now all involved users receive email when a new comment or answer is posted.
+
+Further changes in Kunjika have forced to make in closed source. The code developed
+till now will remain open source.
