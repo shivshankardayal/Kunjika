@@ -1320,7 +1320,7 @@ def edits(element):
                 #question['title'] = title
                 tags = form.tags.data.split(',')
                 tag_list = []
-                print tags
+                question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
                 current_tags = question['content']['tags']
                 for tag in tags:
                     try:
