@@ -24,7 +24,7 @@ TODO
     "4 new questions/comments/answers have just been posted. Click here to read them."
 16. Create private discussion group.
 17. Continuous rendering of questions like discourse.org which can be configured from configuration.
-28. Option for members to complete their social network profiles on their profile page, and give
+18. Option for members to complete their social network profiles on their profile page, and give
     them the option to choose which one(s) to auto-post to. 
 19. Chat, just like Stack Overflow, that only users with a certain reputation may participate
     in, or any registered member can join.
@@ -82,22 +82,22 @@ DONE
 30. Error pages are there.
 31. File based rotated logging.
 32. Automatic private message to users upon registration.
-19. "Similar question" feature just like Stack Overflow.
-20. Search using Elasticsearch.
-21. Similar questions.
-22. Following questions, tags and users. As of now if user is involved in a question you will get an email
+33. "Similar question" feature just like Stack Overflow.
+34. Search using Elasticsearch.
+35. Similar questions.
+36. Following questions, tags and users. As of now if user is involved in a question you will get an email
     if something happens in that question. For tags and users implementation will come as more content and
     users come.
-23. Memcached implementation is not needed as couchbase is very fast for key based access and almost entire
+37. Memcached implementation is not needed as couchbase is very fast for key based access and almost entire
     code related to database has been changed for this.
-14. Admin can create an announcement post that is then broadcast by email to all registered
+38. Admin can create an announcement post that is then broadcast by email to all registered
     users. Give users the option to opt out of such messages from their profile page.
-23. Admin can send bulk email or private messages to members.
-24. Users can receive an email when someone quotes them, replies to their posts, or mentions
+39. Admin can send bulk email or private messages to members.
+40. Users can receive an email when someone quotes them, replies to their posts, or mentions
     their @username. (@username is not done because sometimes last name is missing and anyway user involved in
     a question will get an email.)
-17. Related questions tag that embeds related questions at the end of a discussion.
-21. Users can send invitation emails from their profile page.
+41. Related questions tag that embeds related questions at the end of a discussion.
+42. Users can send invitation emails from their profile page.
 
 Postponed for later
 ===================
