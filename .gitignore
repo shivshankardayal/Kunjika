@@ -9,3 +9,4 @@ venv/
 .pydevproject
 *.log
 docs/build/
+config.py*
