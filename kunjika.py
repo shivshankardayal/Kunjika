@@ -1773,8 +1773,8 @@ def reset_password(token=None):
                 document = urllib2.urlopen(
                     DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
 
-		document = json.loads(document)
-		#print document
+		        document = json.loads(document)
+		        #print document
                 if 'id' in document['rows'][0]:
                     try:
                         document = cb.get(str(document['rows'][0]['id'])).value
@@ -1845,20 +1845,6 @@ def close():
         return jsonify({"success": True})
     else:
         return jsonify({"success": False})
-
-
-'''
-def create_poll(form, options):
-    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
-    choices = []
-    for i in range(0, options):
-        choices.append(str(i+1))
-    if form.validate_on_submit() and request.method == 'POST':
-        print "render"
-    print options
-    return render_template('create_poll.html', title='Create Poll', form=form, options=choices, ppage=True, name=g.user.name, role=g.user.role,
-                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
-'''
 
 @kunjika.route('/poll', methods=['GET', 'POST'])
 def poll():
@@ -2255,7 +2241,7 @@ def add_objective_question():
 
     choices = []
 
-    if g.user is not None and g.user.is_authenticated():
+    if g.user.id == 1:
         if oqForm.validate_on_submit() and request.method == 'POST':
             for i in range(0, int(oqForm.oq_answers.data)):
                 choices.append(str(i+1))
@@ -2311,6 +2297,18 @@ def add_objective_question():
         return render_template('oq.html', title='Create Objective Question', form=oqForm, ppage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id)
     return redirect(url_for('login'))
+
+@kunjika.route('/browse_objective_question', methods=['GET', 'POST'])
+def add_objective_question():
+    boqForm = BOQForm(request.form)
+
+    if g.user.id == 1:
+        if boqForm.validate_on_submit() and request.method == 'POST':
+            tech = boqForm.tech.data
+            cat = boqForm.cat.data
+
+    return redirect(url_for('login'))
+
 
 '''
 @kunjika.route('/invites')

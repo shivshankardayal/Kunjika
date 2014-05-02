@@ -109,3 +109,13 @@ class EditProfileForm(Form):
 class BulkEmailForm(Form):
     subject = TextField('Subject', [validators.Length(min=2, max=200), validators.optional()])
     bulk_mail = TextAreaField('Body', [validators.Length(min=20, max=10000), validators.optional()])
+
+class BOQForm(Form):
+    tech = SelectField('Technology:', choices=[('c', 'C'), ('cpp', 'C++'), ('java', 'Java'), ('perl', 'Perl'), \
+        ('python', 'Python')])
+    cat = SelectField('Category:', choices=[('arrays', 'Arrays'), ('basics', 'Basics'), ('bitop', 'Bitwise Operators'),
+            ('cli', 'Command Line Arguments'), ('const', 'Const'), ('control_flow', 'Control Flow'),
+            ('funcs', 'Functions'), ('io', 'IO'), ('lib', 'Library Functions'), ('memalloc', 'Memory Allocation'),
+            ('oae', 'Operators and Expressions'), ('pointers', 'Pointers'), ('strings', 'Strings'),
+            ('sue', 'Structures, Unions and Eums'), ('threading', 'Multithreading'), ('typedef', 'Typedef'),
+            ('vararg', 'Variable Arguments')])
