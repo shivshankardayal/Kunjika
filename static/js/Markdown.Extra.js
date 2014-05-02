@@ -24,7 +24,7 @@
         }
       }
       return -1;
-    }
+    };
   }
 
   function trim(str) {
@@ -37,7 +37,7 @@
 
   // Remove one level of indentation from text. Indent is 4 spaces.
   function outdent(text) {
-      return text.replace(new RegExp('^(\\t|[ ]{1,4})', 'gm'), '');
+    return text.replace(new RegExp('^(\\t|[ ]{1,4})', 'gm'), '');
   }
 
   function contains(str, substr) {
@@ -88,52 +88,51 @@
   }
 
   // Convert markdown within an element, retaining only span-level tags
-  // (An inefficient version of Pagedown's runSpanGamut. We rely on a
-  // pagedown coverter to do the complete conversion, and then retain
-  // only the specified tags -- inline in this case).
-  function convertSpans(text, converter) {
-    text = denormalize(text);
-    var html = converter.makeHtml(text);
-    return sanitizeHtml(html, inlineTags);
+  function convertSpans(text, extra) {
+    return sanitizeHtml(convertAll(text, extra), inlineTags);
   }
 
   // Convert internal markdown using the stock pagedown converter
-  function convertAll(text, converter) {
-    text = denormalize(text);
-    return converter.makeHtml(text);
+  function convertAll(text, extra) {
+    var result = extra.blockGamutHookCallback(text);
+    // We need to perform these operations since we skip the steps in the converter
+    result = unescapeSpecialChars(result);
+    result = result.replace(/~D/g, "$$").replace(/~T/g, "~");
+    result = extra.previousPostConversion(result);
+    return result;
   }
 
-  // We use convertSpans and convertAll to convert markdown inside of Markdown Extra
-  // elements we create. Since this markdown has already been through the pagedown
-  // normalization process before our hooks were called, we need to do some
-  // denormalization before sending it back through a different Pagedown converter.
-  function denormalize(text) {
-    // Restore dollar signs and tildes
-    text = text.replace(/~D/g, "$$");
-    text = text.replace(/~T/g, "~");
+  // Convert escaped special characters
+  function processEscapesStep1(text) {
+    // Markdown extra adds two escapable characters, `:` and `|`
+    return text.replace(/\\\|/g, '~I').replace(/\\:/g, '~i');
+  }
+  function processEscapesStep2(text) {
+    return text.replace(/~I/g, '|').replace(/~i/g, ':');
+  }
+
+  // Duplicated from PageDown converter
+  function unescapeSpecialChars(text) {
+    // Swap back in all the special characters we've hidden.
+    text = text.replace(/~E(\d+)E/g, function(wholeMatch, m1) {
+      var charCodeToReplace = parseInt(m1);
+      return String.fromCharCode(charCodeToReplace);
+    });
     return text;
   }
-
-  // Convert escaped special characters to HTML decimal entity codes.
-  function processEscapes(text) {
-    // Markdown extra adds two escapable characters, `:` and `|`
-    // If escaped, we convert them to html entities so our
-    // regexes don't recognize them. Markdown doesn't support escaping
-    // the escape character, e.g. `\\`, which make this even simpler.
-    return text.replace(/\\\|/g, '&#124;').replace(/\\:/g, '&#58;');
+  
+  function slugify(text) {
+    return text.toLowerCase()
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+    .replace(/^-+/, '') // Trim - from start of text
+    .replace(/-+$/, ''); // Trim - from end of text
   }
 
-  // Determine if the given pagedown converter performs sanitization
-  // on postConversion
-  function isSanitizing(converter) {
-    // call the converter's postConversion hook and see if it sanitizes its input
-    return converter.hooks.postConversion("<table>") === "";
-  }
-
-
-  /******************************************************************
-   * Markdown.Extra                                                 *
-   *****************************************************************/
+  /*****************************************************************************
+   * Markdown.Extra *
+   ****************************************************************************/
 
   Markdown.Extra = function() {
     // For converting internal markdown (in tables for instance).
@@ -145,6 +144,10 @@
     // Stores html blocks we generate in hooks so that
     // they're not destroyed if the user is using a sanitizing converter
     this.hashBlocks = [];
+    
+    // Stores footnotes
+    this.footnotes = {};
+    this.usedFootnotes = [];
 
     // Special attribute blocks for fenced code blocks and headers enabled.
     this.attributeBlocks = false;
@@ -163,32 +166,76 @@
     // Each call to init creates a new instance of Markdown.Extra so it's
     // safe to have multiple converters, with different options, on a single page
     var extra = new Markdown.Extra();
-    var transformations = [];
+    var postNormalizationTransformations = [];
+    var preBlockGamutTransformations = [];
+    var postSpanGamutTransformations = [];
+    var postConversionTransformations = ["unHashExtraBlocks"];
 
     options = options || {};
     options.extensions = options.extensions || ["all"];
     if (contains(options.extensions, "all")) {
-      transformations.push("all");
-      extra.attributeBlocks = true;
-    } else {
-      if (contains(options.extensions, "tables"))
-        transformations.push("tables");
-      if (contains(options.extensions, "fenced_code_gfm"))
-        transformations.push("fencedCodeBlocks");
-      if (contains(options.extensions, "def_list"))
-        transformations.push("definitionLists");
-      if (contains(options.extensions, "attr_list"))
-        extra.attributeBlocks = true;
+      options.extensions = ["tables", "fenced_code_gfm", "def_list", "attr_list", "footnotes", "smartypants", "strikethrough", "newlines"];
     }
-
-    // preBlockGamut also gives us access to a hook so we can run the
-    // block gamut recursively, however we don't need it at this point
-    converter.hooks.chain("preBlockGamut", function(text) {
-      return extra.doConversion(transformations, text);
+    preBlockGamutTransformations.push("wrapHeaders");
+    if (contains(options.extensions, "attr_list")) {
+      postNormalizationTransformations.push("hashFcbAttributeBlocks");
+      preBlockGamutTransformations.push("hashHeaderAttributeBlocks");
+      postConversionTransformations.push("applyAttributeBlocks");
+      extra.attributeBlocks = true;
+    }
+    if (contains(options.extensions, "fenced_code_gfm")) {
+      // This step will convert fcb inside list items and blockquotes
+      preBlockGamutTransformations.push("fencedCodeBlocks");
+      // This extra step is to prevent html blocks hashing and link definition/footnotes stripping inside fcb
+      postNormalizationTransformations.push("fencedCodeBlocks");
+    }
+    if (contains(options.extensions, "tables")) {
+      preBlockGamutTransformations.push("tables");
+    }
+    if (contains(options.extensions, "def_list")) {
+      preBlockGamutTransformations.push("definitionLists");
+    }
+    if (contains(options.extensions, "footnotes")) {
+      postNormalizationTransformations.push("stripFootnoteDefinitions");
+      preBlockGamutTransformations.push("doFootnotes");
+      postConversionTransformations.push("printFootnotes");
+    }
+    if (contains(options.extensions, "smartypants")) {
+      postConversionTransformations.push("runSmartyPants");
+    }
+    if (contains(options.extensions, "strikethrough")) {
+      postSpanGamutTransformations.push("strikethrough");
+    }
+    if (contains(options.extensions, "newlines")) {
+      postSpanGamutTransformations.push("newlines");
+    }
+    
+    converter.hooks.chain("postNormalization", function(text) {
+      return extra.doTransform(postNormalizationTransformations, text) + '\n';
     });
 
+    converter.hooks.chain("preBlockGamut", function(text, blockGamutHookCallback) {
+      // Keep a reference to the block gamut callback to run recursively
+      extra.blockGamutHookCallback = blockGamutHookCallback;
+      text = processEscapesStep1(text);
+      text = extra.doTransform(preBlockGamutTransformations, text) + '\n';
+      text = processEscapesStep2(text);
+      return text;
+    });
+
+    converter.hooks.chain("postSpanGamut", function(text) {
+      return extra.doTransform(postSpanGamutTransformations, text);
+    });
+
+    // Keep a reference to the hook chain running before doPostConversion to apply on hashed extra blocks
+    extra.previousPostConversion = converter.hooks.postConversion;
     converter.hooks.chain("postConversion", function(text) {
-      return extra.finishConversion(text);
+      text = extra.doTransform(postConversionTransformations, text);
+      // Clear state vars that may use unnecessary memory
+      extra.hashBlocks = [];
+      extra.footnotes = {};
+      extra.usedFootnotes = [];
+      return text;
     });
 
     if ("highlighter" in options) {
@@ -200,37 +247,16 @@
       extra.tableClass = options.table_class;
     }
 
-    // we can't just use the same converter that the user passes in, as
-    // Pagedown forbids it (doing so could cause an infinite loop)
-    extra.converter = isSanitizing(converter) ? Markdown.getSanitizingConverter()
-                                              : new Markdown.Converter();
+    extra.converter = converter;
 
     // Caller usually won't need this, but it's handy for testing.
     return extra;
   };
 
-  // Setup state vars, do conversion
-  Markdown.Extra.prototype.doConversion = function(transformations, text) {
-    text = processEscapes(text);
-
-    if (this.attributeBlocks)
-      text = this.hashAttributeBlocks(text);
-
+  // Do transformations
+  Markdown.Extra.prototype.doTransform = function(transformations, text) {
     for(var i = 0; i < transformations.length; i++)
       text = this[transformations[i]](text);
-
-    return text + '\n';
-  };
-
-  // Clear state vars that may use unnecessary memory. Unhash blocks we
-  // stored, apply attribute blocks if necessary, and return converted text.
-  Markdown.Extra.prototype.finishConversion = function(text) {
-    text = this.unHashExtraBlocks(text);
-
-    if (this.attributeBlocks)
-      text = this.applyAttributeBlocks(text);
-
-    this.hashBlocks = [];
     return text;
   };
 
@@ -239,15 +265,37 @@
   Markdown.Extra.prototype.hashExtraBlock = function(block) {
     return '\n<p>~X' + (this.hashBlocks.push(block) - 1) + 'X</p>\n';
   };
-
+  Markdown.Extra.prototype.hashExtraInline = function(block) {
+    return '~X' + (this.hashBlocks.push(block) - 1) + 'X';
+  };
+  
   // Replace placeholder blocks in `text` with their corresponding
   // html blocks in the hashBlocks array.
   Markdown.Extra.prototype.unHashExtraBlocks = function(text) {
     var self = this;
-    text = text.replace(/<p>~X(\d+)X<\/p>/g, function(wholeMatch, m1) {
-      var key = parseInt(m1, 10);
-      return self.hashBlocks[key];
-    });
+    function recursiveUnHash() {
+      var hasHash = false;
+      text = text.replace(/(?:<p>)?~X(\d+)X(?:<\/p>)?/g, function(wholeMatch, m1) {
+        hasHash = true;
+        var key = parseInt(m1, 10);
+        return self.hashBlocks[key];
+      });
+      if(hasHash === true) {
+        recursiveUnHash();
+      }
+    }
+    recursiveUnHash();
+    return text;
+  };
+  
+  // Wrap headers to make sure they won't be in def lists
+  Markdown.Extra.prototype.wrapHeaders = function(text) {
+    function wrap(text) {
+      return '\n' + text + '\n';
+    }
+    text = text.replace(/^.+[ \t]*\n=+[ \t]*\n+/gm, wrap);
+    text = text.replace(/^.+[ \t]*\n-+[ \t]*\n+/gm, wrap);
+    text = text.replace(/^\#{1,6}[ \t]*.+?[ \t]*\#*\n+/gm, wrap);
     return text;
   };
 
@@ -256,18 +304,19 @@
    * Attribute Blocks                                               *
    *****************************************************************/
 
-  // Extract attribute blocks, move them above the element they will be
+  // TODO: use sentinels. Should we just add/remove them in doConversion?
+  // TODO: better matches for id / class attributes
+  var attrBlock = "\\{[ \\t]*((?:[#.][-_:a-zA-Z0-9]+[ \\t]*)+)\\}";
+  var hdrAttributesA = new RegExp("^(#{1,6}.*#{0,6})[ \\t]+" + attrBlock + "[ \\t]*(?:\\n|0x03)", "gm");
+  var hdrAttributesB = new RegExp("^(.*)[ \\t]+" + attrBlock + "[ \\t]*\\n" +
+    "(?=[\\-|=]+\\s*(?:\\n|0x03))", "gm"); // underline lookahead
+  var fcbAttributes =  new RegExp("^(```[ \\t]*[^{\\s]*)[ \\t]+" + attrBlock + "[ \\t]*\\n" +
+    "(?=([\\s\\S]*?)\\n```[ \\t]*(\\n|0x03))", "gm");
+      
+  // Extract headers attribute blocks, move them above the element they will be
   // applied to, and hash them for later.
-  Markdown.Extra.prototype.hashAttributeBlocks = function(text) {
-    // TODO: use sentinels. Should we just add/remove them in doConversion?
-    // TODO: better matches for id / class attributes
-    var attrBlock = "\\{\\s*[.|#][^}]+\\}";
-    var hdrAttributesA = new RegExp("^(#{1,6}.*#{0,6})\\s+(" + attrBlock + ")[ \\t]*(\\n|0x03)", "gm");
-    var hdrAttributesB = new RegExp("^(.*)\\s+(" + attrBlock + ")[ \\t]*\\n" +
-                                    "(?=[\\-|=]+\\s*(\\n|0x03))", "gm"); // underline lookahead
-    var fcbAttributes =  new RegExp("^(```[^{]*)\\s+(" + attrBlock + ")[ \\t]*\\n" +
-                                    "(?=([\\s\\S]*?)\\n```\\s*(\\n|0x03))", "gm");
-
+  Markdown.Extra.prototype.hashHeaderAttributeBlocks = function(text) {
+    
     var self = this;
     function attributeCallback(wholeMatch, pre, attr) {
       return '<p>~XX' + (self.hashBlocks.push(attr) - 1) + 'XX</p>\n' + pre + "\n";
@@ -275,6 +324,20 @@
 
     text = text.replace(hdrAttributesA, attributeCallback);  // ## headers
     text = text.replace(hdrAttributesB, attributeCallback);  // underline headers
+    return text;
+  };
+  
+  // Extract FCB attribute blocks, move them above the element they will be
+  // applied to, and hash them for later.
+  Markdown.Extra.prototype.hashFcbAttributeBlocks = function(text) {
+    // TODO: use sentinels. Should we just add/remove them in doConversion?
+    // TODO: better matches for id / class attributes
+
+    var self = this;
+    function attributeCallback(wholeMatch, pre, attr) {
+      return '<p>~XX' + (self.hashBlocks.push(attr) - 1) + 'XX</p>\n' + pre + "\n";
+    }
+
     return text.replace(fcbAttributes, attributeCallback);
   };
 
@@ -291,11 +354,11 @@
       var attributes = self.hashBlocks[key];
 
       // get id
-      var id = attributes.match(/#[^\s{}]+/g) || [];
+      var id = attributes.match(/#[^\s#.]+/g) || [];
       var idStr = id[0] ? ' id="' + id[0].substr(1, id[0].length - 1) + '"' : '';
 
       // get classes and merge with existing classes
-      var classes = attributes.match(/\.[^\s{}]+/g) || [];
+      var classes = attributes.match(/\.[^\s#.]+/g) || [];
       for (var i = 0; i < classes.length; i++) // Remove leading dot
         classes[i] = classes[i].substr(1, classes[i].length - 1);
 
@@ -393,7 +456,7 @@
 
       // build column headers.
       for (i = 0; i < colCount; i++) {
-        var headerHtml = convertSpans(trim(headers[i]), self.converter);
+        var headerHtml = convertSpans(trim(headers[i]), self);
         html += ["  <th", align[i], ">", headerHtml, "</th>\n"].join('');
       }
       html += "</tr>\n</thead>\n";
@@ -412,7 +475,7 @@
 
         html += "<tr>\n";
         for (j = 0; j < colCount; j++) {
-          var colHtml = convertSpans(trim(rowCells[j]), self.converter);
+          var colHtml = convertSpans(trim(rowCells[j]), self);
           html += ["  <td", align[j], ">", colHtml, "</td>\n"].join('');
         }
         html += "</tr>\n";
@@ -429,6 +492,81 @@
 
 
   /******************************************************************
+   * Footnotes                                                      *
+   *****************************************************************/
+  
+  // Strip footnote, store in hashes.
+  Markdown.Extra.prototype.stripFootnoteDefinitions = function(text) {
+    var self = this;
+
+    text = text.replace(
+      /\n[ ]{0,3}\[\^(.+?)\]\:[ \t]*\n?([\s\S]*?)\n{1,2}((?=\n[ ]{0,3}\S)|$)/g,
+      function(wholeMatch, m1, m2) {
+        m1 = slugify(m1);
+        m2 += "\n";
+        m2 = m2.replace(/^[ ]{0,3}/g, "");
+        self.footnotes[m1] = m2;
+        return "\n";
+      });
+
+    return text;
+  };
+  
+
+  // Find and convert footnotes references.
+  Markdown.Extra.prototype.doFootnotes = function(text) {
+    var self = this;
+    if(self.isConvertingFootnote === true) {
+      return text;
+    }
+
+    var footnoteCounter = 0;
+    text = text.replace(/\[\^(.+?)\]/g, function(wholeMatch, m1) {
+      var id = slugify(m1);
+      var footnote = self.footnotes[id];
+      if (footnote === undefined) {
+        return wholeMatch;
+      }
+      footnoteCounter++;
+      self.usedFootnotes.push(id);
+      var html = '<a href="#fn:' + id + '" id="fnref:' + id
+      + '" title="See footnote" class="footnote">' + footnoteCounter
+      + '</a>';
+      return self.hashExtraInline(html);
+    });
+
+    return text;
+  };
+
+  // Print footnotes at the end of the document
+  Markdown.Extra.prototype.printFootnotes = function(text) {
+    var self = this;
+
+    if (self.usedFootnotes.length === 0) {
+      return text;
+    }
+
+    text += '\n\n<div class="footnotes">\n<hr>\n<ol>\n\n';
+    for(var i=0; i<self.usedFootnotes.length; i++) {
+      var id = self.usedFootnotes[i];
+      var footnote = self.footnotes[id];
+      self.isConvertingFootnote = true;
+      var formattedfootnote = convertSpans(footnote, self);
+      delete self.isConvertingFootnote;
+      text += '<li id="fn:'
+        + id
+        + '">'
+        + formattedfootnote
+        + ' <a href="#fnref:'
+        + id
+        + '" title="Return to article" class="reversefootnote">&#8617;</a></li>\n\n';
+    }
+    text += '</ol>\n</div>';
+    return text;
+  };
+  
+  
+  /******************************************************************
   * Fenced Code Blocks  (gfm)                                       *
   ******************************************************************/
 
@@ -438,11 +576,14 @@
       code = code.replace(/&/g, "&amp;");
       code = code.replace(/</g, "&lt;");
       code = code.replace(/>/g, "&gt;");
+      // These were escaped by PageDown before postNormalization 
+      code = code.replace(/~D/g, "$$");
+      code = code.replace(/~T/g, "~");
       return code;
     }
 
     var self = this;
-    text = text.replace(/(?:^|\n)```(.*)\n([\s\S]*?)\n```/g, function(match, m1, m2) {
+    text = text.replace(/(?:^|\n)```[ \t]*(\S*)[ \t]*\n([\s\S]*?)\n```[ \t]*(?=\n)/g, function(match, m1, m2) {
       var language = m1, codeblock = m2;
 
       // adhere to specified options
@@ -467,13 +608,120 @@
     return text;
   };
 
-  Markdown.Extra.prototype.all = function(text) {
-    text = this.tables(text);
-    text = this.fencedCodeBlocks(text);
+
+  /******************************************************************
+  * SmartyPants                                                     *
+  ******************************************************************/
+  
+  Markdown.Extra.prototype.educatePants = function(text) {
+    var self = this;
+    var result = '';
+    var blockOffset = 0;
+    // Here we parse HTML in a very bad manner
+    text.replace(/(?:<!--[\s\S]*?-->)|(<)([a-zA-Z1-6]+)([^\n]*?>)([\s\S]*?)(<\/\2>)/g, function(wholeMatch, m1, m2, m3, m4, m5, offset) {
+      var token = text.substring(blockOffset, offset);
+      result += self.applyPants(token);
+      self.smartyPantsLastChar = result.substring(result.length - 1);
+      blockOffset = offset + wholeMatch.length;
+      if(!m1) {
+        // Skip commentary
+        result += wholeMatch;
+        return;
+      }
+      // Skip special tags
+      if(!/code|kbd|pre|script|noscript|iframe|math|ins|del|pre/i.test(m2)) {
+        m4 = self.educatePants(m4);
+      }
+      else {
+        self.smartyPantsLastChar = m4.substring(m4.length - 1);
+      }
+      result += m1 + m2 + m3 + m4 + m5;
+    });
+    var lastToken = text.substring(blockOffset);
+    result += self.applyPants(lastToken);
+    self.smartyPantsLastChar = result.substring(result.length - 1);
+    return result;
+  };
+    
+  function revertPants(wholeMatch, m1) {
+    var blockText = m1;
+    blockText = blockText.replace(/&\#8220;/g, "\"");
+    blockText = blockText.replace(/&\#8221;/g, "\"");
+    blockText = blockText.replace(/&\#8216;/g, "'");
+    blockText = blockText.replace(/&\#8217;/g, "'");
+    blockText = blockText.replace(/&\#8212;/g, "---");
+    blockText = blockText.replace(/&\#8211;/g, "--");
+    blockText = blockText.replace(/&\#8230;/g, "...");
+    return blockText;
+  }
+  
+  Markdown.Extra.prototype.applyPants = function(text) {
+    // Dashes
+    text = text.replace(/---/g, "&#8212;").replace(/--/g, "&#8211;");
+    // Ellipses
+    text = text.replace(/\.\.\./g, "&#8230;").replace(/\.\s\.\s\./g, "&#8230;");
+    // Backticks
+    text = text.replace(/``/g, "&#8220;").replace (/''/g, "&#8221;");
+    
+    if(/^'$/.test(text)) {
+      // Special case: single-character ' token
+      if(/\S/.test(this.smartyPantsLastChar)) {
+        return "&#8217;";
+      }
+      return "&#8216;";
+    }
+    if(/^"$/.test(text)) {
+      // Special case: single-character " token
+      if(/\S/.test(this.smartyPantsLastChar)) {
+        return "&#8221;";
+      }
+      return "&#8220;";
+    }
+
+    // Special case if the very first character is a quote
+    // followed by punctuation at a non-word-break. Close the quotes by brute force:
+    text = text.replace (/^'(?=[!"#\$\%'()*+,\-.\/:;<=>?\@\[\\]\^_`{|}~]\B)/, "&#8217;");
+    text = text.replace (/^"(?=[!"#\$\%'()*+,\-.\/:;<=>?\@\[\\]\^_`{|}~]\B)/, "&#8221;");
+
+    // Special case for double sets of quotes, e.g.:
+    //   <p>He said, "'Quoted' words in a larger quote."</p>
+    text = text.replace(/"'(?=\w)/g, "&#8220;&#8216;");
+    text = text.replace(/'"(?=\w)/g, "&#8216;&#8220;");
+
+    // Special case for decade abbreviations (the '80s):
+    text = text.replace(/'(?=\d{2}s)/g, "&#8217;");
+    
+    // Get most opening single quotes:
+    text = text.replace(/(\s|&nbsp;|--|&[mn]dash;|&\#8211;|&\#8212;|&\#x201[34];)'(?=\w)/g, "$1&#8216;");
+    
+    // Single closing quotes:
+    text = text.replace(/([^\s\[\{\(\-])'/g, "$1&#8217;");
+    text = text.replace(/'(?=\s|s\b)/g, "&#8217;");
+
+    // Any remaining single quotes should be opening ones:
+    text = text.replace(/'/g, "&#8216;");
+    
+    // Get most opening double quotes:
+    text = text.replace(/(\s|&nbsp;|--|&[mn]dash;|&\#8211;|&\#8212;|&\#x201[34];)"(?=\w)/g, "$1&#8220;");
+    
+    // Double closing quotes:
+    text = text.replace(/([^\s\[\{\(\-])"/g, "$1&#8221;");
+    text = text.replace(/"(?=\s)/g, "&#8221;");
+    
+    // Any remaining quotes should be opening ones.
+    text = text.replace(/"/ig, "&#8220;");
     return text;
   };
 
-
+  // Find and convert markdown extra definition lists into html.
+  Markdown.Extra.prototype.runSmartyPants = function(text) {
+    this.smartyPantsLastChar = '';
+    text = this.educatePants(text);
+    // Clean everything inside html tags (some of them may have been converted due to our rough html parsing)
+    text = text.replace(/(<([a-zA-Z1-6]+)\b([^\n>]*?)(\/)?>)/g, revertPants);
+    return text;
+  };
+  
   /******************************************************************
   * Definition Lists                                                *
   ******************************************************************/
@@ -572,7 +820,7 @@
       for (var i = 0; i < terms.length; i++) {
         var term = terms[i];
         // process spans inside dt
-        term = convertSpans(trim(term), self.converter);
+        term = convertSpans(trim(term), self);
         text += "\n<dt>" + term + "</dt>";
       }
       return text + "\n";
@@ -586,11 +834,11 @@
         // process markdown inside definition
         // TODO?: currently doesn't apply extensions
         def = outdent(def) + "\n\n";
-        def = "\n" + convertAll(def, self.converter) + "\n";
+        def = "\n" + convertAll(def, self) + "\n";
       } else {
         // convert span-level markdown inside definition
         def = rtrim(def);
-        def = convertSpans(outdent(def), self.converter);
+        def = convertSpans(outdent(def), self);
       }
 
       return "\n<dd>" + def + "</dd>\n";
@@ -599,5 +847,28 @@
     return removeAnchors(listStr);
   };
 
+
+  /***********************************************************
+  * Strikethrough                                            *
+  ************************************************************/
+
+  Markdown.Extra.prototype.strikethrough = function(text) {
+    // Pretty much duplicated from _DoItalicsAndBold
+    return text.replace(/([\W_]|^)~T~T(?=\S)([^\r]*?\S[\*_]*)~T~T([\W_]|$)/g,
+      "$1<del>$2</del>$3");
+  };
+
+
+  /***********************************************************
+  * New lines                                                *
+  ************************************************************/
+
+  Markdown.Extra.prototype.newlines = function(text) {
+    // We have to ignore already converted newlines and line breaks in sub-list items
+    return text.replace(/(<(?:br|\/li)>)?\n/g, function(wholeMatch, previousTag) {
+      return previousTag ? wholeMatch : " <br>\n";
+    });
+  };
+  
 })();
 

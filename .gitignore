@@ -10,3 +10,4 @@ venv/
 *.log
 docs/build/
 config.py*
+questions/

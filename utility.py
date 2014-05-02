@@ -413,7 +413,7 @@ def get_groups_per_page(page, GROUPS_PER_PAGE, document):
     #print document
     for row in document:
         #print row['id']
-        group_list.append(kunjika.sb.get(row['id'].split(':')[1]).value)
+        group_list.append(kunjika.kb.get(row['id'].split(':')[1]).value)
 
     print group_list
     groups = sorted(group_list, key=lambda k: k['member_count'], reverse=True)
@@ -671,9 +671,9 @@ def create_group(request):
         member['member-id'] = g.user.id
         member['type'] = 'group-member'
 
-        kunjika.sb.add(group['id'], group)
+        kunjika.kb.add(group['id'], group)
 
-        kunjika.sb.add(str(member['member-id']) + ':' + str(group['id']), member)
+        kunjika.kb.add(str(member['member-id']) + ':' + str(group['id']), member)
 
         return True
     except:
@@ -681,3 +681,4 @@ def create_group(request):
 
 def send_async_email(msg):
     kunjika.mail.send(msg)
+

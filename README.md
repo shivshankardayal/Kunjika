@@ -6,8 +6,7 @@ Kunjika
 Stackoverflow clone. I am using Flask framework so obviously Python as well.
 Couchbase for database and Memcahced funcitonality.
 
-We have some functionality working now. Still not even alpha. This project
-has been started to scratch my own itch. OSQA's development has been stopped.
+This project has been started to scratch my own itch. OSQA's development has been stopped.
 I used LampCMS for sometime but found it buggy. Question2Answer is good and
 decent but is in PHP which I do not know so I decided to roll my own.
 Askbot could substitute OSQA but all these are turning commercial which is bad
@@ -20,28 +19,12 @@ which provided nice replication, auto-sharding and memcached functionality apart
 from document based database. So one query for question, one for user and one
 for tag and it is done.
 
-Release 0.2 alpha is done. Please test while I am fixing bugs and working on new
-features.
-
 I am working on documentation which you can read at http://libreprogramming.org/docs/kunjika/
 The documentation covers installation and configuration as of now. Code
-documentation is yet to be put there. The documentation is not update though.
+documentation is yet to be put there.
+The documentation is out of date and I will update that soon.
 
-github is again home of Kunjika. 
+I am working on a series of tests for different topics related to programming language
+which should be accessible in near future.
 
-At present I am working on Couchbase optimization for Kunjika and I have
-decided that it will remain purely a QA platform with little or no social
-features.
-
-I believe that keeping it minimalistic is best and very few new features will
-be introduced. The atom feed is the best way to watch the QA activity. In few
-days I will freeze the new features and do a final beta release.
-
-Few more feature are to be done and e.g. to put uploads in distributed filesystem.
-Database has been tuned for maximum performance and querying code should be changed
-for simplicity.
-
-Now all involved users receive email when a new comment or answer is posted.
-
-Further changes in Kunjika have forced to make in closed source. The code developed
-till now will remain open source.
+Kunjika is quite stable now but I have yet to do a beta release.

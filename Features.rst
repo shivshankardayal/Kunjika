@@ -32,8 +32,7 @@ TODO
     message is received.
 21. Automatic private message to users upon successful email activation.
 22. Blog module, with a liveblogging feature similar to ScribbleLive.
-23. WordPress module, to embed Kunjika forum in a WP site.
-24. Gallery module to enable creation of a gallery page (a blog for galleries).
+23. Gallery module to enable creation of a gallery page (a blog for galleries).
 
 DONE
 ====
@@ -60,8 +59,8 @@ DONE
 12. Making questions favorite for one user.
 13. Search on question title/contents using Google's custom search. Note that
     crawler crawls depending upon activity so new stuff wont reflect immediately.
-14. Simple tags display.(Allow editing of excerpt)
-15. Users page.(edit link does not work.)
+14. Simple tags display.
+15. Users page.
 16. Simple count of questions, answers, tags and users.
 17. Popular tags display on main page in side bar.
 18. Code attachments also .zip source attachments up to 2MB.
