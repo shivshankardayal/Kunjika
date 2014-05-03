@@ -440,8 +440,10 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
 
     skip = (page - 1) * QUESTIONS_PER_PAGE
     tag = urllib2.quote(tag, '')
-    rows = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?&key=' + '"' + tag + '"').read()
-    #tag = json.loads(tag)['rows'][0]['id']
+    rows = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?limit=' +
+                str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&key="' + tag + '"&reduce=false').read()
+    count = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?key=' + '"' + tag + '"&reduce=true').read()
+    count = json.loads(count)['rows'][0]['value']
     #tag = kunjika.tb.get(tag).value
     rows = json.loads(rows)['rows']
     question_list = []
@@ -462,7 +464,7 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
         user = kunjika.cb.get(i['content']['op']).value
         i['opname'] = user['name']
 
-    return question_list
+    return [question_list, count]
 
 def url_for_other_page(page):
     args = request.view_args.copy()
@@ -483,6 +485,11 @@ def url_for_search_page(page, query):
     args = request.view_args.copy()
     args['page'] = page
     return url_for(request.endpoint, query=query, **args)
+
+def url_for_browse_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
 
 def get_popular_tags():
 

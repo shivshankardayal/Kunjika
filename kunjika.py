@@ -279,8 +279,7 @@ def questions(tag=None, page=None, qid=None, url=None):
 
     questions_dict = {}
     if tag is not None:
-        questions_list = utility.get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag)
-        count = len(questions_list)
+        [questions_list, count] = utility.get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag)
         if not questions_list and page != 1:
             abort(404)
         pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
@@ -2299,15 +2298,17 @@ def add_objective_question():
 @kunjika.route('/browse_objective_questions', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/browse_objective_questions/page/<int:page>')
 @kunjika.route('/browse_objective_questions', methods=['GET', 'POST'])
-def browse_objective_questions():
+def browse_objective_questions(page=None):
     boqForm = BOQForm(request.form)
 
     if g.user.id == 1:
         if boqForm.validate_on_submit() and request.method == 'POST':
+            skip = (page - 1) * QUESTIONS_PER_PAGE
             tech = boqForm.tech.data
             cat = boqForm.cat.data
 
-            questions = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_by_ts?key=' + '"' + urllib2.quote(str(tech)) + '"').read()
+            questions = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_by_ts?limit=' +
+                str(QUESTIONS_PER_PAGE) + 'key=' + '"' + urllib2.quote(str(tech)) + '"').read()
             questions = json.loads(questions)
             qids = []
             if len(questions) > 0:
@@ -2328,8 +2329,8 @@ def browse_objective_questions():
                 abort(404)
             pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
 
-            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
-                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+            return render_template('browse.html', title='Questions', qpage=True, questions=questions_list,
+                                   pagination=pagination)
 
         return render_template('browse_form.html', title='Browse Question Form', form=boqForm, ppage=True, name=g.user.name, role=g.user.role,
                        user_id=g.user.id)
