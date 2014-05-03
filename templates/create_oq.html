@@ -189,9 +189,9 @@
                 preventDuplicates: true
             });
         });
-        $('#lang').change(function() {
+        $('#tech').change(function() {
             $.getJSON('/getcat', {
-                lang : $( "#lang option:selected" ).text()
+                lang : $( "#tech option:selected" ).text()
             }, function (data) {
                 $.each(data, function(k, v) {
                     var options = $("#cat");

@@ -17,11 +17,11 @@
     <div class="row-fluid">
     <h3>Please Set Your Options</h3>
     <div class="mainbar" id="mainbar">
-        <form class="ask-form" method="post" aciton="/add_objective_question">
+        <form class="ask-form" method="post" aciton="/browse_objective_question">
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
-
-            {{ render_field(form.oq_answers, style="margin-left:10px") }}
+            {{ render_field(form.tech, style="margin-left:15px") }}
+            {{ render_field(form.cat, style="margin-left:25px") }}
             <div class="controls">
                 <button class="btn btn-primary">
                     Next
@@ -30,4 +30,21 @@
         </form>
     </div>
     </div>
+    <script type="text/javascript">
+    $('#tech').change(function() {
+        $.getJSON('/getcat', {
+            lang : $( "#tech option:selected" ).text()
+        }, function (data) {
+            $.each(data, function(k, v) {
+                var options = $("#cat");
+                options.find('option').remove();
+                $.each(data, function(k, v) {
+                    options.append($("<option />").val(k).text(v));
+                });
+            });
+        });
+        return false;
+    });
+    </script>
 {% endblock %}
+

@@ -1772,17 +1772,15 @@ def reset_password(token=None):
 
                 document = urllib2.urlopen(
                     DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
-
-		        document = json.loads(document)
-		        #print document
+                document = json.loads(document)
                 if 'id' in document['rows'][0]:
                     try:
                         document = cb.get(str(document['rows'][0]['id'])).value
                     except:
                         return redirect(url_for('questions'))
-            	    passwd_hash = bcrypt.generate_password_hash(passwordResetForm.password.data)
-		    document['password'] = passwd_hash
-		    cb.replace(str(document['id']), document)
+                    passwd_hash = bcrypt.generate_password_hash(passwordResetForm.password.data)
+                    document['password'] = passwd_hash
+                    cb.replace(str(document['id']), document)
             except:
                 print "Either signature is bad or token has expired"
                 return redirect(url_for('questions'))
@@ -2219,7 +2217,7 @@ def add_objective_question():
     oqForm = OQForm(request.form)
 
     class ChoiceForm(Form):
-        lang = SelectField('Technology', choices=[('c', 'C'), ('cpp', 'C++'), ('java', 'Java'), ('perl', 'Perl'), \
+        tech = SelectField('Technology', choices=[('c', 'C'), ('cpp', 'C++'), ('java', 'Java'), ('perl', 'Perl'), \
         ('python', 'Python')])
         cat = SelectField('Category', choices=[('arrays', 'Arrays'), ('basics', 'Basics'), ('bitop', 'Bitwise Operators'),
             ('cli', 'Command Line Arguments'), ('const', 'Const'), ('control_flow', 'Control Flow'),
@@ -2251,14 +2249,14 @@ def add_objective_question():
 
         if questionForm.validate_on_submit() and request.method == 'POST':
             print "hello"
-            lang = questionForm.lang.data
+            tech = questionForm.lang.data
             cat = questionForm.cat.data
             option =  questionForm.option.data
             option_1 =  questionForm.option_1.data
             option_2 =  questionForm.option_2.data
 
             question = {}
-            question['lang'] = lang
+            question['tech'] = tech
             question['cat'] = cat
             question['content'] = {}
             question['content']['description'] = questionForm.description.data
@@ -2298,8 +2296,10 @@ def add_objective_question():
                                user_id=g.user.id)
     return redirect(url_for('login'))
 
-@kunjika.route('/browse_objective_question', methods=['GET', 'POST'])
-def add_objective_question():
+@kunjika.route('/browse_objective_questions', defaults={'page': 1}, methods=['GET', 'POST'])
+@kunjika.route('/browse_objective_questions/page/<int:page>')
+@kunjika.route('/browse_objective_questions', methods=['GET', 'POST'])
+def browse_objective_questions():
     boqForm = BOQForm(request.form)
 
     if g.user.id == 1:
@@ -2307,6 +2307,32 @@ def add_objective_question():
             tech = boqForm.tech.data
             cat = boqForm.cat.data
 
+            questions = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_by_ts?key=' + '"' + urllib2.quote(str(tech)) + '"').read()
+            questions = json.loads(questions)
+            qids = []
+            if len(questions) > 0:
+                for row in questions['rows']:
+                    qids.append(str(row['id']))
+
+            val_res = kb.get_multi(qids)
+            questions_list = []
+            for qid in qids:
+                questions_list.append(val_res[str(qid)].value)
+
+            questions_list = [question for question in questions_list if question['cat'] == cat]
+
+            print questions_list
+
+            count = len(questions_list)
+            if not questions_list and page != 1:
+                abort(404)
+            pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
+
+            return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
+                                   pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+
+        return render_template('browse_form.html', title='Browse Question Form', form=boqForm, ppage=True, name=g.user.name, role=g.user.role,
+                       user_id=g.user.id)
     return redirect(url_for('login'))
 
 
