@@ -515,19 +515,21 @@ def questions(tag=None, page=None, qid=None, url=None):
                     current_user_list = [str(g.user.id)]
                     email_list = email_list - set(current_user_list)
                     email_list = list(email_list)
-
-                    email_users = cb.get_multi(email_list)
+                    email_users = None
+                    if email_list:
+                        email_users = cb.get_multi(email_list)
                     email_list = []
-                    for id in email_users:
-                        email_list.append(email_users[str(id)].value['email'])
+                    if email_users is not None:
+                        for id in email_users:
+                            email_list.append(email_users[str(id)].value['email'])
 
-                    msg = Message("A new answer has been posted to a question where you have answered or commented")
-                    msg.recipients = email_list
-                    msg.sender = admin
-                    msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
-                    HOST_URL + "questions/" + str(questions_dict['qid']) + '/' + questions_dict['content']['url'] + \
-                    " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-                    mail.send(msg)
+                        msg = Message("A new answer has been posted to a question where you have answered or commented")
+                        msg.recipients = email_list
+                        msg.sender = admin
+                        msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
+                        HOST_URL + "questions/" + str(questions_dict['qid']) + '/' + questions_dict['content']['url'] + \
+                        " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+                        mail.send(msg)
 
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
                 qb.replace(str(questions_dict['qid']), questions_dict)
@@ -2297,7 +2299,6 @@ def add_objective_question():
 
 @kunjika.route('/browse_objective_questions', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/browse_objective_questions/page/<int:page>')
-@kunjika.route('/browse_objective_questions', methods=['GET', 'POST'])
 def browse_objective_questions(page=None):
     boqForm = BOQForm(request.form)
 
@@ -2306,9 +2307,12 @@ def browse_objective_questions(page=None):
             skip = (page - 1) * QUESTIONS_PER_PAGE
             tech = boqForm.tech.data
             cat = boqForm.cat.data
-
             questions = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_by_ts?limit=' +
-                str(QUESTIONS_PER_PAGE) + 'key=' + '"' + urllib2.quote(str(tech)) + '"').read()
+                                        str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&key="' +
+                                        urllib2.quote(str(tech)) + '"&reduce=false').read()
+            count = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_by_ts?key="' +
+                                    urllib2.quote(str(tech)) + '"&reduce=true').read()
+            count = json.loads(count)['rows'][0]['value']
             questions = json.loads(questions)
             qids = []
             if len(questions) > 0:
