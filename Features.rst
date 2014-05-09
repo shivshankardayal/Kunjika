@@ -97,6 +97,7 @@ DONE
     a question will get an email.)
 41. Related questions tag that embeds related questions at the end of a discussion.
 42. Users can send invitation emails from their profile page.
+43. Preview of questions on mouse hover on links on home page of questions.
 
 Postponed for later
 ===================
