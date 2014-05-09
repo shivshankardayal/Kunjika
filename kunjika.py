@@ -508,7 +508,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                         for answer in questions_dict['answers']:
                             email_list.append(str(answer['poster']))
                             if 'comments' in answer:
-                                for comment in questions_dict['comments']:
+                                for comment in answer['comments']:
                                     email_list.append(str(comment['poster']))
 
                     email_list = set(email_list)
