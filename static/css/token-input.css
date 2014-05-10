@@ -58,8 +58,8 @@ li.token-input-token-kunjika span {
 }
 
 li.token-input-selected-token-kunjika {
-    background-color: #5670a6;
-    border: 1px solid #3b5998;
+    background-color: #2c8a39;
+    border: 1px solid #4caa59;
     color: #fff;
 }
 
@@ -117,6 +117,6 @@ div.token-input-dropdown-kunjika ul li em {
 }
 
 div.token-input-dropdown-kunjika ul li.token-input-selected-dropdown-item-kunjika {
-    background-color: #3b5998;
+    background-color: #2c8a39;
     color: #fff;
 }

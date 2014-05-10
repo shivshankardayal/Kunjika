@@ -178,7 +178,11 @@
     <div class="row-fluid">
     <div id="mainbar" class="mainbar">
     <div class="q-header">
-        <h3>{{ questions['title'] }}</h3>
+        {% if questions['close'] == True %}
+            <h3>{{ questions['title'] }} [Closed]</h3>
+        {% else %}
+            <h3>{{ questions['title'] }}</h3>
+        {% endif %}
     </div>
     <table>
         <tr>
@@ -237,6 +241,11 @@
                                 <a href="/flag/{{ questions['qid'] }}" title="Flag for inappropriate comment"
                                    id="qqf-{{ questions['qid'] }}" class="flag" title=""><i class="icon-flag"
                                                                                             style="color:#d00"></i> Flag</a>
+                            </td>
+                            <td class="vt">
+                                <a href="/bookmark/{{ questions['qid'] }}" title="Bookmark this question"
+                                   id="{{ questions['qid'] }}" class="bookmark" title=""><i class="icon-bookmark"
+                                                                                            style="color:#d00"></i> Bookamrk</a>
                             </td>
                         {% if g.user.id == 1 %}
                             <td class="vt">
@@ -624,6 +633,9 @@
         </div>
         </form>
     {% endif %}
+    {% if user_id is undefined %}
+    <h5>You need to be logged in to answer or comment.</h5>
+    {% endif %}
     </div>
     <div id="sidebar">
         <div class="count">
@@ -667,25 +679,6 @@
         </div>
     </div>
     </div>
-    <!--    <script type="text/javascript">
-            $("document").ready(function () {
-            //hljs.selected_languages = hljs.LANGUAGES;
-            $("textarea").each(function () {
-            $(this).keypress(function () {
-            window.clearTimeout(hljs.Timeout);
-            hljs.Timeout = window.setTimeout(function () {
-            hljs.initHighlighting.called = false;
-            hljs.initHighlighting();
-
-            }, 200);
-            });
-            });
-            window.setTimeout(function () {
-            hljs.initHighlighting.called = false;
-            hljs.initHighlighting();
-            }, 200);
-            });
-            </script>-->
     <script type="text/javascript">
         var converter = new Markdown.Converter();
         Markdown.Extra.init(converter, {
@@ -876,6 +869,20 @@
                 url: $(location).attr('href')
             }, function (data) {
                 flash('Question has been closed/opened.', 'success')
+            });
+            return false;
+        });
+        $('.bookmark').click(function () {
+            id = '#' + $(this).attr('id');
+            $.getJSON('/bookmark', {
+                id: '#' + $(this).attr('id'),
+                url: $(location).attr('href')
+            }, function (data) {
+                if(data['bookmark']) {
+                    flash('This question is bookmarked.', 'info')
+                } else {
+                    flash('This question is unbookmarked.', 'info')
+                }
             });
             return false;
         });

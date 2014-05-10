@@ -1172,10 +1172,20 @@ def image_upload():
             return json.dumps(data)
 
 
-@kunjika.route('/get_tags/<qid>', methods=['GET', 'POST'])
-def get_tags(q=None, qid=None):
-    ##print request.args.get('q')
+@kunjika.route('/get_tags', methods=['GET', 'POST'])
+def get_tags():
 
+    query = request.args.get('q')
+    print query
+    q=pyes.MatchQuery('tag', query)
+    tags_result=es_conn.search(query=q)
+    results=[]
+
+    for r in tags_result:
+        results.append({'id': str(r['tid']), 'name':r['tag']})
+
+    return json.dumps(results)
+    '''
     if qid is not None:
         question = qb.get(str(qid)).value
 
@@ -1196,7 +1206,7 @@ def get_tags(q=None, qid=None):
             tags_list.append({"id": val_res[str(tid)].value['tid'], "name": val_res[str(tid)].value['tag']})
     ##print tags_list
     return json.dumps(tags_list)
-
+    '''
 
 def add_tags(tags_passed, qid):
     for tag in tags_passed:
@@ -1427,31 +1437,7 @@ def postcomment():
     ##print type(request.form['comment'])
     #user = cb.get(str(g.user.id)).value
     user = g.user.user_doc
-    '''
-    try:
-        data = sb.get(user['email'])
-        data['comments/min'] += 1
-        data['comments/hr'] += 1
-        data['comments/day'] += 1
-        sb.replace(user['email'] + 'comments/min', data, ttl=60)
-        sb.replace(user['email'] + 'comments/hr', data, ttl=3600)
-        sb.replace(user['email'] + 'comments/day', data, ttl=86400)
-        if data['comments/min'] >= kunjika.config['COMMENTS_PER_MIN'] or \
-            data['comments/hr'] >= kunjika.config['COMMENTS_PER_HR'] or \
-            data['comments/day'] >= kunjika.config['COMMENTS_PER_DAY']:
 
-            return redirect(url_for('questions'))
-
-    except:
-        data1 = {}
-        data1['email'] = user['email']
-        data1['comments/min'] = 1
-        data1['comments/hr'] = 1
-        data1['comments/day'] = 1
-        sb.add(user['email'] + 'comments/min', data1, ttl=60)
-        sb.add(user['email'] + 'comments/hr', data1, ttl=3600)
-        sb.add(user['email'] + 'comments/day', data1, ttl=86400)
-    '''
     if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
         return "Comment must be between 10 and 5000 characters."
     else:
@@ -1543,27 +1529,6 @@ def postcomment():
 def unanswered(page):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     skip = (page - 1) * QUESTIONS_PER_PAGE
-    '''
-    questions = urllib2.urlopen(
-        DB_URL + 'questions/_design/dev_qa/_view/get_unanswered?limit=' +
-        str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true&reduce=false').read()
-    questions = json.loads(questions)['rows']
-    #print question_view
-    questions_list = []
-    for row in questions:
-        print row['value']
-        question = {}
-        question['qid'] = row['value'][0]
-        question['votes'] = row['value'][1]
-        question['acount'] = row['value'][2]
-        question['title'] = row['value'][3]
-        question['url'] = row['value'][4]
-        question['views'] = row['value'][5]
-        question['ts'] = row['value'][6]
-        question['op'] = row['value'][7]
-        question['tags'] = row['value'][8]
-        questions_list.append(question)
-    '''
 
     q = Query(descending=True, limit=50)
     questions_list = []
@@ -1572,19 +1537,6 @@ def unanswered(page):
         #print result
         questions_list.append(result.doc.value)
         count += 1
-
-    '''
-    q = Query(descending=True, limit=50)
-    for result in View(qb, "dev_qa", "get_unanswered", include_docs=True, query=q):
-        print result
-    count = urllib2.urlopen(
-        DB_URL + 'questions/_design/dev_qa/_view/get_unanswered?limit=' +
-        str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&descending=true').read()
-    count = json.loads(count)['rows'][0]['value']
-    '''
-    ##print questions
-    #for i in questions['rows']:
-    #    questions_list.append(i['value'])
 
     for i in questions_list:
         i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(float(i['content']['ts'])))
@@ -2249,8 +2201,7 @@ def add_objective_question():
                        user_id=g.user.id)
 
         if questionForm.validate_on_submit() and request.method == 'POST':
-            print "hello"
-            tech = questionForm.lang.data
+            tech = questionForm.tech.data
             cat = questionForm.cat.data
             option =  questionForm.option.data
             option_1 =  questionForm.option_1.data
@@ -2261,7 +2212,6 @@ def add_objective_question():
             question['cat'] = cat
             question['content'] = {}
             question['content']['description'] = questionForm.description.data
-            question['lang'] = questionForm.lang.data
             question['answers'] = questionForm.answers.data
 
             if option == 'Single choice':
@@ -2285,7 +2235,8 @@ def add_objective_question():
             question['content']['ts'] = int(time())
             question['updated'] = question['content']['ts']
             question['content']['ip'] = request.remote_addr
-            question['qid'] = str(uuid4())
+            question['qid'] = 'tq-' + str(uuid4())  # tq stands for test question. prefix is used for increasing period
+                                                   # before uuid will repeat
             question['_type'] = 'test_questions'
 
             print str(question['qid'])
@@ -2295,7 +2246,8 @@ def add_objective_question():
 
         return render_template('oq.html', title='Create Objective Question', form=oqForm, ppage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id)
-    return redirect(url_for('login'))
+    else:
+        return redirect(url_for('login'))
 
 @kunjika.route('/browse_objective_questions', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/browse_objective_questions/page/<int:page>')
@@ -2312,7 +2264,11 @@ def browse_objective_questions(page=None):
                                         urllib2.quote(str(tech)) + '"&reduce=false').read()
             count = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_by_ts?key="' +
                                     urllib2.quote(str(tech)) + '"&reduce=true').read()
-            count = json.loads(count)['rows'][0]['value']
+            count = json.loads(count)['rows']
+            if len(count) != 0:
+                count = count[0]['value']
+            else:
+                count = 0
             questions = json.loads(questions)
             qids = []
             if len(questions) > 0:
@@ -2326,20 +2282,170 @@ def browse_objective_questions(page=None):
 
             questions_list = [question for question in questions_list if question['cat'] == cat]
 
-            print questions_list
-
-            count = len(questions_list)
+            #count = len(questions_list)
             if not questions_list and page != 1:
                 abort(404)
-            pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
+            pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, int(count))
 
             return render_template('browse.html', title='Questions', qpage=True, questions=questions_list,
-                                   pagination=pagination)
+                                   pagination=pagination, name=g.user.name, role=g.user.role,
+                                   user_id=g.user.id, tech=tech, cat=cat)
 
         return render_template('browse_form.html', title='Browse Question Form', form=boqForm, ppage=True, name=g.user.name, role=g.user.role,
                        user_id=g.user.id)
     return redirect(url_for('login'))
 
+@kunjika.route('/edit_test/<element>', methods=['GET', 'POST'])
+def edit_test(element):
+    question = kb.get(element).value
+    options = len(question['content']['options'])
+    class ChoiceForm(Form):
+        option = RadioField('What type of question do you want?', choices=[('Single choice', 'Single Choice'),
+                                                                           ('Multiple choice', 'Multiple choice')])
+        description = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
+        option_1 = TextField('Question', [validators.Length(min=1, max=200), validators.Required()])
+        option_2 = TextField('Question', [validators.Length(min=1, max=200), validators.Required()])
+        option_3 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        option_4 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        option_5 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        option_6 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        answers = TextField('Answers', [validators.Length(min=1, max=200), validators.Required()])
+
+    form = ChoiceForm(request.form)
+    choices = []
+    for i in range(0, options):
+        choices.append(str(i+1))
+
+    if g.user.id == 1:
+        print form.description.data
+        print form.option_1.data
+        print form.option.data
+        print form.option_2.data
+        print form.answers.data
+        if form.validate_on_submit() and request.method == 'POST':
+            print "editing test question"
+            option =  form.option.data
+            option_1 =  form.option_1.data
+            option_2 =  form.option_2.data
+
+            question['content'] = {}
+            question['content']['description'] = form.description.data
+            question['answers'] = form.answers.data
+
+            if option == 'Single choice':
+                question['content']['sc'] = True
+                question['content']['mc'] = False
+            else:
+                question['content']['mc'] = True
+                question['content']['sc'] = False
+
+            question['content']['options'] = []
+            question['content']['options'].append(option_1)
+            question['content']['options'].append(option_2)
+
+            if form.option_3.data != "":
+                question['content']['options'].append(form.option_3.data)
+                if form.option_4.data != "":
+                    question['content']['options'].append(form.option_4.data)
+                    if form.option_5.data != "":
+                        question['content']['options'].append(form.option_5.data)
+                        if form.option_6.data != "":
+                            question['content']['options'].append(form.option_6.data)
+
+            question['content']['ts'] = int(time())
+            question['updated'] = question['content']['ts']
+            question['content']['ip'] = request.remote_addr
+
+            kb.replace(question['qid'], question) # tq stands for test question. prefix is used for increasing period
+                                                  # before uuid will repeat
+
+            return redirect(url_for('browse_objective_questions'))
+
+        return render_template('edit_test.html', title='Edit Objective Question', form=form, ppage=True, name=g.user.name, role=g.user.role,
+                               user_id=g.user.id, question=question, options=zip(choices, question['content']['options']))
+    else:
+        return render_template('login')
+
+@kunjika.route('/bookmark')
+def bookmark():
+    qid = request.args.get('id')
+    bookmark = qb.get(qid[1:]).value
+    print bookmark
+    bid = 'bq-' + qid[1:] + '-' + str(g.user.id) # bq stands for bookmark question
+
+    try:
+        bookmark_doc = kb.get(bid).value
+        if bookmark_doc['status'] == False:
+            bookmark_doc['status'] = True
+            kb.replace(bid, bookmark_doc)
+            return jsonify({'bookmark': True})
+        else:
+            bookmark_doc['status'] = False
+            kb.replace(bid, bookmark_doc)
+            return jsonify({'bookmark': False})
+    except:
+        bookmark_doc = {}
+        bookmark_doc['id'] = bid
+        bookmark_doc['_type'] = 'bq' # bq stands for bookmark question
+        bookmark_doc['title'] = bookmark['title']
+        bookmark_doc['qid'] = bookmark['qid']
+        bookmark_doc['tags'] = bookmark['content']['tags']
+        bookmark_doc['uid'] = g.user.id
+        bookmark_doc['name'] = g.user.name
+        bookmark_doc['status'] = True
+        kb.add(bid, bookmark_doc)
+        return jsonify({'bookmark': True})
+
+@kunjika.route('/users/<uid>/<name>/bookmarks', defaults={'page': 1})
+@kunjika.route('/users/<uid>/<name>/bookmarks/<int:page>')
+def user_bookmarks(uid, name, page=1):
+    skip = (page - 1) * QUESTIONS_PER_PAGE
+    questions = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_bookmarks_by_uid?limit=' +
+                                str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&key=' +
+                                str(uid) + '&reduce=false').read()
+    print questions
+    count = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_bookmarks_by_uid?key=' +
+                            str(uid)).read()
+    count = json.loads(count)['rows']
+    if len(count) != 0:
+        count = count[0]['value']
+    else:
+        count = 0
+    print count
+    questions = json.loads(questions)
+    qids = []
+    if len(questions) > 0:
+        for row in questions['rows']:
+            qids.append((str(row['id'])).split('-')[1])
+
+    print qids
+    if len(qids) != 0:
+        val_res = qb.get_multi(qids)
+    questions_list = []
+    for qid in qids:
+        questions_list.append(val_res[str(qid)].value)
+
+    #count = len(questions_list)
+    if not questions_list and page != 1:
+        abort(404)
+    pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, int(count))
+    gravatar100 = Gravatar(kunjika,
+                           size=100,
+                           rating='g',
+                           default='identicon',
+                           force_default=False,
+                           force_lower=False)
+    try:
+        user = cb.get(str(g.user.id)).value
+    except:
+        pass
+    if uid in session:
+        logged_in = True
+	if g.user.is_authenticated():
+	        return render_template('bookmarks.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \
+        	                       lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, \
+                	               role=g.user.role, bookmarks_pagination = pagination, user=user, questions=questions_list)
+    flash('You are not allowed to view the bookmarks.', 'error')
 
 '''
 @kunjika.route('/invites')

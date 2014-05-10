@@ -98,6 +98,9 @@ DONE
 41. Related questions tag that embeds related questions at the end of a discussion.
 42. Users can send invitation emails from their profile page.
 43. Preview of questions on mouse hover on links on home page of questions.
+44. Test series creation for objective questions. (Generating tests to be done.)
+45. Tag suggestion(autocomplete).
+46. Bookmarking questions and view on profile.
 
 Postponed for later
 ===================
