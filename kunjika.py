@@ -2509,7 +2509,7 @@ def user_skills(uid, name):
     if 'skills' in user:
         for skill in user['skills']:
             sid_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) + \
-                                       ',"' + skill + '"]&stale=false&reduce=false').read()
+                                       ',"' + urllib.quote(skill) + '"]&stale=false&reduce=false').read()
             sid_doc = json.loads(sid_doc)
             print sid_doc
             for row in sid_doc['rows']:
@@ -2532,7 +2532,7 @@ def user_skills(uid, name):
 
             sids = []
             count_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
-                                       ',"' + skill + '"]&stale=false&reduce=true').read()
+                                       ',"' + urllib.quote(skill) + '"]&stale=false&reduce=true').read()
             count_doc = json.loads(count_doc)
             print count_doc
             if len(count_doc['rows']) != 0:

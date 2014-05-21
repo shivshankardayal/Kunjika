@@ -48,12 +48,12 @@ class OpenIDForm(Form):
 
 class QuestionForm(Form):
     question = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
-    description = TextAreaField('', [validators.Length(min=20, max=10000), validators.Required()])
+    description = TextAreaField('', [validators.Length(min=20, max=20000), validators.Required()])
     tags = TextField('Tags', [validators.Length(min=1, max=100), validators.Required()])
 
 
 class AnswerForm(Form):
-    answer = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
+    answer = TextAreaField('', [validators.Length(min=20, max=20000), validators.Required()])
 
 
 class CommentForm(Form):

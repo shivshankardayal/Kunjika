@@ -694,7 +694,7 @@ def endorse():
     skill = request.args['id'][1:]
 
     sid_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(to_user['id']) +
-                                   ',"' + skill + '"]&stale=false&reduce=false').read()
+                                   ',"' + urllib.quote(skill) + '"]&stale=false&reduce=false').read()
 
     sid_doc = json.loads(sid_doc)
     print sid_doc
