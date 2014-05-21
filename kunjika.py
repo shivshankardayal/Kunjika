@@ -1344,7 +1344,7 @@ def edits(element):
                 for tag in tags:
                     try:
                         #tag = int(tag)
-                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?key=' + str(tag)).read()
+                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?key=' + urllib2.quote(str(tag))).read()
                         tid = json.loads(tag)['rows'][0]['id']
                         tag = tb.get(str(tid)).value
                         tag_list.append(tag['tag'])
@@ -1671,7 +1671,7 @@ def tag_info(tag=None):
 def edit_tag(tag):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
 
-    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' +tag + '"').read()
+    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(tag) + '"').read()
     tid = json.loads(tag)['rows'][0]['id']
     tag = tb.get(tid).value
     tagForm = TagForm(request.form)
@@ -2455,13 +2455,18 @@ def user_bookmarks(uid, name, page=1):
         user = cb.get(str(g.user.id)).value
     except:
         pass
+
+    logged_in = False
     if uid in session:
         logged_in = True
 	if g.user.is_authenticated():
 	        return render_template('bookmarks.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \
         	                       lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, \
                 	               role=g.user.role, bookmarks_pagination = pagination, user=user, questions=questions_list)
-    flash('You are not allowed to view the bookmarks.', 'error')
+
+    return render_template('bookmarks.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \
+        	                       lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, \
+                	               role=g.user.role, bookmarks_pagination = pagination, user=user, questions=questions_list)
 
 @kunjika.route('/get_skills/<uid>', methods=['GET', 'POST'])
 def get_skills(uid=None):

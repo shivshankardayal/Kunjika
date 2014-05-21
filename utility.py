@@ -28,6 +28,7 @@ from couchbase.views.iterator import View
 from couchbase.views.params import Query
 from threading import Thread
 from uuid import uuid4
+import urllib
 
 def common_data():
     tag_list = []
@@ -442,8 +443,8 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
     skip = (page - 1) * QUESTIONS_PER_PAGE
     tag = urllib2.quote(tag, '')
     rows = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?limit=' +
-                str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&key="' + tag + '"&reduce=false').read()
-    count = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?key=' + '"' + tag + '"&reduce=true').read()
+                str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&key="' + urllib.quote(tag) + '"&reduce=false').read()
+    count = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?key=' + '"' + urllib.quote(tag) + '"&reduce=true').read()
     count = json.loads(count)['rows'][0]['value']
     #tag = kunjika.tb.get(tag).value
     rows = json.loads(rows)['rows']
