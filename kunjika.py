@@ -2504,47 +2504,48 @@ def user_skills(uid, name):
         logged_in = True
     skills = []
     sids = []
-    for skill in user['skills']:
-        sid_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
-                                   ',"' + skill + '"]&stale=false&reduce=false').read()
-        sid_doc = json.loads(sid_doc)
-        print sid_doc
-        for row in sid_doc['rows']:
-            sids.append(row['id'])
+    if 'skills' in user:
+        for skill in user['skills']:
+            sid_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
+                                       ',"' + skill + '"]&stale=false&reduce=false').read()
+            sid_doc = json.loads(sid_doc)
+            print sid_doc
+            for row in sid_doc['rows']:
+                sids.append(row['id'])
 
-        if len(sids) != 0:
-            val_res = kb.get_multi(sids)
+            if len(sids) != 0:
+                val_res = kb.get_multi(sids)
 
-        endorsements = []
-        has_endorsement = False
-        for id in sids:
-            endorsement = val_res[str(id)].value
-            #endorser =  cb.get(str(val_res[str(id)].value['fuid']))
-            #endorsement['email'] = endorser['email']
-            #endorsement['fuid'] = endorser['id']
-            endorsements.append(endorsement)
-            print endorsement
-            if g.user.id == endorsement['fuid']:
-                has_endorsement = True
+            endorsements = []
+            has_endorsement = False
+            for id in sids:
+                endorsement = val_res[str(id)].value
+                #endorser =  cb.get(str(val_res[str(id)].value['fuid']))
+                #endorsement['email'] = endorser['email']
+                #endorsement['fuid'] = endorser['id']
+                endorsements.append(endorsement)
+                print endorsement
+                if g.user.id == endorsement['fuid']:
+                    has_endorsement = True
 
-        sids = []
-        count_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
-                                   ',"' + skill + '"]&stale=false&reduce=true').read()
-        count_doc = json.loads(count_doc)
-        print count_doc
-        if len(count_doc['rows']) != 0:
-            count = count_doc['rows'][0]['value']
-        else:
-            count = 0
-        #print endorsements
+            sids = []
+            count_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
+                                       ',"' + skill + '"]&stale=false&reduce=true').read()
+            count_doc = json.loads(count_doc)
+            print count_doc
+            if len(count_doc['rows']) != 0:
+                count = count_doc['rows'][0]['value']
+            else:
+                count = 0
+            #print endorsements
 
-        print has_endorsement
-        if has_endorsement == True:
-            skills.append({'endorsements': endorsements, 'count': count, 'has_end': True, 'tech': skill})
-        else:
-            skills.append({'endorsements': endorsements, 'count': count, 'has_end': False, 'tech': skill})
-    skills = sorted(skills, key=lambda k: k['count'], reverse=True)
-    print skills
+            print has_endorsement
+            if has_endorsement == True:
+                skills.append({'endorsements': endorsements, 'count': count, 'has_end': True, 'tech': skill})
+            else:
+                skills.append({'endorsements': endorsements, 'count': count, 'has_end': False, 'tech': skill})
+        skills = sorted(skills, key=lambda k: k['count'], reverse=True)
+        print skills
 
     if g.user.is_authenticated():
         return render_template('skills.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \
