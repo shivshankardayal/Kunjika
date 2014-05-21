@@ -1,0 +1,128 @@
+.skills-section {
+    margin-top: 20px;
+    margin-bottom: 0px;
+}
+.endorse-item {
+    margin-top: 0px;
+    margin-bottom: 2px;
+    overflow: hidden;
+}
+
+.skills-section .skill-pill {
+    float: left;
+    margin-top: 2px;
+    margin-bottom: 0px;
+}
+
+.skill-pill {
+    display: inline-block;
+    vertical-align: middle;
+    overflow: hidden;
+    cursor: default;
+    white-space: nowrap;
+}
+
+.skill-pill .endorse-count, .skill-pill .endorse-item-name {
+    float: left;
+    line-height: 24px;
+}
+.endorse-count {
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: normal;
+    color: #FFF;
+    text-shadow: 0px 1px 0px #666;
+    transition: min-width 0.2s linear 0s;
+    background-color: #1BA8E5;
+    border-radius: 3px 0px 0px 3px;
+    text-align: center;
+    border-bottom: 1px solid #1BA8E5;
+}
+
+.has-endorsements .num-endorsements {
+    font-weight: bold;
+    color: #FFF;
+    display: inline;
+}
+
+.endorsed-by-viewer .endorse-item-name, .has-endorsements .endorse-item-name {
+    border-radius: 0px 3px 3px 0px;
+}
+
+.endorse-item-name {
+    padding: 0px 13px;
+    font-size: 13px;
+    line-height: 17px;
+    color: #333;
+    font-weight: normal;
+    background-color: #F0F0F0;
+    position: relative;
+    border-bottom: 1px solid #DDD;
+    border-right: 1px solid #DDD;
+    border-radius: 3px;
+}
+
+.endorsers-container {
+    overflow: hidden;
+}
+
+.endorsers-pics {
+    float: right;
+    overflow: visible;
+    margin-left: 10px;
+    margin-right: 0px;
+    height: 27px;
+}
+
+a.endorse-count:hover, a.endorse-count:focus {
+    background-color: #0073B2;
+    border-bottom-color: #0073B2;
+    text-decoration: none;
+}
+.endorsed-by-viewer .endorse-count, .has-endorsements, .endorse-count {
+    min-width: 18px;
+    padding: 0px 2px;
+}
+
+.endorsed-by-viewer .viewer-pic-container {
+    width: 24px;
+    right: 0px;
+}
+.endorsers-pics li {
+    float: left;
+    margin-left: 1px;
+    margin-right: 0px;
+    height: 24px;
+}
+.viewer-pic-container {
+    position: relative;
+    transition: right 0.2s linear 0s;
+}
+
+.endorser {
+    overflow: hidden;
+    margin: 0px 0px 10px;
+}
+.small-thumbnail {
+    width: 24px;
+    height: 24px;
+}
+.hr-line {
+    border-top: 1px solid #F4F4F4;
+    margin: 15px 0px 0px 10px;
+    overflow: hidden;
+    height: 12px;
+    display: block;
+}
+
+.endorsers-pics ol, ul {
+    list-style: none outside none;
+}
+
+.endorsers-action {
+    padding: 7px 0px 0px 10px;
+}
+
+.see-all-endorsers .icon-caret-right{
+    vertical-align: top;
+}

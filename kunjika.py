@@ -697,6 +697,8 @@ def users(qpage=None, apage=None, uid=None, uname=None):
                            default='identicon',
                            force_default=False,
                            force_lower=False)
+    if 'skills' in user:
+        user['skills'] = user['skills'].sort()
     if uid in session:
         logged_in = True
 	if g.user.is_authenticated():
@@ -1172,20 +1174,9 @@ def image_upload():
             return json.dumps(data)
 
 
-@kunjika.route('/get_tags', methods=['GET', 'POST'])
-def get_tags():
-
-    query = request.args.get('q')
-    print query
-    q=pyes.MatchQuery('tag', query)
-    tags_result=es_conn.search(query=q)
-    results=[]
-
-    for r in tags_result:
-        results.append({'id': str(r['tid']), 'name':r['tag']})
-
-    return json.dumps(results)
-    '''
+@kunjika.route('/get_tags/<qid>', methods=['GET', 'POST'])
+@kunjika.route('/get_tags/', defaults={'qid' : None}, methods=['GET', 'POST'])
+def get_tags(qid=None):
     if qid is not None:
         question = qb.get(str(qid)).value
 
@@ -1204,9 +1195,19 @@ def get_tags():
         tags = []
         for tid in tids_list:
             tags_list.append({"id": val_res[str(tid)].value['tid'], "name": val_res[str(tid)].value['tag']})
-    ##print tags_list
-    return json.dumps(tags_list)
-    '''
+        return json.dumps(tags_list)
+    else:
+        query = request.args.get('q')
+        print query
+        if query is not None:
+            q=pyes.MatchQuery('tag', query)
+            tags_result=es_conn.search(query=q)
+            results=[]
+
+            for r in tags_result:
+                results.append({'id': str(r['tid']), 'name':r['tag']})
+
+            return json.dumps(results)
 
 def add_tags(tags_passed, qid):
     for tag in tags_passed:
@@ -1989,7 +1990,17 @@ def edit_profile(uid=None):
             user['website'] = form.website.data
             user['location'] = form.location.data
             user['about-me'] = form.about_me.data
-
+            print form.skills.data
+            skills = form.skills.data.split(',')
+            current_skills = user['skills']
+            user['skills'] = []
+            if len(skills) != 0:
+                for skill in skills:
+                    if skill.isdecimal():
+                        user['skills'].append(current_skills[int(skill)])
+                    else:
+                        user['skills'].append(skill)
+            user['skills'].sort()
             cb.replace(str(g.user.id), user)
 
             return redirect(url_for('users', uid=g.user.id, uname=g.user.name))
@@ -2399,7 +2410,7 @@ def bookmark():
 @kunjika.route('/users/<uid>/<name>/bookmarks', defaults={'page': 1})
 @kunjika.route('/users/<uid>/<name>/bookmarks/<int:page>')
 def user_bookmarks(uid, name, page=1):
-    if uid != g.user.id:
+    if int(uid) != g.user.id:
         flash('You are not allowed to view the bookmarks other than your own.', 'error')
         return redirect(request.referrer)
     skip = (page - 1) * QUESTIONS_PER_PAGE
@@ -2449,6 +2460,101 @@ def user_bookmarks(uid, name, page=1):
         	                       lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, \
                 	               role=g.user.role, bookmarks_pagination = pagination, user=user, questions=questions_list)
     flash('You are not allowed to view the bookmarks.', 'error')
+
+@kunjika.route('/get_skills/<uid>', methods=['GET', 'POST'])
+def get_skills(uid=None):
+    if uid is not None:
+        user = cb.get(str(uid)).value
+        if 'skills' in user and len(user['skills']) > 0:
+            skills = user['skills']
+            sids = []
+            skill_list = []
+            for i in range(0, len(skills)):
+                sids.append(i)
+
+            skills_list = zip(sids, skills)
+            for id, skill in skills_list:
+                skill_list.append({"id": str(id), "name": skill})
+            return json.dumps(skill_list)
+        else:
+            return json.dumps({})
+    else:
+        return json.dumps({})
+
+@kunjika.route('/users/<uid>/<name>/skills')
+def user_skills(uid, name):
+    if not g.user.is_authenticated():
+        flash('You need to be logged in to view skills and endorsements.', 'error')
+        return redirect(request.referrer)
+    user = cb.get(str(uid)).value
+    gravatar100 = Gravatar(kunjika,
+                           size=100,
+                           rating='g',
+                           default='identicon',
+                           force_default=False,
+                           force_lower=False)
+    gravatar32 = Gravatar(kunjika,
+                           size=32,
+                           rating='g',
+                           default='identicon',
+                           force_default=False,
+                           force_lower=False)
+    logged_in = False
+    if uid in session:
+        logged_in = True
+    skills = []
+    sids = []
+    for skill in user['skills']:
+        sid_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
+                                   ',"' + skill + '"]&stale=false&reduce=false').read()
+        sid_doc = json.loads(sid_doc)
+        print sid_doc
+        for row in sid_doc['rows']:
+            sids.append(row['id'])
+
+        if len(sids) != 0:
+            val_res = kb.get_multi(sids)
+
+        endorsements = []
+        has_endorsement = False
+        for id in sids:
+            endorsement = val_res[str(id)].value
+            #endorser =  cb.get(str(val_res[str(id)].value['fuid']))
+            #endorsement['email'] = endorser['email']
+            #endorsement['fuid'] = endorser['id']
+            endorsements.append(endorsement)
+            print endorsement
+            if g.user.id == endorsement['fuid']:
+                has_endorsement = True
+
+        sids = []
+        count_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
+                                   ',"' + skill + '"]&stale=false&reduce=true').read()
+        count_doc = json.loads(count_doc)
+        print count_doc
+        if len(count_doc['rows']) != 0:
+            count = count_doc['rows'][0]['value']
+        else:
+            count = 0
+        #print endorsements
+
+        print has_endorsement
+        if has_endorsement == True:
+            skills.append({'endorsements': endorsements, 'count': count, 'has_end': True, 'tech': skill})
+        else:
+            skills.append({'endorsements': endorsements, 'count': count, 'has_end': False, 'tech': skill})
+    skills = sorted(skills, key=lambda k: k['count'], reverse=True)
+    print skills
+
+    if g.user.is_authenticated():
+        return render_template('skills.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \
+                               lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, \
+                               role=g.user.role, user=user, skills = skills, gravatar32=gravatar32)
+
+
+@kunjika.route('/endorse')
+def endorse():
+   return utility.endorse()
 
 '''
 @kunjika.route('/invites')

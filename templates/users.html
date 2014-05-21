@@ -153,6 +153,7 @@
             <ul class="nav nav-pills nav-stacked">
                 <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name }}/bookmarks"><i class="icon-bookmark"></i> Bookmarks</a></li>
                 <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name }}/messages"><i class="icon-envelope"></i> Messages</a></li>
+                <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name }}/skills"><i class="icon-thumbs-up"></i> Skills</a></li>
             </ul>
         </div>
         <div style="clear:both"></div>
@@ -161,6 +162,7 @@
             <div style="margin-top: 40px">
             </div>
         {% endif %}
+
         <div class="user-about-me note" id="about-me">{{ user['about-me'] }}</div>
         <div style="clear:both">
         </div>

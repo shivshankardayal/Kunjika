@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see http://www.gnu.org/licenses/.
 import kunjika
-from flask import jsonify, g, render_template
+from flask import jsonify, g, render_template, flash
 from math import ceil
 import urllib2
 import json
@@ -27,6 +27,7 @@ from uuid import uuid4
 from couchbase.views.iterator import View
 from couchbase.views.params import Query
 from threading import Thread
+from uuid import uuid4
 
 def common_data():
     tag_list = []
@@ -685,6 +686,39 @@ def create_group(request):
         return True
     except:
         return False
+
+def endorse():
+    tuid = request.referrer.split('/')[4]
+    to_user = kunjika.cb.get(str(tuid)).value
+    from_user = g.user.user_doc
+    skill = request.args['id'][1:]
+
+    sid_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(to_user['id']) +
+                                   ',"' + skill + '"]&stale=false&reduce=false').read()
+
+    sid_doc = json.loads(sid_doc)
+    print sid_doc
+
+    endorsed = False
+    docid = None
+    if len(sid_doc['rows']) != 0:
+        for row in sid_doc['rows']:
+            endorsement = kunjika.kb.get(row['id']).value
+            if endorsement['fuid'] == g.user.id:
+                endorsed = True
+                kunjika.kb.delete(row['id'])
+                break
+    if endorsed == False:
+        doc = {}
+        doc['id'] = 'e' + str(uuid4())
+        doc['fuid'] = g.user.id
+        doc['tuid'] = int(tuid)
+        doc['femail'] = g.user.user_doc['email']
+        doc['_type'] = 'e'
+        doc['skill'] = skill
+        kunjika.kb.add(doc['id'], doc)
+
+    return jsonify({'success': True})
 
 def send_async_email(msg):
     kunjika.mail.send(msg)

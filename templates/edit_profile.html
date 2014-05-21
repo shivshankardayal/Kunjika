@@ -14,6 +14,7 @@
     <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link href="/static/css/prettify.css" rel="stylesheet">
+    <link href="/static/css/token-input.css" rel="stylesheet">
     <script src="/static/js/jquery.cookie.js"></script>
     <script src="http://malsup.github.com/jquery.form.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
@@ -21,6 +22,7 @@
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
     <script type="text/javascript" src="/static/js/prettify.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
 
 {% endblock %}
 {% block container %}
@@ -95,6 +97,23 @@
 
                             <div class="controls">
                                 <div id="wmd-preview" class="wmd-panel wmd-preview" style="margin-left:25px"></div>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                        <label class="control-label" for="skills" style="margin-right: 45px">Skills:</label>
+
+                            <div class="controls">
+
+                                <ul class="token-input-list-kunjika">
+                                    <li class="token-input-input-token-kunjika"><input id="token-input-kunjika-tags"
+                                                                                   style="outline: medium none; width: 30px;"
+                                                                                   autocomplete="off"
+                                                                                   autocapitalize="on" name="skills"
+                                                                                   type="text">
+                                    <tester style="position: absolute; top: -9999px; left: -9999px; width: auto; font-size: 14px; font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif; font-weight: 400; letter-spacing: 0px; white-space:
+                                    nowrap;"></tester>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -312,5 +331,23 @@
                 editor.run();
             }
         })();
+        $("#token-input-kunjika-tags").ready(function () {
+        var url = String(window.location);
+        var JSONdata;
+        //alert(url);
+        var urlsplit = url.split("/");
+        var uid = urlsplit[4];
+        $.getJSON('/get_skills/' + String(uid), {
+        }, function (data) {
+            $("#token-input-kunjika-tags").tokenInput("{{ config['HOST_URL'] }}get_skills/", {
+                theme: "kunjika",
+                allowFreeTagging: true,
+                tokenLimit: 50,
+                tokenDelimiter: ',',
+                preventDuplicates: true,
+                prePopulate: data
+            });
+        });
+    });
     </script>
 {% endblock %}

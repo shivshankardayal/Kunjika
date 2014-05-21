@@ -594,13 +594,10 @@ pre.prettyprint {
 text-align: center;
 }
 
-.userheader .user-about-me {
-}
-
 .user-about-me {
     height: 225px;
     display:block;
-    width:830px;
+    width:850px;
     overflow-y: auto;
     padding: 10px;
     font-size: 12px;
@@ -608,6 +605,7 @@ text-align: center;
     border-top: 1px solid rgb(224, 224, 224);
     border-bottom: 1px solid rgb(238, 238, 238);
     line-height: 1.3;
+    margin-left: 15px;
 }
 
 .narrow .summary-user {
@@ -778,4 +776,12 @@ td.invite, td.create-group {
 .user-nav {
     float: right;
     width:160px;
+}
+.Skills {
+    margin-top: 20px;
+}
+
+.skill-button {
+    width: 140px;
+    float: left;
 }
