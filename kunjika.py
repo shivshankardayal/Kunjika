@@ -1992,7 +1992,9 @@ def edit_profile(uid=None):
             user['about-me'] = form.about_me.data
             print form.skills.data
             skills = form.skills.data.split(',')
-            current_skills = user['skills']
+            current_skills = []
+            if 'skills' in user:
+                current_skills = user['skills']
             user['skills'] = []
             if len(skills) != 0:
                 for skill in skills:
