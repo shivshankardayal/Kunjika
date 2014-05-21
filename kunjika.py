@@ -2508,7 +2508,7 @@ def user_skills(uid, name):
     sids = []
     if 'skills' in user:
         for skill in user['skills']:
-            sid_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
+            sid_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) + \
                                        ',"' + skill + '"]&stale=false&reduce=false').read()
             sid_doc = json.loads(sid_doc)
             print sid_doc
