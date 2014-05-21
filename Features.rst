@@ -101,6 +101,7 @@ DONE
 44. Test series creation for objective questions. (Generating tests to be done.)
 45. Tag suggestion(autocomplete).
 46. Bookmarking questions and view on profile.
+47. Skills and endorsements on profile page.
 
 Postponed for later
 ===================
