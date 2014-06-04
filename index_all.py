@@ -111,16 +111,21 @@ es_conn.indices.put_mapping("questions-type", {'properties':questions_mapping}, 
 es_conn.indices.put_mapping("users-type", {'properties':users_mapping}, ["users"])
 es_conn.indices.put_mapping("tags-type", {'properties':tags_mapping}, ["tags"])
 
-questions = urllib2.urlopen("http://localhost:8092/_design/dev_qa/_view/get_questions?descending=true&limit=20&stale=false").read()
+questions = urllib2.urlopen("http://localhost:8092/questions/_design/dev_qa/_view/get_questions?descending=true&stale=false").read()
 questions = json.loads(questions)
-##print questions
+#print questions
 question_list = []
 for i in questions['rows']:
-    question_list.append(i['value'])
+    question_list.append(str(i['id']))
 
-for question in question_list:
-    es_conn.index({'title':question['title'], 'description':question['content']['description'], 'qid':question['qid'],
-                   'position':question['qid']}, 'questions', 'questions-type', question['qid'])
+val_res = qb.get_multi(question_list)
+questions = []
+for qid in question_list:
+	questions.append(val_res[str(qid)].value)
+for question in questions:
+    print question
+    es_conn.index({'title':question['title'], 'description':question['content']['description'], 'qid':int(question['qid']),
+                   'position':int(question['qid'])}, 'questions', 'questions-type', int(question['qid']))
 
 es_conn.indices.refresh('questions')
 
@@ -131,7 +136,12 @@ for row in rows:
     tids_list.append(str(row['id']))
 
 if len(tids_list) != 0:
-    tags = tb.get_multi(tids_list)
+    val_res = tb.get_multi(tids_list)
+
+tags = []
+
+for tid in tids_list:
+    tags.append(val_res[str(tid)].value)
 
 for tag in tags:
     es_conn.index({'tag':tag['tag'], 'tid':tag['tid'], 'position':tag['tid']}, 'tags', 'tags-type', tag['tid'])
@@ -145,8 +155,13 @@ for row in rows:
     uids_list.append(str(row['id']))
 
 if len(uids_list) != 0:
-    users = cb.get_multi(uids_list)
+    val_res = cb.get_multi(uids_list)
+
+users = []
+
+for uid in uids_list:
+    users.append(val_res[str(uid)].value)
 
 for user in users:
-    es_conn.index({'name':users['name'], 'uid':user['id'], 'position':user['id']}, 'users', 'users-type', user['id'])
+    es_conn.index({'name':user['name'], 'uid':user['id'], 'position':user['id']}, 'users', 'users-type', user['id'])
 es_conn.indices.refresh('users')
