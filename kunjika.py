@@ -1344,7 +1344,7 @@ def edits(element):
                 for tag in tags:
                     try:
                         #tag = int(tag)
-                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?key=' + urllib2.quote(str(tag))).read()
+                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + urllib2.quote(str(tag))).read()
                         tid = json.loads(tag)['rows'][0]['id']
                         tag = tb.get(str(tid)).value
                         tag_list.append(tag['tag'])
