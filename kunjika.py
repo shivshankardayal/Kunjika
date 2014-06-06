@@ -1501,22 +1501,22 @@ def postcomment():
     email_list = email_list - set(current_user_list)
     email_list = list(email_list)
 
-    email_users = cb.get_multi(email_list)
-    email_list = []
+    if len(email_list) != 0:
+        email_users = cb.get_multi(email_list)
+        email_list = []
 
-    for id in email_users:
-      email_list.append(email_users[str(id)].value['email'])
+        for id in email_users:
+            email_list.append(email_users[str(id)].value['email'])
 
-    print email_list
+        print email_list
 
-
-    msg = Message("A new answer has been posted to a question where you have answered or commented")
-    msg.recipients = email_list
-    msg.sender = admin
-    msg.html = "<p>Hi,<br/><br/> A new comment has been posted which you can read at " +\
-    HOST_URL + "questions/" + str(question['qid']) + '/' + question['content']['url'] + \
-    " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-    mail.send(msg)
+        msg = Message("A new answer has been posted to a question where you have answered or commented")
+        msg.recipients = email_list
+        msg.sender = admin
+        msg.html = "<p>Hi,<br/><br/> A new comment has been posted which you can read at " +\
+        HOST_URL + "questions/" + str(question['qid']) + '/' + question['content']['url'] + \
+        " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+        mail.send(msg)
 
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
     #return '<div class="comment" id="c-' + str(comment['cid']) + '">' + request.form['comment'] +'<div>&mdash;</div>' \
