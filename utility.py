@@ -135,19 +135,31 @@ def search_user(query, page):
     for uid in results:
         question_view = urllib2.urlopen(
             kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_userid?key=' + '"' +str(uid) + '"').read()
-        question_view = json.loads(question_view)['rows']
-        print question_view
-        for row in question_view:
-            print row['value']
+        rows = json.loads(question_view)['rows']
+        print rows
+        qids_list = []
+        questions = []
+        for row in rows:
+            #print row['id']
+            qids_list.append(str(row['id']))
+        if len(qids_list) != 0:
+            val_res = kunjika.qb.get_multi(qids_list)
+
+        for id in qids_list:
+            questions.append(val_res[str(id)].value)
+        print questions
+        for q in questions:
+            print q
             question = {}
-            question['qid'] = row['value'][0]
-            question['votes'] = row['value'][1]
-            question['acount'] = row['value'][2]
-            question['title'] = row['value'][3]
-            question['url'] = row['value'][4]
-            question['views'] = row['value'][5]
-            question['ts'] = row['value'][6]
-            question['op'] = row['value'][7]
+            question['qid'] = q['qid']
+            question['votes'] = q['votes']
+            question['acount'] = q['acount']
+            question['title'] = q['title']
+            question['url'] = q['content']['url']
+            question['views'] = q['views']
+            question['ts'] = q['updated']
+            question['op'] = q['content']['op']
+            question['tags'] = q['content']['tags']
             questions_list.append(question)
 
     for i in questions_list:
