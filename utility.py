@@ -171,13 +171,13 @@ def search_user(query, page):
     pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))
 
     if g.user is None:
-        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:(page)*kunjika.QUESTIONS_PER_PAGE],
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:page*kunjika.QUESTIONS_PER_PAGE],
                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
     elif g.user is not None and g.user.is_authenticated():
-        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:(page)*kunjika.QUESTIONS_PER_PAGE],
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:page*kunjika.QUESTIONS_PER_PAGE],
                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
     else:
-        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:(page)*kunjika.QUESTIONS_PER_PAGE],
+        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:page*kunjika.QUESTIONS_PER_PAGE],
                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
 
 def search_tag(query, page):
