@@ -257,7 +257,7 @@ def get_user(uid):
 
 @lm.user_loader
 def load_user(uid):
-    ##print id
+    ###print id
     user = get_user(int(uid))
     return user
 
@@ -320,7 +320,7 @@ def questions(tag=None, page=None, qid=None, url=None):
         choices = []
         votes = []
         j = 0
-        print questions_dict['qid']
+        #print questions_dict['qid']
         similar_questions = utility.get_similar_questions(questions_dict['title'], questions_dict['qid'])
         if 'options' in questions_dict['content']:
             for option in questions_dict['content']['options']:
@@ -346,8 +346,8 @@ def questions(tag=None, page=None, qid=None, url=None):
                     else:
                         option2_votes = 0
                     votes.append((option2_votes, option))
-                    print option2_votes
-                    print option
+                    #print option2_votes
+                    #print option
                 elif j == 3:
                     option3_votes = urllib2.urlopen(
                         DB_URL + 'polls/_design/dev_qa/_view/get_option3_votes?key=' + '"' + qid + '"' + '&reduce=true'
@@ -543,7 +543,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     pass
 
 
-                print str(votes)
+                #print str(votes)
                 setattr(PollForm, 'radio', RadioField('radio', choices=choices))
                 answerForm=PollForm(request.form)
                 if answerForm.validate_on_submit() and request.method == 'POST':
@@ -826,14 +826,14 @@ def create_profile():
     if g.user is not None and g.user.is_authenticated():
         return redirect(url_for('questions'))
     if profileForm.validate_on_submit() and request.method == 'POST':
-        #print "hello"
+        ##print "hello"
         data = {}
-        #print profileForm.email1.data
+        ##print profileForm.email1.data
         view = urllib2.urlopen(DB_URL + 'default/_design/dev_qa/_view/get_role?stale=false').read()
         view = json.loads(view)
 
         if len(view['rows']) == 0:
-            #print "hello1"
+            ##print "hello1"
             data['role'] = 'admin'
             populate_user_fields(data, profileForm)
 
@@ -864,9 +864,9 @@ def create_profile():
         document = json.loads(document)
         #if 'id' in document['rows'][0]:
         #    document = cb.get(document['rows'][0]['id']).value
-        ##print(document)
+        ###print(document)
         if len(document['rows']) == 0:
-            #print "hello2"
+            ##print "hello2"
             populate_user_fields(data, profileForm)
 
             cb.incr('count', 1)
@@ -875,7 +875,7 @@ def create_profile():
             cb.add(str(did), data)
             user = User(data['name'], data, did)
             login_user(user, remember=True)
-            #print data['name'] + ' ' + did
+            ##print data['name'] + ' ' + did
             es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
             es_conn.indices.refresh('users')
             g.user = user
@@ -900,13 +900,13 @@ def create_profile():
 def create_or_login(resp):
     session['openid'] = resp.identity_url
     user = utility.filter_by(resp.email)
-    #print user
+    ##print user
     if user is not None:
         if user['banned'] == True:
             return redirect(url_for('questions'))
         flash(u'Successfully signed in')
 
-        #print user
+        ##print user
         session[user['id']] = user['id']
         session['logged_in'] = True
         if 'role' in user:
@@ -931,16 +931,16 @@ def openid_login():
     loginForm = LoginForm(request.form)
     openidForm = OpenIDForm(request.form)
 
-    #print g.user
+    ##print g.user
 
     if g.user is not AnonymousUserMixin and g.user.is_authenticated():
         return redirect(oid.get_next_url())
     if openidForm.validate_on_submit() and request.method == 'POST':
         googleid = request.form.get('googleid')
         yahooid = request.form.get('yahooid')
-        ##print openid
-        ##print yahooid
-        #print googleid
+        ###print openid
+        ###print yahooid
+        ##print googleid
         if googleid:
             return oid.try_login('https://www.google.com/accounts/o8/id', ask_for=['email', 'fullname', 'nickname'])
         elif yahooid:
@@ -977,7 +977,7 @@ def login():
                     flash('You have successfully logged in.', 'success')
                     g.user = user
                     referrer = request.args['next']
-                    print referrer
+                    #print referrer
                     if referrer == HOST_URL + 'login' or referrer == HOST_URL + 'None':
                         return redirect(url_for('questions'))
                     else:
@@ -1060,7 +1060,7 @@ def register():
         if len(document['rows']) != 0:
             if 'id' in document['rows'][0]:
                 document = cb.get(document['rows'][0]['id']).value
-                print(document)
+                #print(document)
         else:
             data['password'] = passwd_hash
             populate_user_fields(data, registrationForm)
@@ -1185,7 +1185,7 @@ def get_tags(qid=None):
         tags_list = []
         tids_list = []
         for i in tags:
-            print i
+            #print i
             tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib.quote(str(i)) + '"').read()
             tag = json.loads(tag)['rows'][0]['id']
             tids_list.append(tag)
@@ -1198,7 +1198,7 @@ def get_tags(qid=None):
         return json.dumps(tags_list)
     else:
         query = request.args.get('q')
-        print query
+        #print query
         if query is not None:
             q=pyes.MatchQuery('tag', query)
             tags_result=es_conn.search(query=q)
@@ -1263,7 +1263,7 @@ def replace_tags(tags_passed, qid, current_tags):
     for tag in current_tags:
         if tag not in tags_passed:
             tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
-            ##print tag
+            ###print tag
             tid = json.loads(tag)['rows'][0]['id']
             tag = tb.get(tid).value
             #tag['qid'].remove(int(qid))
@@ -1280,7 +1280,7 @@ def vote_clicked():
 def edits(element):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     #edit_list = edit.handle_edit(element)
-    #p#print(edit_list)
+    #p##print(edit_list)
 
     aid = 0
     cid = 0
@@ -1350,16 +1350,16 @@ def edits(element):
                         tag_list.append(tag['tag'])
 
                     except:
-                        #print "hello"
+                        ##print "hello"
                         tag_list.append(tag)
 
                 question['updated'] = int(time())
                 question['content']['tags'] = tag_list
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1
-                ##print tag_list
-                ##print question['content']['tags']
-                ##print current_tags
+                ###print tag_list
+                ###print question['content']['tags']
+                ###print current_tags
                 #return redirect(url_for('questions'))
                 qb.replace(str(qid), question)
                 es_conn.index({'title':question['title'], 'description':question['content']['description'], 'qid':question['qid'],
@@ -1392,7 +1392,7 @@ def flag():
 
     question = qb.get(str(idntfr_list[1])).value
     op_id = 0
-    #print idntfr_list
+    ##print idntfr_list
     if idntfr_list[0] == '#qqf':
         op_id = question['content']['op']
     elif idntfr_list[0] == '#qcf':
@@ -1405,14 +1405,14 @@ def flag():
                 op_id = answer['poster']
     elif idntfr_list[0] == unicode('#qac'):
         for answer in question['answers']:
-            #print "hello"
+            ##print "hello"
             if unicode(answer['aid']) == idntfr_list[2]:
                 for comment in answer['comments']:
                     if unicode(comment['cid']) == idntfr_list[3]:
                         op_id = comment['poster']
-                        #print op_id
+                        ##print op_id
 
-    #print op_id
+    ##print op_id
 
     flagged_user = cb.get(str(op_id)).value
 
@@ -1434,8 +1434,8 @@ def flag():
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():
-    ##print request.form
-    ##print type(request.form['comment'])
+    ###print request.form
+    ###print type(request.form['comment'])
     #user = cb.get(str(g.user.id)).value
     user = g.user.user_doc
 
@@ -1444,11 +1444,11 @@ def postcomment():
     else:
         elements = request.form['element'].split('-')
         qid = elements[0]
-        ##print "qid = " + qid
+        ###print "qid = " + qid
         aid = 0
         if len(elements) == 2: # check if comment has been made on answers
             aid = elements[1]
-            ##print "aid = ",  aid   # if it is on question aid will be zero
+            ###print "aid = ",  aid   # if it is on question aid will be zero
 
     question = qb.get(qid).value
     aid = int(aid)
@@ -1481,7 +1481,7 @@ def postcomment():
             comment['cid'] = 1
             question['comments'].append(comment)
 
-    #p#print(question)
+    #p##print(question)
     question['updated'] = int(time())
     qb.replace(str(qid), question)
     email_list = []
@@ -1508,7 +1508,7 @@ def postcomment():
         for id in email_users:
             email_list.append(email_users[str(id)].value['email'])
 
-        print email_list
+        #print email_list
 
         msg = Message("A new answer has been posted to a question where you have answered or commented")
         msg.recipients = email_list
@@ -1535,7 +1535,7 @@ def unanswered(page):
     questions_list = []
     count = 0
     for result in View(qb, "dev_qa", "get_unanswered", include_docs=True, query=q):
-        #print result
+        ##print result
         questions_list.append(result.doc.value)
         count += 1
 
@@ -1678,7 +1678,7 @@ def edit_tag(tag):
     if g.user is not None and g.user.is_authenticated():
         if tagForm.validate_on_submit() and request.method == 'POST':
             tag['info'] = tagForm.info.data
-            #print "hello"
+            ##print "hello"
             tb.replace(tag['tag'], tag)
             return redirect(url_for('tag_info', tag=str(tag['tag'])))
 
@@ -1712,8 +1712,8 @@ def reset_password(token=None):
                            "your password just send an email to " + admin + ". Note that this " \
                            "token is only valid for 1 day. <br/>Best regards," \
                            "<br/> Admin</p>"
-                #print type(token)
-                #print type(email)
+                ##print type(token)
+                ##print type(email)
                 mail.send(msg)
             else:
                 return redirect(url_for('questions'))
@@ -1736,7 +1736,7 @@ def reset_password(token=None):
                     document['password'] = passwd_hash
                     cb.replace(str(document['id']), document)
             except:
-                print "Either signature is bad or token has expired"
+                #print "Either signature is bad or token has expired"
                 return redirect(url_for('questions'))
 
             return redirect(url_for('questions'))
@@ -1764,7 +1764,7 @@ def search_help():
 def stikcy():
     if g.user.id == 1:
         qid=request.args.get('id')[2:]
-        #print qid
+        ##print qid
         question = qb.get(str(qid)).value
         if 'sticky' not in question:
             question['sticky'] = True
@@ -1774,7 +1774,7 @@ def stikcy():
             question['sticky'] = False
 
         qb.replace(str(qid), question)
-        #print "questions stickied"
+        ##print "questions stickied"
 
         return jsonify({"success": True})
     else:
@@ -1784,7 +1784,7 @@ def stikcy():
 def close():
     if g.user.id == 1:
         qid=request.args.get('id')[2:]
-        #print qid
+        ##print qid
         question = qb.get(str(qid)).value
         if question['close'] == False:
             question['close'] = True
@@ -1792,7 +1792,7 @@ def close():
             question['close'] = False
 
         qb.replace(str(qid), question)
-        #print "questions stickied"
+        ##print "questions stickied"
 
         return jsonify({"success": True})
     else:
@@ -1946,7 +1946,7 @@ def administration():
         user = g.user.user_doc
     except:
         return redirect(url_for('login'))
-    print request.method
+    #print request.method
 
     if g.user.id == 1:
         if request.method == 'POST' and form.validate_on_submit():
@@ -1957,14 +1957,14 @@ def administration():
                 each_doc = cb.get(row['id']).value
                 if each_doc['receive-email'] is True:
                     email_list.append(row['value']['email'])
-            #print document
+            ##print document
             msg = Message(form.subject.data)
             msg.recipients = email_list
             msg.sender = (',').join(email_list)
             msg.html = form.bulk_mail.data
             try:
                 mail.send(msg)
-                print msg
+                #print msg
                 flash('Email sent to all users.', 'success')
             except:
                 flash('Email could not be sent.', 'error')
@@ -1990,7 +1990,7 @@ def edit_profile(uid=None):
             user['website'] = form.website.data
             user['location'] = form.location.data
             user['about-me'] = form.about_me.data
-            print form.skills.data
+            #print form.skills.data
             skills = form.skills.data.split(',')
             current_skills = []
             if 'skills' in user:
@@ -2252,7 +2252,7 @@ def add_objective_question():
                                                    # before uuid will repeat
             question['_type'] = 'test_questions'
 
-            print str(question['qid'])
+            #print str(question['qid'])
             kb.add(question['qid'], question)
 
             return redirect(url_for('administration'))
@@ -2330,13 +2330,13 @@ def edit_test(element):
         choices.append(str(i+1))
 
     if g.user.id == 1:
-        print form.description.data
-        print form.option_1.data
-        print form.option.data
-        print form.option_2.data
-        print form.answers.data
+        #print form.description.data
+        #print form.option_1.data
+        #print form.option.data
+        #print form.option_2.data
+        #print form.answers.data
         if form.validate_on_submit() and request.method == 'POST':
-            print "editing test question"
+            #print "editing test question"
             option =  form.option.data
             option_1 =  form.option_1.data
             option_2 =  form.option_2.data
@@ -2383,7 +2383,7 @@ def edit_test(element):
 def bookmark():
     qid = request.args.get('id')
     bookmark = qb.get(qid[1:]).value
-    print bookmark
+    #print bookmark
     bid = 'bq-' + qid[1:] + '-' + str(g.user.id) # bq stands for bookmark question
 
     try:
@@ -2419,7 +2419,7 @@ def user_bookmarks(uid, name, page=1):
     questions = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_bookmarks_by_uid?limit=' +
                                 str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&key=' +
                                 str(uid) + '&reduce=false').read()
-    print questions
+    #print questions
     count = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_bookmarks_by_uid?key=' +
                             str(uid)).read()
     count = json.loads(count)['rows']
@@ -2427,14 +2427,14 @@ def user_bookmarks(uid, name, page=1):
         count = count[0]['value']
     else:
         count = 0
-    print count
+    #print count
     questions = json.loads(questions)
     qids = []
     if len(questions) > 0:
         for row in questions['rows']:
             qids.append((str(row['id'])).split('-')[1])
 
-    print qids
+    #print qids
     if len(qids) != 0:
         val_res = qb.get_multi(qids)
     questions_list = []
@@ -2516,7 +2516,7 @@ def user_skills(uid, name):
             sid_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) + \
                                        ',"' + urllib.quote(skill) + '"]&stale=false&reduce=false').read()
             sid_doc = json.loads(sid_doc)
-            print sid_doc
+            #print sid_doc
             for row in sid_doc['rows']:
                 sids.append(row['id'])
 
@@ -2531,7 +2531,7 @@ def user_skills(uid, name):
                 #endorsement['email'] = endorser['email']
                 #endorsement['fuid'] = endorser['id']
                 endorsements.append(endorsement)
-                print endorsement
+                #print endorsement
                 if g.user.id == endorsement['fuid']:
                     has_endorsement = True
 
@@ -2539,20 +2539,20 @@ def user_skills(uid, name):
             count_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
                                        ',"' + urllib.quote(skill) + '"]&stale=false&reduce=true').read()
             count_doc = json.loads(count_doc)
-            print count_doc
+            #print count_doc
             if len(count_doc['rows']) != 0:
                 count = count_doc['rows'][0]['value']
             else:
                 count = 0
-            #print endorsements
+            ##print endorsements
 
-            print has_endorsement
+            #print has_endorsement
             if has_endorsement == True:
                 skills.append({'endorsements': endorsements, 'count': count, 'has_end': True, 'tech': skill})
             else:
                 skills.append({'endorsements': endorsements, 'count': count, 'has_end': False, 'tech': skill})
         skills = sorted(skills, key=lambda k: k['count'], reverse=True)
-        print skills
+        #print skills
 
     if g.user.is_authenticated():
         return render_template('skills.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \

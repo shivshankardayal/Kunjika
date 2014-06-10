@@ -113,7 +113,7 @@ es_conn.indices.put_mapping("tags-type", {'properties':tags_mapping}, ["tags"])
 
 questions = urllib2.urlopen("http://localhost:8092/questions/_design/dev_qa/_view/get_questions?descending=true&stale=false").read()
 questions = json.loads(questions)
-#print questions
+##print questions
 question_list = []
 for i in questions['rows']:
     question_list.append(str(i['id']))
@@ -123,7 +123,7 @@ questions = []
 for qid in question_list:
 	questions.append(val_res[str(qid)].value)
 for question in questions:
-    print question
+    #print question
     es_conn.index({'title':question['title'], 'description':question['content']['description'], 'qid':int(question['qid']),
                    'position':int(question['qid'])}, 'questions', 'questions-type', int(question['qid']))
 

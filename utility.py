@@ -103,7 +103,7 @@ def search_title(query, page):
 
     for r in title_results:
         results.append(r['qid'])
-        #print str(r)
+        ##print str(r)
 
     return common_rendering(results, query, page)
 
@@ -127,7 +127,7 @@ def search_user(query, page):
 
     results=[]
     for r in question_results:
-        print r
+        #print r
         results.append(r['uid'])
 
     questions_list=[]
@@ -136,20 +136,20 @@ def search_user(query, page):
         question_view = urllib2.urlopen(
             kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_userid?key=' + '"' +str(uid) + '"').read()
         rows = json.loads(question_view)['rows']
-        print rows
+        #print rows
         qids_list = []
         questions = []
         for row in rows:
-            #print row['id']
+            ##print row['id']
             qids_list.append(str(row['id']))
         if len(qids_list) != 0:
             val_res = kunjika.qb.get_multi(qids_list)
 
         for id in qids_list:
             questions.append(val_res[str(id)].value)
-        print questions
+        #print questions
         for q in questions:
-            print q
+            #print q
             question = {}
             question['qid'] = q['qid']
             question['votes'] = q['votes']
@@ -175,10 +175,12 @@ def search_user(query, page):
                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
     elif g.user is not None and g.user.is_authenticated():
         return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:page*kunjika.QUESTIONS_PER_PAGE],
-                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query,
+                               name=g.user.name, role=g.user.role, user_id=g.user.id)
     else:
         return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:page*kunjika.QUESTIONS_PER_PAGE],
-                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query, name=g.user.name, role=g.user.role,
+                               user_id=g.user.id)
 
 def search_tag(query, page):
     (qcount, acount, tcount, ucount, tag_list) = common_data()
@@ -190,17 +192,17 @@ def search_tag(query, page):
 
     for r in question_results:
         results.append(r['tag'])
-        print r['tag']
+        #print r['tag']
 
     questions_list=[]
     for tag in results:
         #question_view = urllib2.urlopen(
         #    kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_tag?key=' + '"' + tag + '"').read()
         #question_view = json.loads(question_view)['rows']
-        #print question_view
+        ##print question_view
         q = Query(key=tag)
         for result in View(kunjika.qb, "dev_qa", "get_questions_by_tag", include_docs=True, query=q):
-            #print result
+            ##print result
             questions_list.append(result.doc.value)
 
         #for element in question_view['rows']:
@@ -301,12 +303,12 @@ def handle_favorite(idntfr):
 
     qid = idntfr[3:]
 
-    #print qid
+    ##print qid
     question = kunjika.qb.get(qid).value
     #user = kunjika.cb.get(str(g.user.id)).value
 
-    #print question
-    #print user
+    ##print question
+    ##print user
     if 'users_fav' in question:
         if g.user.id in question['users_fav']:
             question['users_fav'].remove(g.user.id)
@@ -375,7 +377,7 @@ def get_questions_for_page(page, QUESTIONS_PER_PAGE, count):
     qids_list = []
     questions_list = []
     for row in rows:
-        #print row['id']
+        ##print row['id']
         qids_list.append(str(row['id']))
     if len(qids_list) != 0:
         val_res = kunjika.qb.get_multi(qids_list)
@@ -424,12 +426,12 @@ def get_groups_per_page(page, GROUPS_PER_PAGE, document):
 
     skip = (page - 1) * GROUPS_PER_PAGE
     group_list = []
-    #print document
+    ##print document
     for row in document:
-        #print row['id']
+        ##print row['id']
         group_list.append(kunjika.kb.get(row['id'].split(':')[1]).value)
 
-    print group_list
+    #print group_list
     groups = sorted(group_list, key=lambda k: k['member_count'], reverse=True)
     return groups
 
@@ -463,7 +465,7 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
     question_list = []
     qids_list = []
     for row in rows:
-        #print row
+        ##print row
         qids_list.append(str(row['id']))
 
     if len(qids_list) != 0:
@@ -551,27 +553,39 @@ def get_user_questions_per_page(user, qpage, USER_QUESTIONS_PER_PAGE, qcount):
         kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_userid?key=' + '"' +str(user['id'])
         + '"' + '&desending=true&skip=' + str(skip) + '&limit=' + str(USER_QUESTIONS_PER_PAGE)
     ).read()
-    question_view = json.loads(question_view)['rows']
-    #print question_view
-    for row in question_view:
-        print row['value']
+    rows = json.loads(question_view)['rows']
+    ##print rows
+    qids_list = []
+    questions = []
+
+    for row in rows:
+        ##print row['id']
+        qids_list.append(str(row['id']))
+    if len(qids_list) != 0:
+        val_res = kunjika.qb.get_multi(qids_list)
+
+    for id in qids_list:
+        questions.append(val_res[str(id)].value)
+    ##print questions
+    for q in questions:
+        #print q
         question = {}
-	question['content'] = {}
-        question['qid'] = row['value'][0]
-        question['votes'] = row['value'][1]
-        question['acount'] = row['value'][2]
-        question['title'] = row['value'][3]
-        question['url'] = row['value'][4]
-        question['views'] = row['value'][5]
-	question['content']['ts'] = row['value'][6]
-	question['content']['op'] = row['value'][7]
+        question['qid'] = q['qid']
+        question['votes'] = q['votes']
+        question['acount'] = q['acount']
+        question['title'] = q['title']
+        question['url'] = q['content']['url']
+        question['views'] = q['views']
+        question['ts'] = q['updated']
+        question['op'] = q['content']['op']
+        question['tags'] = q['content']['tags']
         question_list.append(question)
 
     #for qid in qid_list:
     #    question = kunjika.qb.get(str(qid)).value
     #    question_list.append(question)
 
-    print question_list
+    ##print question_list
     return question_list
 
 def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
@@ -590,9 +604,9 @@ def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
         + '&desending=true&skip=' + str(skip) + '&limit=' + str(USER_ANSWERS_PER_PAGE)
     ).read()
     question_view = json.loads(question_view)['rows']
-    #print question_view
+    ##print question_view
     for row in question_view:
-        print row['value']
+        #print row['value']
         question = {}
         question['qid'] = row['value'][0]
         question['votes'] = row['value'][1]
@@ -606,8 +620,8 @@ def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
     #for aid in aid_list:
     #    qid = aid.split('-')[0]
     #    single_aid = aid.split('-')[1]
-    #    #print qid
-    #    #print single_aid
+    #    ##print qid
+    #    ##print single_aid
     #    question = kunjika.qb.get(qid).value
     #    question_list.append(question)
     #    aids.append(single_aid)
@@ -615,24 +629,24 @@ def get_user_answers_per_page(user, apage, USER_ANSWERS_PER_PAGE, acount):
     return question_list, aids
 
 def get_similar_questions(title, qid):
-    print title
+    #print title
     title_q=pyes.MatchQuery('title', title)
     title_results=kunjika.es_conn.search(query=title_q)
 
     results=[]
 
     for r in title_results:
-        print r
+        #print r
         if r['qid'] != qid:
             question_dict = {}
             question_dict = question.get_question_by_id(str(r['qid']), question_dict)
-            print question_dict
+            #print question_dict
             results.append([r['qid'], r['title'], question_dict['content']['url']])
 
     return results[:10]
 
 def get_autocomplete(request):
-    #print request.args.get('val')
+    ##print request.args.get('val')
     q=pyes.MatchQuery('title', request.args.get('val'))
     title_results=kunjika.es_conn.search(query=q)
     results=[]
@@ -646,12 +660,12 @@ def get_autocomplete(request):
         for i in range(0, len(results)):
             question = kunjika.qb.get(str(results[i])).value
             questions_list.append({'title':question['title'], 'qid': question['qid'], 'url':question['content']['url']})
-            #print question['title'] + ' ' + question['content']['url'] + str(question['qid'])
+            ##print question['title'] + ' ' + question['content']['url'] + str(question['qid'])
     else:
         for i in range(0, len(results)):
             question = kunjika.qb.get(str(results[i])).value
             questions_list.append({'title':question['title'], 'qid': question['qid'], 'url':question['content']['url']})
-            #print question['title'] + ' ' + question['content']['url'] + str(question['qid'])
+            ##print question['title'] + ' ' + question['content']['url'] + str(question['qid'])
 
     if len(results) > 10:
         return jsonify({'data': questions_list[0:10]})
@@ -661,7 +675,7 @@ def get_autocomplete(request):
 
 def send_invites(request):
     user = kunjika.cb.get(str(g.user.id)).value
-    #print user
+    ##print user
     try:
         email_list = request.form['email_list']
         email_list = email_list.split(';')
@@ -710,7 +724,7 @@ def endorse():
                                    ',"' + urllib.quote(skill) + '"]&stale=false&reduce=false').read()
 
     sid_doc = json.loads(sid_doc)
-    print sid_doc
+    #print sid_doc
 
     endorsed = False
     docid = None

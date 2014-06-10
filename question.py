@@ -47,7 +47,7 @@ def get_question_by_id(qid, question):
 def get_questions():
     questions = urllib2.urlopen(kunjika.DB_URL + "/_design/dev_qa/_view/get_questions?stale=false").read()
     questions = json.loads(questions)
-    ##print questions
+    ###print questions
     question_list = []
     for i in questions['rows']:
         question_list.append(i['value'])
