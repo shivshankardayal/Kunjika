@@ -16,7 +16,6 @@
 
 import kunjika
 from flask import g, jsonify
-from p#print import p#print
 
 
 def handle_vote(request):

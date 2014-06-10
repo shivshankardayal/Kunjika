@@ -182,7 +182,7 @@
                 <div class="endorsers-container">
                     <ul class="endorsers-pics">
                     {% for endorsement in doc['endorsements'][:10] recursive %}
-                        <li id="{{ endorsement['fuid'] }}-{{ doc['tech'] }}">
+                        <li id="{{ endorsement['fuid'] }}-{{ doc['tech'] }}" rel=popover data-placement="top" data-html="true" data-content="<img src=' {{ endorsement['femail'] | gravatar(size=100) }}' >">
                         <img class="endorser small-thumbnail lazy-load" src="{{ endorsement['femail'] | gravatar(size=24) }}">
                         </li>
                     {% endfor %}
@@ -343,6 +343,11 @@
                     flash('Invites could not be sent. Please contact admin.')
                 }
             }
+        });
+    </script>
+    <script>
+    $("[rel=popover]").on("click", function () {
+            $(this).popover('toggle');
         });
     </script>
 {% endblock %}
