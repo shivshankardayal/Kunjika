@@ -182,7 +182,8 @@
                 <div class="endorsers-container">
                     <ul class="endorsers-pics">
                     {% for endorsement in doc['endorsements'][:10] recursive %}
-                        <li id="{{ endorsement['fuid'] }}-{{ doc['tech'] }}" rel=popover data-placement="top" data-html="true" data-content="<img src=' {{ endorsement['femail'] | gravatar(size=100) }}' >">
+                        <li id="{{ endorsement['fuid'] }}-{{ doc['tech'] }}" rel=popover data-placement="top" data-html="true" data-content="<p style='float:left'><img src=' {{ endorsement['femail'] | gravatar(size=100) }}' ></p>
+                        <div style='float:right;margin-left:10px'><h4>{{ endorsement['user']['name'] }}</h4><a class='btn' href='/users/{{ endorsement['fuid'] }}'>View Profile</a></div>">
                         <img class="endorser small-thumbnail lazy-load" src="{{ endorsement['femail'] | gravatar(size=24) }}">
                         </li>
                     {% endfor %}
@@ -347,7 +348,16 @@
     </script>
     <script>
     $("[rel=popover]").on("click", function () {
-            $(this).popover('toggle');
+            $(this).popover();
         });
+    $('body').on('click', function (e) {
+    $('[rel="popover"]').each(function () {
+        //the 'is' for buttons that trigger popups
+        //the 'has' for icons within a button that triggers a popup
+        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+            $(this).popover('hide');
+        }
+    });
+    });
     </script>
 {% endblock %}

@@ -2530,6 +2530,7 @@ def user_skills(uid, name):
                 #endorser =  cb.get(str(val_res[str(id)].value['fuid']))
                 #endorsement['email'] = endorser['email']
                 #endorsement['fuid'] = endorser['id']
+                endorsement['user'] = cb.get(str(endorsement['fuid'])).value
                 endorsements.append(endorsement)
                 #print endorsement
                 if g.user.id == endorsement['fuid']:
