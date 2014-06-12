@@ -183,15 +183,34 @@
                     <ul class="endorsers-pics">
                     {% for endorsement in doc['endorsements'][:10] recursive %}
                         <li id="{{ endorsement['fuid'] }}-{{ doc['tech'] }}" rel=popover data-placement="top" data-html="true" data-content="<p style='float:left'><img src=' {{ endorsement['femail'] | gravatar(size=100) }}' ></p>
-                        <div style='float:right;margin-left:10px'><h4>{{ endorsement['user']['name'] }}</h4><a class='btn' href='/users/{{ endorsement['fuid'] }}'>View Profile</a></div>">
+                        <div style='float:right;margin-left:10px'><h4>{{ endorsement['user']['name'] }}</h4><p>{{ endorsement['user']['location'] }}</p><a class='btn' href='/users/{{ endorsement['fuid'] }}'>View Profile</a></div>">
                         <img class="endorser small-thumbnail lazy-load" src="{{ endorsement['femail'] | gravatar(size=24) }}">
                         </li>
                     {% endfor %}
                         <li class="endorsers-action">
-                            <a class="see-all-endorsers" href="#" role="button">
+                            <a class="see-all-endorsers" href="#{{ doc['tech'] }}-modal" role="button" data-toggle="modal">
                                 <i class="icon-caret-right"></i>
                             </a>
                         </li>
+                        <div id="{{ doc['tech'] }}-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="{{ doc['tech'] }}Label" aria-hidden="true" style="max-height:400px;position:fixed;
+                            overflow-x:auto;overflow-y:scroll; z-index:9999;">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 id="myModalLabel">Endorsers</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p style="margin:10px;font-size: 15px">{{ doc['endorsements']|length }} people have endorsed you for <b>{{ doc['tech'] }}</b>.</p>
+                                <hr/>
+                                <ul>
+                                {% for endorsement in doc['endorsements'] %}
+                                    <p style='float:left'><img src=' {{ endorsement['femail'] | gravatar(size=70) }}' ></p>
+                                    <div style='margin-left:110px'><h4>{{ endorsement['user']['name'] }}</h4><p>{{ endorsement['user']['location'] }}</p><a class='btn' href='/users/{{ endorsement['fuid'] }}'>View Profile</a></div>
+                                    <div style="clear: both"></div>
+                                    <hr/>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
                     </ul>
                 <div class="hr-line"></div>
                 </div>
@@ -359,5 +378,7 @@
         }
     });
     });
+    </script>
+    <script>
     </script>
 {% endblock %}
