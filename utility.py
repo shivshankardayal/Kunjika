@@ -23,11 +23,10 @@ from flask import url_for, request
 import pyes
 import question
 from flask.ext.mail import Mail, Message
-from uuid import uuid4
 from couchbase.views.iterator import View
 from couchbase.views.params import Query
 from threading import Thread
-from uuid import uuid4
+from uuid import uuid1
 import urllib
 
 def common_data():
@@ -698,7 +697,7 @@ def create_group(request):
         member = {}
 
         group['group_name'] = group_name
-        group['id'] = str(uuid4())
+        group['id'] = str(uuid1())
         group['owner'] = g.user.id
         group['member_count'] = 1
         group['type'] = 'private-group'
@@ -737,7 +736,7 @@ def endorse():
                 break
     if endorsed == False:
         doc = {}
-        doc['id'] = 'e' + str(uuid4())
+        doc['id'] = 'e' + str(uuid1())
         doc['fuid'] = g.user.id
         doc['tuid'] = int(tuid)
         doc['femail'] = g.user.user_doc['email']

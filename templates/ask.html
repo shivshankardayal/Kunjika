@@ -108,25 +108,6 @@
         </div>
     </div>
     </div>
-    <!--    <script type="text/javascript">
-            $("document").ready(function () {
-                //hljs.selected_languages = hljs.LANGUAGES;
-                $("textarea").each(function () {
-                    $(this).keypress(function () {
-                        window.clearTimeout(hljs.Timeout);
-                        hljs.Timeout = window.setTimeout(function () {
-                            hljs.initHighlighting.called = false;
-                            hljs.initHighlighting();
-
-                        }, 200);
-                    });
-                });
-                window.setTimeout(function () {
-                    hljs.initHighlighting.called = false;
-                    hljs.initHighlighting();
-                }, 200);
-            });
-        </script>-->
     <script type="text/javascript">
         (function () {
             if ($('#wmd-input').length > 0) {
@@ -139,15 +120,6 @@
                     highlighter: "prettify",
                     table_class: "table-bordered table"
                 });
-                /*converter.hooks.chain("preBlockGamut", function (text, rbg) {
-                 return text.replace(/^ {0,3}""" *\n((?:.*?\n)+?) {0,3}""" *$/gm, function (whole, inner) {
-                 return "<blockquote>" + rbg(inner) + "</blockquote>\n";
-                 });
-                 });
-
-                 converter.hooks.chain("preConversion", function (text) {
-                 return text.replace(/\b(a\w*)/gi, "*$1*");
-                 });*/
 
                 var editor = new Markdown.Editor(converter, null, { handler: help });
 

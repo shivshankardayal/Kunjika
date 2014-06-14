@@ -48,8 +48,9 @@ from wtforms import (BooleanField, TextField, PasswordField, validators, TextAre
 import pyes
 import urllib
 from couchbase.views.iterator import View, Query
-from uuid import uuid4
+from uuid import uuid1
 from threading import Thread
+import base64
 
 ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg',
@@ -1126,7 +1127,33 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-@kunjika.route('/image_upload', methods=['GET', 'POST'])
+@kunjika.route('/image_upload', methods=['POST'])
+def image_upload():
+    if request.method == 'POST':
+        file = request.files['file']
+        content = file.read()
+        extension = file.filename.split(".")[-1]
+        encoded_file = base64.b64encode(content)
+        id = 'u-' + str(uuid1()) + "." + extension
+        data = {}
+        try:
+            kb.add(id, {'content': encoded_file})
+            data['success'] = "true"
+            data['imagePath'] = HOST_URL + "uploads/" + id
+        except:
+            data['success'] = "false"
+            data['mesage'] = "Invalid image file"
+
+        return json.dumps(data)
+
+@kunjika.route('/uploads/<string:filename>', methods=['GET'])
+def get_uploads(filename):
+    content = kb.get(filename).value['content']
+    content = base64.b64decode(content)
+
+    return content
+
+'''
 def image_upload():
     if request.method == 'POST':
         file = request.files['file']
@@ -1172,7 +1199,7 @@ def image_upload():
                 data['mesage'] = "Invalid image file"
 
             return json.dumps(data)
-
+'''
 
 @kunjika.route('/get_tags/<qid>', methods=['GET', 'POST'])
 @kunjika.route('/get_tags/', defaults={'qid' : None}, methods=['GET', 'POST'])
@@ -2248,7 +2275,7 @@ def add_objective_question():
             question['content']['ts'] = int(time())
             question['updated'] = question['content']['ts']
             question['content']['ip'] = request.remote_addr
-            question['qid'] = 'tq-' + str(uuid4())  # tq stands for test question. prefix is used for increasing period
+            question['qid'] = 'tq-' + str(uuid1())  # tq stands for test question. prefix is used for increasing period
                                                    # before uuid will repeat
             question['_type'] = 'test_questions'
 
