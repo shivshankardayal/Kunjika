@@ -3,7 +3,11 @@ Kunjika
 
 "It is software made up of bugs."
 
-Stackoverflow clone. I am using Flask framework so obviously Python as well.
+It started as Stackoverflow clone but now I have implemented some features which
+are not there in Stackoverflow so calling Kunjika a clone is not appropriate.
+It has skills and endorsement features like linked in. I am also going to implement
+articles feature which can act as a knowledge base portion for a QA site.
+I am using Flask framework so obviously Python as well.
 Couchbase for database and Memcahced funcitonality.
 
 This project has been started to scratch my own itch. OSQA's development has been stopped.

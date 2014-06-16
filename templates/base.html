@@ -127,16 +127,40 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="brand" style="padding: 8px 8px"; href="/"><b><i class="icon-key"></i> Kunjika</b></a>
+                        <a class="brand" style="padding:8px 8px" href="/"> <b> <i class="icon-key"> </i> Kunjika</b> </a>
                         <div class="nav-collapse collapse">
                             <ul class="nav">
-                                {% if qpage is defined %}
-                                    <li><a href="/questions"><i class="icon-question"></i>
-                                        <b>Questions</b></a>
-                                    </li>
-                                {% else %}
-                                    <li><a href="/questions"><i class="icon-question"></i> Questions</a></li>
-                                {% endif %}
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                                        <i class="icon-question"></i>
+                                        {% if qpage is defined or apage is defined or unpage is defined %}
+                                        <b>Questions</b>
+                                        {% else %}
+                                        Questions
+                                        {% endif %}
+                                        <b class="caret"></b>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="/questions">Browse</a></li>
+                                        <li><a href="/ask">Ask</a></li>
+                                        <li><a href="/unanswered">Unanswered</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                                        <i class="icon-book"></i>
+                                        {% if artpage is defined %}
+                                        <b>Articles</b>
+                                        {% else %}
+                                        Articles
+                                        {% endif %}
+                                        <b class="caret"></b>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="/browse_articles">Browse</a></li>
+                                        <li><a href="/write_article">Write</a></li>
+                                    </ul>
+                                </li>
                                 {% if tpage is defined %}
                                     <li><a href="/tags"><i class="icon-tags"></i> <b>Tags</b></a></li>
                                 {% else %}
@@ -146,20 +170,6 @@
                                     <li><a href="/users"><i class="icon-user"></i> <b>Users</b></a></li>
                                 {% else %}
                                     <li><a href="/users"><i class="icon-user"></i> Users</a></li>
-                                {% endif %}
-                                {% if unpage is defined %}
-                                    <li><a href="/unanswered"><i class="icon-question-sign"></i>
-                                        <b>Unanswered</b></a></li>
-                                {% else %}
-                                    <li><a href="/unanswered"><i class="icon-question-sign"></i>
-                                        Unanswered</a></li>
-                                {% endif %}
-                                {% if apage is defined %}
-                                    <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> <b>Ask</b></a>
-                                    </li>
-                                {% else %}
-                                    <li><a href="/ask" class="ask"><i class="icon-question-sign"></i> Ask</a>
-                                    </li>
                                 {% endif %}
                                 {% if ppage is defined %}
                                     <li><a href="/poll" class="poll"><i class="icon-group"></i>

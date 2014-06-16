@@ -18,7 +18,7 @@ from flask import (Flask, session, render_template, abort, redirect, url_for, fl
                    make_response, request, g, jsonify)
 import json
 from forms import *
-from flaskext.bcrypt import Bcrypt
+from flask.ext.bcrypt import Bcrypt
 from couchbase import Couchbase
 from couchbase.exceptions import *
 import urllib2
@@ -75,6 +75,8 @@ USERS_PER_PAGE = kunjika.config['USERS_PER_PAGE']
 
 USER_QUESTIONS_PER_PAGE = kunjika.config['USER_QUESTIONS_PER_PAGE']
 USER_ANSWERS_PER_PAGE = kunjika.config['USER_ANSWERS_PER_PAGE']
+
+ARTICLES_PER_PAGE = kunjika.config['ARTICLES_PER_PAGE']
 
 oid = OpenID(kunjika, '/tmp')
 
@@ -140,6 +142,11 @@ try:
 except:
     pass
 
+try:
+    #es_conn.indices.delete_index("tags")
+    es_conn.indices.create_index("articles")
+except:
+    pass
 
 questions_mapping = {
      'title': {
@@ -199,9 +206,34 @@ tags_mapping = {
      }
 }
 
+articles_mapping = {
+     'title': {
+         'boost': 1.0,
+         'index': 'analyzed',
+         'store': 'yes',
+         'type': 'string',
+         "term_vector": "with_positions_offsets"
+     },
+     'content': {
+         'boost': 1.0,
+         'index': 'analyzed',
+         'store': 'yes',
+         'type': 'string',
+         "term_vector": "with_positions_offsets"
+     },
+     'qid': {
+         'boost': 1.0,
+         'index': 'not_analyzed',
+         'store': 'yes',
+         'type': 'string',
+         "term_vector": "with_positions_offsets"
+     }
+}
+
 es_conn.indices.put_mapping("questions-type", {'properties':questions_mapping}, ["questions"])
 es_conn.indices.put_mapping("users-type", {'properties':users_mapping}, ["users"])
 es_conn.indices.put_mapping("tags-type", {'properties':tags_mapping}, ["tags"])
+es_conn.indices.put_mapping("articles-type", {'properties':articles_mapping}, ["articles"])
 
 gravatar32 = Gravatar(kunjika,
                       size=32,
@@ -2591,6 +2623,29 @@ def user_skills(uid, name):
 @kunjika.route('/endorse')
 def endorse():
    return utility.endorse()
+
+@kunjika.route('/write_article', methods=['GET', 'POST'])
+def write_article():
+    return utility.write_article()
+
+@kunjika.route('/', defaults={'page': 1}, methods=['GET', 'POST'])
+@kunjika.route('/browse_articles', defaults={'page': 1}, methods=['GET', 'POST'])
+@kunjika.route('/browse_articles/<aid>', methods=['GET', 'POST'])
+@kunjika.route('/browse_articles/<aid>/<url>', methods=['GET', 'POST'])
+@kunjika.route('/browse_articles/page/<int:page>')
+@kunjika.route('/browse_articles/tagged/<string:tag>', defaults={'page': 1}, methods=['GET', 'POST'])
+@kunjika.route('/browse_articles/tagged/<string:tag>/page/<int:page>')
+def browse_articles(page=None, aid=None, tag=None, url=None):
+    return utility.browse_articles(page, aid, tag)
+
+@kunjika.route('/article_comment', methods=['GET', 'POST'])
+def article_comment():
+    return utility.article_comment()
+
+@kunjika.route('/edit_article/<element>', methods=['GET', 'POST'])
+def edit_article(element):
+    return utility.edit_article(element)
+
 
 '''
 @kunjika.route('/invites')

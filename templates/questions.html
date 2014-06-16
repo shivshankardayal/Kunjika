@@ -53,13 +53,15 @@
                             </div>
                         </div>
                         <div class="summary">
-                            <h4><a class="question-hyperlink"
-                                   href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}"
-                                   title="{{ question['content']['description'][:200] }}" >
+                            <h4>
                                 {% if 'sticky' in question and question['sticky'] == True %}
-                                <i class="icon-pushpin"></i> {{ question['title'] }}</a>
+                                <a class="question-hyperlink"
+                                   href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}"
+                                   title="{{ question['content']['description'][:200] }}" ><i class="icon-pushpin"></i> {{ question['title'] }}</a>
                                 {% else %}
-                                    {{ question['title'] }}
+                                    <a class="question-hyperlink"
+                                   href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}"
+                                   title="{{ question['content']['description'][:200] }}" > {{ question['title'] }}</a>
                                 {% endif %}
                             </h4>
                         <div class="tags">

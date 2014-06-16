@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see http://www.gnu.org/licenses/.
 import kunjika
-from flask import jsonify, g, render_template, flash
+from flask import jsonify, g, render_template, flash, redirect, abort
 from math import ceil
 import urllib2
 import json
-from time import strftime, localtime
+from time import strftime, localtime, time
 from flask import url_for, request
 import pyes
 import question
@@ -27,6 +27,7 @@ from couchbase.views.iterator import View
 from couchbase.views.params import Query
 from threading import Thread
 from uuid import uuid1
+from forms import *
 import urllib
 
 def common_data():
@@ -745,6 +746,277 @@ def endorse():
         kunjika.kb.add(doc['id'], doc)
 
     return jsonify({'success': True})
+
+def write_article():
+    articleForm = ArticleForm(request.form)
+    if g.user is not None and g.user.is_authenticated():
+        if articleForm.validate_on_submit() and request.method == 'POST':
+            article = {}
+            article['content'] = {}
+            title = articleForm.title.data
+            article['content'] = articleForm.content.data
+            article['tags'] = []
+            article['tags'] = articleForm.tags.data.split(',')
+            article['tags'] = [tag.strip(' \t').lower() for tag in article['tags']]
+            article['title'] = title
+            article['_type'] = 'a'
+
+            url = generate_url(title)
+
+            article['url'] = url
+            article['op'] = str(g.user.id)
+            article['ts'] = int(time())
+            article['updated'] = article['ts']
+            article['ip'] = request.remote_addr
+            article['aid'] = 'a-' + str(uuid1())
+            article['opname'] = g.user.name
+
+            kunjika.es_conn.index({'title':title, 'content':article['content'], 'aid':article['aid'],
+                           'position':article['content']}, 'articles', 'articles-type', article['aid'])
+            kunjika.es_conn.indices.refresh('articles')
+            kunjika.kb.add(str(article['aid']), article)
+
+            return redirect(url_for('browse_articles', aid=article['aid'], url=article['url']))
+
+        return render_template('write_article.html', title='Write Artcile', form=articleForm, artpage=True, name=g.user.name, role=g.user.role,
+                               user_id=g.user.id)
+    return redirect(url_for('login'))
+
+def browse_articles(page, aid, tag):
+
+    if tag is not None:
+        [articles_list, count] = get_articles_for_tag(page, kunjika.ARTICLES_PER_PAGE, tag)
+        if not articles_list and page != 1:
+            abort(404)
+        pagination = Pagination(page, kunjika.ARTICLES_PER_PAGE, count)
+        if g.user is None:
+            return render_template('browse_articles.html', title='Articles for tag ' + tag, qpage=True, articles=articles_list,
+                                   pagination=pagination)
+        elif g.user is not None and g.user.is_authenticated():
+            return render_template('browse_articles.html', title='Articles for tag ' + tag, qpage=True, articles=articles_list,
+                                   name=g.user.name, role=g.user.role, user_id=g.user.id, pagination=pagination)
+        else:
+            return render_template('browse_articles.html', title='Articles for tag ' + tag, qpage=True, articles=articles_list,
+                                   pagination=pagination)
+
+    if aid is None:
+        count_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_articles').read()
+        count_doc = json.loads(count_doc)
+        count = count_doc['rows'][0]['value']
+        articles_list = get_articles_for_page(page, kunjika.ARTICLES_PER_PAGE, count)
+        if not articles_list and page != 1:
+            abort(404)
+        pagination = Pagination(page, kunjika.ARTICLES_PER_PAGE, count)
+        print articles_list
+        if g.user is None:
+            return render_template('browse_articles.html', title='Articles', artpage=True, articles=articles_list,
+                                   pagination=pagination)
+        elif g.user is not None and g.user.is_authenticated():
+            return render_template('browse_articles.html', title='Articles', artpage=True, articles=articles_list,
+                                   name=g.user.name, role=g.user.role, user_id=g.user.id, pagination=pagination)
+        else:
+            return render_template('browse_articles.html', title='Articles', artpage=True, articles=articles_list,
+                                    pagination=pagination)
+    else:
+        article = kunjika.kb.get(aid).value
+        article['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(article['ts']))
+        user = kunjika.cb.get(article['op']).value
+        article['email'] = user['email']
+        article['opname'] = user['name']
+
+        form = CommentForm(request.form)
+
+        cids_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_comments').read()
+        cids_doc = json.loads(cids_doc)['rows']
+        print cids_doc
+        cids_list = []
+        article['comments'] = []
+        for row in cids_doc:
+            cids_list.append(str(row['id']))
+        if(len(cids_list)) != 0:
+            val_res = kunjika.kb.get_multi(cids_list)
+        for cid in cids_list:
+            article['comments'].append(val_res[str(cid)].value)
+            article['comments'][-1]['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(article['comments'][-1]['ts']))
+        if g.user is None:
+            return render_template('single_article.html', title='Articles', artpage=True, article=article)
+
+        elif g.user is not None and g.user.is_authenticated():
+            return render_template('single_article.html', title='Articles', artpage=True, article=article, form=form,
+                                   name=g.user.name, role=g.user.role, user_id=g.user.id)
+        else:
+            return render_template('single_article.html', title='Articles', artpage=True, article=article)
+
+
+
+def get_articles_for_page(page, ARTICLES_PER_PAGE, count):
+    skip = (page - 1) * ARTICLES_PER_PAGE
+    articles = urllib2.urlopen(
+                kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_articles?limit=' +
+                str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&descending=true&reduce=false').read()
+
+    rows = json.loads(articles)['rows']
+    aids_list = []
+    articles_list = []
+    for row in rows:
+        ##print row['id']
+        aids_list.append(str(row['id']))
+    if len(aids_list) != 0:
+        val_res = kunjika.kb.get_multi(aids_list)
+
+    for id in aids_list:
+        articles_list.append(val_res[str(id)].value)
+
+
+    for i in articles_list:
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
+
+        user = kunjika.cb.get(i['op']).value
+        i['opname'] = user['name']
+
+    return articles_list
+
+def get_articles_for_tag(page, ARTICLES_PER_PAGE, tag):
+
+    skip = (page - 1) * ARTICLES_PER_PAGE
+    tag = urllib2.quote(tag, '')
+    rows = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_aid_from_tag?limit=' +
+                str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&key="' + urllib.quote(tag) + '"&reduce=false').read()
+    count = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_aid_from_tag?key=' + '"' + urllib.quote(tag) + '"&reduce=true').read()
+    count = json.loads(count)['rows'][0]['value']
+    #tag = kunjika.tb.get(tag).value
+    rows = json.loads(rows)['rows']
+    aids_list = []
+    for row in rows:
+        ##print row
+        aids_list.append(str(row['id']))
+
+    if len(aids_list) != 0:
+        val_res = kunjika.kb.get_multi(aids_list)
+
+    articles_list = []
+    for aid in aids_list:
+        articles_list.append(val_res[aid].value)
+
+    for i in articles_list:
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
+
+        user = kunjika.cb.get(i['op']).value
+        i['opname'] = user['name']
+
+    return [articles_list, count]
+
+def article_comment():
+
+    if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
+        return "Comment must be between 10 and 5000 characters."
+    else:
+        print request.form['element']
+        elements = request.form['element']
+        aid = elements
+    comment = {}
+    comment['comment'] = request.form['comment']
+    comment['poster'] = g.user.id
+    comment['opname'] = g.user.name
+    comment['ts'] = int(time())
+    comment['ip'] = request.remote_addr
+    comment['aid'] = aid
+    comment['_type'] = 'ac'
+    cid = 'ac-' + str(uuid1())
+    comment['cid'] = cid
+
+    kunjika.kb.add(cid, comment)
+    '''
+    email_list = []
+    email_list.append(str(question['content']['op']))
+    if 'comments' in question:
+        for comment in question['comments']:
+            email_list.append(str(comment['poster']))
+    if 'answers' in question:
+        for answer in question['answers']:
+            email_list.append(str(answer['poster']))
+            if 'comments' in answer:
+                for comment in question['comments']:
+                    email_list.append(str(comment['poster']))
+
+    email_list = set(email_list)
+    current_user_list = [str(g.user.id)]
+    email_list = email_list - set(current_user_list)
+    email_list = list(email_list)
+
+    if len(email_list) != 0:
+        email_users = cb.get_multi(email_list)
+        email_list = []
+
+        for id in email_users:
+            email_list.append(email_users[str(id)].value['email'])
+
+        #print email_list
+
+        msg = Message("A new answer has been posted to a question where you have answered or commented")
+        msg.recipients = email_list
+        msg.sender = admin
+        msg.html = "<p>Hi,<br/><br/> A new comment has been posted which you can read at " +\
+        HOST_URL + "questions/" + str(question['qid']) + '/' + question['content']['url'] + \
+        " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+        mail.send(msg)
+
+
+    #return '<div class="comment" id="c-' + str(comment['cid']) + '">' + request.form['comment'] +'<div>&mdash;</div>' \
+    #       '<a href="/users/"' + str(g.user.id) + '/' + g.user.name + '>' + g.user.name +'</a> ' + str(ts) +'</div>'
+    '''
+    ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
+    return json.dumps({"id": cid, "comment": request.form['comment'], "user_id": g.user.id,
+                       "uname": g.user.name, "ts": ts})
+
+def edit_article(element):
+    type = element[:2]
+    id = element[3:]
+    aid = id.split('_')[0]
+    cid = None
+    print aid
+    comment = {}
+    tags = str
+    article = kunjika.kb.get(aid).value
+    if type == 'ce':
+        cid = id.split('_')[1]
+        comment = kunjika.kb.get(cid).value
+        if comment['poster'] != g.user.id:
+            flash('You did not write this comment!', 'error')
+            return redirect(request.referrer)
+        form = CommentForm(request.form)
+    elif type == 'ae':
+        if int(article['op']) != int(g.user.id):
+            flash('You did not write this article!', 'error')
+            return redirect(request.referrer)
+        form = ArticleForm(request.form)
+        tags = ', '.join(article['tags'])
+
+    if request.method == 'POST':
+        if type == 'ce':
+            if form.validate_on_submit():
+                comment['comment'] = form.comment.data
+                comment['ts'] = int(time())
+                kunjika.kb.replace(comment['cid'], comment)
+
+            return redirect(url_for('browse_articles', aid=aid, url=article['url']))
+        elif type == 'ae':
+            if form.validate_on_submit():
+                print form.content.data
+                print form.tags.data
+                article['content'] = form.content.data
+                tags = form.tags.data.split(',')
+                article['tags'] = [tag.strip(' \t').lower() for tag in tags]
+                article['ts'] = int(time())
+                kunjika.kb.replace(str(article['aid']), article)
+                kunjika.es_conn.index({'title':article['title'], 'content':article['content'], 'aid':article['aid'],
+                                     'position':article['content']}, 'articles', 'articles-type', article['aid'])
+                kunjika.es_conn.indices.refresh('articles')
+
+            return redirect(url_for('browse_articles', aid=aid, url=article['url']))
+    else:
+        return render_template('edit_article.html', title='Edit', form=form, article=article, comment=comment, type=type, aid=aid,
+                                cid=cid, name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
 
 def send_async_email(msg):
     kunjika.mail.send(msg)

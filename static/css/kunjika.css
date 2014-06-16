@@ -785,3 +785,7 @@ td.invite, td.create-group {
     width: 140px;
     float: left;
 }
+
+.acomment {
+    margin-left: 0px;
+}

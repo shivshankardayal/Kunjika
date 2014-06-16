@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+{% block title %}{{ article['title'] }} - Kunjika{% endblock %}
+{% block css_bootstrap %}
+    {{ super() }}
+    {# TODO: probably remove this and let the user set it manually? #}
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+{% endblock %}
+
+{% block css_site %}
+    <link href="/static/css/wmd.css" rel="stylesheet">
+    <link href="/static/css/prettify.css" rel="stylesheet">
+    <!--    <link href="/static/css/googlecode.css" rel="stylesheet">-->
+    <link href="/static/css/token-input.css" rel="stylesheet">
+    <link href="/static/css/kunjika.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
+    <script type="text/javascript"
+            src="/static/js/prettify.js?lang=clj&amp;lbg=erlang&amp;lang=matlab&amp;lang=sql&amp;lang=vb&amp;lang=css&amp;lang=go&amp;lang=pascal&amp;lan=tcl&amp;lang=yaml&amp;lan=basic&amp;lang=dart&amp;lan=lua&amp;lang=scala&amp;lang=wiki&amp;lang=tex"></script>
+    <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+    <!--    <script type="text/javascript" src="/static/js/highlight.pack.js"></script>
+            <script>hljs.initHighlightingOnLoad();</script>-->
+    <script>
+        function toggleDiv(divid) {
+            var objDiv = document.getElementById(divid);
+            var id = '#' + divid;
+            console.log('#' + divid);
+            $(id).toggle("slow");
+
+            if ($(id).hasClass('ran')) {
+
+            } else {
+                $(id).addClass('ran');
+
+                var converter = new Markdown.Converter();
+                var help = function () {
+                    window.open('{{ config['HOST_URL'] }}editing-help');
+                }
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "prettify"
+                });
+                var editor = new Markdown.Editor(converter, '-' + divid, { handler: help });
+
+                var str = '#insertImageDialog' + '-' + divid;
+                //alert(str);
+                var $dialog = $(str).dialog({
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+                var $loader = $('span.loading-small', $dialog);
+                var $url = $('input[type=text]', $dialog);
+                var $file = $('input[type=file]', $dialog);
+
+                editor.hooks.set('insertImageDialog', function (callback) {
+
+                    // dialog functions
+                    var dialogInsertClick = function () {
+                        callback($url.val().length > 0 ? $url.val() : null);
+                        dialogClose();
+                    };
+
+                    var dialogCancelClick = function () {
+                        dialogClose();
+                        callback(null);
+                    };
+
+                    var dialogClose = function () {
+                        // clean up inputs
+                        $url.val('');
+                        $file.val('');
+                        $dialog.dialog('close');
+                    };
+
+                    // set up dialog button handlers
+                    $dialog.dialog('option', 'buttons', {
+                        'Insert': dialogInsertClick,
+                        'Cancel': dialogCancelClick
+                    });
+
+                    var uploadStart = function () {
+                        $loader.show();
+                    };
+
+                    var uploadComplete = function (response) {
+                        $loader.hide();
+                        if (response.success) {
+                            callback(response.imagePath);
+                            dialogClose();
+                        } else {
+                            alert(response.message);
+                            $file.val('');
+                        }
+                        editor.refreshPreview();
+                    };
+
+                    // upload
+                    $file.unbind('change').ajaxfileupload({
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
+
+                    // open the dialog
+                    $dialog.dialog('open');
+
+                    return true; // tell the editor that we'll take care of getting the image url
+                });
+                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.run();
+            }
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            var options = {
+                //target:        '#output1',   // target element(s) to be updated with server response
+                //beforeSubmit:  showRequest,  // pre-submit callback
+                success: showResponse,  // post-submit callback
+
+                // other available options:
+                url: '/article_comment',         // override for form's 'action' attribute
+                //type:      'post',        // 'get' or 'post', override for form's 'method' attribute
+                //dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
+                clearForm: true,        // clear all form fields after successful submit
+                resetForm: true        // reset the form after successful submit
+
+                // $.ajax options can be used here too, for example:
+                //timeout:   3000
+            };
+
+            // bind form using 'ajaxForm'
+            $('form.comment-form').ajaxForm(options);
+            //function showRequest(formData, jqForm, options) {
+            // formData is an array; here we use $.param to convert it to a string to display it
+            // but the form plugin does this for you automatically when it submits the data
+            //var queryString = $.param(formData);
+
+            // jqForm is a jQuery object encapsulating the form element.  To access the
+            // DOM element for the form do this:
+            // var formElement = jqForm[0];
+
+            //alert('About to submit: \n\n' + queryString);
+
+            // here we could return false to prevent the form from being submitted;
+            // returning anything other than false will allow the form submit to continue
+            //return true;
+            //}
+            function showResponse(responseText, statusText, xhr, $form) {
+                var converter = new Markdown.Converter();
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "prettify"
+                });
+
+                responseJSON = jQuery.parseJSON(responseText);
+                str = '<div class="comment" id="c-' + responseJSON.id + '">';
+                comment = converter.makeHtml(responseJSON.comment);
+                str += comment;
+                str += " &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
+                str += " " + responseJSON.ts + "</div>"
+                $(str).insertBefore('form.comment-form');
+                flash('Your comment has been successfully posted.', 'info')
+            }
+        });
+    </script>
+{% endblock %}
+{% block container %}
+    <div class="row-fluid">
+    <div id="mainbar" class="mainbar">
+    <div class="q-header">
+            <h3>{{ article['title'] }}</h3>
+    </div>
+    <table>
+        <tr>
+            <td class="post">
+                <div class="post-tags"><i class="icon-tags" title="Tags" style="color:#a4c639;"></i>
+                    {% for tag in article['tags'] %}
+                        <a class="post-tag" href="/browse_articles/tagged/{{ tag }}">{{ tag }}</a>
+                    {% endfor %}
+                </div>
+                <div class="q-desc" id="q-desc">{{ article['content'] }}</div>
+                <table class="poster">
+                    <tbody>
+                    <tr>
+                        {% if user_id is defined and user_id == article['op'] %}
+                            <td class="vt">
+                                <a href="/edit_article/ae-{{ article['aid'] }}" class="suggest-edit-post" title=""><i
+                                        class="icon-edit"></i> Edit</a>
+                            </td>
+                        {% elif user_id is defined %}
+                            <td class="vt">
+                                <a href="#a-{{ article['aid'] }}" id="a-{{ article['aid'] }}"
+                                   onclick="toggleDiv('{{ article['aid'] }}');"><i class="icon-comment"
+                                                                                     style="color:#a4c639"></i> Comment</a>
+                            </td>
+                        {% else %}
+                            <td class="vt">
+                            </td>
+                        {% endif %}
+                        <td class="post-signature owner" align="right">
+                            <div class="user-info ">
+                                <div class="user-action-time">
+                                    Written on <span title="2013-05-28 01:32:12Z"
+                                                   class="relativetime">{{ article['tstamp'] }} </span>
+                                </div>
+                                <div class="user-gravatar32">
+                                    <a href="/users/{{ article['content']['op'] }}/{{ article['opname'] }}">
+                                        <div class=""><img
+                                                src="{{ article['email']|gravatar }}"
+                                                alt="" height="32" width="32"></div>
+                                    </a>
+                                </div>
+                                <div class="user-details">
+                                    <a href="/users/{{ article['content']['op'] }}/{{ article['opname'] }}">{{ article['opname'] }}</a><br>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+    </table>
+    {% if user_id is defined %}
+    <form class="comment-form" id="f-{{ article['aid'] }}" method="post"
+          aciton="/article_comment">
+        {% from "macros.html" import render_field %}
+        {{ form.csrf_token }}
+        <div class="wmd-panel hidden-comment-form" id="{{ article['aid'] }}">
+            <div id="wmd-button-bar-{{ article['aid'] }}" class="wmd-bar"></div>
+            <div class="control-group">
+                <label for="answer" class="control-label"></label>
+
+                <div class="controls">
+
+                    <textarea stlyle="margin-left:5px;" placeholder="Please post your comment here."
+                              name="comment" id="wmd-input-{{ article['aid'] }}" class="wmd-input"></textarea>
+                </div>
+            </div>
+            <div id="insertImageDialog-{{ article['aid'] }}" title="&nbsp;Insert Image or File">
+                <h6>From the web</h6>
+
+                <p>
+                    <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                </p>
+                <h6>From your computer (Max. 2MB)</h6>
+                <span class="loading-small"></span>
+                <input type="file" name="file" id="file" data-action="/image_upload"/>
+            </div>
+            <div id="wmd-preview-{{ article['aid'] }}" class="wmd-panel wmd-preview"></div>
+            <input type="hidden" name="element" value="{{ article['aid'] }}">
+
+            <div style="clear:both;"></div>
+            <div class="controls">
+                <input type="submit" value="Post comment" class="btn btn-primary">
+            </div>
+        </div>
+    </form>
+    {% endif %}
+    {% if user_id is undefined %}
+    <h5>You need to be logged in to comment.</h5>
+    {% endif %}
+    <h3>User Comments</h3>
+    {% for comment in article['comments'] %}
+        <div class="comment acomment" id="c-{{ comment['cid'] }}">
+            <div class="content"> {{ comment['comment'] }}</div>
+            -
+            <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }}</a>
+            {{ comment['tstamp'] }}&nbsp;
+            {% if user_id is defined and user_id == comment['poster'] %}
+            <a title="edit" href="/edit_article/ce-{{ article['aid'] }}_{{ comment['cid'] }}"><i
+                class="icon-edit"></i></a>
+            {% else %}
+            <a title="Flag for inappropriate comment" id="qcf-{{ comment['cid'] }}" class="flag"
+               style="color:#d00" href="/flag/-{{ comment['cid'] }}"><i class="icon-flag"></i></a>
+            {% endif %}
+        </div>
+    {% endfor %}
+    <script type="text/javascript">
+        var converter = new Markdown.Converter();
+        Markdown.Extra.init(converter, {
+            extensions: "all",
+            highlighter: "prettify",
+            table_class: "table-bordered table"
+        });
+
+        var originalHTML = $("#q-desc").text();
+        var convertedHTML = converter.makeHtml(originalHTML);
+        $("#q-desc").html(convertedHTML);
+        $(".content").each(function () {
+            var originalHTML = $(this).text();
+            var convertedHTML = converter.makeHtml(originalHTML);
+            $(this).html(convertedHTML);
+        });
+    </script>
+    <script type="text/javascript">
+        (function () {
+            if ($('#wmd-input').length > 0) {
+                var converter = new Markdown.getSanitizingConverter();
+                var help = function () {
+                    window.open('{{ config['HOST_URL'] }}editing-help');
+                }
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "prettify",
+                    table_class: "table-bordered table"
+                });
+
+                var editor = new Markdown.Editor(converter, null, { handler: help });
+
+                var $dialog = $('#insertImageDialog').dialog({
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+                var $loader = $('span.loading-small', $dialog);
+                var $url = $('input[type=text]', $dialog);
+                var $file = $('input[type=file]', $dialog);
+
+                editor.hooks.set('insertImageDialog', function (callback) {
+
+                    // dialog functions
+                    var dialogInsertClick = function () {
+                        callback($url.val().length > 0 ? $url.val() : null);
+                        dialogClose();
+                    };
+
+                    var dialogCancelClick = function () {
+                        dialogClose();
+                        callback(null);
+                    };
+
+                    var dialogClose = function () {
+                        // clean up inputs
+                        $url.val('');
+                        $file.val('');
+                        $dialog.dialog('close');
+                    };
+
+                    // set up dialog button handlers
+                    $dialog.dialog('option', 'buttons', {
+                        'Insert': dialogInsertClick,
+                        'Cancel': dialogCancelClick
+                    });
+
+                    var uploadStart = function () {
+                        $loader.show();
+                    };
+
+                    var uploadComplete = function (response) {
+                        $loader.hide();
+                        if (response.success) {
+                            callback(response.imagePath);
+                            dialogClose();
+                        } else {
+                            alert(response.message);
+                            $file.val('');
+                        }
+                        editor.refreshPreview();
+                    };
+
+                    // upload
+                    $file.unbind('change').ajaxfileupload({
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
+
+                    // open the dialog
+                    $dialog.dialog('open');
+
+                    return true; // tell the editor that we'll take care of getting the image url
+                });
+                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.run();
+            }
+        })();
+    </script>
+{% endblock %}

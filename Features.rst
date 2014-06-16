@@ -102,6 +102,7 @@ DONE
 45. Tag suggestion(autocomplete).
 46. Bookmarking questions and view on profile.
 47. Skills and endorsements on profile page.
+48. Images are now stored as base64 strings in database for distributed storage.
 
 Postponed for later
 ===================
