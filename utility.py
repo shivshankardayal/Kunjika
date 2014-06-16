@@ -839,7 +839,9 @@ def browse_articles(page, aid, tag):
             val_res = kunjika.kb.get_multi(cids_list)
         for cid in cids_list:
             article['comments'].append(val_res[str(cid)].value)
-            article['comments'][-1]['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(article['comments'][-1]['ts']))
+        article['comments'] = sorted(article['comments'], key=lambda k: k['ts'], reverse=True)
+        for comment in article['comments']:
+            comment['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
         if g.user is None:
             return render_template('single_article.html', title='Articles', artpage=True, article=article)
 
@@ -855,7 +857,7 @@ def get_articles_for_page(page, ARTICLES_PER_PAGE, count):
     skip = (page - 1) * ARTICLES_PER_PAGE
     articles = urllib2.urlopen(
                 kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_articles?limit=' +
-                str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&descending=true&reduce=false').read()
+                str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&descending=true&reduce=false&stale=false').read()
 
     rows = json.loads(articles)['rows']
     aids_list = []
@@ -883,7 +885,7 @@ def get_articles_for_tag(page, ARTICLES_PER_PAGE, tag):
     skip = (page - 1) * ARTICLES_PER_PAGE
     tag = urllib2.quote(tag, '')
     rows = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_aid_from_tag?limit=' +
-                str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&key="' + urllib.quote(tag) + '"&reduce=false').read()
+                str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&key="' + urllib.quote(tag) + '"&reduce=false&stale=false').read()
     count = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_aid_from_tag?key=' + '"' + urllib.quote(tag) + '"&reduce=true').read()
     count = json.loads(count)['rows'][0]['value']
     #tag = kunjika.tb.get(tag).value
@@ -969,7 +971,7 @@ def article_comment():
     '''
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
     return json.dumps({"id": cid, "comment": request.form['comment'], "user_id": g.user.id,
-                       "uname": g.user.name, "ts": ts})
+                       "uname": g.user.name, "ts": ts, "aid": aid})
 
 def edit_article(element):
     type = element[:2]

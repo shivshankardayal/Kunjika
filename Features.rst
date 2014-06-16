@@ -103,6 +103,7 @@ DONE
 46. Bookmarking questions and view on profile.
 47. Skills and endorsements on profile page.
 48. Images are now stored as base64 strings in database for distributed storage.
+49. Articles are now implemented.
 
 Postponed for later
 ===================
