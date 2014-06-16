@@ -29,6 +29,9 @@
     <div class="row-fluid">
         <div id="mainbar" class="mainbar">
             <div id="qsummary">
+		{% if articles|length == 0 %}
+			<h3> No Articles Yet! Why don't you write first one!</h3>
+		{% endif %}
                 {% for article in articles %}
                     <div id="qsummary-{{ article['aid'] }}" class="qsummary narrow">
                     <div class="summary">

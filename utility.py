@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see http://www.gnu.org/licenses/.
 import kunjika
-from flask import jsonify, g, render_template, flash, redirect, abort
+from flask import jsonify, g, render_template, flash, redirect, abort, make_response
 from math import ceil
 import urllib2
 import json
@@ -802,7 +802,9 @@ def browse_articles(page, aid, tag):
     if aid is None:
         count_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_articles').read()
         count_doc = json.loads(count_doc)
-        count = count_doc['rows'][0]['value']
+        count = 0
+	if len(count_doc['rows']) != 0:
+            count = count_doc['rows'][0]['value']
         articles_list = get_articles_for_page(page, kunjika.ARTICLES_PER_PAGE, count)
         if not articles_list and page != 1:
             abort(404)
