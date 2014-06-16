@@ -192,10 +192,15 @@
                 <table class="poster">
                     <tbody>
                     <tr>
-                        {% if user_id is defined and user_id == article['op'] %}
+                        {% if user_id is defined and user_id|string == article['op'] %}
                             <td class="vt">
                                 <a href="/edit_article/ae-{{ article['aid'] }}" class="suggest-edit-post" title=""><i
                                         class="icon-edit"></i> Edit</a>
+                            </td>
+                            <td class="vt">
+                                <a href="#a-{{ article['aid'] }}" id="a-{{ article['aid'] }}"
+                                   onclick="toggleDiv('{{ article['aid'] }}');"><i class="icon-comment"
+                                                                                     style="color:#a4c639"></i> Comment</a>
                             </td>
                         {% elif user_id is defined %}
                             <td class="vt">
