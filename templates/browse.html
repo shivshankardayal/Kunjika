@@ -34,7 +34,7 @@
                     <div id="qsummary-{{ question['qid'] }}" class="qsummary narrow">
                         <div class="summary">
                             <h4><a class="question-hyperlink"
-                                   href="/questions/{{ question['qid'] }}"
+                                   href="/browse_objective_questions/{{ question['qid'] }}"
                                    title="{{ question['content']['description'][:200] }}" >
                                 {% if 'sticky' in question and question['sticky'] == True %}
                                 <i class="icon-pushpin"></i> {{ question['content']['description'][:50] }}</a>

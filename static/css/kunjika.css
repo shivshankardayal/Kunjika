@@ -789,3 +789,7 @@ td.invite, td.create-group {
 .acomment {
     margin-left: 0px;
 }
+
+.nav {
+    font-size: 15px;
+}
