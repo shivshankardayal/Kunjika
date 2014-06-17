@@ -219,14 +219,14 @@
                                                    class="relativetime">{{ article['tstamp'] }} </span>
                                 </div>
                                 <div class="user-gravatar32">
-                                    <a href="/users/{{ article['content']['op'] }}/{{ article['opname'] }}">
+                                    <a href="/users/{{ article['op'] }}/{{ article['opname'] }}">
                                         <div class=""><img
                                                 src="{{ article['email']|gravatar }}"
                                                 alt="" height="32" width="32"></div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="/users/{{ article['content']['op'] }}/{{ article['opname'] }}">{{ article['opname'] }}</a><br>
+                                    <a href="/users/{{ article['op'] }}/{{ article['opname'] }}">{{ article['opname'] }}</a><br>
                                 </div>
                             </div>
                         </td>
