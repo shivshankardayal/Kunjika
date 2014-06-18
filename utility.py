@@ -803,7 +803,7 @@ def browse_articles(page, aid, tag):
         count_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_articles').read()
         count_doc = json.loads(count_doc)
         count = 0
-	if len(count_doc['rows']) != 0:
+        if len(count_doc['rows']) != 0:
             count = count_doc['rows'][0]['value']
         articles_list = get_articles_for_page(page, kunjika.ARTICLES_PER_PAGE, count)
         if not articles_list and page != 1:
@@ -885,9 +885,13 @@ def get_articles_for_tag(page, ARTICLES_PER_PAGE, tag):
     skip = (page - 1) * ARTICLES_PER_PAGE
     tag = urllib2.quote(tag, '')
     rows = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_aid_from_tag?limit=' +
-                str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&key="' + urllib.quote(tag) + '"&reduce=false&stale=false').read()
-    count = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_aid_from_tag?key=' + '"' + urllib.quote(tag) + '"&reduce=true').read()
-    count = json.loads(count)['rows'][0]['value']
+                str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&key="' + tag + '"&reduce=false&stale=false').read()
+    count_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_aid_from_tag?key="' + tag + '"&reduce=true').read()
+    count_doc = json.loads(count_doc)
+    count = 0
+    if len(count_doc['rows']) != 0:
+        count = count_doc['rows'][0]['value']
+
     #tag = kunjika.tb.get(tag).value
     rows = json.loads(rows)['rows']
     aids_list = []
