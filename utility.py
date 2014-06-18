@@ -809,7 +809,7 @@ def browse_articles(page, aid, tag):
         if not articles_list and page != 1:
             abort(404)
         pagination = Pagination(page, kunjika.ARTICLES_PER_PAGE, count)
-        print articles_list
+        #print articles_list
         if g.user is None:
             return render_template('browse_articles.html', title='Articles', artpage=True, articles=articles_list,
                                    pagination=pagination)
@@ -828,9 +828,9 @@ def browse_articles(page, aid, tag):
 
         form = CommentForm(request.form)
 
-        cids_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_comments').read()
+        cids_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_comments?key="' + str(aid) + '"').read()
         cids_doc = json.loads(cids_doc)['rows']
-        print cids_doc
+        #print cids_doc
         cids_list = []
         article['comments'] = []
         for row in cids_doc:
@@ -915,7 +915,7 @@ def article_comment():
     if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
         return "Comment must be between 10 and 5000 characters."
     else:
-        print request.form['element']
+        #print request.form['element']
         elements = request.form['element']
         aid = elements
     comment = {}
@@ -978,7 +978,7 @@ def edit_article(element):
     id = element[3:]
     aid = id.split('_')[0]
     cid = None
-    print aid
+    #print aid
     comment = {}
     tags = str
     article = kunjika.kb.get(aid).value
@@ -1006,8 +1006,8 @@ def edit_article(element):
             return redirect(url_for('browse_articles', aid=aid, url=article['url']))
         elif type == 'ae':
             if form.validate_on_submit():
-                print form.content.data
-                print form.tags.data
+                #print form.content.data
+                #print form.tags.data
                 article['content'] = form.content.data
                 tags = form.tags.data.split(',')
                 article['tags'] = [tag.strip(' \t').lower() for tag in tags]
