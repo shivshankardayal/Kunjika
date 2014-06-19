@@ -32,6 +32,7 @@
 		{% if articles|length == 0 %}
 			<h3> No Articles Yet! Why don't you write first one!</h3>
 		{% endif %}
+            <h4><a href="/write_article">Write New Article</a></h4>
                 {% for article in articles %}
                     <div id="qsummary-{{ article['aid'] }}" class="qsummary narrow">
                     <div class="summary">
