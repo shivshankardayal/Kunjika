@@ -636,12 +636,13 @@ def get_similar_questions(title, qid):
     results=[]
 
     for r in title_results:
-        #print r
-        if r['qid'] != qid:
-            question_dict = {}
-            question_dict = question.get_question_by_id(str(r['qid']), question_dict)
-            #print question_dict
-            results.append([r['qid'], r['title'], question_dict['content']['url']])
+        print r
+        if 'qid' in r:
+            if r['qid'] != qid:
+                question_dict = {}
+                question_dict = question.get_question_by_id(str(r['qid']), question_dict)
+                #print question_dict
+                results.append([r['qid'], r['title'], question_dict['content']['url']])
 
     return results[:10]
 
