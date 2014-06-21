@@ -63,7 +63,7 @@
                             </h4>
                         <div class="tags">
                             <i class="icon-tags" style="color:#a4c639;"></i>
-                            {% for tag in question['tags'] %}
+                            {% for tag in question['content']['tags'] %}
                                 <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
                             {% endfor %}
                         </div>
