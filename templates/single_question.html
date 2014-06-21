@@ -12,20 +12,16 @@
 
 {% block css_site %}
     <link href="/static/css/wmd.css" rel="stylesheet">
-    <link href="/static/css/prettify.css" rel="stylesheet">
-    <!--    <link href="/static/css/googlecode.css" rel="stylesheet">-->
+    <link href="/static/css/solarized_light.css" rel="stylesheet">
     <link href="/static/css/token-input.css" rel="stylesheet">
     <link href="/static/css/kunjika.css" rel="stylesheet">
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
-    <script type="text/javascript"
-            src="/static/js/prettify.js?lang=clj&amp;lbg=erlang&amp;lang=matlab&amp;lang=sql&amp;lang=vb&amp;lang=css&amp;lang=go&amp;lang=pascal&amp;lan=tcl&amp;lang=yaml&amp;lan=basic&amp;lang=dart&amp;lan=lua&amp;lang=scala&amp;lang=wiki&amp;lang=tex"></script>
     <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
     <script src="http://malsup.github.com/jquery.form.js"></script>
-    <!--    <script type="text/javascript" src="/static/js/highlight.pack.js"></script>
-            <script>hljs.initHighlightingOnLoad();</script>-->
+    <script type="text/javascript" src="/static/js/highlight.js"></script>
     <script>
         function toggleDiv(divid) {
             var objDiv = document.getElementById(divid);
@@ -44,7 +40,7 @@
                 }
                 Markdown.Extra.init(converter, {
                     extensions: "all",
-                    highlighter: "prettify"
+                    highlighter: "highlight"
                 });
                 var editor = new Markdown.Editor(converter, '-' + divid, { handler: help });
 
@@ -115,7 +111,8 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                hljs.initHighlightingOnLoad();
                 editor.run();
             }
         }
@@ -693,7 +690,7 @@
                 }
                 Markdown.Extra.init(converter, {
                     extensions: "all",
-                    highlighter: "prettify",
+                    highlighter: "highlight",
                     table_class: "table-bordered table"
                 });
 
@@ -765,7 +762,7 @@
                     return true; // tell the editor that we'll take care of getting the image url
                 });
                 //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
-
+                hljs.initHighlightingOnLoad();
                 editor.run();
             }
         })();

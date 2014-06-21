@@ -41,7 +41,7 @@
                 }
                 Markdown.Extra.init(converter, {
                     extensions: "all",
-                    highlighter: "prettify"
+                    highlighter: "highlight"
                 });
                 var editor = new Markdown.Editor(converter, '-' + divid, { handler: help });
 
@@ -112,7 +112,8 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                hljs.initHighlightingOnLoad();
                 editor.run();
             }
         }
