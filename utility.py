@@ -89,9 +89,11 @@ def search(query, page):
     results=[]
 
     for r in title_results:
-        results.append(r['qid'])
+        if 'qid' in r:
+            results.append(r['qid'])
     for r in question_results:
-        results.append(r['qid'])
+        if 'qid' in r:
+            results.append(r['qid'])
 
     return common_rendering(results, query, page)
 
@@ -102,7 +104,8 @@ def search_title(query, page):
     results=[]
 
     for r in title_results:
-        results.append(r['qid'])
+        if 'qid' in r:
+            results.append(r['qid'])
         ##print str(r)
 
     return common_rendering(results, query, page)
@@ -115,7 +118,8 @@ def search_description(query, page):
     results=[]
 
     for r in question_results:
-        results.append(r['qid'])
+        if 'qid' in r:
+            results.append(r['qid'])
 
     return common_rendering(results, query, page)
 
