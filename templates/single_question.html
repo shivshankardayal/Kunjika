@@ -663,7 +663,7 @@
         var converter = new Markdown.Converter();
         Markdown.Extra.init(converter, {
             extensions: "all",
-            highlighter: "prettify",
+            highlighter: "highlght",
             table_class: "table-bordered table"
         });
 
@@ -680,6 +680,7 @@
             var convertedHTML = converter.makeHtml(originalHTML);
             $(this).html(convertedHTML);
         });
+        hljs.initHighlightingOnLoad();
     </script>
     <script type="text/javascript">
         (function () {
