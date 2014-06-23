@@ -832,10 +832,10 @@ def browse_articles(page, aid, tag):
         article['opname'] = user['name']
 
         form = CommentForm(request.form)
-
+        print aid
         cids_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_comments?key="' + str(aid) + '"').read()
         cids_doc = json.loads(cids_doc)['rows']
-        #print cids_doc
+        print cids_doc
         cids_list = []
         article['comments'] = []
         for row in cids_doc:
