@@ -134,7 +134,7 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.12.0/jquery.validate.min.js"></script>
     <script>
         $(document).ready(function () {
             $('#tab').validate({
@@ -189,12 +189,13 @@
                     form.submit();
                 }
             });
-
-            $('#check_availability').click(function () {
-                var checking_html = 'Checking...';
-                $('#availability_result').html(checking_html);
-                check_availability();
-            });
+        });
+    </script>
+    <script type='text/javascript'>
+        $('#check_availability').click(function () {
+            var checking_html = 'Checking...';
+            $('#availability_result').html(checking_html);
+            check_availability();
         });
         function check_availability() {
 
