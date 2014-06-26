@@ -1,0 +1,11 @@
+map function:
+
+function (doc, meta) {
+  if(doc._type == "bq") {
+    emit(doc.uid, null);
+  }
+}
+
+reduce function:
+
+_count
