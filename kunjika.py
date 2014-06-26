@@ -2646,9 +2646,10 @@ def article_comment():
 def edit_article(element):
     return utility.edit_article(element)
 
-@kunjika.route('/article_tags')
-def article_tags():
-    return utility.article_tags()
+@kunjika.route('/article_tags', defaults={'page': 1})
+@kunjika.route('/article_tags/page/<int:page>')
+def article_tags(page=1):
+    return utility.article_tags(page)
 
 
 '''

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - Kunjika{% endblock %}
+{% block css_bootstrap %}
+    {{ super() }}
+    {# TODO: probably remove this and let the user set it manually? #}
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+{% endblock %}
+
+{% block css_site %}
+    <link href="/static/css/kunjika.css" rel="stylesheet">
+
+{% endblock %}
+{% block container %}
+    <div class="row-fluid">
+    <div id="mainbar" class="mainbar">
+    {% if pagination is not defined %}
+    {% else %}
+        <div id="tags">
+            <table>
+                {% set i = 0 %}
+                {% for tag in tags %}
+                    {% if i < no_of_tags %}
+                        {% if (no_of_tags - i) > 4 %}
+                            {% set k = 4 %}
+                        {% else %}
+                            {% set k = no_of_tags - i %}
+                        {% endif %}
+                        <tr>
+                            {% for j in range(0, k) %}
+                                <td class="tag-cell">
+                                    <a href="/browse_articles/tagged/{{ tags[i+j]['key'] }}" class="post-tag" title="" rel="tag">{{ tags[i+j]['key'] }}</a><span class="item-multiplier-x">×</span>&nbsp;<span
+                                        class="item-multiplier-count">{{ tags[i+j]['value'] }}</span>
+
+                                    <!--a href="/info/{{ tags[i+j]['key'] }}">info</a>
+                                    {% if 'excerpt' in tags[i+j] %}
+                                    <div class="excerpt">{{ tags[i+j]['excerpt'] }}
+                                    {{ tags[i+j]['info'][:108] }}
+                                    </div>
+                                    {% endif %}-->
+                                    <div>
+                                        <div class="cbt"></div>
+                                    </div>
+                                </td>
+                            {% endfor %}
+                            {% set i = i + 4 %}
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+            {{ render_pagination(pagination) }}
+        </div>
+    {% endif %}
+    </div>
+    </div>
+{% endblock %}

@@ -1032,11 +1032,28 @@ def edit_article(element):
         return render_template('edit_article.html', title='Edit', form=form, article=article, comment=comment, type=type, aid=aid,
                                 cid=cid, name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
 
-def article_tags():
-    tags_count = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_atags?reduce=true').read()
-    tags_count = json.loads(tags_count)
-    print tags_count
-    pass
+def article_tags(page):
+    tags_count = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_tags_from_article?reduce=true').read()
+    tags_count = json.loads(tags_count)['rows'][0]['value']
+    tags = {}
+
+    skip = (page - 1) * kunjika.TAGS_PER_PAGE
+    tags = urllib2.urlopen(
+                kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_tags_from_article?limit=' +
+                str(kunjika.TAGS_PER_PAGE) + '&skip=' + str(skip) + '&group=true').read()
+    tags = json.loads(tags)['rows']
+
+    if not tags and page != 1:
+        abort(404)
+    pagination = Pagination(page, kunjika.TAGS_PER_PAGE, tags_count)
+    no_of_tags = len(tags)
+    if g.user is not None and g.user.is_authenticated():
+        logged_in = True
+        return render_template('article_tags.html', title='Article Tags', logged_in=logged_in, pagination=pagination,
+                               tags=tags, no_of_tags=no_of_tags, name=g.user.name, role=g.user.role, user_id=g.user.id)
+    return render_template('article_tags.html', title='Articles Tags', pagination=pagination, tags=tags,
+                           no_of_tags=no_of_tags)
+
 
 def send_async_email(msg):
     kunjika.mail.send(msg)
