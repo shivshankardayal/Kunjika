@@ -1031,6 +1031,12 @@ def edit_article(element):
         return render_template('edit_article.html', title='Edit', form=form, article=article, comment=comment, type=type, aid=aid,
                                 cid=cid, name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
 
+def article_tags():
+    tags_count = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_atags?reduce=true').read()
+    tags_count = json.loads(tags_count)
+    print tags_count
+    pass
+
 def send_async_email(msg):
     kunjika.mail.send(msg)
 

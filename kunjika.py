@@ -2646,6 +2646,10 @@ def article_comment():
 def edit_article(element):
     return utility.edit_article(element)
 
+@kunjika.route('/article_tags')
+def article_tags():
+    return utility.article_tags()
+
 
 '''
 @kunjika.route('/invites')
