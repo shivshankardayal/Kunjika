@@ -999,9 +999,10 @@ def edit_article(element):
             return redirect(request.referrer)
         form = CommentForm(request.form)
     elif type == 'ae':
-        if int(article['op']) != int(g.user.id):
-            flash('You did not write this article!', 'error')
-            return redirect(request.referrer)
+        if g.user.id != 1:
+            if int(article['op']) != int(g.user.id):
+                flash('You did not write this article!', 'error')
+                return redirect(request.referrer)
         form = ArticleForm(request.form)
         tags = ', '.join(article['tags'])
 

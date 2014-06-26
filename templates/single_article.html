@@ -190,7 +190,7 @@
                 <table class="poster">
                     <tbody>
                     <tr>
-                        {% if user_id is defined and user_id|string == article['op'] %}
+                        {% if user_id is defined and user_id|string == article['op'] or user_id == 1%}
                             <td class="vt">
                                 <a href="/edit_article/ae-{{ article['aid'] }}" class="suggest-edit-post" title=""><i
                                         class="icon-edit"></i> Edit</a>
