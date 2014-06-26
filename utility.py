@@ -1033,7 +1033,7 @@ def edit_article(element):
                                 cid=cid, name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
 
 def article_tags(page):
-    tags_count = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_tags_from_article?reduce=true').read()
+    tags_count = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_unique_article_tag_count?reduce=true').read()
     tags_count = json.loads(tags_count)['rows'][0]['value']
     tags = {}
 
