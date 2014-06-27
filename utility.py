@@ -768,6 +768,19 @@ def write_article():
             article['tags'] = []
             article['tags'] = articleForm.tags.data.split(',')
             article['tags'] = [tag.strip(' \t').lower() for tag in article['tags']]
+            new_tag_list = []
+            for tag in article['tags']:
+                tag = list(tag)
+                for i in range(0, len(tag)):
+                    if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
+                         or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
+                         or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                         or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
+                         or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
+                         or tag[i] == ' ':
+                        tag[i] = '-'
+                new_tag_list.append(''.join(tag))
+            article['tags'] = new_tag_list
             article['title'] = title
             article['_type'] = 'a'
 
@@ -1023,6 +1036,19 @@ def edit_article(element):
                 article['content'] = form.content.data
                 tags = form.tags.data.split(',')
                 article['tags'] = [tag.strip(' \t').lower() for tag in tags]
+                new_tag_list = []
+                for tag in article['tags']:
+                    tag = list(tag)
+                    for i in range(0, len(tag)):
+                        if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
+                             or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
+                             or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                             or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
+                             or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
+                             or tag[i] == ' ':
+                            tag[i] = '-'
+                    new_tag_list.append(''.join(tag))
+                article['tags'] = new_tag_list
                 article['ts'] = int(time())
                 kunjika.kb.replace(str(article['aid']), article)
                 kunjika.es_conn.index({'title':article['title'], 'content':article['content'], 'aid':article['aid'],
