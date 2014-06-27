@@ -311,6 +311,7 @@ def questions(tag=None, page=None, qid=None, url=None):
 
     questions_dict = {}
     if tag is not None:
+	print tag
         [questions_list, count] = utility.get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag)
         if not questions_list and page != 1:
             abort(404)
@@ -1320,8 +1321,8 @@ def replace_tags(tags_passed, qid, current_tags):
 
     for tag in current_tags:
         if tag not in tags_passed:
+            print tag
             tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
-            ###print tag
             tid = json.loads(tag)['rows'][0]['id']
             tag = tb.get(tid).value
             #tag['qid'].remove(int(qid))
@@ -1397,7 +1398,7 @@ def edits(element):
                 #question['title'] = title
                 tags = form.tags.data.split(',')
                 tag_list = []
-                question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
+                #question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
                 current_tags = question['content']['tags']
                 for tag in tags:
                     try:
@@ -1411,6 +1412,7 @@ def edits(element):
                         ##print "hello"
                         tag_list.append(tag)
 
+                tag_list = [tag.strip(' \t').lower() for tag in tag_list]
                 question['updated'] = int(time())
                 question['content']['tags'] = tag_list
                 editor = cb.get(str(g.user.id)).value

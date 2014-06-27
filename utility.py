@@ -464,7 +464,11 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
     rows = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?limit=' +
                 str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&key="' + tag + '"&reduce=false').read()
     count = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?key="' + tag + '"&reduce=true').read()
-    count = json.loads(count)['rows'][0]['value']
+    count = json.loads(count)['rows']
+    if len(count) == 0:
+        count = 0
+    else:
+        count = count[0]['value']
     #tag = kunjika.tb.get(tag).value
     rows = json.loads(rows)['rows']
     question_list = []
