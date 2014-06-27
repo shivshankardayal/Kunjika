@@ -460,9 +460,10 @@ def get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag):
 
     skip = (page - 1) * QUESTIONS_PER_PAGE
     tag = urllib2.quote(tag, '')
+    print tag
     rows = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?limit=' +
                 str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&key="' + tag + '"&reduce=false').read()
-    count = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?key=' + '"' + tag + '"&reduce=true').read()
+    count = urllib2.urlopen(kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_qid_from_tag?key="' + tag + '"&reduce=true').read()
     count = json.loads(count)['rows'][0]['value']
     #tag = kunjika.tb.get(tag).value
     rows = json.loads(rows)['rows']
@@ -775,6 +776,7 @@ def write_article():
             article['ip'] = request.remote_addr
             article['aid'] = 'a-' + str(uuid1())
             article['opname'] = g.user.name
+            article['cids'] = []
 
             kunjika.es_conn.index({'title':title, 'content':article['content'], 'aid':article['aid'],
                            'position':article['content']}, 'articles', 'articles-type', article['aid'])
@@ -832,17 +834,11 @@ def browse_articles(page, aid, tag):
         article['opname'] = user['name']
 
         form = CommentForm(request.form)
-        print aid
-        cids_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_comments?key="' + str(aid) + '"').read()
-        cids_doc = json.loads(cids_doc)['rows']
-        print cids_doc
-        cids_list = []
         article['comments'] = []
-        for row in cids_doc:
-            cids_list.append(str(row['id']))
-        if(len(cids_list)) != 0:
-            val_res = kunjika.kb.get_multi(cids_list)
-        for cid in cids_list:
+
+        if(len(article['cids'])) != 0:
+            val_res = kunjika.kb.get_multi(article['cids'])
+        for cid in article['cids']:
             article['comments'].append(val_res[str(cid)].value)
         article['comments'] = sorted(article['comments'], key=lambda k: k['ts'], reverse=True)
         for comment in article['comments']:
@@ -937,7 +933,9 @@ def article_comment():
     comment['_type'] = 'ac'
     cid = 'ac-' + str(uuid1())
     comment['cid'] = cid
-
+    article = kunjika.kb.get(aid).value
+    article['cids'].append(cid)
+    kunjika.kb.replace(aid, article)
     kunjika.kb.add(cid, comment)
     '''
     email_list = []

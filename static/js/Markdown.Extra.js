@@ -8,7 +8,7 @@
                                'font|i|iframe|img|input|ins|kbd|label|map|',
                                'mark|meter|object|param|progress|q|ruby|rp|rt|s|',
                                'samp|script|select|small|span|strike|strong|',
-                               'sub|sup|textarea|time|tt|u|var|wbr)[^>]*>|',
+                               'sub|sup|textarea|time|tt|u|var|wbr|svg)[^>]*>|',
                                '<(br)\\s?\\/?>)$'].join(''), 'i');
 
   /******************************************************************

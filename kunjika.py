@@ -294,7 +294,6 @@ def load_user(uid):
     user = get_user(int(uid))
     return user
 
-
 @kunjika.route('/', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>', methods=['GET', 'POST'])
