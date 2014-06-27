@@ -1343,7 +1343,7 @@ def replace_tags(tags_passed, qid, current_tags):
             tb.replace(tag['tag'], tag)
             if tag['count'] == 0:
                 tb.delete(tag['tag'])
-            tb.decr('tcount')
+                tb.decr('tcount')
 
 @kunjika.route('/vote_clicked', methods=['GET', 'POST'])
 def vote_clicked():
