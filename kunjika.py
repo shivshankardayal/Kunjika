@@ -253,7 +253,6 @@ bcrypt = Bcrypt(kunjika)
 
 lm.anonymous_user = Anonymous
 
-
 kunjika.jinja_env.globals['url_for_other_page'] = utility.url_for_other_page
 kunjika.jinja_env.globals['url_for_other_user_question_page'] = utility.url_for_other_user_question_page
 kunjika.jinja_env.globals['url_for_other_user_answer_page'] = utility.url_for_other_user_answer_page
@@ -786,6 +785,19 @@ def ask():
             question['content']['tags'] = []
             question['content']['tags'] = questionForm.tags.data.split(',')
             question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
+            new_tag_list = []
+            for tag in tag_list:
+                tag = list(tag)
+                for i in range(0, len(tag)):
+                    if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
+                         or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
+                         or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                         or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
+                         or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/':
+                        tag[i] = '-'
+                new_tag_list.append(''.join(tag))
+            question['content']['tags'] = new_tag_list
+
             question['title'] = title
 
             url = utility.generate_url(title)
@@ -1413,8 +1425,20 @@ def edits(element):
                         tag_list.append(tag)
 
                 tag_list = [tag.strip(' \t').lower() for tag in tag_list]
+                new_tag_list = []
+                for tag in tag_list:
+                    tag = list(tag)
+                    for i in range(0, len(tag)):
+                        if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
+                             or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
+                             or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                             or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
+                             or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
+                             or tag[i] == ' ':
+                            tag[i] = '-'
+                    new_tag_list.append(''.join(tag))
                 question['updated'] = int(time())
-                question['content']['tags'] = tag_list
+                question['content']['tags'] = new_tag_list
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1
                 ###print tag_list
