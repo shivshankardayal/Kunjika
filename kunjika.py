@@ -15,7 +15,7 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 from flask import (Flask, session, render_template, abort, redirect, url_for, flash,
-                   make_response, request, g, jsonify)
+                   make_response, request, g, jsonify, Response)
 import json
 from forms import *
 from flask.ext.bcrypt import Bcrypt
@@ -785,6 +785,7 @@ def ask():
             question['content']['tags'] = []
             question['content']['tags'] = questionForm.tags.data.split(',')
             question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
+            tag_list = question['content']['tags']
             new_tag_list = []
             for tag in tag_list:
                 tag = list(tag)
@@ -1195,7 +1196,6 @@ def image_upload():
 def get_uploads(filename):
     content = kb.get(filename).value['content']
     content = base64.b64decode(content)
-
     return content
 
 '''
