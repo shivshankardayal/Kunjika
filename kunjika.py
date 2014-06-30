@@ -1264,7 +1264,7 @@ def get_tags(qid=None):
         tids_list = []
         for i in tags:
             #print i
-            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib.quote(str(i)) + '"').read()
+            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(i) + '"').read()
             tag = json.loads(tag)['rows'][0]['id']
             tids_list.append(tag)
 
@@ -1419,13 +1419,14 @@ def edits(element):
                 #question['content']['url'] = url
                 #question['title'] = title
                 tags = form.tags.data.split(',')
+                tags = [tag.strip(' \t').lower() for tag in tags]
                 tag_list = []
                 #question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
                 current_tags = question['content']['tags']
                 for tag in tags:
                     try:
                         #tag = int(tag)
-                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + urllib2.quote(str(tag))).read()
+                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + str(tag)).read()
                         tid = json.loads(tag)['rows'][0]['id']
                         tag = tb.get(str(tid)).value
                         tag_list.append(tag['tag'])
@@ -1434,7 +1435,6 @@ def edits(element):
                         ##print "hello"
                         tag_list.append(tag)
 
-                tag_list = [tag.strip(' \t').lower() for tag in tag_list]
                 new_tag_list = []
                 for tag in tag_list:
                     tag = list(tag)
