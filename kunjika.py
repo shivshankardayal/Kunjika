@@ -1785,26 +1785,30 @@ def reset_password(token=None):
             document = urllib2.urlopen(
                 DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
             document = json.loads(document)
-            if 'id' in document['rows'][0]:
-                document = cb.get(document['rows'][0]['id']).value
-            if document['email'] == email and\
-                            'password' in document:
-                token = s.sign(email)
-                msg = Message("Password reset")
-                msg.recipients = [email]
-                msg.sender = admin
-                msg.html = "<p>Hi,<br/>A password reset request has been initiated " \
-                           "by you. You can reset your password at " \
-                           "<a href=" + HOST_URL + "reset_password/" + token + ">" + HOST_URL + "reset_password/" + token + "</a>." \
-                           "However, if you have not raised this request no need to change " \
-                           "your password just send an email to " + admin + ". Note that this " \
-                           "token is only valid for 1 day. <br/>Best regards," \
-                           "<br/> Admin</p>"
-                ##print type(token)
-                ##print type(email)
-                mail.send(msg)
+            if len(document['rows']) != 0:
+                if 'id' in document['rows'][0]:
+                    document = cb.get(document['rows'][0]['id']).value
+                if document['email'] == email and 'password' in document:
+                    token = s.sign(email)
+                    msg = Message("Password reset")
+                    msg.recipients = [email]
+                    msg.sender = admin
+                    msg.html = "<p>Hi,<br/>A password reset request has been initiated " \
+                               "by you. You can reset your password at " \
+                               "<a href=" + HOST_URL + "reset_password/" + token + ">" + HOST_URL + "reset_password/" + token + "</a>." \
+                               "However, if you have not raised this request no need to change " \
+                               "your password just send an email to " + admin + ". Note that this " \
+                               "token is only valid for 1 day. <br/>Best regards," \
+                               "<br/> Admin</p>"
+                    ##print type(token)
+                    ##print type(email)
+                    mail.send(msg)
+                else:
+                    flash('You seem to have openid login, your password cannot be reset here.', 'error')
+                    return redirect(url_for('login'))
             else:
-                return redirect(url_for('questions'))
+                flash('The email was not found in database.', 'error')
+                return redirect(url_for('reset_password'))
         return render_template('reset_password.html', emailForm=emailForm, title="Reset Password")
     elif token is not None:
         passwordResetForm = PasswordResetForm(request.form)

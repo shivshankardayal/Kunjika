@@ -954,26 +954,23 @@ def article_comment():
     article['cids'].append(cid)
     kunjika.kb.replace(aid, article)
     kunjika.kb.add(cid, comment)
-    '''
+
     email_list = []
-    email_list.append(str(question['content']['op']))
-    if 'comments' in question:
-        for comment in question['comments']:
-            email_list.append(str(comment['poster']))
-    if 'answers' in question:
-        for answer in question['answers']:
-            email_list.append(str(answer['poster']))
-            if 'comments' in answer:
-                for comment in question['comments']:
-                    email_list.append(str(comment['poster']))
+    email_list.append(str(article['op']))
+    if(len(article['cids'])) != 0:
+        val_res = kunjika.kb.get_multi(article['cids'])
+    for cid in article['cids']:
+        #article['comments'].append(val_res[str(cid)].value)
+        email_list.append(val_res[str(cid)].value['poster'])
 
     email_list = set(email_list)
+
     current_user_list = [str(g.user.id)]
     email_list = email_list - set(current_user_list)
     email_list = list(email_list)
 
     if len(email_list) != 0:
-        email_users = cb.get_multi(email_list)
+        email_users = kunjika.cb.get_multi(email_list)
         email_list = []
 
         for id in email_users:
@@ -981,18 +978,16 @@ def article_comment():
 
         #print email_list
 
-        msg = Message("A new answer has been posted to a question where you have answered or commented")
+        msg = Message("A new comment has been posted to the article you have written or to the article where you" +
+                      "have commented.")
         msg.recipients = email_list
-        msg.sender = admin
+        msg.sender = kunjika.admin
         msg.html = "<p>Hi,<br/><br/> A new comment has been posted which you can read at " +\
-        HOST_URL + "questions/" + str(question['qid']) + '/' + question['content']['url'] + \
+        kunjika.HOST_URL + "browse_articles/" + str(article['aid']) + '/' + article['url'] + \
         " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-        mail.send(msg)
+        kunjika.mail.send(msg)
 
 
-    #return '<div class="comment" id="c-' + str(comment['cid']) + '">' + request.form['comment'] +'<div>&mdash;</div>' \
-    #       '<a href="/users/"' + str(g.user.id) + '/' + g.user.name + '>' + g.user.name +'</a> ' + str(ts) +'</div>'
-    '''
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
     return json.dumps({"id": cid, "comment": request.form['comment'], "user_id": g.user.id,
                        "uname": g.user.name, "ts": ts, "aid": aid})
