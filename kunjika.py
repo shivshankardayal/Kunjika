@@ -788,16 +788,6 @@ def ask():
             tag_list = []
             new_tag_list = []
             for tag in question['content']['tags']:
-                try:
-                    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + urllib2.quote(str(tag))).read()
-                    tid = json.loads(tag)['rows'][0]['id']
-                    tag = tb.get(str(tid)).value
-                    tag_list.append(tag['tag'])
-
-                except:
-                    ##print "hello"
-                    tag_list.append(tag)
-            for tag in tag_list:
                 tag = list(tag)
                 for i in range(0, len(tag)):
                     if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
@@ -807,8 +797,19 @@ def ask():
                          or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
                          or tag[i] == ' ':
                         tag[i] = '-'
-                new_tag_list.append(''.join(tag))
-            new_tag_list = [tag.strip(' \t').lower() for tag in new_tag_list]
+                tag_list.append(''.join(tag))
+
+            for tag in tag_list:
+                try:
+                    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + urllib2.quote(str(tag))).read()
+                    tid = json.loads(tag)['rows'][0]['id']
+                    tag = tb.get(str(tid)).value
+                    new_tag_list.append(tag['tag'])
+
+                except:
+                    ##print "hello"
+                    new_tag_list.append(tag)
+
             question['content']['tags'] = new_tag_list
 
             question['title'] = title
@@ -1423,20 +1424,8 @@ def edits(element):
                 tag_list = []
                 #question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
                 current_tags = question['content']['tags']
-                for tag in tags:
-                    try:
-                        #tag = int(tag)
-                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + str(tag)).read()
-                        tid = json.loads(tag)['rows'][0]['id']
-                        tag = tb.get(str(tid)).value
-                        tag_list.append(tag['tag'])
-
-                    except:
-                        ##print "hello"
-                        tag_list.append(tag)
-
                 new_tag_list = []
-                for tag in tag_list:
+                for tag in tags:
                     tag = list(tag)
                     for i in range(0, len(tag)):
                         if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
@@ -1446,7 +1435,20 @@ def edits(element):
                              or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
                              or tag[i] == ' ':
                             tag[i] = '-'
-                    new_tag_list.append(''.join(tag))
+                    tag_list.append(''.join(tag))
+
+                for tag in tag_list:
+                    try:
+                        #tag = int(tag)
+                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + str(tag)).read()
+                        tid = json.loads(tag)['rows'][0]['id']
+                        tag = tb.get(str(tid)).value
+                        new_tag_list.append(tag['tag'])
+
+                    except:
+                        ##print "hello"
+                        new_tag_list.append(tag)
+
                 question['updated'] = int(time())
                 question['content']['tags'] = new_tag_list
                 editor = cb.get(str(g.user.id)).value
