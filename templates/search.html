@@ -54,7 +54,7 @@
                         </div>
                         <div class="summary">
                             <h4><a class="question-hyperlink"
-                                   href="/questions/{{ question['qid'] }}/{{ question['url'] }}">
+                                   href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}">
                                 {% if 'sticky' in question and question['sticky'] == True %}
                                 <i class="icon-pushpin"></i> {{ question['title'] }}</a>
                                 {% else %}
