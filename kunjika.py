@@ -1023,12 +1023,7 @@ def login():
                     login_user(user, remember=True)
                     flash('You have successfully logged in.', 'success')
                     g.user = user
-                    referrer = request.args['next']
-                    #print referrer
-                    if referrer == HOST_URL + 'login' or referrer == HOST_URL + 'None':
-                        return redirect(url_for('questions'))
-                    else:
-                        return redirect(referrer)
+                    return redirect(url_for('questions'))
                 except:
                     return make_response("cant login")
 
@@ -1058,16 +1053,16 @@ def login():
                                 lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
 
         except:
-            return render_template('login.html', prev=request.referrer, form=registrationForm, loginForm=loginForm, openidForm=openidForm,
+            return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
                                    title='Sign In', lpage=True,
                                    next=oid.get_next_url(), error=oid.fetch_error())
 
 
     else:
-        render_template('login.html', prev=request.referrer, form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+        render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
                         lpage=True, next=oid.get_next_url(),error=oid.fetch_error())
 
-    return render_template('login.html', prev=request.referrer, form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+    return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
                            lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
 
 
