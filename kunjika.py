@@ -785,8 +785,18 @@ def ask():
             question['content']['tags'] = []
             question['content']['tags'] = questionForm.tags.data.split(',')
             question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
-            tag_list = question['content']['tags']
+            tag_list = []
             new_tag_list = []
+            for tag in question['content']['tags']:
+                try:
+                    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + urllib2.quote(str(tag))).read()
+                    tid = json.loads(tag)['rows'][0]['id']
+                    tag = tb.get(str(tid)).value
+                    tag_list.append(tag['tag'])
+
+                except:
+                    ##print "hello"
+                    tag_list.append(tag)
             for tag in tag_list:
                 tag = list(tag)
                 for i in range(0, len(tag)):
@@ -798,6 +808,7 @@ def ask():
                          or tag[i] == ' ':
                         tag[i] = '-'
                 new_tag_list.append(''.join(tag))
+            new_tag_list = [tag.strip(' \t').lower() for tag in new_tag_list]
             question['content']['tags'] = new_tag_list
 
             question['title'] = title
