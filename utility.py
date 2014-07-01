@@ -961,7 +961,7 @@ def article_comment():
         val_res = kunjika.kb.get_multi(article['cids'])
     for cid in article['cids']:
         #article['comments'].append(val_res[str(cid)].value)
-        email_list.append(val_res[str(cid)].value['poster'])
+        email_list.append(str(val_res[str(cid)].value['poster']))
 
     email_list = set(email_list)
 

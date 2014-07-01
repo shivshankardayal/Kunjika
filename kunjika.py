@@ -2809,6 +2809,5 @@ def page_not_found(e):
 def page_not_found(e):
     return render_template('503.html'), 503
 
-
 if __name__ == '__main__':
     kunjika.run()
