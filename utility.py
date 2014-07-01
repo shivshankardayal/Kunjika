@@ -1019,7 +1019,7 @@ def edit_article(element):
     if request.method == 'POST':
         if type == 'ce':
             if form.validate_on_submit():
-                if len(form.comment.data) < 10 or len(form.comment.data]) > 5000:
+                if len(form.comment.data) < 10 or len(form.comment.data) > 5000:
                     flash("Comment must be between 10 and 5000 characters.", 'error')
                     return redirect(request.referrer)
                 comment['comment'] = form.comment.data
