@@ -271,14 +271,14 @@
                                                    class="relativetime">{{ questions['tstamp'] }} </span>
                                 </div>
                                 <div class="user-gravatar32">
-                                    <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">
+                                    <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname']|urlencode }}">
                                         <div class=""><img
                                                 src="{{ questions['email']|gravatar }}"
                                                 alt="" height="32" width="32"></div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname'] }}">{{ questions['opname'] }}</a><br>
+                                    <a href="/users/{{ questions['content']['op'] }}/{{ questions['opname']|urlencode }}">{{ questions['opname'] }}</a><br>
                                 </div>
                             </div>
                         </td>
@@ -295,7 +295,7 @@
         <div class="comment" id="c-{{ comment['cid'] }}">
             <div class="content"> {{ comment['comment'] }}</div>
             -
-            <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }}</a>
+            <a href="/users/{{ comment['poster'] }}/{{ comment['opname']|urlencode }}">{{ comment['opname'] }}</a>
             {{ comment['tstamp'] }}&nbsp;
             {% if user_id is defined %}
             <a title="edit" href="/edit/ce-{{ questions['qid'] }}-{{ comment['cid'] }}"><i
@@ -466,7 +466,7 @@
                                             </a>
                                         </div>
                                         <div class="user-details">
-                                            <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">{{ answer['opname'] }}</a><br>
+                                            <a href="/users/{{ answer['poster'] }}/{{ answer['opname']|urlencode }}">{{ answer['opname'] }}</a><br>
                                         </div>
                                     </div>
                                 </td>
@@ -480,7 +480,7 @@
                 <div class="comment" id="c-{{ comment['cid'] }}">
                     <div class="content">{{ comment['comment'] }}</div>
                     -
-                    <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }} </a>
+                    <a href="/users/{{ comment['poster'] }}/{{ comment['opname']|urlencode }}">{{ comment['opname'] }} </a>
                     {{ comment['tstamp'] }}&nbsp;
                     {% if user_id is defined %}
                     <a title="Edit"

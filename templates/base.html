@@ -180,7 +180,7 @@
                                     <li><a href="/poll" class="poll"><i class="icon-group"></i> Poll</a></li>
                                 {% endif %}
                                 {% if user_id is defined and g.user.is_authenticated() %}
-                                    <!-- li class="active"><a href="/users/{{ g.user.id }}/{{ g.user.name }}" class="login"><i
+                                    <!-- li class="active"><a href="/users/{{ g.user.id }}/{{ g.user.fname }}%20{{ g.user.lname }}" class="login"><i
                                             class="icon-sigin"></i> <b>{{ g.user.name }}</b></a></li-->
                                     <li class="dropdown">
                                         <a class="dropdown-toggle" href="#" data-toggle="dropdown">
@@ -188,7 +188,7 @@
                                             <b class="caret"></b>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="/users/{{ g.user.id }}/{{ g.user.name|urlencode }}">Profile</a></li>
+                                            <li><a href='/users/{{ g.user.id }}/{{g.user.name|quote|quote}}'>Profile</a></li>
                                             <li><a href="/users/{{ g.user.id }}/{{ g.user.name|urlencode }}/settings">Settings</a></li>
                                             <!--li><a href="/users/{{ user_id }}/{{ name|urlencode }}/groups">My Groups</a></li>
                                             <li><a href="/users/{{ user_id }}/{{ name|urlencode }}/group_messages">Group Messages</a></li-->

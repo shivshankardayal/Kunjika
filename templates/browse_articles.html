@@ -49,7 +49,7 @@
                         </div>
                         <div class="started">
                             <p>Written on {{ article['tstamp'] }} by <a
-                                href="/users/{{ article['op'] }}/{{ article['opname'] }}">{{ article['opname'] }}</a>
+                                href="/users/{{ article['op'] }}/{{ article['opname']|urlencode }}">{{ article['opname'] }}</a>
                             </p>
                         </div>
                     </div>
