@@ -188,7 +188,7 @@
                                             <b class="caret"></b>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href='/users/{{ g.user.id }}/{{g.user.name|quote|quote}}'>Profile</a></li>
+                                            <li><a href='/users/{{ g.user.id }}/{{g.user.name|urlencode}}'>Profile</a></li>
                                             <li><a href="/users/{{ g.user.id }}/{{ g.user.name|urlencode }}/settings">Settings</a></li>
                                             <!--li><a href="/users/{{ user_id }}/{{ name|urlencode }}/groups">My Groups</a></li>
                                             <li><a href="/users/{{ user_id }}/{{ name|urlencode }}/group_messages">Group Messages</a></li-->
