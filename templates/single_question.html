@@ -119,9 +119,10 @@
     </script>
     <script>
         $(document).ready(function () {
+            var id = '';
             var options = {
                 //target:        '#output1',   // target element(s) to be updated with server response
-                //beforeSubmit:  showRequest,  // pre-submit callback
+                beforeSubmit:  showRequest,  // pre-submit callback
                 success: showResponse,  // post-submit callback
 
                 // other available options:
@@ -137,21 +138,21 @@
 
             // bind form using 'ajaxForm'
             $('form.comment-form').ajaxForm(options);
-            //function showRequest(formData, jqForm, options) {
+            function showRequest(formData, jqForm, options) {
             // formData is an array; here we use $.param to convert it to a string to display it
             // but the form plugin does this for you automatically when it submits the data
-            //var queryString = $.param(formData);
+            var queryString = $.param(formData);
 
             // jqForm is a jQuery object encapsulating the form element.  To access the
             // DOM element for the form do this:
             // var formElement = jqForm[0];
 
-            //alert('About to submit: \n\n' + queryString);
+            id = formData[formData.length - 1].value;
 
             // here we could return false to prevent the form from being submitted;
             // returning anything other than false will allow the form submit to continue
             //return true;
-            //}
+            }
             function showResponse(responseText, statusText, xhr, $form) {
                 var converter = new Markdown.Converter();
                 Markdown.Extra.init(converter, {
@@ -165,7 +166,8 @@
                 str += comment;
                 str += " &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
                 str += " " + responseJSON.ts + "</div>"
-                $(str).insertBefore('form.comment-form');
+
+                $(str).insertBefore('#f-' + id);
                 flash('Your comment has been successfully posted.', 'info')
             }
         });
