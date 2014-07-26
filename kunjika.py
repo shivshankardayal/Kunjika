@@ -2692,6 +2692,11 @@ def edit_article(element):
 def article_tags(page=1):
     return utility.article_tags(page)
 
+@kunjika.route('/sitemap.xml')
+def sitemap():
+    sitemap = open('sitemap.xml', 'r')
+    sitemap = sitemap.read()
+    return sitemap
 
 '''
 @kunjika.route('/invites')
