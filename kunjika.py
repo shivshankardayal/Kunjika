@@ -2482,9 +2482,10 @@ def edit_test(element):
 @kunjika.route('/bookmark')
 def bookmark():
     qid = request.args.get('id')
-    bookmark = qb.get(qid[1:]).value
+    print qid.split('-')[1]
+    bookmark = qb.get(qid.split('-')[1]).value
     #print bookmark
-    bid = 'bq-' + qid[1:] + '-' + str(g.user.id) # bq stands for bookmark question
+    bid = 'bq-' + qid.split('-')[1] + '-' + str(g.user.id) # bq stands for bookmark question
 
     try:
         bookmark_doc = kb.get(bid).value
@@ -2534,7 +2535,7 @@ def user_bookmarks(uid, name, page=1):
         for row in questions['rows']:
             qids.append((str(row['id'])).split('-')[1])
 
-    #print qids
+    print qids
     if len(qids) != 0:
         val_res = qb.get_multi(qids)
     questions_list = []
