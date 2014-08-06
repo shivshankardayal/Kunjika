@@ -83,15 +83,15 @@ oid = OpenID(kunjika, '/tmp')
 mail = Mail(kunjika)
 admin = kunjika.config['ADMIN_EMAIL']
 
-kunjika.config.update(
-	DEBUG=True,
-	#EMAIL SETTINGS
-	MAIL_SERVER='smtp.gmail.com',
-	MAIL_PORT=465,
-	MAIL_USE_TLS=True,
-	MAIL_USERNAME = 'shivshankar.dayal@google.com',
-	MAIL_PASSWORD = 'Gannu25$'
-	)
+#kunjika.config.update(
+#	DEBUG=True,
+#	#EMAIL SETTINGS
+#	MAIL_SERVER='smtp.gmail.com',
+#	MAIL_PORT=465,
+#	MAIL_USE_TLS=True,
+#	MAIL_USERNAME = 'shivshankar.dayal@google.com',
+#	MAIL_PASSWORD = 'abcdefgh'
+#	)
 lm = LoginManager()
 lm.init_app(kunjika)
 lm.session_protection = "strong"
