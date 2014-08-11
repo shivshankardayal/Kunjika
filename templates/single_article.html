@@ -183,7 +183,7 @@
             <td class="post">
                 <div class="post-tags"><i class="icon-tags" title="Tags" style="color:#a4c639;"></i>
                     {% for tag in article['tags'] %}
-                        <a class="post-tag" href="/browse_articles/tagged/{{ tag }}">{{ tag }}</a>
+                        <a class="post-tag" href="/articles/tagged/{{ tag }}">{{ tag }}</a>
                     {% endfor %}
                 </div>
                 <div class="q-desc" id="q-desc">{{ article['content'] }}</div>

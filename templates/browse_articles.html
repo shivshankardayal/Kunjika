@@ -38,13 +38,13 @@
                     <div class="summary">
                         <h4>
                             <a class="question-hyperlink"
-                           href="/browse_articles/{{ article['aid'] }}/{{ article['url'] }}"
+                           href="/articles/{{ article['aid'] }}/{{ article['url'] }}"
                            title="{{ article['content'][:200] }}" > {{ article['title'] }}</a>
                         </h4>
                         <div class="tags">
                             <i class="icon-tags" style="color:#a4c639;"></i>
                             {% for tag in article['tags'] %}
-                                <a class="post-tag" href="/browse_articles/tagged/{{ tag }}">{{ tag }}</a>
+                                <a class="post-tag" href="/articles/tagged/{{ tag }}">{{ tag }}</a>
                             {% endfor %}
                         </div>
                         <div class="started">
