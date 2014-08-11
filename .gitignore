@@ -11,3 +11,4 @@ venv/
 docs/build/
 config.py*
 questions/
+.ropeproject/

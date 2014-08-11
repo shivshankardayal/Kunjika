@@ -15,7 +15,7 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 from flask import (Flask, session, render_template, abort, redirect, url_for, flash,
-                   make_response, request, g, jsonify, Response)
+                   make_response, request, g, jsonify)
 import json
 from forms import *
 from flask.ext.bcrypt import Bcrypt
@@ -83,15 +83,15 @@ oid = OpenID(kunjika, '/tmp')
 mail = Mail(kunjika)
 admin = kunjika.config['ADMIN_EMAIL']
 
-#kunjika.config.update(
-#	DEBUG=True,
-#	#EMAIL SETTINGS
-#	MAIL_SERVER='smtp.gmail.com',
-#	MAIL_PORT=465,
-#	MAIL_USE_TLS=True,
-#	MAIL_USERNAME = 'shivshankar.dayal@google.com',
-#	MAIL_PASSWORD = 'abcdefgh'
-#	)
+kunjika.config.update(
+	DEBUG=True,
+	#EMAIL SETTINGS
+	MAIL_SERVER='kunjika.libreprogramming.org',
+	MAIL_PORT=25,
+	MAIL_USE_TLS=True,
+	MAIL_USERNAME = 'noreply@kunjika.libreprogramming.org',
+	MAIL_PASSWORD = ''
+	)
 lm = LoginManager()
 lm.init_app(kunjika)
 lm.session_protection = "strong"
@@ -821,8 +821,7 @@ def ask():
             question['content']['ts'] = int(time())
             question['updated'] = question['content']['ts']
             question['content']['ip'] = request.remote_addr
-            qb.incr('qcount', 1)
-            question['qid'] = qb.get('qcount').value
+            question['qid'] = qb.incr('qcount', 1)
             question['votes'] = 0
             question['acount'] = 0
             question['views'] = 0
@@ -896,8 +895,7 @@ def create_profile():
             data['role'] = 'admin'
             populate_user_fields(data, profileForm)
 
-            cb.incr('count', 1)
-            did = cb.get('count').value
+            did = cb.incr('count', 1)
             data['id'] = did
             cb.add(str(did), data)
             user = User(data['name'], data, data['id'])
@@ -928,8 +926,7 @@ def create_profile():
             ##print "hello2"
             populate_user_fields(data, profileForm)
 
-            cb.incr('count', 1)
-            did = cb.get('count').value
+            did = cb.incr('count', 1)
             data['id'] = did
             cb.add(str(did), data)
             user = User(data['name'], data, did)
@@ -1096,8 +1093,7 @@ def register():
             data['role'] = 'admin'
             populate_user_fields(data, registrationForm)
 
-            cb.incr('count', 1)
-            did = cb.get('count').value
+            did = cb.incr('count', 1)
             data['id'] = did
             cb.add(str(did), data)
             session['admin'] = True
@@ -1119,8 +1115,7 @@ def register():
             data['password'] = passwd_hash
             populate_user_fields(data, registrationForm)
 
-            cb.incr('count', 1)
-            did = cb.get('count').value
+            did = cb.incr('count', 1)
             data['id'] = did
             cb.add(str(did), data)
 
@@ -1304,8 +1299,8 @@ def add_tags(tags_passed, qid):
             data['count'] = 1
             data['info'] = ""
             #data['qid'].append(qid)
-            tb.incr('tcount', 1)
-            tid = tb.get('tcount').value
+
+            tid = tb.incr('tcount', 1)
             data['tid'] = tid
 
             tb.add(tag, data)
@@ -1331,8 +1326,8 @@ def replace_tags(tags_passed, qid, current_tags):
                 data['count'] = 1
                 data['info'] = ""
                 #data['qid'].append(qid)
-                tb.incr('tcount', 1)
-                tid = tb.get('tcount').value
+
+                tid = tb.incr('tcount', 1)
                 data['tid'] = tid
 
                 tb.add(tag, data)
@@ -1981,8 +1976,8 @@ def poll():
             question['content']['ts'] = int(time())
             question['updated'] = question['content']['ts']
             question['content']['ip'] = request.remote_addr
-            qb.incr('qcount', 1)
-            question['qid'] = qb.get('qcount').value
+
+            question['qid'] = qb.incr('qcount', 1)
             question['votes'] = 0
             question['acount'] = 0
             question['views'] = 0
