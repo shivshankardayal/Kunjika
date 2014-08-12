@@ -313,7 +313,7 @@ def edit_test(element):
             kunjika.kb.replace(question['qid'], question) # tq stands for test question. prefix is used for increasing period
                                                   # before uuid will repeat
 
-            return redirect(url_for('browse_objective_questions'))
+            return redirect(url_for('test_series.browse_objective_questions'))
 
         return render_template('edit_test.html', title='Edit Objective Question', form=form, ppage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, question=question, options=zip(choices, question['content']['options']))

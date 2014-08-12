@@ -33,6 +33,10 @@ TODO
 21. Automatic private message to users upon successful email activation.
 22. Blog module, with a liveblogging feature similar to ScribbleLive.
 23. Gallery module to enable creation of a gallery page (a blog for galleries).
+24. Moderator on 5000 points.
+25. Scale points by a factor of 10.
+26. OAuth for FB, G+, Twitter and Linkedin.
+27. Tags in meta for questions and articles page.
 
 DONE
 ====
