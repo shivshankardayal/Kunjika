@@ -36,7 +36,6 @@ TODO
 24. Moderator on 5000 points.
 25. Scale points by a factor of 10.
 26. OAuth for FB, G+, Twitter and Linkedin.
-27. Tags in meta for questions and articles page.
 
 DONE
 ====
@@ -108,6 +107,7 @@ DONE
 47. Skills and endorsements on profile page.
 48. Images are now stored as base64 strings in database for distributed storage.
 49. Articles are now implemented.
+50. Tags in meta for questions and articles page.
 
 Postponed for later
 ===================

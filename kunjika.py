@@ -821,7 +821,7 @@ def ask():
             question['content']['ts'] = int(time())
             question['updated'] = question['content']['ts']
             question['content']['ip'] = request.remote_addr
-            question['qid'] = qb.incr('qcount', 1)
+            question['qid'] = qb.incr('qcount', 1).value
             question['votes'] = 0
             question['acount'] = 0
             question['views'] = 0
@@ -835,6 +835,7 @@ def ask():
             #Isuue 9
             #user['questions'].append(question['qid'])
             user['qcount'] += 1
+            print question['qid']
             es_conn.index({'title':title, 'description':question['content']['description'], 'qid':question['qid'],
                            'position':question['qid']}, 'questions', 'questions-type', question['qid'])
             es_conn.indices.refresh('questions')
@@ -895,7 +896,7 @@ def create_profile():
             data['role'] = 'admin'
             populate_user_fields(data, profileForm)
 
-            did = cb.incr('count', 1)
+            did = cb.incr('count', 1).value
             data['id'] = did
             cb.add(str(did), data)
             user = User(data['name'], data, data['id'])
@@ -926,7 +927,7 @@ def create_profile():
             ##print "hello2"
             populate_user_fields(data, profileForm)
 
-            did = cb.incr('count', 1)
+            did = cb.incr('count', 1).value
             data['id'] = did
             cb.add(str(did), data)
             user = User(data['name'], data, did)
@@ -1093,7 +1094,7 @@ def register():
             data['role'] = 'admin'
             populate_user_fields(data, registrationForm)
 
-            did = cb.incr('count', 1)
+            did = cb.incr('count', 1).value
             data['id'] = did
             cb.add(str(did), data)
             session['admin'] = True
@@ -1115,7 +1116,7 @@ def register():
             data['password'] = passwd_hash
             populate_user_fields(data, registrationForm)
 
-            did = cb.incr('count', 1)
+            did = cb.incr('count', 1).value
             data['id'] = did
             cb.add(str(did), data)
 
@@ -1300,7 +1301,7 @@ def add_tags(tags_passed, qid):
             data['info'] = ""
             #data['qid'].append(qid)
 
-            tid = tb.incr('tcount', 1)
+            tid = tb.incr('tcount', 1).value
             data['tid'] = tid
 
             tb.add(tag, data)
@@ -1327,7 +1328,7 @@ def replace_tags(tags_passed, qid, current_tags):
                 data['info'] = ""
                 #data['qid'].append(qid)
 
-                tid = tb.incr('tcount', 1)
+                tid = tb.incr('tcount', 1).value
                 data['tid'] = tid
 
                 tb.add(tag, data)
@@ -1977,7 +1978,7 @@ def poll():
             question['updated'] = question['content']['ts']
             question['content']['ip'] = request.remote_addr
 
-            question['qid'] = qb.incr('qcount', 1)
+            question['qid'] = qb.incr('qcount', 1).value
             question['votes'] = 0
             question['acount'] = 0
             question['views'] = 0

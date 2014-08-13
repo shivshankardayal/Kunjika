@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ article['title'] }} - Kunjika{% endblock %}
+{% block meta_keywords %}{% for tag in article['tags'] %}{{ tag }},{% endfor %}{% endblock %}
 {% block css_bootstrap %}
     {{ super() }}
     {# TODO: probably remove this and let the user set it manually? #}
