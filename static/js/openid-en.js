@@ -19,11 +19,11 @@ var providers_large = {
 		label : 'Enter your AOL screenname.',
 		url : 'http://openid.aol.com/{username}'
 	},
-	myopenid : {
+	/*myopenid : {
 		name : 'MyOpenID',
 		label : 'Enter your MyOpenID username.',
 		url : 'http://{username}.myopenid.com/'
-	},
+	},*/
 	openid : {
 		name : 'OpenID',
 		label : 'Enter your OpenID.',

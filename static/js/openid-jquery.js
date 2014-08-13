@@ -51,6 +51,7 @@ openid = {
 		// add box for each provider
 		var id, box;
 		for (id in providers_large) {
+            if(i == 3) { i= 4;} // do not use myopenid as it is down now
 			box = this.getBoxHTML(id, providers_large[id], (this.all_small ? 'small' : 'large'), i++);
 			openid_btns.append(box);
 		}
