@@ -79,6 +79,8 @@ USER_ANSWERS_PER_PAGE = kunjika.config['USER_ANSWERS_PER_PAGE']
 
 ARTICLES_PER_PAGE = kunjika.config['ARTICLES_PER_PAGE']
 
+is_maintenance_mode = kunjika.config['MAINTENANCE_MODE']
+
 oid = OpenID(kunjika, '/tmp')
 
 mail = Mail(kunjika)
@@ -272,6 +274,16 @@ if not kunjika.debug:
                                kunjika.config['ADMIN_EMAIL'], 'Application Failed')
     mail_handler.setLevel(logging.ERROR)
     kunjika.logger.addHandler(mail_handler)
+
+@kunjika.before_request
+def check_for_maintenance():
+    if is_maintenance_mode and request.path != url_for('maintenance'):
+        return redirect(url_for('maintenance'))
+
+
+@kunjika.route('/maintenance')
+def maintenance():
+    return 'Sorry, off for maintenance!', 503
 
 @kunjika.before_request
 def before_request():

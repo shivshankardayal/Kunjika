@@ -4,38 +4,36 @@ TODO
 ====
 1.  Automatic upgrade check and 1-click site upgrade.
 2.  Automatic site and DB backup, with backup scheduling to remote or cloud server.
-3.  Ability to take site offline (maintenance mode).
-4.  Forum statistics (page views, active members, new members, etc) from the Admin page.
-5.  HTML fields to embed code, like Piwik Web Analytics, AdSense or any other display ad
+3.  Forum statistics (page views, active members, new members, etc) from the Admin page.
+4.  HTML fields to embed code, like Piwik Web Analytics, AdSense or any other display ad
     integration into specific part of a the site or in template files.
-6.  Built-in firewall and IDS/IPS system.
-7.  Prevent remote access to core files except from a specified IP/user.
-8.  Banning IP/IP range.
-9.  Akismet or Defensio anti-spam integration.
-10. Built-in website scanner to scan template files for malware and unauthorized modifications,
+5.  Built-in firewall and IDS/IPS system.
+6.  Prevent remote access to core files except from a specified IP/user.
+7.  Banning IP/IP range.
+8.  Akismet or Defensio anti-spam integration.
+9.  Built-in website scanner to scan template files for malware and unauthorized modifications,
     with email notification to admin to report suspected modifications
-11. Backup core files to a locked down directory, with the ability to restore modified files
+10. Backup core files to a locked down directory, with the ability to restore modified files
     to the originals from this directory
-12. Login Security & Monitoring (notify admin when a user with admin privileges logs in, etc).
-13. Lock and Unlock core files from admin page.
-14. jQuery lightbox integration.
-15. Visual notification of new questions/comments/answers when a user is browsing any part of
+11. Login Security & Monitoring (notify admin when a user with admin privileges logs in, etc).
+12. Lock and Unlock core files from admin page.
+13. jQuery lightbox integration.
+14. Visual notification of new questions/comments/answers when a user is browsing any part of
     the forum. e.g "A new question/comment/answer has been posted, click here to read it." Or
     "4 new questions/comments/answers have just been posted. Click here to read them."
-16. Create private discussion group.
-17. Continuous rendering of questions like discourse.org which can be configured from configuration.
-18. Option for members to complete their social network profiles on their profile page, and give
-    them the option to choose which one(s) to auto-post to. 
-19. Chat, just like Stack Overflow, that only users with a certain reputation may participate
+15. Create private discussion group.
+16. Continuous rendering of questions like discourse.org which can be configured from configuration.
+17. Option for members to complete their social network profiles on their profile page, and give
+    them the option to choose which one(s) to auto-post to.
+18. Chat, just like Stack Overflow, that only users with a certain reputation may participate
     in, or any registered member can join.
-20. Sending private messages between registered members, and email notification when a private
+19. Sending private messages between registered members, and email notification when a private
     message is received.
-21. Automatic private message to users upon successful email activation.
-22. Blog module, with a liveblogging feature similar to ScribbleLive.
-23. Gallery module to enable creation of a gallery page (a blog for galleries).
-24. Moderator on 5000 points.
-25. Scale points by a factor of 10.
-26. OAuth for FB, G+, Twitter and Linkedin.
+20. Automatic private message to users upon successful email activation.
+21. Blog module, with a liveblogging feature similar to ScribbleLive.
+22. Gallery module to enable creation of a gallery page (a blog for galleries).
+23. Moderator on 500 points.
+24. OAuth for FB, G+, Twitter and Linkedin.
 
 DONE
 ====
@@ -108,6 +106,7 @@ DONE
 48. Images are now stored as base64 strings in database for distributed storage.
 49. Articles are now implemented.
 50. Tags in meta for questions and articles page.
+51. Ability to take site offline (maintenance mode).
 
 Postponed for later
 ===================
