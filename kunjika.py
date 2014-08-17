@@ -1387,6 +1387,14 @@ def edits(element):
     elif type == 'qe':
         form = QuestionForm(request.form)
 
+    if 'version' not in question:
+        question['version'] = 1
+        question['type'] = 'qb' # question backup
+    else:
+        question['version'] += 1
+
+    kb.add(edit_list[1] + '_v' + str(question['version']), question)
+
     if request.method == 'POST':
         if type == 'ce':
             if form.validate_on_submit():
@@ -1453,10 +1461,6 @@ def edits(element):
                 question['content']['tags'] = new_tag_list
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1
-                ###print tag_list
-                ###print question['content']['tags']
-                ###print current_tags
-                #return redirect(url_for('questions'))
                 qb.replace(str(qid), question)
                 es_conn.index({'title':question['title'], 'description':question['content']['description'], 'qid':question['qid'],
                                'position':question['qid']}, 'questions', 'questions-type', question['qid'])
