@@ -34,6 +34,9 @@ TODO
 22. Gallery module to enable creation of a gallery page (a blog for galleries).
 23. Moderator on 500 points.
 24. OAuth for FB, G+, Twitter and Linkedin.
+25. Hide inappropriate question, answer or comment.
+26. Restore previous versions of question.
+
 
 DONE
 ====
@@ -107,6 +110,7 @@ DONE
 49. Articles are now implemented.
 50. Tags in meta for questions and articles page.
 51. Ability to take site offline (maintenance mode).
+52. Questions are versioned now. Every edit creates a new version.(restore to be done.)
 
 Postponed for later
 ===================

@@ -31,4 +31,4 @@ The documentation is out of date and I will update that soon.
 I am working on a series of tests for different topics related to programming language
 which should be accessible in near future.
 
-Kunjika is quite stable now but I have yet to do a beta release.
+Kunjika is quite stable now and a beta release has been done.
