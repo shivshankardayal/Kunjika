@@ -1023,6 +1023,9 @@ def login():
             document = json.loads(document)
             if 'id' in document['rows'][0]:
                 document = cb.get(document['rows'][0]['id']).value
+            else:
+                flash('Either email or password is wrong')
+                return redirect(url_for('login'))
             if document['banned'] is True:
                 flash('Your acount is banned possibly because you abused the system. Contact ' + admin +
                       'for more info.', 'error')
@@ -1039,7 +1042,8 @@ def login():
                     g.user = user
                     return redirect(url_for('questions'))
                 except:
-                    return make_response("cant login")
+                    flash('Either email or password is wrong')
+                    return redirect(url_for('login'))
 
             else:
                 try:
