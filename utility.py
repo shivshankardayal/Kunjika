@@ -241,6 +241,7 @@ def generate_url(title):
             prev_dash = False
         elif c >= 'A' and c <= 'Z':
             url += c
+            prev_dash = False
         elif c == ' ' or c == ',' or c == '.' or c == '/' or c == '\\' or c == '-' or c == '_' or c == '=':
             if not prev_dash and len(url) > 0:
                 url += '-'
