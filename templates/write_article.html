@@ -32,7 +32,7 @@
     <div class="row-fluid">
     <h3>Please write your article</h3>
     <div class="mainbar" id="mainbar">
-        <form class="ask-form" method="post" aciton="/ask">
+        <form class="ask-form" method="post" aciton="/write">
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
             {{ render_field(form.title, class="question input-x-large span10", style="margin-left:25px;", placeholder="Please post your article's title here?") }}
