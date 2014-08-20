@@ -36,7 +36,7 @@ TODO
 24. OAuth for FB, G+, Twitter and Linkedin.
 25. Hide inappropriate question, answer or comment.
 26. Restore previous versions of question.
-
+27. Drafts feature for article authors.
 
 DONE
 ====
@@ -111,10 +111,10 @@ DONE
 50. Tags in meta for questions and articles page.
 51. Ability to take site offline (maintenance mode).
 52. Questions are versioned now. Every edit creates a new version.(restore to be done.)
+53. Sitemap generation
 
 Postponed for later
 ===================
 1. Extra cloning of stackoverflow.
 2. Feed for users.
-3. Sitemap generation
 4. Stop DOS.(This should not reach application and must be filtered at web server level or before).

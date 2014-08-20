@@ -1391,6 +1391,7 @@ def edits(element):
         if 'version' not in question:
             question['version'] = 1
             question['type'] = 'qb' # question backup
+            question['editor'] = g.user.id
         else:
             question['version'] += 1
 
