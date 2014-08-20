@@ -1020,11 +1020,11 @@ def login():
             #document = json.loads(document)
             document = urllib2.urlopen(
                 DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + urllib2.quote(loginForm.email.data) + '"').read()
-            document = json.loads(document)
-            if 'id' in document['rows'][0]:
-                document = cb.get(document['rows'][0]['id']).value
+            document = json.loads(document)['rows']
+            if len(document) != 0:
+                document = cb.get(document[0]['id']).value
             else:
-                flash('Either email or password is wrong')
+                flash('Either email or password is wrong', 'error')
                 return redirect(url_for('login'))
             if document['banned'] is True:
                 flash('Your acount is banned possibly because you abused the system. Contact ' + admin +
