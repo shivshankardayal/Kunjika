@@ -54,7 +54,10 @@
                 {{ render_field(form.tags, class="input-xlarge span10", id="kunjika-tags", style="margin-left:30px; margin-top=30px;", placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
                 <div class="controls">
                     <button class="btn btn-primary">
-                        Submit
+                        Publish
+                    </button>
+                    <button class="btn btn-primary" formaction="/save_draft" method="POST" style="margin-left: 20px">
+                        Save Draft
                     </button>
                 </div>
             </div>

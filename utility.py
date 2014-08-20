@@ -536,7 +536,7 @@ def get_popular_tags():
 def filter_by(email):
 
     user = urllib2.urlopen(
-                kunjika.DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"').read()
+                kunjika.DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + urllib2.quote(email) + '"').read()
     try:
       id = json.loads(user)['rows'][0]['id']
     except:
@@ -1080,6 +1080,56 @@ def article_tags(page):
                                tags=tags, no_of_tags=no_of_tags, name=g.user.name, role=g.user.role, user_id=g.user.id)
     return render_template('article_tags.html', title='Articles Tags', pagination=pagination, tags=tags,
                            no_of_tags=no_of_tags)
+
+
+def save_draft():
+    articleForm = ArticleForm(request.form)
+    if g.user is not None and g.user.is_authenticated():
+        if articleForm.validate_on_submit() and request.method == 'POST':
+            article = {}
+            article['content'] = {}
+            title = articleForm.title.data
+            article['content'] = articleForm.content.data
+            article['tags'] = []
+            article['tags'] = articleForm.tags.data.split(',')
+            article['tags'] = [tag.strip(' \t').lower() for tag in article['tags']]
+            new_tag_list = []
+            for tag in article['tags']:
+                tag = list(tag)
+                for i in range(0, len(tag)):
+                    if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
+                         or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
+                         or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                         or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
+                         or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
+                         or tag[i] == ' ':
+                        tag[i] = '-'
+                new_tag_list.append(''.join(tag))
+            article['tags'] = new_tag_list
+            article['title'] = title
+            article['_type'] = 'd'
+
+            url = generate_url(title)
+
+            article['url'] = url
+            article['op'] = str(g.user.id)
+            article['ts'] = int(time())
+            article['updated'] = article['ts']
+            article['ip'] = request.remote_addr
+            article['aid'] = 'a-' + str(uuid1())
+            article['opname'] = g.user.name
+            article['cids'] = []
+
+            kunjika.es_conn.index({'title':title, 'content':article['content'], 'aid':article['aid'],
+                           'position':article['content']}, 'articles', 'articles-type', article['aid'])
+            kunjika.es_conn.indices.refresh('articles')
+            kunjika.kb.add(str(article['aid']), article)
+
+            return redirect(url_for('', aid=article['aid'], url=article['url']))
+
+        return render_template('write_article.html', title='Write Artcile', form=articleForm, artpage=True, name=g.user.name, role=g.user.role,
+                               user_id=g.user.id)
+    return redirect(url_for('login'))
 
 
 def send_async_email(msg):

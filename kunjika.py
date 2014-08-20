@@ -1154,7 +1154,7 @@ def check_email():
 
     try:
         document = urllib2.urlopen(
-            DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
+            DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + urllib2.quote(email) + '"&stale=false').read()
         document = json.loads(document)
         if 'id' in document['rows'][0]:
             try:
@@ -1795,7 +1795,7 @@ def reset_password(token=None):
         if emailForm.validate_on_submit() and request.method == 'POST':
             email = emailForm.email.data
             document = urllib2.urlopen(
-                DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
+                DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + urllib2.quote(email) + '"&stale=false').read()
             document = json.loads(document)
             if len(document['rows']) != 0:
                 if 'id' in document['rows'][0]:
@@ -1829,7 +1829,7 @@ def reset_password(token=None):
                 email = s.unsign(token, max_age=86400)
 
                 document = urllib2.urlopen(
-                    DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + email + '"&stale=false').read()
+                    DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + urllib2.quote(email) + '"&stale=false').read()
                 document = json.loads(document)
                 if 'id' in document['rows'][0]:
                     try:
@@ -2380,6 +2380,11 @@ def edit_article(element):
 @kunjika.route('/article_tags/page/<int:page>')
 def article_tags(page=1):
     return utility.article_tags(page)
+
+@kunjika.route('/save_draft', methods=['POST'])
+def save_draft():
+    return
+    utility.save_draft()
 
 @kunjika.route('/sitemap.xml')
 def sitemap():
