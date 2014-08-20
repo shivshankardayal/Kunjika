@@ -1019,7 +1019,7 @@ def login():
         try:
             #document = json.loads(document)
             document = urllib2.urlopen(
-                DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + loginForm.email.data + '"').read()
+                DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + urllib2.quote(loginForm.email.data) + '"').read()
             document = json.loads(document)
             if 'id' in document['rows'][0]:
                 document = cb.get(document['rows'][0]['id']).value
