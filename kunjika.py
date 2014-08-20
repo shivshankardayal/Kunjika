@@ -1824,6 +1824,7 @@ def reset_password(token=None):
                     ##print type(token)
                     ##print type(email)
                     mail.send(msg)
+                    flash('A password reset email has been sent to you.', 'error')
                 else:
                     flash('You seem to have openid login, your password cannot be reset here.', 'error')
                     return redirect(url_for('login'))
