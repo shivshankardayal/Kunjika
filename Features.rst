@@ -36,7 +36,6 @@ TODO
 24. OAuth for FB, G+, Twitter and Linkedin.
 25. Hide inappropriate question, answer or comment.
 26. Restore previous versions of question.
-27. Drafts feature for article authors.
 
 DONE
 ====
@@ -112,6 +111,7 @@ DONE
 51. Ability to take site offline (maintenance mode).
 52. Questions are versioned now. Every edit creates a new version.(restore to be done.)
 53. Sitemap generation
+54. Drafts feature for article authors.
 
 Postponed for later
 ===================

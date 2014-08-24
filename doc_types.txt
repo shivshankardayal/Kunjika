@@ -1,0 +1,11 @@
+This document contains the document types of couchbase.
+
+a   => article
+d   => draft
+e   => endorsement
+ac  => article comment
+qb  => question backup
+bq  => question bookmark
+test_questions => questions of test series
+dl  => drafts list
+ad  => article drafts
