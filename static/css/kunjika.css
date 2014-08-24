@@ -668,6 +668,7 @@ td, th {
     width: 750px!important;
     display: table;
     margin: 0 auto;
+    padding-bottom: 3px;
 }
 
 .error {

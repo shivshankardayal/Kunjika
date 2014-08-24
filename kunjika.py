@@ -352,7 +352,13 @@ def questions(tag=None, page=None, qid=None, url=None):
                                    pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     else:
         questions_dict = question.get_question_by_id(qid, questions_dict)
-
+        ccount = 0
+        if 'comments' in questions_dict:
+            ccount += len(questions_dict['comments'])
+        if 'answers' in questions_dict:
+            for answer in questions_dict['answers']:
+                if 'comments' in answer:
+                    ccount += len(answer['comments'])
         if request.referrer == HOST_URL + "questions":
             questions_dict['views'] += 1
         elif request.host_url != HOST_URL + "":
@@ -469,7 +475,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                         option10_votes = 0
                     votes.append((option10_votes, option))
         if g.user is AnonymousUserMixin:
-            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
+            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict, ccount=ccount)
         elif g.user is not None and g.user.is_authenticated():
             user = cb.get(str(g.user.id)).value
             if 'mc' not in questions_dict['content'] and 'sc' not in questions_dict['content']:
@@ -571,13 +577,13 @@ def questions(tag=None, page=None, qid=None, url=None):
                                    " <br/><br/>Best regards,<br/>Kunjika Team<p>"
                         mail.send(msg)
 
-                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url'], ccount=ccount))
                 qb.replace(str(questions_dict['qid']), questions_dict)
 
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                                       similar_questions=similar_questions)
+                                       similar_questions=similar_questions, ccount=ccount)
             elif 'sc' in questions_dict['content']:
                 class PollForm(Form):
                     pass
@@ -632,12 +638,12 @@ def questions(tag=None, page=None, qid=None, url=None):
                     except:
                         flash('You have already voted on this question', 'error')
 
-                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url'], ccount=ccount))
                 qb.replace(str(questions_dict['qid']), questions_dict)
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                                       votes=votes, similar_questions=similar_questions)
+                                       votes=votes, similar_questions=similar_questions, ccount=ccount)
             elif 'mc' in questions_dict['content']:
                 class PollForm(Form):
                     pass
@@ -698,18 +704,18 @@ def questions(tag=None, page=None, qid=None, url=None):
                     except:
                         flash('You have already voted on this question', 'error')
 
-                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url'], ccount=ccount))
                 qb.replace(str(questions_dict['qid']), questions_dict)
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                                       options=i, field_names=options, votes=votes, similar_questions=similar_questions)
+                                       options=i, field_names=options, votes=votes, similar_questions=similar_questions, ccount=ccount)
 
         else:
             qb.replace(str(questions_dict['qid']), questions_dict)
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                    qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                                   votes=votes, similar_questions=similar_questions)
+                                   votes=votes, similar_questions=similar_questions, ccount=ccount)
 
 
 @kunjika.route('/users/<uid>', defaults={'qpage': 1, 'apage': 1})
@@ -2424,6 +2430,27 @@ def show_groups(page, uid, uname):
                                name=g.user.name, role=g.user.role, user_id=g.user.id, acount=acount, tag_list=tag_list)
     return redirect(url_for('users', uid=g.user.id))
 '''
+
+
+@kunjika.route('/get_qcount')
+def get_qcount():
+    qcount = qb.get('qcount').value
+    return jsonify({'qcount': qcount})
+
+
+@kunjika.route('/get_account')
+def get_account():
+    qid = request.args.get('qid')
+    questions_dict = qb.get(qid).value
+    ccount = 0
+    acount = questions_dict['acount']
+    if 'comments' in questions_dict:
+        ccount += len(questions_dict['comments'])
+    if 'answers' in questions_dict:
+        for answer in questions_dict['answers']:
+            if 'comments' in answer:
+                ccount += len(answer['comments'])
+    return jsonify({'acount': acount, 'ccount': ccount})
 
 
 @kunjika.errorhandler(404)
