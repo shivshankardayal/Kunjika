@@ -1248,9 +1248,10 @@ def image_upload():
 
 
 @kunjika.route('/get_tags/<qid>', methods=['GET', 'POST'])
-@kunjika.route('/get_tags/', defaults={'qid': None}, methods=['GET', 'POST'])
 def get_tags(qid=None):
+    print request.url
     if qid is not None:
+        print "hello"
         question = qb.get(str(qid)).value
 
         tags = question['content']['tags']
@@ -1268,17 +1269,19 @@ def get_tags(qid=None):
         for tid in tids_list:
             tags_list.append({"id": val_res[str(tid)].value['tid'], "name": val_res[str(tid)].value['tag']})
         return json.dumps(tags_list)
-    else:
-        query = request.args.get('q')
-        if query is not None:
-            q = pyes.MatchQuery('tag', query)
-            tags_result = es_conn.search(query=q)
-            results = []
 
-            for r in tags_result:
-                results.append({'id': str(r['tid']), 'name': r['tag']})
 
-            return json.dumps(results)
+@kunjika.route('/get_tags')
+def get_tags_ajax():
+    query = request.args.get('q')
+    if query is not None:
+        q = pyes.search('tag', query)
+        tags_result = es_conn.search(query=q)
+        results = []
+        for r in tags_result:
+            results.append({'id': str(r['tid']), 'name': r['tag']})
+
+        return json.dumps(results)
 
 
 def add_tags(tags_passed, qid):
