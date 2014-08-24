@@ -1241,6 +1241,7 @@ def edit_draft(element):
 def publish(element):
     print "In publish"
     articleForm = ArticleForm(request.form)
+    did = element.split('-')[2:]
     article = kunjika.kb.get(element).value
     if g.user.id != 1:
         if int(article['op']) != int(g.user.id):
@@ -1290,7 +1291,6 @@ def publish(element):
             kunjika.kb.add(str(article['aid']), article)
             kunjika.kb.delete(element)
             dl = kunjika.kb.get('dl-' + str(g.user.id)).value
-            did = element.split('-')[2:]
             dl['drafts_list'].remove(int(did[0]))
             kunjika.kb.replace('dl-' + str(g.user.id), dl)
             return redirect(url_for('browse_articles', aid=article['aid'], url=article['url']))
