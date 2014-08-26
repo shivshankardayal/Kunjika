@@ -1141,7 +1141,7 @@ def save_draft(element):
             article['opname'] = g.user.name
             article['cids'] = []
 
-            kunjika.kb.add(str(article['aid']), article)
+            kunjika.kb.set(str(article['aid']), article)
             return redirect(url_for('drafts', did=article['aid'], url=article['url']))
 
         return render_template('write_article.html', title='Write Artcile', form=articleForm, artpage=True, name=g.user.name, role=g.user.role,
