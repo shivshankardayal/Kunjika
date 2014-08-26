@@ -2351,7 +2351,7 @@ def edit_draft(element):
 @kunjika.route('/drafts/<did>/<url>', methods=['GET', 'POST'])
 @kunjika.route('/drafts/page/<int:page>')
 def drafts(page=None, did=None, url=None):
-    return utility.drafts(page, did)
+    return utility.drafts(page, did, request)
 
 
 @kunjika.route('/publish/<string:element>', methods=['GET', 'POST'])

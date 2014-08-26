@@ -1149,11 +1149,15 @@ def save_draft(element):
     return redirect(url_for('login'))
 
 
-def drafts(page, did):
+def drafts(page, did, request):
     if g.user.id == -1:  # -1 is the user id of anonymous user
         return redirect(url_for('login'))
     if did is None:
-        count = g.user.user_doc['draft_count']
+        try:
+            count = g.user.user_doc['draft_count']
+        except:
+            flash('You have no drafts!', 'error')
+            return redirect(request.referrer)
         drafts_list = get_drafts_for_page(page, kunjika.ARTICLES_PER_PAGE, count)
         if not drafts_list and page != 1:
             abort(404)
@@ -1291,7 +1295,6 @@ def publish(element):
             article['opname'] = g.user.name
             article['cids'] = []
 
-            user = g.user.user_doc
             kunjika.es_conn.index({'title': title, 'content': article['content'], 'aid': article['aid'],
                                    'position': article['content']}, 'articles', 'articles-type', article['aid'])
             kunjika.es_conn.indices.refresh('articles')
