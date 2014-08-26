@@ -2336,9 +2336,9 @@ def article_tags(page=1):
     return utility.article_tags(page)
 
 
-@kunjika.route('/save_draft', methods=['POST'])
-def save_draft():
-    return utility.save_draft()
+@kunjika.route('/save_draft/<element>', methods=['POST'])
+def save_draft(element):
+    return utility.save_draft(element)
 
 
 @kunjika.route('/edit_draft/<element>', methods=['GET', 'POST'])

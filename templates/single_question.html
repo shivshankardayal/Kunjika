@@ -32,12 +32,10 @@
          qid: qid,
        }, function (data) {
            var adiff = data.acount - acount;
-           if (adiff > 0) {
-             flash(adiff + ' new answer/s have been posted! Please referesh to see them.', 'success')
-           }
            var cdiff = data.ccount - ccount;
-           if (cdiff > 0) {
-             flash(cdiff + ' new comment/s have been posted! Please referesh to see them.', 'success')
+           var updates = adiff + cdiff;
+           if (updates > 0) {
+             flash(updates + ' new updated/s have been posted to this question! Please referesh to see them.', 'success')
            }
          });
      };
@@ -187,7 +185,6 @@
                 str += comment;
                 str += "</div> &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
                 str += " " + responseJSON.ts + "</div>"
-                alert(str);
                 $(str).insertBefore('#f-' + id);
                 flash('Your comment has been successfully posted.', 'info')
             }

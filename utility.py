@@ -1084,22 +1084,27 @@ def article_tags(page):
                            no_of_tags=no_of_tags)
 
 
-def save_draft():
+def save_draft(element):
+    if g.user.id == -1:
+        return redirect(url_for('login'))
     articleForm = ArticleForm(request.form)
     if g.user is not None and g.user.is_authenticated():
         if articleForm.validate_on_submit() and request.method == 'POST':
             user = g.user.user_doc
-            if 'draft_count' not in user:
-                user['draft_count'] = 1
-                doc = {}
-                doc['drafts_list'] = []
-                doc['drafts_list'].append(1)
-                kunjika.kb.add('dl-' + str(g.user.id), doc)
-            else:
-                user['draft_count'] += 1
-                drafts_list = kunjika.kb.get('dl-' + str(g.user.id)).value
-                drafts_list['drafts_list'].append(user['draft_count'])
-                kunjika.kb.replace('dl-' + str(g.user.id), drafts_list)
+            try:
+                kunjika.kb.get(element).value
+            except:
+                if 'draft_count' not in user:
+                    user['draft_count'] = 1
+                    doc = {}
+                    doc['drafts_list'] = []
+                    doc['drafts_list'].append(1)
+                    kunjika.kb.add('dl-' + str(g.user.id), doc)
+                else:
+                    user['draft_count'] += 1
+                    drafts_list = kunjika.kb.get('dl-' + str(g.user.id)).value
+                    drafts_list['drafts_list'].append(user['draft_count'])
+                    kunjika.kb.replace('dl-' + str(g.user.id), drafts_list)
 
             kunjika.cb.replace(str(g.user.id), user)
             article = {}
@@ -1145,6 +1150,8 @@ def save_draft():
 
 
 def drafts(page, did):
+    if g.user.id == -1:  # -1 is the user id of anonymous user
+        return redirect(url_for('login'))
     if did is None:
         count = g.user.user_doc['draft_count']
         drafts_list = get_drafts_for_page(page, kunjika.ARTICLES_PER_PAGE, count)
@@ -1295,7 +1302,7 @@ def publish(element):
             kunjika.kb.replace('dl-' + str(g.user.id), dl)
             return redirect(url_for('browse_articles', aid=article['aid'], url=article['url']))
 
-        return render_template('edit_draft.html', title='Edit', form=articleForm, article=article, type=type, aid=did,
+        return render_template('edit_draft.html', title='Edit', form=articleForm, article=article, type=type, aid=element,
                                name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
     return redirect(url_for('login'))
 
