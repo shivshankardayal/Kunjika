@@ -12,6 +12,7 @@ TODO
 6. Hide inappropriate question, answer or comment.
 7. Restore previous versions of question.
 8. Test series implementation.
+9. Question, answers and comments should be editable only by poster.
 
 DONE
 ====

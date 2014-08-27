@@ -1701,7 +1701,7 @@ def recent_feed():
         question_list.append(result.doc.value)
 
     for q in question_list:
-        feed.add(question['title'], unicode(question['content']['description']),
+        feed.add(q['title'], unicode(q['content']['description']),
                  content_type='html',
                  author=HOST_URL + 'users/' + unicode(q['content']['op']) + q['opname'],
                  url=make_external(HOST_URL + 'questions' + '/' + unicode(q['qid']) + "/" + q['content']['url']),
