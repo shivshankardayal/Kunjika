@@ -519,7 +519,7 @@
                     {% from "macros.html" import render_field %}
                     {{ form.csrf_token }}
                     <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}-{{ answer['aid'] }}">
-                        <div id="wmd-button-bar" class="wmd-bar"></div>
+                        <div id="wmd-button-bar-{{ questions['qid'] }}-{{ answer['aid'] }}" class="wmd-bar"></div>
                         <div class="control-group">
                             <label for="answer" class="control-label"></label>
 
@@ -562,7 +562,7 @@
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
             <div class="wmd-panel">
-                <div id="wmd-button-bar"></div>
+                <div id="wmd-button-bar" class="wmb-bar"></div>
 
                 {{ render_field(form.answer, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please post your answer here..") }}
                 <div id="insertImageDialog" title="&nbsp;Insert Image or File">
