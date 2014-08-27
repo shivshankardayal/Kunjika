@@ -1385,9 +1385,15 @@ def edits(element):
 
         if type == 'ce':
             if form.validate_on_submit():
-                if aid != 0:
+                if  aid != 0:
+                    if question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['poster'] != g.user.id and g.user.id != 1:
+                        flash('You are not author of this comment!', 'error')
+                        return redirect(request.referrer)
                     question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['comment'] = form.comment.data
                 else:
+                    if question['comments'][int(cid) - 1] != g.user.id and g.user.id != 1:
+                        flash('You are not author of this comment!', 'error')
+                        return redirect(request.referrer)
                     question['comments'][int(cid) - 1]['comment'] = form.comment.data
 
                 editor = cb.get(str(g.user.id)).value
@@ -1400,6 +1406,9 @@ def edits(element):
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
         elif type == 'ae':
             if form.validate_on_submit():
+                if question['answers'][int(aid) - 1]['poster'] != g.user.id and g.user.id != 1:
+                    flash('You are not author of this answer!', 'error')
+                    return redirect(request.referrer)
                 question['answers'][int(aid) - 1]['answer'] = form.answer.data
 
                 editor = cb.get(str(g.user.id)).value
@@ -1412,6 +1421,9 @@ def edits(element):
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
         else:
             if form.validate_on_submit():
+                if int(question['content']['op']) != g.user.id and g.user.id != 1:
+                    flash('You are not author of this question!', 'error')
+                    return redirect(request.referrer)
                 question['content']['description'] = form.description.data
                 # title editing disabled so that existing links do not break
                 # title = form.question.data
