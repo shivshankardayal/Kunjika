@@ -656,7 +656,7 @@ def get_similar_questions(title, qid):
     results=[]
 
     for r in title_results:
-        print r
+        # print r
         if 'qid' in r:
             if r['qid'] != qid:
                 question_dict = {}

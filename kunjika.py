@@ -1574,7 +1574,7 @@ def postcomment():
         for answer in question['answers']:
             email_list.append(str(answer['poster']))
             if 'comments' in answer:
-                for comment in question['comments']:
+                for comment in answer['comments']:
                     email_list.append(str(comment['poster']))
 
     email_list = set(email_list)
