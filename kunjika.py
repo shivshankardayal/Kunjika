@@ -82,10 +82,10 @@ admin = kunjika.config['ADMIN_EMAIL']
 kunjika.config.update(
     DEBUG=True,
     # EMAIL SETTINGS
-    MAIL_SERVER='kunjika.libreprogramming.org',
+    MAIL_SERVER='10hash.com',
     MAIL_PORT=25,
     MAIL_USE_TLS=True,
-    MAIL_USERNAME='noreply@kunjika.libreprogramming.org',
+    MAIL_USERNAME='noreply@10hash.com',
     MAIL_PASSWORD=''
 )
 lm = LoginManager()
@@ -2038,11 +2038,11 @@ def administration():
             email_list = []
             for row in document['rows']:
                 each_doc = cb.get(row['id']).value
-                if each_doc['receive-email'] is True:
-                    email_list.append(row['value']['email'])
+                #if each_doc['receive-email'] is True:
+                email_list.append(each_doc['email'])
             msg = Message(form.subject.data)
             msg.recipients = email_list
-            msg.sender = (',').join(email_list)
+            msg.sender = admin
             msg.html = form.bulk_mail.data
             try:
                 mail.send(msg)
