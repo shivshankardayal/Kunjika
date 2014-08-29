@@ -1,4 +1,5 @@
 # Copyright (c) 2013 Shiv Shankar Dayal
+# Copyright (c) 2013 Shiv Shankar Dayal
 # This file is part of Kunjika.
 #
 # Kunjika is free software: you can redistribute it and/or modify it
@@ -1009,7 +1010,7 @@ def openid_login():
 def login():
     registrationForm = RegistrationForm(request.form)
     loginForm = LoginForm(request.form)
-    openidForm = OpenIDForm(request.form)
+    #openidForm = OpenIDForm(request.form)
 
     if g.user.id != -1:
         resp = make_response(redirect(url_for('questions')))
@@ -1069,18 +1070,18 @@ def login():
                     kb.add(user['email'], user, ttl=600)
                     flash('Either email or password is wrong.', 'error')
 
-                render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+                render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
                                 lpage=True)
 
         except:
-            return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
+            return render_template('login.html', form=registrationForm, loginForm=loginForm,
                                    title='Sign In', lpage=True)
 
     else:
-        render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+        render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
                         lpage=True)
 
-    return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
+    return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
                            lpage=True)
 
 
@@ -1088,7 +1089,7 @@ def login():
 def register():
     loginForm = LoginForm(request.form)
     registrationForm = RegistrationForm(request.form)
-    openidForm = OpenIDForm(request.form)
+    #openidForm = OpenIDForm(request.form)
     document = None
 
     if registrationForm.validate_on_submit() and request.method == 'POST':
@@ -1146,9 +1147,8 @@ def register():
             except:
                 return make_response("cant login")
 
-    return render_template('register.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
-                           title='Register', lpage=True,
-                           next=oid.get_next_url(), error=oid.fetch_error())
+    return render_template('register.html', form=registrationForm, loginForm=loginForm,
+                           title='Register', lpage=True,)
 
 
 @kunjika.route('/check_email', methods=['POST'])
@@ -1801,7 +1801,7 @@ def reset_password(token=None):
             if len(document['rows']) != 0:
                 if 'id' in document['rows'][0]:
                     document = cb.get(document['rows'][0]['id']).value
-                if document['email'] == email and 'password' in document:
+                if document['email'] == email:
                     token = s.sign(email)
                     msg = Message("Password reset")
                     msg.recipients = [email]
@@ -1815,9 +1815,6 @@ def reset_password(token=None):
                                "<br/> Admin</p>"
                     mail.send(msg)
                     flash('A password reset email has been sent to you.', 'error')
-                else:
-                    flash('You seem to have openid login, your password cannot be reset here.', 'error')
-                    return redirect(url_for('login'))
             else:
                 flash('The email was not found in database.', 'error')
                 return redirect(url_for('reset_password'))
