@@ -35,7 +35,7 @@ import utility
 from flask.ext.mail import Mail, Message
 from urlparse import urljoin
 from werkzeug.contrib.atom import AtomFeed
-from flask_openid import OpenID
+#from flask_openid import OpenID
 from itsdangerous import TimestampSigner
 from flask_wtf import Form
 from wtforms import (BooleanField, TextField, validators, TextAreaField, RadioField)
@@ -46,13 +46,24 @@ from uuid import uuid1
 import base64
 from test_series import test_series
 
+kunjika = Flask(__name__)
+kunjika.config.from_object('config')
+
+GOOGLE_ID = kunjika.config['GOOGLE_ID']
+GOOGLE_SECRET = kunjika.config['GOOGLE_SECRET']
+FACEBOOK_ID = kunjika.config['FACEBOOK_ID']
+FACEBOOK_SECRET = kunjika.config['FACEBOOK_SECRET']
+TWITTER_KEY = kunjika.config['TWITTER_KEY']
+TWITTER_SECRET = kunjika.config['TWITTER_SECRET']
+LINKEDIN_KEY = kunjika.config['LINKEDIN_KEY']
+LINKEDIN_SECRET = kunjika.config['LINKEDIN_SECRET']
+
+from oauth_impl import OA
+
 ALLOWED_EXTENSIONS = set(['gif', 'png', 'jpg', 'jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg',
                           'tar.gz', 'tar.bz2', 'tgz', 'tbz', 'doc', 'docx', 'odf', 'odt', 'ppt', 'pptx', 'djvu'])
 
-kunjika = Flask(__name__)
-
-kunjika.config.from_object('config')
 DB_URL = kunjika.config['DB_URL']
 HOST_URL = kunjika.config['HOST_URL']
 ES_URL = kunjika.config['ES_URL']
@@ -74,7 +85,7 @@ ARTICLES_PER_PAGE = kunjika.config['ARTICLES_PER_PAGE']
 
 is_maintenance_mode = kunjika.config['MAINTENANCE_MODE']
 
-oid = OpenID(kunjika, '/tmp')
+#oid = OpenID(kunjika, '/tmp')
 
 mail = Mail(kunjika)
 admin = kunjika.config['ADMIN_EMAIL']
@@ -890,11 +901,8 @@ def populate_user_fields(data, form):
 
 @kunjika.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
-    # if request.args.get('email') is None:
-    #    return redirect('/')
-    document = None
     profileForm = ProfileForm(request.form)
-    if g.user is not None and g.user.is_authenticated():
+    if g.user.id != -1:
         return redirect(url_for('questions'))
     if profileForm.validate_on_submit() and request.method == 'POST':
         data = {}
@@ -954,13 +962,11 @@ def create_profile():
             except:
                 return make_response("cant login")
     return render_template('create_profile.html', form=profileForm,
-                           title="Create Profile", lpage=True, next=oid.get_next_url())
+                           title="Create Profile", lpage=True)
 
-
-@oid.after_login
-def create_or_login(resp):
-    session['openid'] = resp.identity_url
-    user = utility.filter_by(resp.email)
+@kunjika.route('/create_or_login')
+def create_or_login():
+    user = utility.filter_by(session['email'])
     if user is not None:
         if user['banned'] is True:
             return redirect(url_for('questions'))
@@ -968,7 +974,7 @@ def create_or_login(resp):
 
         session[user['id']] = user['id']
         session['logged_in'] = True
-        if 'role' in user:
+        if 'role' in user and user['role'] == 'admin':
             user['admin'] = True
 
         g.user = User(user['name'], user, user['id'])
@@ -979,11 +985,10 @@ def create_or_login(resp):
             return redirect(url_for('questions'))
         except:
             return make_response("cant login")
-    return redirect(url_for('create_profile', next=oid.get_next_url(),
-                            name=resp.fullname or resp.nickname,
-                            email=resp.email))
+    return redirect(url_for('create_profile'))
 
 
+'''
 @kunjika.route('/openid_login', methods=['GET', 'POST'])
 @oid.loginhandler
 def openid_login():
@@ -997,6 +1002,7 @@ def openid_login():
         return oid.try_login(openid, ask_for=['email', 'fullname', 'nickname'])
     return render_template('openid.html', form=registrationForm, loginForm=loginForm, title='Sign In',
                            lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+'''
 
 
 @kunjika.route('/login', methods=['GET', 'POST'])
@@ -1004,6 +1010,11 @@ def login():
     registrationForm = RegistrationForm(request.form)
     loginForm = LoginForm(request.form)
     openidForm = OpenIDForm(request.form)
+
+    if g.user.id != -1:
+        resp = make_response(redirect(url_for('questions')))
+        resp.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
+        return resp
 
     if loginForm.validate_on_submit() and request.method == 'POST':
         try:
@@ -1029,7 +1040,9 @@ def login():
                     login_user(user, remember=True)
                     flash('You have successfully logged in.', 'success')
                     g.user = user
-                    return redirect(url_for('questions'))
+                    resp = make_response(redirect(url_for('questions')))
+                    resp.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
+                    return resp
                 except:
                     flash('Either email or password is wrong')
                     return redirect(url_for('login'))
@@ -1057,19 +1070,18 @@ def login():
                     flash('Either email or password is wrong.', 'error')
 
                 render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
-                                lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+                                lpage=True)
 
         except:
             return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
-                                   title='Sign In', lpage=True,
-                                   next=oid.get_next_url(), error=oid.fetch_error())
+                                   title='Sign In', lpage=True)
 
     else:
         render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
-                        lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+                        lpage=True)
 
     return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
-                           lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+                           lpage=True)
 
 
 @kunjika.route('/register', methods=['POST'])
@@ -2514,6 +2526,8 @@ def page_503(e):
     return render_template('503.html'), 503
 
 kunjika.register_blueprint(test_series)
+kunjika.register_blueprint(OA)
+
 
 if __name__ == '__main__':
     kunjika.run()

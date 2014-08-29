@@ -4,15 +4,6 @@
     {{ super() }}
 
     <link type="text/css" rel="stylesheet" href="/static/css/openid.css" />
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/js/openid-jquery.js"></script>
-    <script type="text/javascript" src="/static/js/openid-en.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        openid.img_path = '/static/images/';
-        openid.init('openid_identifier', 'openid_return_url', 'next', '{{ next }}');
-    });
-    </script>
     <style type="text/css">
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -42,13 +33,13 @@
                         <li class="active">
                             <a href="#create" data-toggle="tab">Create Account</a>
                         </li>
-                        <li>
+                        <!--li>
                             <a href="#openid" data-toggle="tab">OpenID Login</a>
-                        </li>
+                        </li-->
                     </ul>
                     <div id="myTabContent" class="tab-content">
                     <div class="tab-pane active in" id="create">
-                        <form class="form-horizontal" id="tab" method="post" action="/questions">
+                        <form class="form-horizontal" id="tab" method="post" action="/register">
                             <fieldset>
                                 <div id="legend">
                                     <legend class="">
@@ -94,6 +85,12 @@
                     </div>
                         <div class="tab-pane fade" id="login">
                             <form class="form-horizontal" action='/login' method="post">
+                                <div class="social-login">
+                                    <a href='/google_login' class="btn btn-default google"> <i class="icon-google-plus modal-icons"></i> Sign In with Google </a>
+                                    <a href='/fb_login' class="btn btn-default facebook"> <i class="icon-facebook-sign modal-icons"></i> Sign In with Facebook </a>
+                                    <!--a href='/t_login' class="btn btn-default twitter"> <i class="icon-twitter-sign modal-icons"></i> Sign In with Twitter </a>
+                                    <a href='/l_login' class="btn btn-default linkedin"> <i class="icon-linkedin modal-icons"></i> Sign In with Linkedin </a-->
+                                </div>
                                 <fieldset>
                                     <div id="legend">
                                         <legend class="">
@@ -118,7 +115,7 @@
                                 </fieldset>
                             </form>
                         </div>
-                        <div class="tab-pane fade" id="openid">
+                        <!--div class="tab-pane fade" id="openid">
                         <form action="/openid_login" method="post" id="openid_form">
                             <input type="hidden" name="action" value="verify" />
                             <fieldset>
@@ -138,7 +135,7 @@
                             </noscript>
                             </fieldset>
                         </form>
-                        </div>
+                        </div-->
                     </div>
                 </div>
             </div>
