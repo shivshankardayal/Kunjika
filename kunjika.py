@@ -1287,7 +1287,7 @@ def get_tags(qid=None):
 def get_tags_ajax():
     query = request.args.get('q')
     if query is not None:
-        q = pyes.TermQuery('tag', query)
+        q = pyes.PrefixQuery('tag', query)
         tags_result = es_conn.search(query=q)
         results = []
         for r in tags_result:
