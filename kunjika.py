@@ -1283,7 +1283,7 @@ def get_tags(qid=None):
         return json.dumps(tags_list)
 
 
-@kunjika.route('/get_tags')
+@kunjika.route('/get_tags/')
 def get_tags_ajax():
     query = request.args.get('q')
     if query is not None:
