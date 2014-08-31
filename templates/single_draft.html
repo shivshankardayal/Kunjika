@@ -166,7 +166,7 @@
                 comment = converter.makeHtml(responseJSON.comment);
                 str += comment;
                 str += " - <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
-                str += " " + responseJSON.ts + ' <a title="edit" href="/edit_article/ce-' + responseJSON.aid + '_' + responseJSON.cid + '"> <i class="icon-edit"></i></a></div>'
+                str += " " + responseJSON.ts + ' <a title="edit" href="/edit_article/ce-' + responseJSON.aid + '_' + responseJSON.cid + '"> <i class="fa fa-edit"></i></a></div>'
                 $(str).insertAfter('#h3-comment');
                 flash('Your comment has been successfully posted.', 'info')
             }
@@ -182,7 +182,7 @@
     <table>
         <tr>
             <td class="post">
-                <div class="post-tags"><i class="icon-tags" title="Tags" style="color:#a4c639;"></i>
+                <div class="post-tags"><i class="fa fa-tags" title="Tags" style="color:#a4c639;"></i>
                     {% for tag in article['tags'] %}
                         {{ tag }}
                     {% endfor %}
@@ -194,7 +194,7 @@
                         {% if user_id is defined and user_id|string == article['op'] or user_id == 1%}
                             <td class="vt">
                                 <a href="/edit_draft/{{ article['aid'] }}" class="suggest-edit-post" title=""><i
-                                        class="icon-edit"></i> Edit</a>
+                                        class="fa fa-edit"></i> Edit</a>
                             </td>
                         {% elif user_id is defined %}
                         {% else %}

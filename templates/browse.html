@@ -37,14 +37,14 @@
                                    href="/browse_objective_questions/{{ question['qid'] }}"
                                    title="{{ question['content']['description'][:200] }}" >
                                 {% if 'sticky' in question and question['sticky'] == True %}
-                                <i class="icon-pushpin"></i> {{ question['content']['description'][:50] }}</a>
+                                <i class="fa fa-pushpin"></i> {{ question['content']['description'][:50] }}</a>
                                 {% else %}
                                     {{ question['content']['description'][:50] }}</a>
                                 {% endif %}
                             </h4>
                         </div>
                         <a href="/edit_test/{{ question['qid'] }}" class="edit-test" title=""><i
-                                        class="icon-edit"></i> Edit</a>
+                                        class="fa fa-edit"></i> Edit</a>
                     </div>
                 {% endfor %}
             </div>

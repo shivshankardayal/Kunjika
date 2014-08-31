@@ -40,11 +40,23 @@
                 <div id="myTabContent" class="tab-content">
                     <div class="tab-pane active in" id="login">
                         <form class="form-horizontal" action='/login' method="post">
-                            <div class="social-login">
-                                <a href='/google_login' class="btn btn-default google"> <i class="icon-google-plus modal-icons"></i> Sign In with Google </a>
-                                <a href='/fb_login' class="btn btn-default facebook"> <i class="icon-facebook-sign modal-icons"></i> Sign In with Facebook </a>
-                                <!--a href='/t_login' class="btn btn-default twitter"> <i class="icon-twitter-sign modal-icons"></i> Sign In with Twitter </a>
-                                <a href='/l_login' class="btn btn-default linkedin"> <i class="icon-linkedin modal-icons"></i> Sign In with Linkedin </a-->
+                            <div class="social-login col-md-6 pull-right">
+                                <a href='/google_login' class="btn btn-block btn-social btn-google-plus"> 
+                                    <i class="fa fa-google-plus"></i> 
+                                    Sign In with Google 
+                                </a>
+                                <a href='/fb_login' class="btn btn-block btn-social btn-facebook"> 
+                                    <i class="fa fa-facebook"></i> 
+                                    Sign In with Facebook 
+                                </a>
+                                <a href='/t_login' class="btn btn-block btn-social btn-twitter"> 
+                                    <i class="fa fa-twitter"></i> 
+                                    Sign In with Twitter 
+                                </a>
+                                <a href='/l_login' class="btn btn-block btn-social btn-linkedin"> 
+                                    <i class="fa fa-linkedin"></i> 
+                                    Sign In with Linkedin 
+                                </a>
                             </div>
                             <fieldset>
                                 <div id="legend">
@@ -54,8 +66,8 @@
                                 </div>
                                 {% from "macros.html" import render_field %}
                                 {{ loginForm.csrf_token }}
-                                {{ render_field(loginForm.email, class="input-xlarge") }}
-                                {{ render_field(loginForm.password, class="input-xlarge") }}
+                                {{ render_field(loginForm.email, class="form-control") }}
+                                {{ render_field(loginForm.password, class="form-control") }}
                                 <div class="control-group">
                                     <!-- Button -->
                                     <div class="controls">

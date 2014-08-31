@@ -120,7 +120,7 @@
     {% block body %}
 
         {% block navbar_wrapper %}
-            <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
                 <div class="container">
                     <div class="container-fluid">
                         <div class="navbar-header">
@@ -167,8 +167,9 @@
                                     </ul>
                                 </li>
                                 {% if tpage is defined %}
-                                    <li class="active"><a href="/tags">
-                                    Tags</a></li>
+                                    <li class="active">
+                                        <a href="/tags"> Tags</a>
+                                    </li>
                                 {% else %}
                                     <li><a href="/tags">Tags</a></li>
                                 {% endif %}
@@ -177,49 +178,63 @@
                                         <a href="/users">Users</a>
                                     </li>
                                 {% else %}
-                                    <li><a href="/users">Users</a></li>
+                                    <li>
+                                        <a href="/users">Users</a>
+                                    </li>
                                 {% endif %}
                                 {% if ppage is defined %}
-                                     <li class="active"><a href="/poll" class="poll">
-                                        Poll</a>
+                                     <li class="active">
+                                     <a href="/poll" class="poll"> Poll</a>
                                     </li>
                                 {% else %}
                                     <li><a href="/poll" class="poll">Poll</a></li>
                                 {% endif %}
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
                                 {% if user_id is defined and g.user.is_authenticated() %}
                                     <!-- li class="active"><a href="/users/{{ g.user.id }}/{{ g.user.fname }}%20{{ g.user.lname }}" class="login"><i
-                                            class="icon-sigin"></i> <b>{{ g.user.name }}</b></a></li-->
+                                            class="fa fa-sigin"></i> <b>{{ g.user.name }}</b></a></li-->
                                     <li class="dropdown">
                                         <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                                            <b>{{ g.user.name }}</b>
+                                        <span class="nav-user">
+                                            <img src="{{ g.user.user_doc['email'] | gravatar(size=24) }}"/ class="nav-user-avatar">
+                                            <span class="nav-user-name" >{{ g.user.name }}</span>
                                             <span class="caret"></span>
+                                        </span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href='/users/{{ g.user.id }}/{{g.user.name|urlencode}}'>Profile</a></li>
-                                            <li><a href="/users/{{ g.user.id }}/{{ g.user.name|urlencode }}/settings">Settings</a></li>
-                                            <!--li><a href="/users/{{ user_id }}/{{ name|urlencode }}/groups">My Groups</a></li>
-                                            <li><a href="/users/{{ user_id }}/{{ name|urlencode }}/group_messages">Group Messages</a></li-->
+                                            <li>
+                                                <a href='/users/{{ g.user.id }}/{{g.user.name|urlencode}}'> <i class="fa fa-user"></i> Profile</a>
+                                            </li>
+                                            <li>
+                                                <a href="/users/{{ g.user.id }}/{{ g.user.name|urlencode }}/settings"><i class="fa fa-cog"></i> Settings</a>
+                                            </li>
+                                            <li><a href="/logout" class="login"><i class="fa fa-signout"></i> Logout</a>
                                         </ul>
                                     </li>
                                     {% if role == "admin" and adpage == True %}
-                                        <li><a href="/administration" class="administration"> <b>Administration</b></a>
+                                        <li  class="active">
+                                        <a href="/administration" class="administration" title="Administration"> 
+                                            <span class="fa fa-cog"></span>    
+                                        </a>
                                         </li>
                                     {% elif role == "admin" and adpage != True %}
-                                        <li><a href="/administration" class="administration"> Administration</a>
+                                        <li>
+                                        <a href="/administration" class="administration" title="Administration"> 
+                                            <span class="fa fa-cog"></span> 
+                                        </a>
                                         </li>
                                     {% endif %}
-                                    <li><a href="/logout" class="login"><i class="icon-signout"></i> Logout</a>
+                                    
                                     </li>
                                 {% else %}
-                                    <li><a href="/login" class="login"><i class="icon-signin"></i> Login</a></li>
+                                    <li><a href="/login" class="login"><i class="fa fa-sign-in"></i> Login</a></li>
                                 {% endif %}
-                                <li><a href="/recent-questions.atom" class="ask"><i class="icon-rss-sign"></i>
-                                    Feed</a></li>
+
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
-                                            class="icon-search"></i>
+                                            class="fa fa-search"></i>
                                         Search
-                                        <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu">
                                         <div class="span6col-md-6">
@@ -240,8 +255,7 @@
                                         <div class="col-md-6">
                                             <form class="form-search" action="/search" method="get">
                                                 <div style="margin-left: 20px; margin-top: -10px" class="input-append">
-                                                    <input type="text" class="form-control form-inline" id="query"
-                                                           name="query">
+                                                    <input type="text" class="form-control form-inline" id="query"name="query">
                                                     <button type="submit" class="btn">Kunjika Search</button>
                                                 </div>
                                             </form>
@@ -250,7 +264,11 @@
                                         </div>
                                     </ul>
                                 </li>
-
+                                <li>
+                                    <a href="/recent-questions.atom" class="ask" title="Feed">
+                                        <i class="fa fa-rss-sign"></i> 
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <!--/.nav-collapse -->
