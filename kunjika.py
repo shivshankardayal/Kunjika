@@ -1,4 +1,5 @@
 # Copyright (c) 2013 Shiv Shankar Dayal
+# Copyright (c) 2013 Shiv Shankar Dayal
 # This file is part of Kunjika.
 #
 # Kunjika is free software: you can redistribute it and/or modify it
@@ -35,7 +36,7 @@ import utility
 from flask.ext.mail import Mail, Message
 from urlparse import urljoin
 from werkzeug.contrib.atom import AtomFeed
-from flask_openid import OpenID
+#from flask_openid import OpenID
 from itsdangerous import TimestampSigner
 from flask_wtf import Form
 from wtforms import (BooleanField, TextField, validators, TextAreaField, RadioField)
@@ -46,13 +47,24 @@ from uuid import uuid1
 import base64
 from test_series import test_series
 
+kunjika = Flask(__name__)
+kunjika.config.from_object('config')
+
+GOOGLE_ID = kunjika.config['GOOGLE_ID']
+GOOGLE_SECRET = kunjika.config['GOOGLE_SECRET']
+FACEBOOK_ID = kunjika.config['FACEBOOK_ID']
+FACEBOOK_SECRET = kunjika.config['FACEBOOK_SECRET']
+TWITTER_KEY = kunjika.config['TWITTER_KEY']
+TWITTER_SECRET = kunjika.config['TWITTER_SECRET']
+LINKEDIN_KEY = kunjika.config['LINKEDIN_KEY']
+LINKEDIN_SECRET = kunjika.config['LINKEDIN_SECRET']
+
+from oauth_impl import OA
+
 ALLOWED_EXTENSIONS = set(['gif', 'png', 'jpg', 'jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg',
                           'tar.gz', 'tar.bz2', 'tgz', 'tbz', 'doc', 'docx', 'odf', 'odt', 'ppt', 'pptx', 'djvu'])
 
-kunjika = Flask(__name__)
-
-kunjika.config.from_object('config')
 DB_URL = kunjika.config['DB_URL']
 HOST_URL = kunjika.config['HOST_URL']
 ES_URL = kunjika.config['ES_URL']
@@ -74,7 +86,7 @@ ARTICLES_PER_PAGE = kunjika.config['ARTICLES_PER_PAGE']
 
 is_maintenance_mode = kunjika.config['MAINTENANCE_MODE']
 
-oid = OpenID(kunjika, '/tmp')
+#oid = OpenID(kunjika, '/tmp')
 
 mail = Mail(kunjika)
 admin = kunjika.config['ADMIN_EMAIL']
@@ -82,10 +94,10 @@ admin = kunjika.config['ADMIN_EMAIL']
 kunjika.config.update(
     DEBUG=True,
     # EMAIL SETTINGS
-    MAIL_SERVER='kunjika.libreprogramming.org',
+    MAIL_SERVER='10hash.com',
     MAIL_PORT=25,
     MAIL_USE_TLS=True,
-    MAIL_USERNAME='noreply@kunjika.libreprogramming.org',
+    MAIL_USERNAME='noreply@10hash.com',
     MAIL_PASSWORD=''
 )
 lm = LoginManager()
@@ -890,11 +902,8 @@ def populate_user_fields(data, form):
 
 @kunjika.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
-    # if request.args.get('email') is None:
-    #    return redirect('/')
-    document = None
     profileForm = ProfileForm(request.form)
-    if g.user is not None and g.user.is_authenticated():
+    if g.user.id != -1:
         return redirect(url_for('questions'))
     if profileForm.validate_on_submit() and request.method == 'POST':
         data = {}
@@ -954,13 +963,11 @@ def create_profile():
             except:
                 return make_response("cant login")
     return render_template('create_profile.html', form=profileForm,
-                           title="Create Profile", lpage=True, next=oid.get_next_url())
+                           title="Create Profile", lpage=True)
 
-
-@oid.after_login
-def create_or_login(resp):
-    session['openid'] = resp.identity_url
-    user = utility.filter_by(resp.email)
+@kunjika.route('/create_or_login')
+def create_or_login():
+    user = utility.filter_by(session['email'])
     if user is not None:
         if user['banned'] is True:
             return redirect(url_for('questions'))
@@ -968,7 +975,7 @@ def create_or_login(resp):
 
         session[user['id']] = user['id']
         session['logged_in'] = True
-        if 'role' in user:
+        if 'role' in user and user['role'] == 'admin':
             user['admin'] = True
 
         g.user = User(user['name'], user, user['id'])
@@ -979,11 +986,10 @@ def create_or_login(resp):
             return redirect(url_for('questions'))
         except:
             return make_response("cant login")
-    return redirect(url_for('create_profile', next=oid.get_next_url(),
-                            name=resp.fullname or resp.nickname,
-                            email=resp.email))
+    return redirect(url_for('create_profile'))
 
 
+'''
 @kunjika.route('/openid_login', methods=['GET', 'POST'])
 @oid.loginhandler
 def openid_login():
@@ -997,13 +1003,19 @@ def openid_login():
         return oid.try_login(openid, ask_for=['email', 'fullname', 'nickname'])
     return render_template('openid.html', form=registrationForm, loginForm=loginForm, title='Sign In',
                            lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+'''
 
 
 @kunjika.route('/login', methods=['GET', 'POST'])
 def login():
     registrationForm = RegistrationForm(request.form)
     loginForm = LoginForm(request.form)
-    openidForm = OpenIDForm(request.form)
+    #openidForm = OpenIDForm(request.form)
+
+    if g.user.id != -1:
+        resp = make_response(redirect(url_for('questions')))
+        resp.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
+        return resp
 
     if loginForm.validate_on_submit() and request.method == 'POST':
         try:
@@ -1029,7 +1041,9 @@ def login():
                     login_user(user, remember=True)
                     flash('You have successfully logged in.', 'success')
                     g.user = user
-                    return redirect(url_for('questions'))
+                    resp = make_response(redirect(url_for('questions')))
+                    resp.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
+                    return resp
                 except:
                     flash('Either email or password is wrong')
                     return redirect(url_for('login'))
@@ -1056,27 +1070,26 @@ def login():
                     kb.add(user['email'], user, ttl=600)
                     flash('Either email or password is wrong.', 'error')
 
-                render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
-                                lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+                render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
+                                lpage=True)
 
         except:
-            return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
-                                   title='Sign In', lpage=True,
-                                   next=oid.get_next_url(), error=oid.fetch_error())
+            return render_template('login.html', form=registrationForm, loginForm=loginForm,
+                                   title='Sign In', lpage=True)
 
     else:
-        render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
-                        lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+        render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
+                        lpage=True)
 
-    return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
-                           lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+    return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
+                           lpage=True)
 
 
 @kunjika.route('/register', methods=['POST'])
 def register():
     loginForm = LoginForm(request.form)
     registrationForm = RegistrationForm(request.form)
-    openidForm = OpenIDForm(request.form)
+    #openidForm = OpenIDForm(request.form)
     document = None
 
     if registrationForm.validate_on_submit() and request.method == 'POST':
@@ -1134,9 +1147,8 @@ def register():
             except:
                 return make_response("cant login")
 
-    return render_template('register.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
-                           title='Register', lpage=True,
-                           next=oid.get_next_url(), error=oid.fetch_error())
+    return render_template('register.html', form=registrationForm, loginForm=loginForm,
+                           title='Register', lpage=True,)
 
 
 @kunjika.route('/check_email', methods=['POST'])
@@ -1271,11 +1283,11 @@ def get_tags(qid=None):
         return json.dumps(tags_list)
 
 
-@kunjika.route('/get_tags')
+@kunjika.route('/get_tags/')
 def get_tags_ajax():
     query = request.args.get('q')
     if query is not None:
-        q = pyes.TermQuery('tag', query)
+        q = pyes.PrefixQuery('tag', query)
         tags_result = es_conn.search(query=q)
         results = []
         for r in tags_result:
@@ -1385,9 +1397,15 @@ def edits(element):
 
         if type == 'ce':
             if form.validate_on_submit():
-                if aid != 0:
+                if  aid != 0:
+                    if question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['poster'] != g.user.id and g.user.id != 1:
+                        flash('You are not author of this comment!', 'error')
+                        return redirect(request.referrer)
                     question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['comment'] = form.comment.data
                 else:
+                    if question['comments'][int(cid) - 1] != g.user.id and g.user.id != 1:
+                        flash('You are not author of this comment!', 'error')
+                        return redirect(request.referrer)
                     question['comments'][int(cid) - 1]['comment'] = form.comment.data
 
                 editor = cb.get(str(g.user.id)).value
@@ -1400,6 +1418,9 @@ def edits(element):
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
         elif type == 'ae':
             if form.validate_on_submit():
+                if question['answers'][int(aid) - 1]['poster'] != g.user.id and g.user.id != 1:
+                    flash('You are not author of this answer!', 'error')
+                    return redirect(request.referrer)
                 question['answers'][int(aid) - 1]['answer'] = form.answer.data
 
                 editor = cb.get(str(g.user.id)).value
@@ -1412,6 +1433,9 @@ def edits(element):
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
         else:
             if form.validate_on_submit():
+                if int(question['content']['op']) != g.user.id and g.user.id != 1:
+                    flash('You are not author of this question!', 'error')
+                    return redirect(request.referrer)
                 question['content']['description'] = form.description.data
                 # title editing disabled so that existing links do not break
                 # title = form.question.data
@@ -1574,7 +1598,7 @@ def postcomment():
         for answer in question['answers']:
             email_list.append(str(answer['poster']))
             if 'comments' in answer:
-                for comment in question['comments']:
+                for comment in answer['comments']:
                     email_list.append(str(comment['poster']))
 
     email_list = set(email_list)
@@ -1701,7 +1725,7 @@ def recent_feed():
         question_list.append(result.doc.value)
 
     for q in question_list:
-        feed.add(question['title'], unicode(question['content']['description']),
+        feed.add(q['title'], unicode(q['content']['description']),
                  content_type='html',
                  author=HOST_URL + 'users/' + unicode(q['content']['op']) + q['opname'],
                  url=make_external(HOST_URL + 'questions' + '/' + unicode(q['qid']) + "/" + q['content']['url']),
@@ -1777,7 +1801,7 @@ def reset_password(token=None):
             if len(document['rows']) != 0:
                 if 'id' in document['rows'][0]:
                     document = cb.get(document['rows'][0]['id']).value
-                if document['email'] == email and 'password' in document:
+                if document['email'] == email:
                     token = s.sign(email)
                     msg = Message("Password reset")
                     msg.recipients = [email]
@@ -1791,9 +1815,6 @@ def reset_password(token=None):
                                "<br/> Admin</p>"
                     mail.send(msg)
                     flash('A password reset email has been sent to you.', 'error')
-                else:
-                    flash('You seem to have openid login, your password cannot be reset here.', 'error')
-                    return redirect(url_for('login'))
             else:
                 flash('The email was not found in database.', 'error')
                 return redirect(url_for('reset_password'))
@@ -2026,11 +2047,11 @@ def administration():
             email_list = []
             for row in document['rows']:
                 each_doc = cb.get(row['id']).value
-                if each_doc['receive-email'] is True:
-                    email_list.append(row['value']['email'])
+                #if each_doc['receive-email'] is True:
+                email_list.append(each_doc['email'])
             msg = Message(form.subject.data)
             msg.recipients = email_list
-            msg.sender = (',').join(email_list)
+            msg.sender = admin
             msg.html = form.bulk_mail.data
             try:
                 mail.send(msg)
@@ -2337,7 +2358,8 @@ def article_tags(page=1):
 
 
 @kunjika.route('/save_draft/<element>', methods=['POST'])
-def save_draft(element):
+@kunjika.route('/save_draft', methods=['POST'])
+def save_draft(element=None):
     return utility.save_draft(element)
 
 
@@ -2456,6 +2478,59 @@ def get_account():
     return jsonify({'acount': acount, 'ccount': ccount})
 
 
+@kunjika.route('/hide/<id>')
+def hide(id):
+    id_list = id.split('-')
+    question = qb.get(id_list[1]).value
+    print g.user.id
+    if id_list[0] == 'h':
+        if g.user.id == 1 or g.user.id == int(question['content']['op']):
+            if 'hidden' not in question:
+                question['hidden'] = True
+            elif question['hidden']:
+                question['hidden'] = False
+            else:
+                question['hidden'] = True
+        else:
+            flash ('Either admin or OP is allowed to hide!', 'error')
+            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
+    elif id_list[0] == 'ch':
+        if g.user.id == 1 or g.user.id == ['comments'][int(id_list[2]) - 1]['op']:
+            if 'hidden' not in question['comments'][int(id_list[2]) - 1]:
+                question['comments'][int(id_list[2]) - 1]['hidden'] = True
+            elif question['comments'][int(id_list[2]) - 1]['hidden']:
+                question['comments'][int(id_list[2]) - 1]['hidden'] = False
+            else:
+                question['comments'][int(id_list[2]) - 1]['hidden'] = True
+        else:
+            flash ('Either admin or OP is allowed to hide!', 'error')
+            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
+    elif id_list[0] == 'ah':
+        if g.user.id == 1 or g.user.id == question['answers'][int(id_list[2]) - 1]['poster']:
+            if 'hidden' not in question['answers'][int(id_list[2]) - 1]:
+                question['answers'][int(id_list[2]) - 1]['hidden'] = True
+            elif question['answers'][int(id_list[2]) - 1]['hidden']:
+                question['answers'][int(id_list[2]) - 1]['hidden'] = False
+            else:
+                question['answers'][int(id_list[2]) - 1]['hidden'] = True
+        else:
+            flash ('Either admin or OP is allowed to hide!', 'error')
+            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
+    elif id_list[0] == 'ach':
+        if g.user.id == 1 or g.user.id == question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['poster']:
+            if 'hidden' not in question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]:
+                question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['hidden'] = True
+            elif question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['hidden']:
+                question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['hidden'] = False
+            else:
+                question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['hidden'] = True
+        else:
+            flash ('Either admin or OP is allowed to hide!', 'error')
+            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
+    qb.replace(id_list[1], question)
+    return redirect(url_for('questions', qid=id_list[1], url=question['content']['url']))
+
+
 @kunjika.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -2501,6 +2576,8 @@ def page_503(e):
     return render_template('503.html'), 503
 
 kunjika.register_blueprint(test_series)
+kunjika.register_blueprint(OA)
+
 
 if __name__ == '__main__':
     kunjika.run()

@@ -9,9 +9,9 @@ TODO
    message is received.
 4. Automatic private message to users upon successful email activation.
 5. Moderator on 500 points.
-6. Hide inappropriate question, answer or comment.
-7. Restore previous versions of question.
-8. Test series implementation.
+6. Restore previous versions of question.
+7. Test series implementation.
+8. Sorting by activity, votes and sorting of answers.
 
 DONE
 ====
@@ -91,3 +91,5 @@ DONE
 55. Visual notification of new questions/comments/answers when a user is browsing any part of
     the forum. e.g "A new question/comment/answer has been posted, click here to read it." Or
     "4 new questions/comments/answers have just been posted. Click here to read them."
+56. Question, answers and comments should be editable only by poster.
+57. Inappropriate question, answer or comment can be hidden.
