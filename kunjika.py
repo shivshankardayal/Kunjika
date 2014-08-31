@@ -46,6 +46,7 @@ from couchbase.views.iterator import View, Query
 from uuid import uuid1
 import base64
 from test_series import test_series
+import random
 
 kunjika = Flask(__name__)
 kunjika.config.from_object('config')
@@ -322,8 +323,11 @@ def index():
                         DB_URL + 'kunjika/_design/dev_qa/_view/get_articles'
                     ).read()
     art_count = json.loads(art_count)
+    r = random.randint(0, 0xff)
+    g = random.randint(0, 0xff)
+    b = random.randint(0, 0xff)
     return render_template('index.html', qcount=qcount, acount=acount, art_count = art_count['rows'][0]['value'],
-                           form=contactForm)
+                           form=contactForm, r=r, g=g, b=b)
 
 
 @kunjika.route('/query', methods=['POST'])
