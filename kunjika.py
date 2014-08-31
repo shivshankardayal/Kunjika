@@ -39,7 +39,7 @@ from werkzeug.contrib.atom import AtomFeed
 #from flask_openid import OpenID
 from itsdangerous import TimestampSigner
 from flask_wtf import Form
-from wtforms import (BooleanField, TextField, validators, TextAreaField, RadioField)
+from wtforms import (BooleanField, StringField, validators, TextAreaField, RadioField)
 import pyes
 import urllib
 from couchbase.views.iterator import View, Query
@@ -314,7 +314,35 @@ def load_user(uid):
     return user
 
 
-@kunjika.route('/', defaults={'page': 1}, methods=['GET', 'POST'])
+@kunjika.route('/')
+def index():
+    contactForm = ContactForm(request.form)
+    (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
+    art_count = urllib2.urlopen(
+                        DB_URL + 'kunjika/_design/dev_qa/_view/get_articles'
+                    ).read()
+    art_count = json.loads(art_count)
+    return render_template('index.html', qcount=qcount, acount=acount, art_count = art_count['rows'][0]['value'],
+                           form=contactForm)
+
+
+@kunjika.route('/query', methods=['POST'])
+def query():
+    contactForm = ContactForm(request.form)
+    if request.method == 'POST' and contactForm.validate_on_submit():
+        name = contactForm.name.data
+        email = contactForm.email.data
+        message = contactForm.message.data
+
+        msg = Message("A new query from" + name)
+        msg.recipients = [admin]
+        msg.sender = admin
+        msg.html = "A new query from " + email + "is below</br>" + message
+        mail.send(msg)
+        flash('Your message has been successfully sent!', 'info')
+        return redirect(url_for('index'))
+
+
 @kunjika.route('/questions', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>', methods=['GET', 'POST'])
 @kunjika.route('/questions/<qid>/<url>', methods=['GET', 'POST'])
@@ -1904,20 +1932,20 @@ def poll():
     pollForm = PollForm(request.form)
 
     class ChoiceForm(Form):
-        tags = TextField('Tags', [validators.Length(min=1, max=100), validators.Required()])
-        question = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
+        tags = StringField('Tags', [validators.Length(min=1, max=100), validators.DataRequired()])
+        question = StringField('Question', [validators.Length(min=4, max=200), validators.DataRequired()])
         option = RadioField('What type of poll do you want?', choices=[('Single choice', 'Single Choice'), ('Multiple choice', 'Multiple choice')])
-        description = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
-        option_1 = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
-        option_2 = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
-        option_3 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
-        option_4 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
-        option_5 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
-        option_6 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
-        option_7 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
-        option_8 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
-        option_9 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
-        option_10 = TextField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        description = TextAreaField('', [validators.Length(min=20, max=5000), validators.DataRequired()])
+        option_1 = StringField('Question', [validators.Length(min=4, max=200), validators.DataRequired()])
+        option_2 = StringField('Question', [validators.Length(min=4, max=200), validators.DataRequired()])
+        option_3 = StringField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_4 = StringField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_5 = StringField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_6 = StringField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_7 = StringField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_8 = StringField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_9 = StringField('Question', [validators.Length(min=4, max=200), validators.Optional()])
+        option_10 = StringField('Question', [validators.Length(min=4, max=200), validators.Optional()])
 
     questionForm = ChoiceForm(request.form)
 

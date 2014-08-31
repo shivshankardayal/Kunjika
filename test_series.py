@@ -138,14 +138,14 @@ def add_objective_question():
             ('sue', 'Structures, Unions and Eums'), ('threading', 'Multithreading'), ('typedef', 'Typedef'), ('vararg', 'Variable Arguments')])
         option = RadioField('What type of question do you want?', choices=[('Single choice', 'Single Choice'),
                                                                            ('Multiple choice', 'Multiple choice')])
-        description = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
-        option_1 = TextField('Question', [validators.Length(min=1, max=200), validators.Required()])
-        option_2 = TextField('Question', [validators.Length(min=1, max=200), validators.Required()])
-        option_3 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
-        option_4 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
-        option_5 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
-        option_6 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
-        answers = TextField('Answers', [validators.Length(min=1, max=200), validators.Required()])
+        description = TextAreaField('', [validators.Length(min=20, max=5000), validators.DataRequired()])
+        option_1 = StringField('Question', [validators.Length(min=1, max=200), validators.DataRequired()])
+        option_2 = StringField('Question', [validators.Length(min=1, max=200), validators.DataRequired()])
+        option_3 = StringField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        option_4 = StringField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        option_5 = StringField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        option_6 = StringField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        answers = StringField('Answers', [validators.Length(min=1, max=200), validators.DataRequired()])
 
     questionForm = ChoiceForm(request.form)
 
@@ -261,14 +261,14 @@ def edit_test(element):
     class ChoiceForm(Form):
         option = RadioField('What type of question do you want?', choices=[('Single choice', 'Single Choice'),
                                                                            ('Multiple choice', 'Multiple choice')])
-        description = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
-        option_1 = TextField('Question', [validators.Length(min=1, max=200), validators.Required()])
-        option_2 = TextField('Question', [validators.Length(min=1, max=200), validators.Required()])
-        option_3 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
-        option_4 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
-        option_5 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
-        option_6 = TextField('Question', [validators.Length(min=1, max=200), validators.Optional()])
-        answers = TextField('Answers', [validators.Length(min=1, max=200), validators.Required()])
+        description = TextAreaField('', [validators.Length(min=20, max=5000), validators.DataRequired()])
+        option_1 = StringField('Question', [validators.Length(min=1, max=200), validators.DataRequired()])
+        option_2 = StringField('Question', [validators.Length(min=1, max=200), validators.DataRequired()])
+        option_3 = StringField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        option_4 = StringField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        option_5 = StringField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        option_6 = StringField('Question', [validators.Length(min=1, max=200), validators.Optional()])
+        answers = StringField('Answers', [validators.Length(min=1, max=200), validators.DataRequired()])
 
     form = ChoiceForm(request.form)
     choices = []

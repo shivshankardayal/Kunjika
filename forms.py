@@ -15,67 +15,67 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 from flask_wtf import Form, RecaptchaField
-from wtforms import (BooleanField, TextField, PasswordField, validators, TextAreaField,
+from wtforms import (BooleanField, StringField, PasswordField, validators, TextAreaField,
                         RadioField, SelectField)
 
 
 class RegistrationForm(Form):
     password = PasswordField('Password', [
-        validators.Required(),
+        validators.DataRequired(),
         validators.EqualTo('confirm', message='Passwords must match'),
         validators.Length(min=8, max=32)
     ])
     confirm = PasswordField('Confirm Password')
-    fname = TextField('First Name', [validators.Length(min=2, max=32), validators.Required()])
-    lname = TextField('Last Name', [validators.Length(min=2, max=32), validators.Required()])
-    email1 = TextField('Email', [validators.Length(min=5, max=48), validators.Required(),
+    fname = StringField('First Name', [validators.Length(min=2, max=32), validators.DataRequired()])
+    lname = StringField('Last Name', [validators.Length(min=2, max=32), validators.DataRequired()])
+    email1 = StringField('Email', [validators.Length(min=5, max=48), validators.DataRequired(),
                                  validators.Email(message='Either email is invalid or already registered.')])
-    recaptcha = RecaptchaField(validators.Required())
+    recaptcha = RecaptchaField(validators.DataRequired())
 
 
 class LoginForm(Form):
-    email = TextField('Email', [validators.Length(min=4, max=64), validators.Required(),
+    email = StringField('Email', [validators.Length(min=4, max=64), validators.DataRequired(),
                                 validators.Email()])
     password = PasswordField('Password', [
-        validators.Required(),
+        validators.DataRequired(),
         validators.Length(min=8, max=32)
     ])
 
 
 class OpenIDForm(Form):
-    googleid = TextField('GoogleID', [validators.Length(min=2, max=64), validators.Optional()])
-    yahooid = TextField('YahooID', [validators.Length(min=2, max=64), validators.Optional()])
+    googleid = StringField('GoogleID', [validators.Length(min=2, max=64), validators.Optional()])
+    yahooid = StringField('YahooID', [validators.Length(min=2, max=64), validators.Optional()])
 
 
 class QuestionForm(Form):
-    question = TextField('Question', [validators.Length(min=4, max=200), validators.Required()])
-    description = TextAreaField('', [validators.Length(min=20, max=50000), validators.Required()])
-    tags = TextField('Tags', [validators.Length(min=1, max=100), validators.Required()])
+    question = StringField('Question', [validators.Length(min=4, max=200), validators.DataRequired()])
+    description = TextAreaField('', [validators.Length(min=20, max=50000), validators.DataRequired()])
+    tags = StringField('Tags', [validators.Length(min=1, max=100), validators.DataRequired()])
 
 
 class AnswerForm(Form):
-    answer = TextAreaField('', [validators.Length(min=20, max=50000), validators.Required()])
+    answer = TextAreaField('', [validators.Length(min=20, max=50000), validators.DataRequired()])
 
 
 class CommentForm(Form):
-    comment = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
+    comment = TextAreaField('', [validators.Length(min=20, max=5000), validators.DataRequired()])
 
 
 class ProfileForm(Form):
-    fname = TextField('First Name', [validators.Length(min=2, max=32), validators.Required()])
-    lname = TextField('Last Name', [validators.Length(min=2, max=32), validators.Required()])
-    email1 = TextField('Email', [validators.Length(min=5, max=48), validators.Required(),
+    fname = StringField('First Name', [validators.Length(min=2, max=32), validators.DataRequired()])
+    lname = StringField('Last Name', [validators.Length(min=2, max=32), validators.DataRequired()])
+    email1 = StringField('Email', [validators.Length(min=5, max=48), validators.DataRequired(),
                                  validators.Email(message='Either email is invalid or already registered.')])
-    recaptcha = RecaptchaField(validators.Required())
+    recaptcha = RecaptchaField(validators.DataRequired())
 
 
 class TagForm(Form):
-    info = TextAreaField('', [validators.Length(min=20, max=5000), validators.Required()])
+    info = TextAreaField('', [validators.Length(min=20, max=5000), validators.DataRequired()])
 
 
 class PasswordResetForm(Form):
     password = PasswordField('Password', [
-        validators.Required(),
+        validators.DataRequired(),
         validators.EqualTo('confirm', message='Passwords must match'),
         validators.Length(min=8, max=32)
     ])
@@ -83,7 +83,7 @@ class PasswordResetForm(Form):
 
 
 class EmailForm(Form):
-    email = TextField('Email', [validators.Length(min=5, max=48),validators.Required(),
+    email = StringField('Email', [validators.Length(min=5, max=48),validators.DataRequired(),
                                  validators.Email(message='Email is invalid')])
 
 
@@ -97,20 +97,22 @@ class OQForm(Form):
                                                                     ('6', '6')])
 
 class SearchForm(Form):
-    query = TextAreaField('', [validators.Length(min=20, max=1000), validators.Required()])
+    query = TextAreaField('', [validators.Length(min=20, max=1000), validators.DataRequired()])
 
 
 class EditProfileForm(Form):
-    fname = TextField('First Name', [validators.Length(min=2, max=32), validators.Required()])
-    lname = TextField('Last Name', [validators.Length(min=2, max=32), validators.Required()])
-    website = TextField('Website', [validators.Length(min=2, max=160), validators.optional()])
-    location = TextField('Location', [validators.Length(min=2, max=60), validators.optional()])
+    fname = StringField('First Name', [validators.Length(min=2, max=32), validators.DataRequired()])
+    lname = StringField('Last Name', [validators.Length(min=2, max=32), validators.DataRequired()])
+    website = StringField('Website', [validators.Length(min=2, max=160), validators.optional()])
+    location = StringField('Location', [validators.Length(min=2, max=60), validators.optional()])
     about_me = TextAreaField('', [validators.Length(min=20, max=5000), validators.optional()])
-    skills = TextField('Skills', [validators.Length(min=1, max=100), validators.optional()])
+    skills = StringField('Skills', [validators.Length(min=1, max=100), validators.optional()])
+
 
 class BulkEmailForm(Form):
-    subject = TextField('Subject', [validators.Length(min=2, max=200), validators.optional()])
+    subject = StringField('Subject', [validators.Length(min=2, max=200), validators.optional()])
     bulk_mail = TextAreaField('Body', [validators.Length(min=20, max=10000), validators.optional()])
+
 
 class BOQForm(Form):
     tech = SelectField('Technology:', choices=[('c', 'C'), ('cpp', 'C++'), ('java', 'Java'), ('perl', 'Perl'), \
@@ -122,7 +124,16 @@ class BOQForm(Form):
             ('sue', 'Structures, Unions and Eums'), ('threading', 'Multithreading'), ('typedef', 'Typedef'),
             ('vararg', 'Variable Arguments')])
 
+
 class ArticleForm(Form):
-    title = TextField('Title', [validators.Length(min=4, max=200), validators.Required()])
-    content = TextAreaField('', [validators.Length(min=20, max=4000000), validators.Required()])
-    tags = TextField('Tags', [validators.Length(min=1, max=100), validators.Required()])
+    title = StringField('Title', [validators.Length(min=4, max=200), validators.DataRequired()])
+    content = TextAreaField('', [validators.Length(min=20, max=4000000), validators.DataRequired()])
+    tags = StringField('Tags', [validators.Length(min=1, max=100), validators.DataRequired()])
+
+
+class ContactForm(Form):
+    name = StringField('', [validators.Length(min=2, max=32), validators.DataRequired()])
+    email = StringField('', [validators.Length(min=5, max=48), validators.DataRequired(),
+                                 validators.Email(message='Either email is invalid or already registered.')])
+    recaptcha = RecaptchaField(validators.DataRequired())
+    message = TextAreaField('', [validators.Length(min=20, max=5000), validators.DataRequired()])
