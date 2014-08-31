@@ -23,6 +23,25 @@
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
     <script src="https://malsup.github.com/jquery.form.js"></script>
     <script type="text/javascript" src="/static/js/highlight.js"></script>
+    <script type="text/javascript">
+     var ajax_call = function() {
+       var qid = {{ questions['qid'] }};
+       var acount = {{ questions['acount'] }};
+       var ccount = {{ ccount }};
+       $.getJSON('/get_account', {
+         qid: qid,
+       }, function (data) {
+           var adiff = data.acount - acount;
+           var cdiff = data.ccount - ccount;
+           var updates = adiff + cdiff;
+           if (updates > 0) {
+             flash(updates + ' new updated/s have been posted to this question! Please referesh to see them.', 'success')
+           }
+         });
+     };
+     var interval = 1000 * 60; 
+     setInterval(ajax_call, interval);
+    </script>    
     <script>
         function toggleDiv(divid) {
             var objDiv = document.getElementById(divid);
@@ -158,16 +177,14 @@
                 var converter = new Markdown.Converter();
                 Markdown.Extra.init(converter, {
                     extensions: "all",
-                    highlighter: "prettify"
                 });
 
                 responseJSON = jQuery.parseJSON(responseText);
-                str = '<div class="comment" id="c-' + responseJSON.id + '">';
+                str = '<div class="comment" id="c-' + responseJSON.id + '"><div class="content">';
                 comment = converter.makeHtml(responseJSON.comment);
                 str += comment;
-                str += " &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
+                str += "</div> &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
                 str += " " + responseJSON.ts + "</div>"
-
                 $(str).insertBefore('#f-' + id);
                 flash('Your comment has been successfully posted.', 'info')
             }
@@ -209,13 +226,13 @@
                     {% if g.user.id in questions['users_fav'] %}
                         <a class="starred"
                            title="This question is of particular interest to you. Click to favorite it."
-                           href="#" id="f-{{ questions['qid'] }}">
+                           href="#" id="p-{{ questions['qid'] }}">
                             <i class="icon-star icon-large"></i>
                         </a>
                     {% else %}
                         <a class="unstarred"
                            title="This question is of particular interest to you. Click to favorite it."
-                           href="#" id="f-{{ questions['qid'] }}">
+                           href="#" id="p-{{ questions['qid'] }}">
                             <i class="icon-star icon-large"></i>
                         </a>
                     {% endif %}
@@ -245,7 +262,7 @@
                             <td class="vt">
                                 <a href="/bookmark/{{ questions['qid'] }}" title="Bookmark this question"
                                    id="b-{{ questions['qid'] }}" class="bookmark" title=""><i class="icon-bookmark"
-                                                                                            style="color:#d00"></i> Bookamrk</a>
+                                                                                            style="color:#d00"></i> Bookmark</a>
                             </td>
                         {% if g.user.id == 1 %}
                             <td class="vt">
@@ -502,7 +519,7 @@
                     {% from "macros.html" import render_field %}
                     {{ form.csrf_token }}
                     <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}-{{ answer['aid'] }}">
-                        <div id="wmd-button-bar" class="wmd-bar"></div>
+                        <div id="wmd-button-bar-{{ questions['qid'] }}-{{ answer['aid'] }}" class="wmd-bar"></div>
                         <div class="control-group">
                             <label for="answer" class="control-label"></label>
 
@@ -545,7 +562,7 @@
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
             <div class="wmd-panel">
-                <div id="wmd-button-bar"></div>
+                <div id="wmd-button-bar" class="wmb-bar"></div>
 
                 {{ render_field(form.answer, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please post your answer here..") }}
                 <div id="insertImageDialog" title="&nbsp;Insert Image or File">

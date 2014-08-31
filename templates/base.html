@@ -22,7 +22,7 @@
                             m.parentNode.insertBefore(a, m)
                         })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-                        ga('create', 'UA-17487464-5', 'libreprogramming.org');
+                        ga('create', 'UA-17487464-6', 'libreprogramming.org');
                         ga('send', 'pageview');
 
                     </script>
@@ -73,8 +73,8 @@
 			<!--link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"-->
             <link rel="stylesheet" href="/static/css/font-awesome.css">
             <!--[if IE 7]>
-	<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome-ie7.css">
-	<![endif]-->
+	            <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome-ie7.css">
+	        <![endif]-->
         {% endblock %}
         {% block js_jquery %}
             <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -163,6 +163,7 @@
                                         <li><a href="/articles">Browse</a></li>
                                         <li><a href="/write">Write</a></li>
                                         <li><a href="/article_tags">Article Tags</a></li>
+                                        <li><a href="/drafts">My Drafts</a></li>
                                     </ul>
                                 </li>
                                 {% if tpage is defined %}
@@ -223,16 +224,16 @@
                                     <ul class="dropdown-menu">
                                         <div class="span6col-md-6">
                                             <script>
-                                                (function () {
-                                                    var cx = '000002629091691089689:h-fe73fdhdy';
-                                                    var gcse = document.createElement('script');
-                                                    gcse.type = 'text/javascript';
-                                                    gcse.async = true;
-                                                    gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-                                                            '//www.google.com/cse/cse.js?cx=' + cx;
-                                                    var s = document.getElementsByTagName('script')[0];
-                                                    s.parentNode.insertBefore(gcse, s);
-                                                })();
+                                              (function() {
+                                                var cx = '000002629091691089689:clsskp1pmkm';
+                                                var gcse = document.createElement('script');
+                                                gcse.type = 'text/javascript';
+                                                gcse.async = true;
+                                                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                                                    '//www.google.com/cse/cse.js?cx=' + cx;
+                                                var s = document.getElementsByTagName('script')[0];
+                                                s.parentNode.insertBefore(gcse, s);
+                                              })();
                                             </script>
                                             <gcse:search></gcse:search>
                                         </div>

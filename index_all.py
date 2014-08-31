@@ -18,7 +18,7 @@
 # script.
 
 import pyes
-from couchbase.views.iterator import View, Query
+#from couchbase.views.iterator import View, Query
 from couchbase import Couchbase
 from couchbase.exceptions import *
 import urllib2

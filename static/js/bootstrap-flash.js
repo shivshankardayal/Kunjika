@@ -9,13 +9,13 @@
 
 (function(){
     $(document).ready(function () {
-        $("body").prepend('<div class="bootstrap-flash alert alert-success alert-error hide centered-seven-fifty-px" style="height:35px;display: None;vertical-align:middle;"><a class="btn close" href="#" onclick="$(this).parent().hide();return false;">&times;</a><p style="vertical-align:middle;margin:0!important"></p></div>');
+        $("body").prepend('<div class="bootstrap-flash alert alert-success alert-error hide centered-seven-fifty-px" style="height:30px;display: None;vertical-align:middle;"><a class="btn close" href="#" onclick="$(this).parent().hide();return false;">&times;</a><p style="vertical-align:middle;margin:0!important"></p></div>');
     });
 
     // Hide alert in 10 seconds
-    setInterval(function() {
+    /*setInterval(function() {
         $(".bootstrap-flash").fadeOut("slow");
-    }, 5000);
+    }, 5000);*/
 
     this.flash = function(msg, err) {
         var box = $(".bootstrap-flash");

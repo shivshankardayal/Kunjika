@@ -1,4 +1,5 @@
 # Copyright (c) 2013 Shiv Shankar Dayal
+# Copyright (c) 2013 Shiv Shankar Dayal
 # This file is part of Kunjika.
 #
 # Kunjika is free software: you can redistribute it and/or modify it
@@ -23,47 +24,51 @@ from couchbase import Couchbase
 from couchbase.exceptions import *
 import urllib2
 from flaskext.gravatar import Gravatar
-from werkzeug import secure_filename, SharedDataMiddleware
-import os
-from os.path import basename
-from time import localtime, strftime, time, mktime
+from werkzeug import SharedDataMiddleware
+from time import localtime, strftime, time
 from datetime import datetime
-from flask.ext.login import (LoginManager, current_user, login_required, login_user,
-                             logout_user, UserMixin, AnonymousUserMixin, confirm_login,
-                             fresh_login_required)
+from flask.ext.login import (LoginManager, current_user, login_user,
+                             logout_user, AnonymousUserMixin)
 from models import User, Anonymous
 import question
 import votes
-import edit
 import utility
-import jinja2
 from flask.ext.mail import Mail, Message
 from urlparse import urljoin
 from werkzeug.contrib.atom import AtomFeed
-from flask_openid import OpenID
+#from flask_openid import OpenID
 from itsdangerous import TimestampSigner
-from flask_wtf import Form, RecaptchaField
-from wtforms import (BooleanField, TextField, PasswordField, validators, TextAreaField, RadioField, SelectField,
-                     HiddenField)
+from flask_wtf import Form
+from wtforms import (BooleanField, TextField, validators, TextAreaField, RadioField)
 import pyes
 import urllib
 from couchbase.views.iterator import View, Query
 from uuid import uuid1
-from threading import Thread
 import base64
 from test_series import test_series
 
-ALLOWED_EXTENSIONS = set(['gif','png','jpg','jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
+kunjika = Flask(__name__)
+kunjika.config.from_object('config')
+
+GOOGLE_ID = kunjika.config['GOOGLE_ID']
+GOOGLE_SECRET = kunjika.config['GOOGLE_SECRET']
+FACEBOOK_ID = kunjika.config['FACEBOOK_ID']
+FACEBOOK_SECRET = kunjika.config['FACEBOOK_SECRET']
+TWITTER_KEY = kunjika.config['TWITTER_KEY']
+TWITTER_SECRET = kunjika.config['TWITTER_SECRET']
+LINKEDIN_KEY = kunjika.config['LINKEDIN_KEY']
+LINKEDIN_SECRET = kunjika.config['LINKEDIN_SECRET']
+
+from oauth_impl import OA
+
+ALLOWED_EXTENSIONS = set(['gif', 'png', 'jpg', 'jpeg', 'txt', 'c', 'cc', 'cpp', 'C', 'java', 'php', 'py', 'rb',
                           'zip', 'gz', 'bz2', '7z', 'pdf', 'epub', 'css', 'js', 'html', 'h', 'hh', 'hpp', 'svg',
                           'tar.gz', 'tar.bz2', 'tgz', 'tbz', 'doc', 'docx', 'odf', 'odt', 'ppt', 'pptx', 'djvu'])
 
-kunjika = Flask(__name__)
-
-kunjika.config.from_object('config')
 DB_URL = kunjika.config['DB_URL']
 HOST_URL = kunjika.config['HOST_URL']
 ES_URL = kunjika.config['ES_URL']
-MAIL_SERVER_IP  = kunjika.config['MAIL_SERVER_IP']
+MAIL_SERVER_IP = kunjika.config['MAIL_SERVER_IP']
 kunjika.debug = kunjika.config['DEBUG_MODE']
 kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
@@ -72,7 +77,7 @@ kunjika.wsgi_app = SharedDataMiddleware(kunjika.wsgi_app, {
 QUESTIONS_PER_PAGE = kunjika.config['QUESTIONS_PER_PAGE']
 TAGS_PER_PAGE = kunjika.config['TAGS_PER_PAGE']
 USERS_PER_PAGE = kunjika.config['USERS_PER_PAGE']
-#GROUPS_PER_PAGE = kunjika.config['GROUPS_PER_PAGE']
+# GROUPS_PER_PAGE = kunjika.config['GROUPS_PER_PAGE']
 
 USER_QUESTIONS_PER_PAGE = kunjika.config['USER_QUESTIONS_PER_PAGE']
 USER_ANSWERS_PER_PAGE = kunjika.config['USER_ANSWERS_PER_PAGE']
@@ -81,20 +86,20 @@ ARTICLES_PER_PAGE = kunjika.config['ARTICLES_PER_PAGE']
 
 is_maintenance_mode = kunjika.config['MAINTENANCE_MODE']
 
-oid = OpenID(kunjika, '/tmp')
+#oid = OpenID(kunjika, '/tmp')
 
 mail = Mail(kunjika)
 admin = kunjika.config['ADMIN_EMAIL']
 
 kunjika.config.update(
-	DEBUG=True,
-	#EMAIL SETTINGS
-	MAIL_SERVER='kunjika.libreprogramming.org',
-	MAIL_PORT=25,
-	MAIL_USE_TLS=True,
-	MAIL_USERNAME = 'noreply@kunjika.libreprogramming.org',
-	MAIL_PASSWORD = ''
-	)
+    DEBUG=True,
+    # EMAIL SETTINGS
+    MAIL_SERVER='10hash.com',
+    MAIL_PORT=25,
+    MAIL_USE_TLS=True,
+    MAIL_USERNAME='noreply@10hash.com',
+    MAIL_PASSWORD=''
+)
 lm = LoginManager()
 lm.init_app(kunjika)
 lm.session_protection = "strong"
@@ -107,19 +112,19 @@ kb = Couchbase.connect("kunjika")
 
 es_conn = pyes.ES(ES_URL)
 
-#Initialize count at first run. Later it is useless
+# Initialize count at first run. Later it is useless
 try:
     cb.add('count', 0)
 except:
     pass
 
-#Initialize question count at first run. Later it is useless
+# Initialize question count at first run. Later it is useless
 try:
     qb.add('qcount', 0)
 except:
     pass
 
-#Initialize question count at first run. Later it is useless
+# Initialize question count at first run. Later it is useless
 try:
     tb.add('tcount', 0)
 except:
@@ -127,115 +132,115 @@ except:
 
 # Initialize indices for different buckets
 try:
-    #es_conn.indices.delete_index("questions")
+    # es_conn.indices.delete_index("questions")
     es_conn.indices.create_index("questions")
 except:
     pass
 
 try:
-    #es_conn.indices.delete_index("users")
+    # es_conn.indices.delete_index("users")
     es_conn.indices.create_index("users")
 except:
     pass
 
 try:
-    #es_conn.indices.delete_index("tags")
+    # es_conn.indices.delete_index("tags")
     es_conn.indices.create_index("tags")
 except:
     pass
 
 try:
-    #es_conn.indices.delete_index("tags")
+    # es_conn.indices.delete_index("tags")
     es_conn.indices.create_index("articles")
 except:
     pass
 
 questions_mapping = {
-     'title': {
-         'boost': 1.0,
-         'index': 'analyzed',
-         'store': 'yes',
-         'type': 'string',
-         "term_vector": "with_positions_offsets"
-     },
-     'description': {
-         'boost': 1.0,
-         'index': 'analyzed',
-         'store': 'yes',
-         'type': 'string',
-         "term_vector": "with_positions_offsets"
-     },
-     'qid': {
-         'boost': 1.0,
-         'index': 'not_analyzed',
-         'store': 'yes',
-         'type': 'integer',
-         "term_vector": "with_positions_offsets"
-     }
+    'title': {
+        'boost': 1.0,
+        'index': 'analyzed',
+        'store': 'yes',
+        'type': 'string',
+        "term_vector": "with_positions_offsets"
+    },
+    'description': {
+        'boost': 1.0,
+        'index': 'analyzed',
+        'store': 'yes',
+        'type': 'string',
+        "term_vector": "with_positions_offsets"
+    },
+    'qid': {
+        'boost': 1.0,
+        'index': 'not_analyzed',
+        'store': 'yes',
+        'type': 'integer',
+        "term_vector": "with_positions_offsets"
+    }
 }
 
 users_mapping = {
-     'name': {
-         'boost': 1.0,
-         'index': 'analyzed',
-         'store': 'yes',
-         'type': 'string',
-         "term_vector": "with_positions_offsets"
-     },
-     'uid': {
-         'boost': 1.0,
-         'index': 'not_analyzed',
-         'store': 'yes',
-         'type': 'integer',
-         "term_vector": "with_positions_offsets"
-     }
+    'name': {
+        'boost': 1.0,
+        'index': 'analyzed',
+        'store': 'yes',
+        'type': 'string',
+        "term_vector": "with_positions_offsets"
+    },
+    'uid': {
+        'boost': 1.0,
+        'index': 'not_analyzed',
+        'store': 'yes',
+        'type': 'integer',
+        "term_vector": "with_positions_offsets"
+    }
 }
 
 tags_mapping = {
-     'tag': {
-         'boost': 1.0,
-         'index': 'analyzed',
-         'store': 'yes',
-         'type': 'string',
-         "term_vector": "with_positions_offsets"
-     },
-     'tid': {
-         'boost': 1.0,
-         'index': 'not_analyzed',
-         'store': 'yes',
-         'type': 'integer',
-         "term_vector": "with_positions_offsets"
-     }
+    'tag': {
+        'boost': 1.0,
+        'index': 'analyzed',
+        'store': 'yes',
+        'type': 'string',
+        "term_vector": "with_positions_offsets"
+    },
+    'tid': {
+        'boost': 1.0,
+        'index': 'not_analyzed',
+        'store': 'yes',
+        'type': 'integer',
+        "term_vector": "with_positions_offsets"
+    }
 }
 
 articles_mapping = {
-     'title': {
-         'boost': 1.0,
-         'index': 'analyzed',
-         'store': 'yes',
-         'type': 'string',
-         "term_vector": "with_positions_offsets"
-     },
-     'content': {
-         'boost': 1.0,
-         'index': 'analyzed',
-         'store': 'yes',
-         'type': 'string',
-         "term_vector": "with_positions_offsets"
-     },
-     'qid': {
-         'boost': 1.0,
-         'index': 'not_analyzed',
-         'store': 'yes',
-         'type': 'string',
-         "term_vector": "with_positions_offsets"
-     }
+    'title': {
+        'boost': 1.0,
+        'index': 'analyzed',
+        'store': 'yes',
+        'type': 'string',
+        "term_vector": "with_positions_offsets"
+    },
+    'content': {
+        'boost': 1.0,
+        'index': 'analyzed',
+        'store': 'yes',
+        'type': 'string',
+        "term_vector": "with_positions_offsets"
+    },
+    'qid': {
+        'boost': 1.0,
+        'index': 'not_analyzed',
+        'store': 'yes',
+        'type': 'string',
+        "term_vector": "with_positions_offsets"
+    }
 }
 
-es_conn.indices.put_mapping("questions-type", {'properties':questions_mapping}, ["questions"])
-es_conn.indices.put_mapping("users-type", {'properties':users_mapping}, ["users"])
-es_conn.indices.put_mapping("tags-type", {'properties':tags_mapping}, ["tags"])
-es_conn.indices.put_mapping("articles-type", {'properties':articles_mapping}, ["articles"])
+es_conn.indices.put_mapping("questions-type", {'properties': questions_mapping}, ["questions"])
+es_conn.indices.put_mapping("users-type", {'properties': users_mapping}, ["users"])
+es_conn.indices.put_mapping("tags-type", {'properties': tags_mapping}, ["tags"])
+es_conn.indices.put_mapping("articles-type", {'properties': articles_mapping}, ["articles"])
 
 gravatar32 = Gravatar(kunjika,
                       size=32,
@@ -275,6 +280,7 @@ if not kunjika.debug:
     mail_handler.setLevel(logging.ERROR)
     kunjika.logger.addHandler(mail_handler)
 
+
 @kunjika.before_request
 def check_for_maintenance():
     if is_maintenance_mode and request.path != url_for('maintenance'):
@@ -285,9 +291,11 @@ def check_for_maintenance():
 def maintenance():
     return 'Sorry, off for maintenance!', 503
 
+
 @kunjika.before_request
 def before_request():
     g.user = current_user
+
 
 def get_user(uid):
     try:
@@ -299,11 +307,12 @@ def get_user(uid):
     except NotFoundError:
         return None
 
+
 @lm.user_loader
 def load_user(uid):
-    ###print id
     user = get_user(int(uid))
     return user
+
 
 @kunjika.route('/', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/questions', defaults={'page': 1}, methods=['GET', 'POST'])
@@ -322,7 +331,6 @@ def questions(tag=None, page=None, qid=None, url=None):
 
     questions_dict = {}
     if tag is not None:
-	print tag
         [questions_list, count] = utility.get_questions_for_tag(page, QUESTIONS_PER_PAGE, tag)
         if not questions_list and page != 1:
             abort(404)
@@ -343,7 +351,7 @@ def questions(tag=None, page=None, qid=None, url=None):
         if not questions_list and page != 1:
             abort(404)
         pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, count)
-        #questions_list = question.get_questions()
+        # questions_list = question.get_questions()
         if g.user is None:
             return render_template('questions.html', title='Questions', qpage=True, questions=questions_list,
                                    pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
@@ -356,7 +364,13 @@ def questions(tag=None, page=None, qid=None, url=None):
                                    pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     else:
         questions_dict = question.get_question_by_id(qid, questions_dict)
-
+        ccount = 0
+        if 'comments' in questions_dict:
+            ccount += len(questions_dict['comments'])
+        if 'answers' in questions_dict:
+            for answer in questions_dict['answers']:
+                if 'comments' in answer:
+                    ccount += len(answer['comments'])
         if request.referrer == HOST_URL + "questions":
             questions_dict['views'] += 1
         elif request.host_url != HOST_URL + "":
@@ -364,7 +378,7 @@ def questions(tag=None, page=None, qid=None, url=None):
         choices = []
         votes = []
         j = 0
-        #print questions_dict['qid']
+        # print questions_dict['qid']
         similar_questions = utility.get_similar_questions(questions_dict['title'], questions_dict['qid'])
         if 'options' in questions_dict['content']:
             for option in questions_dict['content']['options']:
@@ -390,8 +404,8 @@ def questions(tag=None, page=None, qid=None, url=None):
                     else:
                         option2_votes = 0
                     votes.append((option2_votes, option))
-                    #print option2_votes
-                    #print option
+                    # print option2_votes
+                    # print option
                 elif j == 3:
                     option3_votes = urllib2.urlopen(
                         DB_URL + 'polls/_design/dev_qa/_view/get_option3_votes?key=' + '"' + qid + '"' + '&reduce=true'
@@ -473,7 +487,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                         option10_votes = 0
                     votes.append((option10_votes, option))
         if g.user is AnonymousUserMixin:
-            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict)
+            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict, ccount=ccount)
         elif g.user is not None and g.user.is_authenticated():
             user = cb.get(str(g.user.id)).value
             if 'mc' not in questions_dict['content'] and 'sc' not in questions_dict['content']:
@@ -518,7 +532,7 @@ def questions(tag=None, page=None, qid=None, url=None):
 
                         questions_dict['answers'].append(answer)
                         # Isuue 9
-                        #user['answers'].append(str(qid) + '-' + str(answer['aid']))
+                        # user['answers'].append(str(qid) + '-' + str(answer['aid']))
                         user['acount'] += 1
 
                     else:
@@ -535,7 +549,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                         questions_dict['answers'] = []
                         questions_dict['answers'].append(answer)
                         # Issue 9
-                        #user['answers'].append(str(qid) + '-' + str(answer['aid']))
+                        # user['answers'].append(str(qid) + '-' + str(answer['aid']))
                         user['acount'] += 1
 
                     questions_dict['updated'] = int(time())
@@ -571,25 +585,23 @@ def questions(tag=None, page=None, qid=None, url=None):
                         msg.recipients = email_list
                         msg.sender = admin
                         msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
-                        HOST_URL + "questions/" + str(questions_dict['qid']) + '/' + questions_dict['content']['url'] + \
-                        " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+                                   HOST_URL + "questions/" + str(questions_dict['qid']) + '/' + questions_dict['content']['url'] + \
+                                   " <br/><br/>Best regards,<br/>Kunjika Team<p>"
                         mail.send(msg)
 
-                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url'], ccount=ccount))
                 qb.replace(str(questions_dict['qid']), questions_dict)
 
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                                       similar_questions=similar_questions)
+                                       similar_questions=similar_questions, ccount=ccount)
             elif 'sc' in questions_dict['content']:
                 class PollForm(Form):
                     pass
-
-
-                #print str(votes)
+                # print str(votes)
                 setattr(PollForm, 'radio', RadioField('radio', choices=choices))
-                answerForm=PollForm(request.form)
+                answerForm = PollForm(request.form)
                 if answerForm.validate_on_submit() and request.method == 'POST':
 
                     vote = {}
@@ -638,12 +650,12 @@ def questions(tag=None, page=None, qid=None, url=None):
                     except:
                         flash('You have already voted on this question', 'error')
 
-                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url'], ccount=ccount))
                 qb.replace(str(questions_dict['qid']), questions_dict)
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                                       votes=votes, similar_questions=similar_questions)
+                                       votes=votes, similar_questions=similar_questions, ccount=ccount)
             elif 'mc' in questions_dict['content']:
                 class PollForm(Form):
                     pass
@@ -656,7 +668,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 i += 1
                 setattr(PollForm, 'option' + str(i), BooleanField('option'+str(i)))
                 options.append(option)
-                answerForm=PollForm(request.form)
+                answerForm = PollForm(request.form)
                 if answerForm.validate_on_submit() and request.method == 'POST':
                     i = 0
                     vote = {}
@@ -704,19 +716,19 @@ def questions(tag=None, page=None, qid=None, url=None):
                     except:
                         flash('You have already voted on this question', 'error')
 
-                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url']))
+                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url'], ccount=ccount))
                 qb.replace(str(questions_dict['qid']), questions_dict)
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                                       options=i, field_names=options, votes=votes, similar_questions=similar_questions)
-
+                                       options=i, field_names=options, votes=votes, similar_questions=similar_questions, ccount=ccount)
 
         else:
             qb.replace(str(questions_dict['qid']), questions_dict)
             return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                    qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
-                                   votes=votes, similar_questions=similar_questions)
+                                   votes=votes, similar_questions=similar_questions, ccount=ccount)
+
 
 @kunjika.route('/users/<uid>', defaults={'qpage': 1, 'apage': 1})
 @kunjika.route('/users/<uid>/<path:uname>', defaults={'qpage': 1, 'apage': 1})
@@ -734,7 +746,7 @@ def users(qpage=None, apage=None, uid=None, uname=None):
         abort(404)
     question_pagination = utility.Pagination(qpage, USER_QUESTIONS_PER_PAGE, user['qcount'])
     answer_pagination = utility.Pagination(apage, USER_ANSWERS_PER_PAGE, user['acount'])
-    #user = json.loads(user)
+    # user = json.loads(user)
     gravatar100 = Gravatar(kunjika,
                            size=100,
                            rating='g',
@@ -745,16 +757,18 @@ def users(qpage=None, apage=None, uid=None, uname=None):
         user['skills'] = user['skills'].sort()
     if uid in session:
         logged_in = True
-	if g.user.is_authenticated():
-	        return render_template('users.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \
-        	                       lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, \
-                	               upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user, \
-                        	       questions=questions, answers=answers, aids=aids, question_pagination=question_pagination, \
-					answer_pagination=answer_pagination, role=g.user.role) 
-    return render_template('users.html', title=user['name'], user_id=user['id'], lname=user['lname'], name=user['name'], fname=user['fname'], email=user['email'], gravatar=gravatar100, upage=True,
+        if g.user.is_authenticated():
+            return render_template('users.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'],
+                                   lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
+                                   upage=True, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
+                                   questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
+                                   answer_pagination=answer_pagination, role=g.user.role)
+    return render_template('users.html', title=user['name'], user_id=user['id'], lname=user['lname'], name=user['name'],
+                           fname=user['fname'], email=user['email'], gravatar=gravatar100, upage=True,
                            qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, user=user,
                            questions=questions, answers=answers, aids=aids, question_pagination=question_pagination,
                            answer_pagination=answer_pagination)
+
 
 @kunjika.route('/ask', methods=['GET', 'POST'])
 def ask():
@@ -763,8 +777,7 @@ def ask():
     if g.user is not None and g.user.is_authenticated():
         user = cb.get(str(g.user.id)).value
         if questionForm.validate_on_submit() and request.method == 'POST':
-            data1 = {}
-	    '''
+            '''
             try:
 
                 data = sb.get(user['email'])
@@ -803,12 +816,12 @@ def ask():
                 tag = list(tag)
                 for i in range(0, len(tag)):
                     if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
-                         or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                         or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
-                         or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
-                         or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
-                         or tag[i] == ' ':
-                        tag[i] = '-'
+                       or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
+                       or tag[i] == '+' or tag[i] == '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                       or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
+                       or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
+                       or tag[i] == ' ':
+                            tag[i] = '-'
                 tag_list.append(''.join(tag))
 
             for tag in tag_list:
@@ -819,7 +832,6 @@ def ask():
                     new_tag_list.append(tag['tag'])
 
                 except:
-                    ##print "hello"
                     new_tag_list.append(tag)
 
             question['content']['tags'] = new_tag_list
@@ -844,18 +856,16 @@ def ask():
             user = cb.get(str(g.user.id)).value
 
             user['rep'] += 1
-            #Isuue 9
-            #user['questions'].append(question['qid'])
+            # Isuue 9
+            # user['questions'].append(question['qid'])
             user['qcount'] += 1
             print question['qid']
-            es_conn.index({'title':title, 'description':question['content']['description'], 'qid':question['qid'],
-                           'position':question['qid']}, 'questions', 'questions-type', question['qid'])
+            es_conn.index({'title': title, 'description': question['content']['description'], 'qid': question['qid'],
+                           'position': question['qid']}, 'questions', 'questions-type', question['qid'])
             es_conn.indices.refresh('questions')
             qb.add(str(question['qid']), question)
 
             cb.replace(str(g.user.id), user)
-
-
             add_tags(question['content']['tags'], question['qid'])
 
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
@@ -863,6 +873,7 @@ def ask():
         return render_template('ask.html', title='Ask', form=questionForm, apage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
+
 
 def populate_user_fields(data, form):
 
@@ -886,25 +897,21 @@ def populate_user_fields(data, form):
     data['location'] = ''
     data['about-me'] = ''
     data['receive-emails'] = True
-    #data['receive-invites'] = True
+    # data['receive-invites'] = True
+
 
 @kunjika.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
-    #if request.args.get('email') is None:
-    #    return redirect('/')
-    document = None
     profileForm = ProfileForm(request.form)
-    if g.user is not None and g.user.is_authenticated():
+    if g.user.id != -1:
         return redirect(url_for('questions'))
     if profileForm.validate_on_submit() and request.method == 'POST':
-        ##print "hello"
         data = {}
-        ##print profileForm.email1.data
+        # print profileForm.email1.data
         view = urllib2.urlopen(DB_URL + 'default/_design/dev_qa/_view/get_role?stale=false').read()
         view = json.loads(view)
 
         if len(view['rows']) == 0:
-            ##print "hello1"
             data['role'] = 'admin'
             populate_user_fields(data, profileForm)
 
@@ -913,7 +920,7 @@ def create_profile():
             cb.add(str(did), data)
             user = User(data['name'], data, data['id'])
             login_user(user, remember=True)
-            es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
+            es_conn.index({'name': data['name'], 'uid': did, 'position': did}, 'users', 'users-type', did)
             es_conn.indices.refresh('users')
             g.user = user
             try:
@@ -932,11 +939,7 @@ def create_profile():
         document = urllib2.urlopen(
             DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?key=' + '"' + profileForm.email1.data + '"&stale=false').read()
         document = json.loads(document)
-        #if 'id' in document['rows'][0]:
-        #    document = cb.get(document['rows'][0]['id']).value
-        ###print(document)
         if len(document['rows']) == 0:
-            ##print "hello2"
             populate_user_fields(data, profileForm)
 
             did = cb.incr('count', 1).value
@@ -944,8 +947,7 @@ def create_profile():
             cb.add(str(did), data)
             user = User(data['name'], data, did)
             login_user(user, remember=True)
-            ##print data['name'] + ' ' + did
-            es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
+            es_conn.index({'name': data['name'], 'uid':did, 'position': did}, 'users', 'users-type', did)
             es_conn.indices.refresh('users')
             g.user = user
             try:
@@ -954,52 +956,45 @@ def create_profile():
                 msg.sender = admin
                 msg.html = "<p>Hi,<br/> Thanks for registering at kunjika. If you have not " \
                            "registered please email at " + admin + " .<br/>Best regards," \
-                                                                  "<br/> Admin<p>"
+                           "<br/> Admin<p>"
                 mail.send(msg)
 
                 return redirect(url_for('questions'))
             except:
                 return make_response("cant login")
-        #else:
-        #  document = cb.get(document['rows'][0]['id']).value
     return render_template('create_profile.html', form=profileForm,
-                           title="Create Profile", lpage=True, next=oid.get_next_url())
+                           title="Create Profile", lpage=True)
 
-@oid.after_login
-def create_or_login(resp):
-    session['openid'] = resp.identity_url
-    user = utility.filter_by(resp.email)
-    ##print user
+@kunjika.route('/create_or_login')
+def create_or_login():
+    user = utility.filter_by(session['email'])
     if user is not None:
-        if user['banned'] == True:
+        if user['banned'] is True:
             return redirect(url_for('questions'))
         flash(u'Successfully signed in')
 
-        ##print user
         session[user['id']] = user['id']
         session['logged_in'] = True
-        if 'role' in user:
+        if 'role' in user and user['role'] == 'admin':
             user['admin'] = True
 
         g.user = User(user['name'], user, user['id'])
-        user = g.user   
-        #user = User(user['name'], user, user['id'])
+        user = g.user
+        # user = User(user['name'], user, user['id'])
         try:
             login_user(user, remember=True)
             return redirect(url_for('questions'))
         except:
             return make_response("cant login")
-    return redirect(url_for('create_profile', next=oid.get_next_url(),
-                            name=resp.fullname or resp.nickname,
-                            email=resp.email))
+    return redirect(url_for('create_profile'))
 
+
+'''
 @kunjika.route('/openid_login', methods=['GET', 'POST'])
 @oid.loginhandler
 def openid_login():
     registrationForm = RegistrationForm(request.form)
     loginForm = LoginForm(request.form)
-
-    ##print g.user
 
     if g.user is not AnonymousUserMixin and g.user.is_authenticated():
         return redirect(oid.get_next_url())
@@ -1008,16 +1003,22 @@ def openid_login():
         return oid.try_login(openid, ask_for=['email', 'fullname', 'nickname'])
     return render_template('openid.html', form=registrationForm, loginForm=loginForm, title='Sign In',
                            lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+'''
+
 
 @kunjika.route('/login', methods=['GET', 'POST'])
 def login():
     registrationForm = RegistrationForm(request.form)
     loginForm = LoginForm(request.form)
-    openidForm = OpenIDForm(request.form)
+    #openidForm = OpenIDForm(request.form)
+
+    if g.user.id != -1:
+        resp = make_response(redirect(url_for('questions')))
+        resp.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
+        return resp
 
     if loginForm.validate_on_submit() and request.method == 'POST':
         try:
-            #document = json.loads(document)
             document = urllib2.urlopen(
                 DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + urllib2.quote(loginForm.email.data) + '"').read()
             document = json.loads(document)['rows']
@@ -1040,7 +1041,9 @@ def login():
                     login_user(user, remember=True)
                     flash('You have successfully logged in.', 'success')
                     g.user = user
-                    return redirect(url_for('questions'))
+                    resp = make_response(redirect(url_for('questions')))
+                    resp.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
+                    return resp
                 except:
                     flash('Either email or password is wrong')
                     return redirect(url_for('login'))
@@ -1057,8 +1060,8 @@ def login():
                         msg.recipients = [user['email']]
                         msg.sender = admin
                         msg.html = "<p>Hi,<br/> Your account has been banned because more than " + kunjika.config['MAX_FAILED_LOGINS'] + " attempts " \
-                           "of login have failed in 10 minutes. Please reset your password to login. <br/>Best regards," \
-                                                                  "<br/> Admin<p>"
+                                   "of login have failed in 10 minutes. Please reset your password to login. <br/>Best regards," \
+                                   "<br/> Admin<p>"
                         mail.send(msg)
                 except:
                     user = {}
@@ -1067,28 +1070,26 @@ def login():
                     kb.add(user['email'], user, ttl=600)
                     flash('Either email or password is wrong.', 'error')
 
-                render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
-                                lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+                render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
+                                lpage=True)
 
         except:
-            return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
-                                   title='Sign In', lpage=True,
-                                   next=oid.get_next_url(), error=oid.fetch_error())
-
+            return render_template('login.html', form=registrationForm, loginForm=loginForm,
+                                   title='Sign In', lpage=True)
 
     else:
-        render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
-                        lpage=True, next=oid.get_next_url(),error=oid.fetch_error())
+        render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
+                        lpage=True)
 
-    return render_template('login.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm, title='Sign In',
-                           lpage=True, next=oid.get_next_url(), error=oid.fetch_error())
+    return render_template('login.html', form=registrationForm, loginForm=loginForm, title='Sign In',
+                           lpage=True)
 
 
 @kunjika.route('/register', methods=['POST'])
 def register():
     loginForm = LoginForm(request.form)
     registrationForm = RegistrationForm(request.form)
-    openidForm = OpenIDForm(request.form)
+    #openidForm = OpenIDForm(request.form)
     document = None
 
     if registrationForm.validate_on_submit() and request.method == 'POST':
@@ -1109,7 +1110,7 @@ def register():
             user = User(data['name'], data, data['id'])
             login_user(user, remember=True)
             g.user = user
-            es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
+            es_conn.index({'name': data['name'], 'uid': did, 'position': did}, 'users', 'users-type', did)
             es_conn.indices.refresh('users')
             return redirect(url_for('questions'))
 
@@ -1119,7 +1120,6 @@ def register():
         if len(document['rows']) != 0:
             if 'id' in document['rows'][0]:
                 document = cb.get(document['rows'][0]['id']).value
-                #print(document)
         else:
             data['password'] = passwd_hash
             populate_user_fields(data, registrationForm)
@@ -1132,7 +1132,7 @@ def register():
             try:
                 login_user(user, remember=True)
                 g.user = user
-                es_conn.index({'name':data['name'], 'uid':did, 'position':did}, 'users', 'users-type', did)
+                es_conn.index({'name': data['name'], 'uid': did, 'position': did}, 'users', 'users-type', did)
                 es_conn.indices.refresh('users')
                 flash('Thanks for registration. We hope you enjoy your stay here too.', 'success')
                 msg = Message("Registration at Kunjika")
@@ -1140,16 +1140,15 @@ def register():
                 msg.sender = admin
                 msg.html = "<p>Hi,<br/> Thanks for registering at kunjika. If you have not " \
                            "registered please email at " + admin + " .<br/>Best regards," \
-                                                                  "<br/> Admin<p>"
+                           "<br/> Admin<p>"
                 mail.send(msg)
 
                 return redirect(url_for('questions'))
             except:
                 return make_response("cant login")
 
-    return render_template('register.html', form=registrationForm, loginForm=loginForm, openidForm=openidForm,
-                           title='Register', lpage=True,
-                           next=oid.get_next_url(), error=oid.fetch_error())
+    return render_template('register.html', form=registrationForm, loginForm=loginForm,
+                           title='Register', lpage=True,)
 
 
 @kunjika.route('/check_email', methods=['POST'])
@@ -1170,6 +1169,7 @@ def check_email():
             return '1'
     except:
         return '1'
+
 
 @kunjika.route('/logout')
 def logout():
@@ -1202,6 +1202,7 @@ def image_upload():
             data['mesage'] = "Invalid image file"
 
         return json.dumps(data)
+
 
 @kunjika.route('/uploads/<string:filename>', methods=['GET'])
 def get_uploads(filename):
@@ -1257,10 +1258,12 @@ def image_upload():
             return json.dumps(data)
 '''
 
+
 @kunjika.route('/get_tags/<qid>', methods=['GET', 'POST'])
-@kunjika.route('/get_tags/', defaults={'qid' : None}, methods=['GET', 'POST'])
 def get_tags(qid=None):
+    print request.url
     if qid is not None:
+        print "hello"
         question = qb.get(str(qid)).value
 
         tags = question['content']['tags']
@@ -1268,7 +1271,6 @@ def get_tags(qid=None):
         tags_list = []
         tids_list = []
         for i in tags:
-            #print i
             tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(i) + '"').read()
             tag = json.loads(tag)['rows'][0]['id']
             tids_list.append(tag)
@@ -1279,25 +1281,26 @@ def get_tags(qid=None):
         for tid in tids_list:
             tags_list.append({"id": val_res[str(tid)].value['tid'], "name": val_res[str(tid)].value['tag']})
         return json.dumps(tags_list)
-    else:
-        query = request.args.get('q')
-        #print query
-        if query is not None:
-            q=pyes.MatchQuery('tag', query)
-            tags_result=es_conn.search(query=q)
-            results=[]
 
-            for r in tags_result:
-                results.append({'id': str(r['tid']), 'name':r['tag']})
 
-            return json.dumps(results)
+@kunjika.route('/get_tags/')
+def get_tags_ajax():
+    query = request.args.get('q')
+    if query is not None:
+        q = pyes.PrefixQuery('tag', query)
+        tags_result = es_conn.search(query=q)
+        results = []
+        for r in tags_result:
+            results.append({'id': str(r['tid']), 'name': r['tag']})
+
+        return json.dumps(results)
+
 
 def add_tags(tags_passed, qid):
     for tag in tags_passed:
         try:
             document = tb.get(tag).value
             document['count'] += 1
-            #document['qid'].append(qid)
             tb.replace(tag.lower(), document)
 
         except:
@@ -1307,24 +1310,21 @@ def add_tags(tags_passed, qid):
             data['tag'] = tag
             data['count'] = 1
             data['info'] = ""
-            #data['qid'].append(qid)
-
             tid = tb.incr('tcount', 1).value
             data['tid'] = tid
 
             tb.add(tag, data)
-            es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
+            es_conn.index({'tag': tag, 'tid': tid, 'position': tid}, 'tags', 'tags-type', tid)
             es_conn.indices.refresh('tags')
 
 
 def replace_tags(tags_passed, qid, current_tags):
     for tag in tags_passed:
         if tag not in current_tags:
-	    tid = 0
+            tid = 0
             try:
                 document = tb.get(tag).value
                 document['count'] += 1
-                #document['qid'].append(qid)
                 tb.replace(tag, document)
 
             except:
@@ -1334,13 +1334,11 @@ def replace_tags(tags_passed, qid, current_tags):
                 data['tag'] = tag
                 data['count'] = 1
                 data['info'] = ""
-                #data['qid'].append(qid)
-
                 tid = tb.incr('tcount', 1).value
                 data['tid'] = tid
 
                 tb.add(tag, data)
-                es_conn.index({'tag':tag, 'tid':tid, 'position':tid}, 'tags', 'tags-type', tid)
+                es_conn.index({'tag': tag, 'tid': tid, 'position': tid}, 'tags', 'tags-type', tid)
                 es_conn.indices.refresh('tags')
 
     for tag in current_tags:
@@ -1349,13 +1347,13 @@ def replace_tags(tags_passed, qid, current_tags):
             tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
             tid = json.loads(tag)['rows'][0]['id']
             tag = tb.get(tid).value
-            #tag['qid'].remove(int(qid))
             tag['count'] -= 1
 
             tb.replace(tag['tag'], tag)
             if tag['count'] == 0:
                 tb.delete(tag['tag'])
                 tb.decr('tcount')
+
 
 @kunjika.route('/vote_clicked', methods=['GET', 'POST'])
 def vote_clicked():
@@ -1365,8 +1363,6 @@ def vote_clicked():
 @kunjika.route('/edit/<element>', methods=['GET', 'POST'])
 def edits(element):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
-    #edit_list = edit.handle_edit(element)
-    #p##print(edit_list)
 
     aid = 0
     cid = 0
@@ -1394,16 +1390,22 @@ def edits(element):
     if request.method == 'POST':
         if 'version' not in question:
             question['version'] = 1
-            question['type'] = 'qb' # question backup
+            question['type'] = 'qb'  # question backup
             question['editor'] = g.user.id
         else:
             question['version'] += 1
 
         if type == 'ce':
             if form.validate_on_submit():
-                if aid != 0:
+                if  aid != 0:
+                    if question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['poster'] != g.user.id and g.user.id != 1:
+                        flash('You are not author of this comment!', 'error')
+                        return redirect(request.referrer)
                     question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['comment'] = form.comment.data
                 else:
+                    if question['comments'][int(cid) - 1] != g.user.id and g.user.id != 1:
+                        flash('You are not author of this comment!', 'error')
+                        return redirect(request.referrer)
                     question['comments'][int(cid) - 1]['comment'] = form.comment.data
 
                 editor = cb.get(str(g.user.id)).value
@@ -1416,6 +1418,9 @@ def edits(element):
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
         elif type == 'ae':
             if form.validate_on_submit():
+                if question['answers'][int(aid) - 1]['poster'] != g.user.id and g.user.id != 1:
+                    flash('You are not author of this answer!', 'error')
+                    return redirect(request.referrer)
                 question['answers'][int(aid) - 1]['answer'] = form.answer.data
 
                 editor = cb.get(str(g.user.id)).value
@@ -1428,40 +1433,42 @@ def edits(element):
             return redirect(url_for('questions', qid=int(qid), url=utility.generate_url(question['title'])))
         else:
             if form.validate_on_submit():
+                if int(question['content']['op']) != g.user.id and g.user.id != 1:
+                    flash('You are not author of this question!', 'error')
+                    return redirect(request.referrer)
                 question['content']['description'] = form.description.data
                 # title editing disabled so that existing links do not break
-                #title = form.question.data
-                #url = utility.generate_url(title)
-                #question['content']['url'] = url
-                #question['title'] = title
+                # title = form.question.data
+                # url = utility.generate_url(title)
+                # question['content']['url'] = url
+                # question['title'] = title
                 tags = form.tags.data.split(',')
                 tags = [tag.strip(' \t').lower() for tag in tags]
                 tag_list = []
-                #question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
+                # question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
                 current_tags = question['content']['tags']
                 new_tag_list = []
                 for tag in tags:
                     tag = list(tag)
                     for i in range(0, len(tag)):
                         if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
-                             or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                             or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
-                             or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
-                             or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
-                             or tag[i] == ' ':
+                           or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
+                           or tag[i] == '+' or tag[i] == '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                           or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
+                           or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
+                           or tag[i] == ' ':
                             tag[i] = '-'
                     tag_list.append(''.join(tag))
 
                 for tag in tag_list:
                     try:
-                        #tag = int(tag)
+                        # tag = int(tag)
                         tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + str(tag)).read()
                         tid = json.loads(tag)['rows'][0]['id']
                         tag = tb.get(str(tid)).value
                         new_tag_list.append(tag['tag'])
 
                     except:
-                        ##print "hello"
                         new_tag_list.append(tag)
 
                 question['updated'] = int(time())
@@ -1471,8 +1478,8 @@ def edits(element):
                 qb.replace(str(qid), question)
 
                 kb.add(edit_list[1] + '_v' + str(question['version']), question)
-                es_conn.index({'title':question['title'], 'description':question['content']['description'], 'qid':question['qid'],
-                               'position':question['qid']}, 'questions', 'questions-type', question['qid'])
+                es_conn.index({'title': question['title'], 'description': question['content']['description'], 'qid': question['qid'],
+                               'position': question['qid']}, 'questions', 'questions-type', question['qid'])
                 es_conn.indices.refresh('questions')
 
                 replace_tags(question['content']['tags'], question['qid'], current_tags)
@@ -1492,6 +1499,7 @@ def answer_accepted():
 def favorited():
     return utility.handle_favorite(request.args.get('id'))
 
+
 @kunjika.route('/flag')
 def flag():
     idntfr = request.args.get('id')
@@ -1501,7 +1509,6 @@ def flag():
 
     question = qb.get(str(idntfr_list[1])).value
     op_id = 0
-    ##print idntfr_list
     if idntfr_list[0] == '#qqf':
         op_id = question['content']['op']
     elif idntfr_list[0] == '#qcf':
@@ -1514,15 +1521,10 @@ def flag():
                 op_id = answer['poster']
     elif idntfr_list[0] == unicode('#qac'):
         for answer in question['answers']:
-            ##print "hello"
             if unicode(answer['aid']) == idntfr_list[2]:
                 for comment in answer['comments']:
                     if unicode(comment['cid']) == idntfr_list[3]:
                         op_id = comment['poster']
-                        ##print op_id
-
-    ##print op_id
-
     flagged_user = cb.get(str(op_id)).value
 
     msg = Message("Inappropriate content flag for element " + str(idntfr))
@@ -1541,11 +1543,9 @@ def flag():
 
     return jsonify({"success": True})
 
+
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():
-    ###print request.form
-    ###print type(request.form['comment'])
-    #user = cb.get(str(g.user.id)).value
     user = g.user.user_doc
 
     if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
@@ -1553,16 +1553,13 @@ def postcomment():
     else:
         elements = request.form['element'].split('-')
         qid = elements[0]
-        ###print "qid = " + qid
         aid = 0
-        if len(elements) == 2: # check if comment has been made on answers
+        if len(elements) == 2:  # check if comment has been made on answers
             aid = elements[1]
-            ###print "aid = ",  aid   # if it is on question aid will be zero
 
     question = qb.get(qid).value
     aid = int(aid)
     comment = {}
-    #comment['aid'] = questions_dict['acount'] + 1
     comment['comment'] = request.form['comment']
     comment['poster'] = g.user.id
     comment['opname'] = g.user.name
@@ -1590,7 +1587,6 @@ def postcomment():
             comment['cid'] = 1
             question['comments'].append(comment)
 
-    #p##print(question)
     question['updated'] = int(time())
     qb.replace(str(qid), question)
     email_list = []
@@ -1602,7 +1598,7 @@ def postcomment():
         for answer in question['answers']:
             email_list.append(str(answer['poster']))
             if 'comments' in answer:
-                for comment in question['comments']:
+                for comment in answer['comments']:
                     email_list.append(str(comment['poster']))
 
     email_list = set(email_list)
@@ -1617,19 +1613,15 @@ def postcomment():
         for id in email_users:
             email_list.append(email_users[str(id)].value['email'])
 
-        #print email_list
-
         msg = Message("A new answer has been posted to a question where you have answered or commented")
         msg.recipients = email_list
         msg.sender = admin
         msg.html = "<p>Hi,<br/><br/> A new comment has been posted which you can read at " +\
-        HOST_URL + "questions/" + str(question['qid']) + '/' + question['content']['url'] + \
-        " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+                   HOST_URL + "questions/" + str(question['qid']) + '/' + question['content']['url'] + \
+                   " <br/><br/>Best regards,<br/>Kunjika Team<p>"
         mail.send(msg)
 
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
-    #return '<div class="comment" id="c-' + str(comment['cid']) + '">' + request.form['comment'] +'<div>&mdash;</div>' \
-    #       '<a href="/users/"' + str(g.user.id) + '/' + g.user.name + '>' + g.user.name +'</a> ' + str(ts) +'</div>'
     return json.dumps({"id": comment['cid'], "comment": request.form['comment'], "user_id": g.user.id,
                        "uname": g.user.name, "ts": ts})
 
@@ -1638,13 +1630,11 @@ def postcomment():
 @kunjika.route('/unanswered/page/<int:page>')
 def unanswered(page):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
-    skip = (page - 1) * QUESTIONS_PER_PAGE
 
     q = Query(descending=True, limit=50)
     questions_list = []
     count = 0
     for result in View(qb, "dev_qa", "get_unanswered", include_docs=True, query=q):
-        ##print result
         questions_list.append(result.doc.value)
         count += 1
 
@@ -1719,8 +1709,10 @@ def show_tags(page):
     return render_template('tags.html', title='Tags', tpage=True, pagination=pagination, tags=tags,
                            no_of_tags=no_of_tags, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
+
 def make_external(url):
     return urljoin(request.url_root, url)
+
 
 @kunjika.route('/recent-questions.atom')
 def recent_feed():
@@ -1732,21 +1724,19 @@ def recent_feed():
     for result in View(qb, "dev_qa", "get_questions", include_docs=True, query=q):
         question_list.append(result.doc.value)
 
-    for question in question_list:
-        feed.add(question['title'], unicode(question['content']['description']),
-             content_type='html',
-             author=HOST_URL + 'users/' + unicode(question['content']['op']) + question['opname'],
-             url=make_external(HOST_URL + 'questions' + '/' + unicode(question['qid']) + "/" + question['content']['url']),
-             updated=datetime.fromtimestamp(question['updated']))
+    for q in question_list:
+        feed.add(q['title'], unicode(q['content']['description']),
+                 content_type='html',
+                 author=HOST_URL + 'users/' + unicode(q['content']['op']) + q['opname'],
+                 url=make_external(HOST_URL + 'questions' + '/' + unicode(q['qid']) + "/" + q['content']['url']),
+                 updated=datetime.fromtimestamp(q['updated']))
     return feed.get_response()
+
 
 @kunjika.route('/ban')
 def ban():
-    #just allow admin this
     if g.user.id == 1:
         user_id = request.args.get('id')
-
-        #user = cb.get(str(user_id)).value
         user = g.user.user_doc
         if user['banned'] is False:
             user['banned'] = True
@@ -1758,6 +1748,7 @@ def ban():
         return jsonify({"success": True})
     else:
         return jsonify({"success": False})
+
 
 @kunjika.route('/info', methods=['GET', 'POST'])
 @kunjika.route('/info/<string:tag>')
@@ -1776,6 +1767,7 @@ def tag_info(tag=None):
     else:
         return render_template('tag_info.html', title='Info', tag=tag, tpage=True)
 
+
 @kunjika.route('/edit_tag/<string:tag>', methods=['POST'])
 def edit_tag(tag):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
@@ -1787,13 +1779,13 @@ def edit_tag(tag):
     if g.user is not None and g.user.is_authenticated():
         if tagForm.validate_on_submit() and request.method == 'POST':
             tag['info'] = tagForm.info.data
-            ##print "hello"
             tb.replace(tag['tag'], tag)
             return redirect(url_for('tag_info', tag=str(tag['tag'])))
 
         return render_template('edit_tag.html', title='Edit tag', form=tagForm, tpage=True, name=g.user.name, role=g.user.role, tag=tag,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
+
 
 @kunjika.route('/reset_password', methods=['GET', 'POST'])
 @kunjika.route('/reset_password/<string:token>', methods=['GET', 'POST'])
@@ -1809,7 +1801,7 @@ def reset_password(token=None):
             if len(document['rows']) != 0:
                 if 'id' in document['rows'][0]:
                     document = cb.get(document['rows'][0]['id']).value
-                if document['email'] == email and 'password' in document:
+                if document['email'] == email:
                     token = s.sign(email)
                     msg = Message("Password reset")
                     msg.recipients = [email]
@@ -1821,13 +1813,8 @@ def reset_password(token=None):
                                "your password just send an email to " + admin + ". Note that this " \
                                "token is only valid for 1 day. <br/>Best regards," \
                                "<br/> Admin</p>"
-                    ##print type(token)
-                    ##print type(email)
                     mail.send(msg)
                     flash('A password reset email has been sent to you.', 'error')
-                else:
-                    flash('You seem to have openid login, your password cannot be reset here.', 'error')
-                    return redirect(url_for('login'))
             else:
                 flash('The email was not found in database.', 'error')
                 return redirect(url_for('reset_password'))
@@ -1850,7 +1837,6 @@ def reset_password(token=None):
                     document['password'] = passwd_hash
                     cb.replace(str(document['id']), document)
             except:
-                #print "Either signature is bad or token has expired"
                 return redirect(url_for('questions'))
 
             return redirect(url_for('questions'))
@@ -1858,27 +1844,27 @@ def reset_password(token=None):
     else:
         return redirect(url_for('questions'))
 
+
 @kunjika.route('/editing-help')
 def editing_help():
     return render_template('editing-help.html', title='Markdown Editor Help', name=g.user.name,
                            user_id=g.user.id)
 
+
 @kunjika.route('/search-help')
 def search_help():
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     if g.user is not None and g.user.is_authenticated():
-        #user = cb.get(str(g.user.id)).value
-        user = g.user.user_doc
         return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return render_template('search-help.html', title='Search help', tpage=True, name=g.user.name,
-                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                           user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+
 
 @kunjika.route('/sticky')
 def stikcy():
     if g.user.id == 1:
-        qid=request.args.get('id')[2:]
-        ##print qid
+        qid = request.args.get('id')[2:]
         question = qb.get(str(qid)).value
         if 'sticky' not in question:
             question['sticky'] = True
@@ -1888,29 +1874,28 @@ def stikcy():
             question['sticky'] = False
 
         qb.replace(str(qid), question)
-        ##print "questions stickied"
 
         return jsonify({"success": True})
     else:
         return jsonify({"success": False})
+
 
 @kunjika.route('/close')
 def close():
     if g.user.id == 1:
-        qid=request.args.get('id')[2:]
-        ##print qid
+        qid = request.args.get('id')[2:]
         question = qb.get(str(qid)).value
-        if question['close'] == False:
+        if question['close'] is False:
             question['close'] = True
-        elif question['close'] == True:
+        elif question['close'] is True:
             question['close'] = False
 
         qb.replace(str(qid), question)
-        ##print "questions stickied"
 
         return jsonify({"success": True})
     else:
         return jsonify({"success": False})
+
 
 @kunjika.route('/poll', methods=['GET', 'POST'])
 def poll():
@@ -1939,21 +1924,20 @@ def poll():
     choices = []
 
     if g.user is not None and g.user.is_authenticated():
-        #user = cb.get(str(g.user.id)).value
         user = g.user.user_doc
         if pollForm.validate_on_submit() and request.method == 'POST':
             for i in range(0, int(pollForm.poll_answers.data)):
                 choices.append(str(i+1))
 
             return render_template('create_poll.html', title='Create Poll', form=questionForm, options=choices, ppage=True, name=g.user.name, role=g.user.role,
-                       user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                                   user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
         if questionForm.validate_on_submit() and request.method == 'POST':
 
-            title =  questionForm.question.data
-            option =  questionForm.option.data
-            option_1 =  questionForm.option_1.data
-            option_2 =  questionForm.option_2.data
+            title = questionForm.question.data
+            option = questionForm.option.data
+            option_1 = questionForm.option_1.data
+            option_2 = questionForm.option_2.data
 
             question = {}
             question['content'] = {}
@@ -2001,17 +1985,12 @@ def poll():
             question['acount'] = 0
             question['views'] = 0
             question['votes_list'] = []
-
-            #user = cb.get(str(g.user.id)).value
             user = g.user.user_doc
-
             user['rep'] += 1
             user['qcount'] += 1
 
             qb.add(str(question['qid']), question)
-
             cb.replace(str(g.user.id), user)
-
             add_tags(question['content']['tags'], question['qid'])
 
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
@@ -2020,20 +1999,22 @@ def poll():
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
     return redirect(url_for('login'))
 
+
 @kunjika.route('/search', defaults={'page': 1})
 @kunjika.route('/search/<int:page>')
 def search(page=None):
-    query=request.args.get('query')
-    if query[0:6]=='title:':
+    query = request.args.get('query')
+    if query[0:6] == 'title:':
         return utility.search_title(query, page)
-    elif query[0:12]=='description:':
+    elif query[0:12] == 'description:':
         return utility.search_description(query, page)
-    elif query[0:5]=='user:':
+    elif query[0:5] == 'user:':
         return utility.search_user(query, page)
-    elif query[0:4]=='tag:':
+    elif query[0:4] == 'tag:':
         return utility.search_tag(query, page)
     else:
         return utility.search(query, page)
+
 
 @kunjika.route('/get_autocomplete', methods=['GET', 'POST'])
 def get_autocomplete():
@@ -2043,7 +2024,6 @@ def get_autocomplete():
 @kunjika.route('/send_invites', methods=['GET', 'POST'])
 def send_invites():
     res = utility.send_invites(request)
-    #not needed user = cb.get(str(g.user.id)).value
     if res is True:
         flash('Your invites were successfully sent.', 'success')
     else:
@@ -2055,12 +2035,10 @@ def send_invites():
 def administration():
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     form = BulkEmailForm(request.form)
-    #user = cb.get(str(g.user.id)).value
     try:
         user = g.user.user_doc
     except:
         return redirect(url_for('login'))
-    #print request.method
 
     if g.user.id == 1:
         if request.method == 'POST' and form.validate_on_submit():
@@ -2069,16 +2047,14 @@ def administration():
             email_list = []
             for row in document['rows']:
                 each_doc = cb.get(row['id']).value
-                if each_doc['receive-email'] is True:
-                    email_list.append(row['value']['email'])
-            ##print document
+                #if each_doc['receive-email'] is True:
+                email_list.append(each_doc['email'])
             msg = Message(form.subject.data)
             msg.recipients = email_list
-            msg.sender = (',').join(email_list)
+            msg.sender = admin
             msg.html = form.bulk_mail.data
             try:
                 mail.send(msg)
-                #print msg
                 flash('Email sent to all users.', 'success')
             except:
                 flash('Email could not be sent.', 'error')
@@ -2094,17 +2070,15 @@ def administration():
 def edit_profile(uid=None):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     form = EditProfileForm(request.form)
-    #user = cb.get(str(g.user.id)).value
     user = g.user.user_doc
 
     if (g.user.id == user['id']):
-        if request.method == 'POST' and form.validate_on_submit() :
+        if request.method == 'POST' and form.validate_on_submit():
             user['fname'] = form.fname.data
             user['lname'] = form.lname.data
             user['website'] = form.website.data
             user['location'] = form.location.data
             user['about-me'] = form.about_me.data
-            #print form.skills.data
             skills = form.skills.data.split(',')
             current_skills = []
             if 'skills' in user:
@@ -2123,7 +2097,7 @@ def edit_profile(uid=None):
         return render_template('edit_profile.html', title='Edit Profile', form=form, user=user, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
-    return redirect(url_for('users', uid=g.user.id, name=g.user.name ))
+    return redirect(url_for('users', uid=g.user.id, name=g.user.name))
 
 
 @kunjika.route('/users/<uid>/<uname>/settings', methods=['GET', 'POST'])
@@ -2131,11 +2105,10 @@ def settings(uid=None, uname=None):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     form = PasswordResetForm(request.form)
 
-    #user = cb.get(str(g.user.id)).value
     user = g.user.user_doc
 
     if (g.user.id == user['id']):
-        if request.method == 'POST' and form.validate_on_submit() :
+        if request.method == 'POST' and form.validate_on_submit():
             passwd = request.form['password']
             confirm = request.form['confirm']
 
@@ -2154,13 +2127,11 @@ def settings(uid=None, uname=None):
         return render_template('settings.html', form=form, user=user, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
 
-    return redirect(url_for('users', uid=g.user.id ))
+    return redirect(url_for('users', uid=g.user.id))
 
 
 @kunjika.route('/notify')
 def notify():
-    notify = request.args.get('#id')
-    #user = cb.get(str(g.user.id)).value
     user = g.user.user_doc
 
     if user['receive-emails'] is False:
@@ -2177,17 +2148,17 @@ def notify():
     except:
         return jsonify(response)
 
+
 @kunjika.route('/bookmark')
 def bookmark():
     qid = request.args.get('id')
     print qid.split('-')[1]
     bookmark = qb.get(qid.split('-')[1]).value
-    #print bookmark
-    bid = 'bq-' + qid.split('-')[1] + '-' + str(g.user.id) # bq stands for bookmark question
+    bid = 'bq-' + qid.split('-')[1] + '-' + str(g.user.id)  # bq stands for bookmark question
 
     try:
         bookmark_doc = kb.get(bid).value
-        if bookmark_doc['status'] == False:
+        if bookmark_doc['status'] is False:
             bookmark_doc['status'] = True
             kb.replace(bid, bookmark_doc)
             return jsonify({'bookmark': True})
@@ -2198,7 +2169,7 @@ def bookmark():
     except:
         bookmark_doc = {}
         bookmark_doc['id'] = bid
-        bookmark_doc['_type'] = 'bq' # bq stands for bookmark question
+        bookmark_doc['_type'] = 'bq'  # bq stands for bookmark question
         bookmark_doc['title'] = bookmark['title']
         bookmark_doc['qid'] = bookmark['qid']
         bookmark_doc['tags'] = bookmark['content']['tags']
@@ -2207,6 +2178,7 @@ def bookmark():
         bookmark_doc['status'] = True
         kb.add(bid, bookmark_doc)
         return jsonify({'bookmark': True})
+
 
 @kunjika.route('/users/<uid>/<name>/bookmarks', defaults={'page': 1})
 @kunjika.route('/users/<uid>/<name>/bookmarks/<int:page>')
@@ -2218,7 +2190,6 @@ def user_bookmarks(uid, name, page=1):
     questions = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_bookmarks_by_uid?limit=' +
                                 str(QUESTIONS_PER_PAGE) + '&skip=' + str(skip) + '&key=' +
                                 str(uid) + '&reduce=false').read()
-    #print questions
     count = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_bookmarks_by_uid?key=' +
                             str(uid)).read()
     count = json.loads(count)['rows']
@@ -2226,7 +2197,6 @@ def user_bookmarks(uid, name, page=1):
         count = count[0]['value']
     else:
         count = 0
-    #print count
     questions = json.loads(questions)
     qids = []
     if len(questions) > 0:
@@ -2240,7 +2210,6 @@ def user_bookmarks(uid, name, page=1):
     for qid in qids:
         questions_list.append(val_res[str(qid)].value)
 
-    #count = len(questions_list)
     if not questions_list and page != 1:
         abort(404)
     pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, int(count))
@@ -2258,14 +2227,15 @@ def user_bookmarks(uid, name, page=1):
     logged_in = False
     if uid in session:
         logged_in = True
-	if g.user.is_authenticated():
-	        return render_template('bookmarks.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \
-        	                       lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, \
-                	               role=g.user.role, bookmarks_pagination = pagination, user=user, questions=questions_list)
+        if g.user.is_authenticated():
+            return render_template('bookmarks.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'],
+                                   lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
+                                   role=g.user.role, bookmarks_pagination=pagination, user=user, questions=questions_list)
 
-    return render_template('bookmarks.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \
-        	                       lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, \
-                	               role=g.user.role, bookmarks_pagination = pagination, user=user, questions=questions_list)
+    return render_template('bookmarks.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'],
+                           lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
+                           role=g.user.role, bookmarks_pagination=pagination, user=user, questions=questions_list)
+
 
 @kunjika.route('/get_skills/<uid>', methods=['GET', 'POST'])
 def get_skills(uid=None):
@@ -2287,6 +2257,7 @@ def get_skills(uid=None):
     else:
         return json.dumps({})
 
+
 @kunjika.route('/users/<uid>/<name>/skills')
 def user_skills(uid, name):
     if not g.user.is_authenticated():
@@ -2300,11 +2271,11 @@ def user_skills(uid, name):
                            force_default=False,
                            force_lower=False)
     gravatar32 = Gravatar(kunjika,
-                           size=32,
-                           rating='g',
-                           default='identicon',
-                           force_default=False,
-                           force_lower=False)
+                          size=32,
+                          rating='g',
+                          default='identicon',
+                          force_default=False,
+                          force_lower=False)
     logged_in = False
     if uid in session:
         logged_in = True
@@ -2312,10 +2283,9 @@ def user_skills(uid, name):
     sids = []
     if 'skills' in user:
         for skill in user['skills']:
-            sid_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) + \
-                                       ',"' + urllib.quote(skill) + '"]&stale=false&reduce=false').read()
+            sid_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
+                                      ',"' + urllib.quote(skill) + '"]&stale=false&reduce=false').read()
             sid_doc = json.loads(sid_doc)
-            #print sid_doc
             for row in sid_doc['rows']:
                 sids.append(row['id'])
 
@@ -2326,49 +2296,41 @@ def user_skills(uid, name):
             has_endorsement = False
             for id in sids:
                 endorsement = val_res[str(id)].value
-                #endorser =  cb.get(str(val_res[str(id)].value['fuid']))
-                #endorsement['email'] = endorser['email']
-                #endorsement['fuid'] = endorser['id']
                 endorsement['user'] = cb.get(str(endorsement['fuid'])).value
                 endorsements.append(endorsement)
-                #print endorsement
                 if g.user.id == endorsement['fuid']:
                     has_endorsement = True
 
             sids = []
             count_doc = urllib2.urlopen(DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(user['id']) +
-                                       ',"' + urllib.quote(skill) + '"]&stale=false&reduce=true').read()
+                                        ',"' + urllib.quote(skill) + '"]&stale=false&reduce=true').read()
             count_doc = json.loads(count_doc)
-            #print count_doc
             if len(count_doc['rows']) != 0:
                 count = count_doc['rows'][0]['value']
             else:
                 count = 0
-            ##print endorsements
-
-            #print has_endorsement
-            if has_endorsement == True:
+            if has_endorsement is True:
                 skills.append({'endorsements': endorsements, 'count': count, 'has_end': True, 'tech': skill})
             else:
                 skills.append({'endorsements': endorsements, 'count': count, 'has_end': False, 'tech': skill})
         skills = sorted(skills, key=lambda k: k['count'], reverse=True)
-        #print skills
 
     if g.user.is_authenticated():
-        return render_template('skills.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'], \
-                               lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in, \
-                               role=g.user.role, user=user, skills = skills, gravatar32=gravatar32)
+        return render_template('skills.html', title=user['name'], user_id=user['id'], name=user['name'], fname=user['fname'],
+                               lname=user['lname'], email=user['email'], gravatar=gravatar100, logged_in=logged_in,
+                               role=g.user.role, user=user, skills=skills, gravatar32=gravatar32)
 
 
 @kunjika.route('/endorse')
 def endorse():
-   return utility.endorse()
+    return utility.endorse()
+
 
 @kunjika.route('/write', methods=['GET', 'POST'])
 def write_article():
     return utility.write_article()
 
-@kunjika.route('/', defaults={'page': 1}, methods=['GET', 'POST'])
+
 @kunjika.route('/articles', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/articles/<aid>', methods=['GET', 'POST'])
 @kunjika.route('/articles/<aid>/<url>', methods=['GET', 'POST'])
@@ -2378,23 +2340,46 @@ def write_article():
 def browse_articles(page=None, aid=None, tag=None, url=None):
     return utility.browse_articles(page, aid, tag)
 
+
 @kunjika.route('/article_comment', methods=['GET', 'POST'])
 def article_comment():
     return utility.article_comment()
 
+
 @kunjika.route('/edit_article/<element>', methods=['GET', 'POST'])
 def edit_article(element):
     return utility.edit_article(element)
+
 
 @kunjika.route('/article_tags', defaults={'page': 1})
 @kunjika.route('/article_tags/page/<int:page>')
 def article_tags(page=1):
     return utility.article_tags(page)
 
+
+@kunjika.route('/save_draft/<element>', methods=['POST'])
 @kunjika.route('/save_draft', methods=['POST'])
-def save_draft():
-    return
-    utility.save_draft()
+def save_draft(element=None):
+    return utility.save_draft(element)
+
+
+@kunjika.route('/edit_draft/<element>', methods=['GET', 'POST'])
+def edit_draft(element):
+    return utility.edit_draft(element)
+
+
+@kunjika.route('/drafts', defaults={'page': 1}, methods=['GET', 'POST'])
+@kunjika.route('/drafts/<did>', methods=['GET', 'POST'])
+@kunjika.route('/drafts/<did>/<url>', methods=['GET', 'POST'])
+@kunjika.route('/drafts/page/<int:page>')
+def drafts(page=None, did=None, url=None):
+    return utility.drafts(page, did, request)
+
+
+@kunjika.route('/publish/<string:element>', methods=['GET', 'POST'])
+def publish(element):
+    return utility.publish(element)
+
 
 @kunjika.route('/sitemap.xml')
 def sitemap():
@@ -2471,51 +2456,75 @@ def show_groups(page, uid, uname):
     return redirect(url_for('users', uid=g.user.id))
 '''
 
+
+@kunjika.route('/get_qcount')
+def get_qcount():
+    qcount = qb.get('qcount').value
+    return jsonify({'qcount': qcount})
+
+
+@kunjika.route('/get_account')
+def get_account():
+    qid = request.args.get('qid')
+    questions_dict = qb.get(qid).value
+    ccount = 0
+    acount = questions_dict['acount']
+    if 'comments' in questions_dict:
+        ccount += len(questions_dict['comments'])
+    if 'answers' in questions_dict:
+        for answer in questions_dict['answers']:
+            if 'comments' in answer:
+                ccount += len(answer['comments'])
+    return jsonify({'acount': acount, 'ccount': ccount})
+
+
 @kunjika.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
 
 @kunjika.errorhandler(410)
-def page_not_found(e):
+def page_410(e):
     return render_template('410.html'), 410
 
 
 @kunjika.errorhandler(403)
-def page_not_found(e):
+def page_403(e):
     return render_template('403.html'), 410
 
 
-#@kunjika.errorhandler(400)
-#def page_not_found(e):
-#    return render_template('400.html'), 400
+@kunjika.errorhandler(400)
+def page_400(e):
+    return render_template('400.html'), 400
 
 
 @kunjika.errorhandler(401)
-def page_not_found(e):
+def page_401(e):
     return render_template('401.html'), 401
 
 
 @kunjika.errorhandler(405)
-def page_not_found(e):
+def page_405(e):
     return render_template('405.html'), 405
 
 
 @kunjika.errorhandler(500)
-def page_not_found(e):
+def page_500(e):
     return render_template('500.html'), 500
 
 
 @kunjika.errorhandler(502)
-def page_not_found(e):
+def page_502(e):
     return render_template('502.html'), 502
 
 
 @kunjika.errorhandler(503)
-def page_not_found(e):
+def page_503(e):
     return render_template('503.html'), 503
 
 kunjika.register_blueprint(test_series)
+kunjika.register_blueprint(OA)
+
 
 if __name__ == '__main__':
     kunjika.run()

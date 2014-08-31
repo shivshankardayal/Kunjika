@@ -2,41 +2,16 @@ Features
 ********
 TODO
 ====
-1.  Automatic upgrade check and 1-click site upgrade.
-2.  Automatic site and DB backup, with backup scheduling to remote or cloud server.
-3.  Forum statistics (page views, active members, new members, etc) from the Admin page.
-4.  HTML fields to embed code, like Piwik Web Analytics, AdSense or any other display ad
-    integration into specific part of a the site or in template files.
-5.  Built-in firewall and IDS/IPS system.
-6.  Prevent remote access to core files except from a specified IP/user.
-7.  Banning IP/IP range.
-8.  Akismet or Defensio anti-spam integration.
-9.  Built-in website scanner to scan template files for malware and unauthorized modifications,
-    with email notification to admin to report suspected modifications
-10. Backup core files to a locked down directory, with the ability to restore modified files
-    to the originals from this directory
-11. Login Security & Monitoring (notify admin when a user with admin privileges logs in, etc).
-12. Lock and Unlock core files from admin page.
-13. jQuery lightbox integration.
-14. Visual notification of new questions/comments/answers when a user is browsing any part of
-    the forum. e.g "A new question/comment/answer has been posted, click here to read it." Or
-    "4 new questions/comments/answers have just been posted. Click here to read them."
-15. Create private discussion group.
-16. Continuous rendering of questions like discourse.org which can be configured from configuration.
-17. Option for members to complete their social network profiles on their profile page, and give
-    them the option to choose which one(s) to auto-post to.
-18. Chat, just like Stack Overflow, that only users with a certain reputation may participate
+1. Create private discussion group.
+2. Chat, just like Stack Overflow, that only users with a certain reputation may participate
     in, or any registered member can join.
-19. Sending private messages between registered members, and email notification when a private
+3. Sending private messages between registered members, and email notification when a private
     message is received.
-20. Automatic private message to users upon successful email activation.
-21. Blog module, with a liveblogging feature similar to ScribbleLive.
-22. Gallery module to enable creation of a gallery page (a blog for galleries).
-23. Moderator on 500 points.
-24. OAuth for FB, G+, Twitter and Linkedin.
-25. Hide inappropriate question, answer or comment.
-26. Restore previous versions of question.
-27. Drafts feature for article authors.
+4. Automatic private message to users upon successful email activation.
+5. Moderator on 500 points.
+6. Hide inappropriate question, answer or comment.
+7. Restore previous versions of question.
+8. Test series implementation.
 
 DONE
 ====
@@ -112,9 +87,8 @@ DONE
 51. Ability to take site offline (maintenance mode).
 52. Questions are versioned now. Every edit creates a new version.(restore to be done.)
 53. Sitemap generation
-
-Postponed for later
-===================
-1. Extra cloning of stackoverflow.
-2. Feed for users.
-4. Stop DOS.(This should not reach application and must be filtered at web server level or before).
+54. Drafts feature for article authors.
+55. Visual notification of new questions/comments/answers when a user is browsing any part of
+    the forum. e.g "A new question/comment/answer has been posted, click here to read it." Or
+    "4 new questions/comments/answers have just been posted. Click here to read them."
+56. Question, answers and comments should be editable only by poster.

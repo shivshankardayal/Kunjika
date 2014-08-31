@@ -33,7 +33,7 @@
                                 </div>
                                 {% from "macros.html" import render_field %}
                                 {{ form.csrf_token }}
-                                {{ render_field(form.email1, class="input-xlarge") }}
+                                {{ render_field(form.email1, class="input-xlarge", value=session['email'] ) }}
                                 <div class="control-group">
                                     <div class="controls">
                                         <input type="button" name="check_availability" class="btn btn-info"
@@ -42,8 +42,8 @@
                                         <div id="availability_result"></div>
                                     </div>
                                 </div>
-                                {{ render_field(form.fname, class="input-xlarge") }}
-                                {{ render_field(form.lname, class="input-xlarge") }}
+                                {{ render_field(form.fname, class="input-xlarge", value=session['fname'] ) }}
+                                {{ render_field(form.lname, class="input-xlarge"), value=session['lname']) }}
                                 <label class="control-label">ReCaptcha</label>
 
                                 <div class="control-group">

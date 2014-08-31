@@ -3,15 +3,6 @@
 {% block css_bootstrap %}
     {{ super() }}
     <link type="text/css" rel="stylesheet" href="/static/css/openid.css" />
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/js/openid-jquery.js"></script>
-    <script type="text/javascript" src="/static/js/openid-en.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        openid.img_path = '/static/images/';
-        openid.init('openid_identifier', 'openid_return_url', 'next', '{{ next }}');
-    });
-    </script>
     <style type="text/css">
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;

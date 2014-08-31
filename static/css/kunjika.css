@@ -668,6 +668,7 @@ td, th {
     width: 750px!important;
     display: table;
     margin: 0 auto;
+    padding-bottom: 3px;
 }
 
 .error {
@@ -797,3 +798,9 @@ td.invite, td.create-group {
 body {
     font-size: 14px;
 }
+
+.google, .google:hover{color:#dd4b39;width:100%;text-align: left;padding:7px;margin: 5px;}
+.twitter, .twitter:hover{ color: #00aced;width:100%;text-align: left;padding:5px;margin: 5px;}
+.facebook, .facebook:hover{color: #3b5999;width:100%;text-align: left;padding:7px;margin: 5px;}
+.linkedin, .linkedin:hover{color: #007bb6;width:100%;text-align: left;padding:5px;margin: 5px;}
+.social-login{width: 180px; float:right;margin-top: 55px;margin-right: 300px;}

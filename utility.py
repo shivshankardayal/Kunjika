@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see http://www.gnu.org/licenses/.
 import kunjika
-from flask import jsonify, g, render_template, flash, redirect, abort, make_response
+from flask import jsonify, g, render_template, flash, redirect, abort
 from math import ceil
 import urllib2
 import json
@@ -22,13 +22,14 @@ from time import strftime, localtime, time
 from flask import url_for, request
 import pyes
 import question
-from flask.ext.mail import Mail, Message
+from flask.ext.mail import Message
 from couchbase.views.iterator import View
 from couchbase.views.params import Query
-from threading import Thread
+# from threading import Thread
 from uuid import uuid1
 from forms import *
 import urllib
+
 
 def common_data():
     tag_list = []
@@ -47,6 +48,7 @@ def common_data():
 
     return (qcount, acount, tcount, ucount, tag_list)
 
+
 def common_rendering(results, query, page):
     (qcount, acount, tcount, ucount, tag_list) = common_data()
     results_set = set(results)
@@ -64,29 +66,36 @@ def common_rendering(results, query, page):
     pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))
 
     if g.user is None:
-        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:(page-1)*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+        return render_template('search.html', title='Search results for ' + query, qpage=True,
+                               questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:(page-1)*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
     elif g.user is not None and g.user.is_authenticated():
         if (len(questions_list) - (page-1)*kunjika.QUESTIONS_PER_PAGE) < kunjika.QUESTIONS_PER_PAGE:
-            return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:],
+            return render_template('search.html', title='Search results for ' + query, qpage=True,
+                                   questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:],
                                    pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
         else:
-            return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:(page-1)*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
+            return render_template('search.html', title='Search results for ' + query, qpage=True,
+                                   questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:(page-1)*kunjika.QUESTIONS_PER_PAGE +
+                                                            kunjika.QUESTIONS_PER_PAGE],
                                    pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
     if ((page-1)*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE - page-1*kunjika.QUESTIONS_PER_PAGE) < kunjika.QUESTIONS_PER_PAGE:
         return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:],
                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
     else:
-        return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:(page-1)*kunjika.QUESTIONS_PER_PAGE + kunjika.QUESTIONS_PER_PAGE],
-        pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+        return render_template('search.html', title='Search results for ' + query, qpage=True,
+                               questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:(page-1)*kunjika.QUESTIONS_PER_PAGE +
+                                                        kunjika.QUESTIONS_PER_PAGE],
+                               pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+
 
 def search(query, page):
-    title_q=pyes.MatchQuery('title', query)
-    question_q=pyes.MatchQuery('question', query)
-    title_results=kunjika.es_conn.search(query=title_q)
-    question_results=kunjika.es_conn.search(query=question_q)
+    title_q = pyes.MatchQuery('title', query)
+    question_q = pyes.MatchQuery('question', query)
+    title_results = kunjika.es_conn.search(query=title_q)
+    question_results = kunjika.es_conn.search(query=question_q)
 
-    results=[]
+    results = []
 
     for r in title_results:
         if 'qid' in r:
@@ -97,18 +106,19 @@ def search(query, page):
 
     return common_rendering(results, query, page)
 
+
 def search_title(query, page):
-    title=query[6:]
-    q=pyes.MatchQuery('title', title)
-    title_results=kunjika.es_conn.search(query=q)
-    results=[]
+    title = query[6:]
+    q = pyes.MatchQuery('title', title)
+    title_results = kunjika.es_conn.search(query=q)
+    results = []
 
     for r in title_results:
         if 'qid' in r:
             results.append(r['qid'])
-        ##print str(r)
 
     return common_rendering(results, query, page)
+
 
 def search_description(query, page):
     description=query[12:]
@@ -646,7 +656,7 @@ def get_similar_questions(title, qid):
     results=[]
 
     for r in title_results:
-        print r
+        # print r
         if 'qid' in r:
             if r['qid'] != qid:
                 question_dict = {}
@@ -807,8 +817,8 @@ def write_article():
                                user_id=g.user.id)
     return redirect(url_for('login'))
 
-def browse_articles(page, aid, tag):
 
+def browse_articles(page, aid, tag):
     if tag is not None:
         [articles_list, count] = get_articles_for_tag(page, kunjika.ARTICLES_PER_PAGE, tag)
         if not articles_list and page != 1:
@@ -834,7 +844,6 @@ def browse_articles(page, aid, tag):
         if not articles_list and page != 1:
             abort(404)
         pagination = Pagination(page, kunjika.ARTICLES_PER_PAGE, count)
-        #print articles_list
         if g.user is None:
             return render_template('browse_articles.html', title='Articles', artpage=True, articles=articles_list,
                                    pagination=pagination)
@@ -843,7 +852,7 @@ def browse_articles(page, aid, tag):
                                    name=g.user.name, role=g.user.role, user_id=g.user.id, pagination=pagination)
         else:
             return render_template('browse_articles.html', title='Articles', artpage=True, articles=articles_list,
-                                    pagination=pagination)
+                                   pagination=pagination)
     else:
         article = kunjika.kb.get(aid).value
         article['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(article['ts']))
@@ -871,25 +880,22 @@ def browse_articles(page, aid, tag):
             return render_template('single_article.html', title='Articles', artpage=True, article=article)
 
 
-
 def get_articles_for_page(page, ARTICLES_PER_PAGE, count):
     skip = (page - 1) * ARTICLES_PER_PAGE
     articles = urllib2.urlopen(
-                kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_articles?limit=' +
-                str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&descending=true&reduce=false&stale=false').read()
+        kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_articles?limit=' +
+        str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&descending=true&reduce=false&stale=false').read()
 
     rows = json.loads(articles)['rows']
     aids_list = []
     articles_list = []
     for row in rows:
-        ##print row['id']
         aids_list.append(str(row['id']))
     if len(aids_list) != 0:
         val_res = kunjika.kb.get_multi(aids_list)
 
     for id in aids_list:
         articles_list.append(val_res[str(id)].value)
-
 
     for i in articles_list:
         i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
@@ -899,23 +905,22 @@ def get_articles_for_page(page, ARTICLES_PER_PAGE, count):
 
     return articles_list
 
+
 def get_articles_for_tag(page, ARTICLES_PER_PAGE, tag):
 
     skip = (page - 1) * ARTICLES_PER_PAGE
     tag = urllib2.quote(tag, '')
     rows = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_aid_from_tag?limit=' +
-                str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&key="' + tag + '"&reduce=false&stale=false').read()
+                           str(ARTICLES_PER_PAGE) + '&skip=' + str(skip) + '&key="' + tag + '"&reduce=false&stale=false').read()
     count_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_aid_from_tag?key="' + tag + '"&reduce=true').read()
     count_doc = json.loads(count_doc)
     count = 0
     if len(count_doc['rows']) != 0:
         count = count_doc['rows'][0]['value']
 
-    #tag = kunjika.tb.get(tag).value
     rows = json.loads(rows)['rows']
     aids_list = []
     for row in rows:
-        ##print row
         aids_list.append(str(row['id']))
 
     if len(aids_list) != 0:
@@ -933,12 +938,11 @@ def get_articles_for_tag(page, ARTICLES_PER_PAGE, tag):
 
     return [articles_list, count]
 
-def article_comment():
 
+def article_comment():
     if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
         return "Comment must be between 10 and 5000 characters."
     else:
-        #print request.form['element']
         elements = request.form['element']
         aid = elements
     comment = {}
@@ -961,7 +965,6 @@ def article_comment():
     if(len(article['cids'])) != 0:
         val_res = kunjika.kb.get_multi(article['cids'])
     for cid in article['cids']:
-        #article['comments'].append(val_res[str(cid)].value)
         email_list.append(str(val_res[str(cid)].value['poster']))
 
     email_list = set(email_list)
@@ -977,8 +980,6 @@ def article_comment():
         for id in email_users:
             email_list.append(email_users[str(id)].value['email'])
 
-        #print email_list
-
         msg = Message("A new comment has been posted to the article you have written or to the article where you" +
                       "have commented.")
         msg.recipients = email_list
@@ -988,17 +989,16 @@ def article_comment():
         " <br/><br/>Best regards,<br/>Kunjika Team<p>"
         kunjika.mail.send(msg)
 
-
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
     return json.dumps({"id": cid, "comment": request.form['comment'], "user_id": g.user.id,
                        "uname": g.user.name, "ts": ts, "aid": aid})
+
 
 def edit_article(element):
     type = element[:2]
     id = element[3:]
     aid = id.split('_')[0]
     cid = None
-    #print aid
     comment = {}
     tags = str
     article = kunjika.kb.get(aid).value
@@ -1057,8 +1057,9 @@ def edit_article(element):
 
             return redirect(url_for('browse_articles', aid=aid, url=article['url']))
     else:
-        return render_template('edit_article.html', title='Edit', form=form, article=article, comment=comment, type=type, aid=aid,
-                                cid=cid, name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
+        return render_template('edit_article.html', title='Edit Article', form=form, article=article, comment=comment, type=type, aid=aid,
+                               cid=cid, name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
+
 
 def article_tags(page):
     tags_count = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_unique_article_tag_count?reduce=true').read()
@@ -1067,8 +1068,8 @@ def article_tags(page):
 
     skip = (page - 1) * kunjika.TAGS_PER_PAGE
     tags = urllib2.urlopen(
-                kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_tags_from_article?limit=' +
-                str(kunjika.TAGS_PER_PAGE) + '&skip=' + str(skip) + '&group=true').read()
+        kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_tags_from_article?limit=' +
+        str(kunjika.TAGS_PER_PAGE) + '&skip=' + str(skip) + '&group=true').read()
     tags = json.loads(tags)['rows']
 
     if not tags and page != 1:
@@ -1083,8 +1084,181 @@ def article_tags(page):
                            no_of_tags=no_of_tags)
 
 
-def save_draft():
+def save_draft(element):
+    if g.user.id == -1:
+        return redirect(url_for('login'))
     articleForm = ArticleForm(request.form)
+    if g.user is not None and g.user.is_authenticated():
+        if articleForm.validate_on_submit() and request.method == 'POST':
+            user = g.user.user_doc
+            try:
+                kunjika.kb.get(element).value
+            except:
+                if 'draft_count' not in user:
+                    user['draft_count'] = 1
+                    doc = {}
+                    doc['drafts_list'] = []
+                    doc['drafts_list'].append(1)
+                    kunjika.kb.add('dl-' + str(g.user.id), doc)
+                else:
+                    user['draft_count'] += 1
+                    drafts_list = kunjika.kb.get('dl-' + str(g.user.id)).value
+                    drafts_list['drafts_list'].append(user['draft_count'])
+                    kunjika.kb.replace('dl-' + str(g.user.id), drafts_list)
+
+            kunjika.cb.replace(str(g.user.id), user)
+            article = {}
+            article['content'] = {}
+            title = articleForm.title.data
+            article['content'] = articleForm.content.data
+            article['tags'] = []
+            article['tags'] = articleForm.tags.data.split(',')
+            article['tags'] = [tag.strip(' \t').lower() for tag in article['tags']]
+            new_tag_list = []
+            for tag in article['tags']:
+                tag = list(tag)
+                for i in range(0, len(tag)):
+                    if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
+                       or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
+                       or tag[i] == '+' or tag[i] == '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                       or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
+                       or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
+                       or tag[i] == ' ':
+                        tag[i] = '-'
+                new_tag_list.append(''.join(tag))
+            article['tags'] = new_tag_list
+            article['title'] = title
+            article['_type'] = 'd'
+
+            url = generate_url(title)
+
+            article['url'] = url
+            article['op'] = str(g.user.id)
+            article['ts'] = int(time())
+            article['updated'] = article['ts']
+            article['ip'] = request.remote_addr
+            article['aid'] = 'ad-' + str(g.user.id) + '-' + str(user['draft_count'])
+            article['opname'] = g.user.name
+            article['cids'] = []
+
+            kunjika.kb.set(str(article['aid']), article)
+            return redirect(url_for('drafts', did=article['aid'], url=article['url']))
+
+        return render_template('write_article.html', title='Write Artcile', form=articleForm, artpage=True, name=g.user.name, role=g.user.role,
+                               user_id=g.user.id)
+    return redirect(url_for('login'))
+
+
+def drafts(page, did, request):
+    if g.user.id == -1:  # -1 is the user id of anonymous user
+        return redirect(url_for('login'))
+    if did is None:
+        try:
+            count = g.user.user_doc['draft_count']
+        except:
+            flash('You have no drafts!', 'error')
+            return redirect(request.referrer)
+        drafts_list = get_drafts_for_page(page, kunjika.ARTICLES_PER_PAGE, count)
+        if not drafts_list and page != 1:
+            abort(404)
+        pagination = Pagination(page, kunjika.ARTICLES_PER_PAGE, count)
+        if g.user is None:
+            return render_template('drafts.html', title='Drafts', artpage=True, articles=drafts_list,
+                                   pagination=pagination)
+        elif g.user is not None and g.user.is_authenticated():
+            return render_template('drafts.html', title='Drafts', artpage=True, articles=drafts_list,
+                                   name=g.user.name, role=g.user.role, user_id=g.user.id, pagination=pagination)
+        else:
+            return render_template('drafts.html', title='Drafts', artpage=True, articles=drafts_list,
+                                   pagination=pagination)
+    else:
+        article = kunjika.kb.get(did).value
+        article['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(article['ts']))
+        user = kunjika.cb.get(article['op']).value
+        article['email'] = user['email']
+        article['opname'] = user['name']
+
+        if g.user is None:
+            return render_template('single_draft.html', title='Articles', artpage=True, article=article)
+
+        elif g.user is not None and g.user.is_authenticated():
+            return render_template('single_draft.html', title='Articles', artpage=True, article=article,
+                                   name=g.user.name, role=g.user.role, user_id=g.user.id)
+        else:
+            return render_template('single_draft.html', title='Articles', artpage=True, article=article)
+
+
+def get_drafts_for_page(page, ARTICLES_PER_PAGE, count):
+    skip = (page - 1) * ARTICLES_PER_PAGE
+    drafts_list = kunjika.kb.get('dl-' + str(g.user.id)).value
+    dl = drafts_list['drafts_list']
+    dids_list = dl[skip:skip+ARTICLES_PER_PAGE]
+    articles_list = []
+    dl = []
+    for did in dids_list:
+        dl.append('ad-' + str(g.user.id) + '-' + str(did))
+    if len(dl) != 0:
+        val_res = kunjika.kb.get_multi(dl)
+
+    for id in dl:
+        articles_list.append(val_res[str(id)].value)
+
+    for i in articles_list:
+        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
+
+        user = kunjika.cb.get(i['op']).value
+        i['opname'] = user['name']
+
+    return articles_list
+
+
+def edit_draft(element):
+    did = element
+    tags = str
+    article = kunjika.kb.get(did).value
+    if g.user.id != 1:
+        if int(article['op']) != int(g.user.id):
+            flash('You did not write this article!', 'error')
+            return redirect(request.referrer)
+    form = ArticleForm(request.form)
+    tags = ', '.join(article['tags'])
+
+    if request.method == 'POST' and form.validate_on_submit():
+        article['content'] = form.content.data
+        tags = form.tags.data.split(',')
+        article['tags'] = [tag.strip(' \t').lower() for tag in tags]
+        new_tag_list = []
+        for tag in article['tags']:
+            tag = list(tag)
+            for i in range(0, len(tag)):
+                if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
+                    or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
+                    or tag[i] == '+' or tag[i] == '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                    or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
+                    or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
+                    or tag[i] == ' ':
+                        tag[i] = '-'
+            new_tag_list.append(''.join(tag))
+        article['tags'] = new_tag_list
+        article['ts'] = int(time())
+        kunjika.kb.replace(str(article['aid']), article)
+
+        return redirect(url_for('drafts', did=did, url=article['url']))
+    else:
+        return render_template('edit_draft.html', title='Edit', form=form, article=article, type=type, aid=did,
+                               name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
+
+ 
+def publish(element):
+    print "In publish"
+    articleForm = ArticleForm(request.form)
+    did = element.split('-')[2:]
+    article = kunjika.kb.get(element).value
+    if g.user.id != 1:
+        if int(article['op']) != int(g.user.id):
+            flash('You did not write this article!', 'error')
+            return redirect(request.referrer)
+
     if g.user is not None and g.user.is_authenticated():
         if articleForm.validate_on_submit() and request.method == 'POST':
             article = {}
@@ -1099,16 +1273,16 @@ def save_draft():
                 tag = list(tag)
                 for i in range(0, len(tag)):
                     if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
-                         or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                         or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
-                         or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
-                         or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
-                         or tag[i] == ' ':
-                        tag[i] = '-'
+                        or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
+                        or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                        or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
+                        or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
+                        or tag[i] == ' ':
+                            tag[i] = '-'
                 new_tag_list.append(''.join(tag))
             article['tags'] = new_tag_list
             article['title'] = title
-            article['_type'] = 'd'
+            article['_type'] = 'a'
 
             url = generate_url(title)
 
@@ -1121,15 +1295,18 @@ def save_draft():
             article['opname'] = g.user.name
             article['cids'] = []
 
-            kunjika.es_conn.index({'title':title, 'content':article['content'], 'aid':article['aid'],
-                           'position':article['content']}, 'articles', 'articles-type', article['aid'])
+            kunjika.es_conn.index({'title': title, 'content': article['content'], 'aid': article['aid'],
+                                   'position': article['content']}, 'articles', 'articles-type', article['aid'])
             kunjika.es_conn.indices.refresh('articles')
             kunjika.kb.add(str(article['aid']), article)
+            kunjika.kb.delete(element)
+            dl = kunjika.kb.get('dl-' + str(g.user.id)).value
+            dl['drafts_list'].remove(int(did[0]))
+            kunjika.kb.replace('dl-' + str(g.user.id), dl)
+            return redirect(url_for('browse_articles', aid=article['aid'], url=article['url']))
 
-            return redirect(url_for('', aid=article['aid'], url=article['url']))
-
-        return render_template('write_article.html', title='Write Artcile', form=articleForm, artpage=True, name=g.user.name, role=g.user.role,
-                               user_id=g.user.id)
+        return render_template('edit_draft.html', title='Edit', form=articleForm, article=article, type=type, aid=element,
+                               name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
     return redirect(url_for('login'))
 
 
