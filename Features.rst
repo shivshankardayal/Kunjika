@@ -4,9 +4,9 @@ TODO
 ====
 1. Create private discussion group.
 2. Chat, just like Stack Overflow, that only users with a certain reputation may participate
-    in, or any registered member can join.
+   in or any registered member can join.
 3. Sending private messages between registered members, and email notification when a private
-    message is received.
+   message is received.
 4. Automatic private message to users upon successful email activation.
 5. Moderator on 500 points.
 6. Hide inappropriate question, answer or comment.
