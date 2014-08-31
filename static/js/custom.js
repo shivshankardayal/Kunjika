@@ -26,13 +26,13 @@ jQuery(function ($) {
 	
 
     // LINKS SCROLLING FUNCTION 
-	$('.navbar-nav > li').click(function(event) {
+	/*$('.navbar-nav > li').click(function(event) {
 		event.preventDefault();
 		var target = $(this).find('>a').prop('hash');
 		$('html, body').animate({
 			scrollTop: $(target).offset().top
 		}, 500);
-	});
+	});*/
 
 	
     // PRETTYPHOTO FUNCTION 
