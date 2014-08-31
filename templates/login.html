@@ -25,7 +25,7 @@
             <h3>Have an Account?</h3>
         </div>
         <div class="modal-body">
-            <div class="well">
+            <div class="">
                 <ul class="nav nav-tabs">
                     <li class="active">
                         <a href="#login" data-toggle="tab">Login</a>
@@ -33,54 +33,50 @@
                     <li>
                         <a href="#create" data-toggle="tab">Create Account</a>
                     </li>
-                    <!--li>
-                        <a href="#openid" data-toggle="tab">OpenID Login</a>
-                    </li-->
                 </ul>
                 <div id="myTabContent" class="tab-content">
-                    <div class="tab-pane active in" id="login">
-                        <form class="form-horizontal" action='/login' method="post">
-                            <div class="social-login col-md-6 pull-right">
-                                <a href='/google_login' class="btn btn-block btn-social btn-google-plus"> 
-                                    <i class="fa fa-google-plus"></i> 
-                                    Sign In with Google 
-                                </a>
-                                <a href='/fb_login' class="btn btn-block btn-social btn-facebook"> 
-                                    <i class="fa fa-facebook"></i> 
-                                    Sign In with Facebook 
-                                </a>
-                                <a href='/t_login' class="btn btn-block btn-social btn-twitter"> 
-                                    <i class="fa fa-twitter"></i> 
-                                    Sign In with Twitter 
-                                </a>
-                                <a href='/l_login' class="btn btn-block btn-social btn-linkedin"> 
-                                    <i class="fa fa-linkedin"></i> 
-                                    Sign In with Linkedin 
-                                </a>
-                            </div>
-                            <fieldset>
-                                <div id="legend">
-                                    <legend class="">
-                                        Login
-                                    </legend>
+                    <div class="tab-pane active in login-form" id="login" >
+                        <div class="row">
+
+                            <div class="main">
+                              <h3>Please Log In, or <a href="#">Sign Up</a></h3>
+                              <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                  <a ref='/fb_login' class="btn btn-block btn-social btn-facebook">
+                                    <i class="fa fa-facebook"></i> Facebook
+                                  </a>
                                 </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                     <a href='/google_login' class="btn btn-block btn-social btn-google-plus">
+                                       <i class="fa fa-google-plus"></i> Google
+                                    </a>
+                                </div>
+                              </div>
+                              <div class="login-or">
+                                <hr class="hr-or">
+                                <span class="span-or">or</span>
+                              </div>
+
+                              <form role="form">
                                 {% from "macros.html" import render_field %}
                                 {{ loginForm.csrf_token }}
-                                {{ render_field(loginForm.email, class="form-control") }}
-                                {{ render_field(loginForm.password, class="form-control") }}
-                                <div class="control-group">
-                                    <!-- Button -->
-                                    <div class="controls">
-                                        <button class="btn btn-success">
-                                            Login
-                                        </button>
-                                        <a class="reset-passwd" href="/reset_password">
-                                            Reset Password
-                                        </a>
-                                    </div>
+                                <div class="form-group">
+                                    {{ render_field(loginForm.email, class="form-control") }}
                                 </div>
-                            </fieldset>
-                        </form>
+                                <div class="form-group">
+                                    <a class="pull-right" href="/reset_password">Forgot password?</a>
+                                    {{ render_field(loginForm.password, class="form-control") }}
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn btn-primary">
+                                      <i class="fa fa-sign-in"></i> Log In
+                                    </button>
+                                </div>
+                              </form>
+                            
+                            </div>
+                            
+                          </div>
                     </div>
                     <div class="tab-pane fade" id="create">
                         <form class="form-horizontal" id="tab" method="post" action="/register">
