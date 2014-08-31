@@ -2478,6 +2478,59 @@ def get_account():
     return jsonify({'acount': acount, 'ccount': ccount})
 
 
+@kunjika.route('/hide/<id>')
+def hide(id):
+    id_list = id.split('-')
+    question = qb.get(id_list[1]).value
+    print g.user.id
+    if id_list[0] == 'h':
+        if g.user.id == 1 or g.user.id == int(question['content']['op']):
+            if 'hidden' not in question:
+                question['hidden'] = True
+            elif question['hidden']:
+                question['hidden'] = False
+            else:
+                question['hidden'] = True
+        else:
+            flash ('Either admin or OP is allowed to hide!', 'error')
+            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
+    elif id_list[0] == 'ch':
+        if g.user.id == 1 or g.user.id == ['comments'][int(id_list[2]) - 1]['op']:
+            if 'hidden' not in question['comments'][int(id_list[2]) - 1]:
+                question['comments'][int(id_list[2]) - 1]['hidden'] = True
+            elif question['comments'][int(id_list[2]) - 1]['hidden']:
+                question['comments'][int(id_list[2]) - 1]['hidden'] = False
+            else:
+                question['comments'][int(id_list[2]) - 1]['hidden'] = True
+        else:
+            flash ('Either admin or OP is allowed to hide!', 'error')
+            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
+    elif id_list[0] == 'ah':
+        if g.user.id == 1 or g.user.id == question['answers'][int(id_list[2]) - 1]['poster']:
+            if 'hidden' not in question['answers'][int(id_list[2]) - 1]:
+                question['answers'][int(id_list[2]) - 1]['hidden'] = True
+            elif question['answers'][int(id_list[2]) - 1]['hidden']:
+                question['answers'][int(id_list[2]) - 1]['hidden'] = False
+            else:
+                question['answers'][int(id_list[2]) - 1]['hidden'] = True
+        else:
+            flash ('Either admin or OP is allowed to hide!', 'error')
+            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
+    elif id_list[0] == 'ach':
+        if g.user.id == 1 or g.user.id == question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['poster']:
+            if 'hidden' not in question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]:
+                question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['hidden'] = True
+            elif question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['hidden']:
+                question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['hidden'] = False
+            else:
+                question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['hidden'] = True
+        else:
+            flash ('Either admin or OP is allowed to hide!', 'error')
+            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
+    qb.replace(id_list[1], question)
+    return redirect(url_for('questions', qid=id_list[1], url=question['content']['url']))
+
+
 @kunjika.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
