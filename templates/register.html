@@ -2,13 +2,13 @@
 {% block title %}{{ title }} - Kunjika{% endblock %}
 {% block css_bootstrap %}
     {{ super() }}
-
     <link type="text/css" rel="stylesheet" href="/static/css/openid.css" />
     <style type="text/css">
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
     </style>
+    {# TODO: probably remove this and let the user set it manually? #}
     <style>
         body {
             padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -20,127 +20,130 @@
 {% endblock %}
 {% block container %}
     <div class="container">
-        <div class="" id="loginModal">
-            <div class="modal-header">
-                <h3>Have an Account?</h3>
-            </div>
-            <div class="modal-body">
-                <div class="well">
-                    <ul class="nav nav-tabs">
-                        <li>
-                            <a href="#login" data-toggle="tab">Login</a>
-                        </li>
-                        <li class="active">
-                            <a href="#create" data-toggle="tab">Create Account</a>
-                        </li>
-                        <!--li>
-                            <a href="#openid" data-toggle="tab">OpenID Login</a>
-                        </li-->
-                    </ul>
-                    <div id="myTabContent" class="tab-content">
-                    <div class="tab-pane active in" id="create">
-                        <form class="form-horizontal" id="tab" method="post" action="/register">
-                            <fieldset>
-                                <div id="legend">
-                                    <legend class="">
-                                        Register
-                                    </legend>
+    <div class="" id="loginModal">
+        <div class="modal-header">
+            <h3>Have an Account?</h3>
+        </div>
+        <div class="modal-body">
+            <div class="">
+                <ul class="nav nav-tabs">
+                    <li>
+                        <a href="#login" data-toggle="tab">Login</a>
+                    </li>
+                    <li  class="active">
+                        <a href="#create" data-toggle="tab">Create Account</a>
+                    </li>
+                </ul>
+                <div id="myTabContent" class="tab-content">
+                    <div class="tab-pane fade login-form" id="login" >
+                        <div class="row">
+
+                            <div class="main">
+                              <h3>Please Log In, or <a href="#">Sign Up</a></h3>
+                              <div class="row">
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                  <a ref='/fb_login' class="btn btn-block btn-social btn-facebook">
+                                    <i class="fa fa-facebook"></i> Facebook
+                                  </a>
                                 </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6">
+                                     <a href='/google_login' class="btn btn-block btn-social btn-google-plus">
+                                       <i class="fa fa-google-plus"></i> Google
+                                    </a>
+                                </div>
+                              </div>
+                              <div class="login-or">
+                                <hr class="hr-or">
+                                <span class="span-or">or</span>
+                              </div>
+
+                              <form role="form" action='/login' method="post">
                                 {% from "macros.html" import render_field %}
-                                {{ form.csrf_token }}
-                                {{ render_field(form.email1, class="input-xlarge") }}
-                                <div class="control-group">
-                                    <div class="controls">
-                                        <input type="button" name="check_acailability" class="btn btn-info"
-                                               id="check_availability" value="Check Availability">
-
-                                        <div id="availability_result"></div>
-                                    </div>
+                                {{ loginForm.csrf_token }}
+                                <div class="form-group">
+                                    {{ render_field(loginForm.email, class="form-control") }}
                                 </div>
-                                {{ render_field(form.password, class="input-xlarge") }}
-                                {{ render_field(form.confirm, class="input-xlarge") }}
-                                {{ render_field(form.fname, class="input-xlarge") }}
-                                {{ render_field(form.lname, class="input-xlarge") }}
-                                <label class="control-label">ReCaptcha</label>
+                                <div class="form-group">
+                                    <a class="pull-right" href="/reset_password">Forgot password?</a>
+                                    {{ render_field(loginForm.password, class="form-control") }}
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn btn-primary">
+                                      <i class="fa fa-sign-in"></i> Log In
+                                    </button>
+                                </div>
+                              </form>
+                            
+                            </div>
+                            
+                          </div>
+                    </div>
+                    <div class="tab-pane active in" id="create">
+                        
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
+                                <form role="form" id="tab" method="post" action="/register">
+                                    <h2>Please Sign Up <small>It's free and always will be.</small></h2>
+                                    <hr class="colorgraph">
+                                    <div class="row">
+                                        {% from "macros.html" import render_field %}
+                                        {{ form.csrf_token }}
+                                        <div class="col-xs-12 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                {{ render_field(form.fname, class="form-control") }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                {{ render_field(form.lname, class="form-control") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <a class="pull-right" name="check_acailability" id="check_availability" href="#">Check Availability</a>
+                                        <div id="availability_result"></div>
 
-                                <div class="control-group">
-                                    <div class="controls">
+                                        {{ render_field(form.email1, class="form-control") }}
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                {{ render_field(form.password, class="form-control") }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                {{ render_field(form.confirm, class="form-control") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                   
+                                    <div class="form-group">
                                         {{ form.recaptcha }}
                                     </div>
-                                </div>
-                                <div class="control-group">
-                                    <div class="controls">
-                                        <button class="btn btn-primary">
-                                            Create Account
-                                        </button>
-                                    </div>
-                                </div>
-                                <p>
-                                    <br/>
-                                    By registering, you agree to the <a href="/legal/privacy-policy">privacy
-                                    policy</a> and <a href="/legal/terms-of-service">terms of service</a>.
-                                </p>
-                            </fieldset>
-                        </form>
-                    </div>
-                        <div class="tab-pane fade" id="login">
-                            <form class="form-horizontal" action='/login' method="post">
-                                <div class="social-login">
-                                    <a href='/google_login' class="btn btn-default google"> <i class="fa fa-google-plus modal-icons"></i> Sign In with Google </a>
-                                    <a href='/fb_login' class="btn btn-default facebook"> <i class="fa fa-facebook-sign modal-icons"></i> Sign In with Facebook </a>
-                                    <!--a href='/t_login' class="btn btn-default twitter"> <i class="fa fa-twitter-sign modal-icons"></i> Sign In with Twitter </a>
-                                    <a href='/l_login' class="btn btn-default linkedin"> <i class="fa fa-linkedin modal-icons"></i> Sign In with Linkedin </a-->
-                                </div>
-                                <fieldset>
-                                    <div id="legend">
-                                        <legend class="">
-                                            Login
-                                        </legend>
-                                    </div>
-                                    {% from "macros.html" import render_field %}
-                                    {{ loginForm.csrf_token }}
-                                    {{ render_field(loginForm.email, class="input-xlarge") }}
-                                    {{ render_field(loginForm.password, class="input-xlarge") }}
-                                    <div class="control-group">
-                                        <!-- Button -->
-                                        <div class="controls">
-                                            <button class="btn btn-success">
-                                                Login
-                                            </button>
+                                    <div class="row">
+                                        <div class="col-xs-8 col-sm-9 col-md-9">
+                                             By clicking <strong class="label label-primary">Register</strong>, you agree to the <a href="/legal/privacy-policy">privacy policy</a>
+                                             and <a href="/legal/terms-of-service">terms of service</a>.
                                         </div>
-                                        <a class="reset-passwd" href="/reset_password">
-                                            Reset Password
-                                        </a>
                                     </div>
-                                </fieldset>
-                            </form>
+
+                                    <hr class="colorgraph">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-6">
+                                            <button type="submit" value="" class="btn btn-primary btn-block">Register</button>
+                                        </div>
+                                        <div class="col-xs-12 col-md-6"><a href="/login" class="btn btn-success btn-block">Sign In</a></div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        <!--div class="tab-pane fade" id="openid">
-                        <form action="/openid_login" method="post" id="openid_form">
-                            <input type="hidden" name="action" value="verify" />
-                            <fieldset>
-                            <legend>Sign-in or Create New Account</legend>
-                            <div id="openid_choice">
-                            <p>Please click your account provider:</p>
-                            <div id="openid_btns"></div>
-                            </div>
-                            <div id="openid_input_area">
-                            <input id="openid_identifier" name="openid_identifier" type="text" value="http://" />
-                            <input id="openid_submit" type="submit" value="Sign-In"/>
-                            <input id="openid_return_url" type="hidden" name="next" value="{{ next }}"/>
-                            </div>
-                            <noscript>
-                            <p>OpenID is service that allows you to log-on to many different websites using a single indentity.
-                            Find out <a href="http://openid.net/what/">more about OpenID</a> and <a href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
-                            </noscript>
-                            </fieldset>
-                        </form>
-                        </div-->
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.12.0/jquery.validate.min.js"></script>
     <script>
         $(document).ready(function () {
@@ -196,13 +199,13 @@
                     form.submit();
                 }
             });
-        });
-    </script>
-    <script type='text/javascript'>
-        $('#check_availability').click(function () {
-            var checking_html = 'Checking...';
-            $('#availability_result').html(checking_html);
-            check_availability();
+
+            $('#check_availability').click(function (event) {
+                var checking_html = 'Checking...';
+                $('#availability_result').html(checking_html);
+                check_availability();
+                event.preventDefault();
+            });
         });
         function check_availability() {
 
@@ -225,3 +228,4 @@
         }
     </script>
 {% endblock %}
+

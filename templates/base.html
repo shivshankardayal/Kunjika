@@ -30,33 +30,7 @@
             {% endblock %}
 
         <title>{% block title %}{{ title }}{% endblock %}</title>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    {% if category == 'error' %}
-                        <div class="alert alert-error centered-seven-fifty-px">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            {{ message }}
-                        </div>
-                    {% elif category == 'success' %}
-                        <div class="alert alert-success centered-seven-fifty-px">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            {{ message }}
-                        </div>
-                    {% elif category == 'info' %}
-                        <div class="alert alert-info centered-seven-fifty-px">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            {{ message }}
-                        </div>
-                    {% elif category == 'block' %}
-                        <div class="alert alert-block centered-seven-fifty-px">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            {{ message }}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        
         {% block meta %}
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -77,7 +51,8 @@
 	        <![endif]-->
         {% endblock %}
         {% block js_jquery %}
-            <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+            <!-- <script src="//code.jquery.com/jquery-1.11.0.min.js"></script> -->
+            <script src="/static/js/jquery.min.js"></script>
             <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
             <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
             <script>window.jQuery || document.write('<script src="/static/js/jquery-ui.min.js"><\/script>')</script>
@@ -118,7 +93,7 @@
         {% block bodytag_extra %}{% endblock %}>
 <div id="row-fluid">
     {% block body %}
-
+        
         {% block navbar_wrapper %}
             <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
                 <div class="container">
@@ -153,7 +128,7 @@
                                 <li class="dropdown">
                                     <a class="dropdown-toggle" href="#" data-toggle="dropdown">
                                         {% if artpage is defined %}
-                                        <b>Articles</b>
+                                        Articles
                                         {% else %}
                                         Articles
                                         {% endif %}
@@ -171,7 +146,9 @@
                                         <a href="/tags"> Tags</a>
                                     </li>
                                 {% else %}
-                                    <li><a href="/tags">Tags</a></li>
+                                    <li>
+                                        <a href="/tags">Tags</a>
+                                    </li>
                                 {% endif %}
                                 {% if upage is defined %}
                                     <li class="active">
@@ -183,11 +160,13 @@
                                     </li>
                                 {% endif %}
                                 {% if ppage is defined %}
-                                     <li class="active">
-                                     <a href="/poll" class="poll"> Poll</a>
+                                    <li class="active">
+                                         <a href="/poll" class="poll"> Poll</a>
                                     </li>
                                 {% else %}
-                                    <li><a href="/poll" class="poll">Poll</a></li>
+                                    <li>
+                                        <a href="/poll" class="poll">Poll</a>
+                                    </li>
                                 {% endif %}
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
@@ -272,6 +251,39 @@
                             </ul>
                         </div>
                         <!--/.nav-collapse -->
+                    </div>
+                </div>
+            </div>
+            <div class="containor">
+                    <div class="row">
+                        <div class="col-md-8 col-md-push-2">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    {% if category == 'error' %}
+                                        <div class="alert alert-danger" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            <strong>Oooppss!</strong> {{ message }}
+                                        </div>
+                                    {% elif category == 'success' %}
+                                        <div class="alert alert-success" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            {{ message }}
+                                        </div>
+                                    {% elif category == 'info' %}
+                                        <div class="alert alert-info" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            {{ message }}
+                                        </div>
+                                    {% elif category == 'block' %}
+                                        <div class="alert alert-warning" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            {{ message }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
                     </div>
                 </div>
             </div>
