@@ -25,17 +25,23 @@
 {%- macro debugmin(force_min=False) -%}{% if not DEBUG or force_min %}.min{% endif %}{%- endmacro -%}
 
 {% macro render_field(field) %}
+    {% if field.errors %}
+      <div class="control-group has-error">
+    {% else %}
       <div class="control-group">
-      {{ field.label(class="control-label") }}<div class="controls">
-          {% if field.errors %}
-          {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
-          {{ field(class=css_class, **kwargs) }}
-          <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
-      {% else %}
-          {{ field(**kwargs) }}
-      {% endif %}</div>
-  </div>
-  {% endmacro %}
+    {% endif %}
+        {{ field.label(class="control-label") }}
+        <div class="controls">
+            {% if field.errors %}
+                {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
+                {{ field(class=css_class, **kwargs) }}
+                <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
+            {% else %}
+                {{ field(**kwargs) }}
+            {% endif %}
+        </div>
+      </div>
+{% endmacro %}
 
 {% macro render_pagination(pagination) %}
   <div class=pagination>
