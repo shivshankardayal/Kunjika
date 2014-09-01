@@ -176,7 +176,7 @@
                                     <li class="dropdown">
                                         <a class="dropdown-toggle" href="#" data-toggle="dropdown">
                                         <span class="nav-user">
-                                            <img src="{{ g.user.user_doc['email'] | gravatar(size=24) }}"/ class="nav-user-avatar">
+                                            <img src="{{ g.user.user_doc['email'] | gravatar(size=24) }}"/ class="nav-user-avatar img-rounded">
                                             <span class="nav-user-name" >{{ g.user.name }}</span>
                                             <span class="caret"></span>
                                         </span>
@@ -286,7 +286,7 @@
                         {% endwith %}
                     </div>
                 </div>
-            </div>
+            </div><!-- containor for flash messages -->
         {% endblock %}
 
         {% block pre_container %}
