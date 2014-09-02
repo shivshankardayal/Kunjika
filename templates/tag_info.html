@@ -27,7 +27,7 @@
 {% endblock %}
 {% block container %}
     <div class="row">
-    <div id="mainbar" class="mainbar">
+   <div class="col-md-9">
         <h2 style="border-bottom: 1px #777 dotted">Tag Info About {{ tag['tag'] }}</h2>
         <div id="tag-info">{{ tag['info'] }}</div>
         <form action="/edit_tag/{{ tag['tag'] }}" method="post">

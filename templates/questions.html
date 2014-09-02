@@ -39,7 +39,7 @@
 {% endblock %}
 {% block container %}
     <div class="row">
-        <div id="mainbar" class="mainbar">
+        <div class="col-md-9">
             <div id="qsummary">
                 {% for question in questions %}
                     <div id="qsummary-{{ question['qid'] }}" class="qsummary narrow">
@@ -93,7 +93,7 @@
             </div>
             {{ render_pagination(pagination) }}
         </div>
-        <div id="sidebar">
+        <div class="col-md-3">
             <div class="site-stats">
                 <div class="module">
                     <span class="fa fa-question"></span>

@@ -193,7 +193,7 @@
 {% endblock %}
 {% block container %}
     <div class="row">
-    <div id="mainbar" class="mainbar">
+   <div class="col-md-9">
     <div class="q-header">
         {% if questions['close'] == True %}
             <h3>{{ questions['title'] }} [Closed]</h3>
@@ -637,7 +637,7 @@
     <h5>You need to be logged in to answer or comment.</h5>
     {% endif %}
     </div>
-    <div id="sidebar">
+    <div class="col-md-3">
          <div class="site-stats">
                 <div class="module">
                     <span class="fa fa-question"></span>
