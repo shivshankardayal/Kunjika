@@ -91,7 +91,6 @@
 {# TODO: write a class builder macro #}
 <body class="{% block body_classes %}{% endblock %}" id="{% block body_id %}{% endblock %}"
         {% block bodytag_extra %}{% endblock %}>
-<div id="row-fluid">
     {% block body %}
         
         {% block navbar_wrapper %}
@@ -293,7 +292,7 @@
         {% endblock %}
 
         {% block container_wrapper %}
-            <div class="container container-primary">
+            <div class="container">
                 {% block container %}
 
                     {% block pre_content %}
@@ -326,9 +325,8 @@
 
 
     {% endblock %}
-</div>
 {% block page_footer %}
-    <div class="row-fluid">
+    <div class="row">
         <div class="container">
             <hr/>
             <p>&copy; 2013-14 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
