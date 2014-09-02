@@ -94,23 +94,27 @@
             {{ render_pagination(pagination) }}
         </div>
         <div id="sidebar">
-            <div class="count">
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ qcount }}</div>
-                <p>questions</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ acount }}</div>
-                <p>answers</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ ucount }}</div>
-                <p>users</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ tcount }}</div>
-                <p>tags</p>
-            </div>
+            <div class="site-stats">
+                <div class="module">
+                    <span class="fa fa-question"></span>
+                    <span class="summarycount al">{{ qcount }}</span>
+                    <span>questions</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-comment"></span>
+                    <span class="summarycount al">{{ acount }}</span>
+                    <span>answers</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-users"></span>
+                    <span class="summarycount al">{{ ucount }}</span>
+                    <span>users</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-tags"></span>
+                    <span class="summarycount al">{{ tcount }}</span>
+                    <span>tags</span>
+                </div>
             </div>
             <div id="popular-tags" class="module">
                 <h3><a href="/tests">Tests</a></h3>

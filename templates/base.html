@@ -176,7 +176,7 @@
                                     <li class="dropdown">
                                         <a class="dropdown-toggle" href="#" data-toggle="dropdown">
                                         <span class="nav-user">
-                                            <img src="{{ g.user.user_doc['email'] | gravatar(size=24) }}"/ class="nav-user-avatar img-rounded">
+                                            <img src="{{ g.user.user_doc['email'] | gravatar(size=18) }}"/ class="nav-user-avatar img-rounded">
                                             <span class="nav-user-name" >{{ g.user.name }}</span>
                                             <span class="caret"></span>
                                         </span>
@@ -188,7 +188,7 @@
                                             <li>
                                                 <a href="/users/{{ g.user.id }}/{{ g.user.name|urlencode }}/settings"><i class="fa fa-cog"></i> Settings</a>
                                             </li>
-                                            <li><a href="/logout" class="login"><i class="fa fa-signout"></i> Logout</a>
+                                            <li><a href="/logout" class="login"><i class="fa fa-sign-out"></i> Logout</a>
                                         </ul>
                                     </li>
                                     {% if role == "admin" and adpage == True %}
@@ -244,8 +244,8 @@
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="/recent-questions.atom" class="ask" title="Feed">
-                                        <i class="fa fa-rss-sign"></i> 
+                                    <a href="/recent-questions.atom" class="feed" title="Feed">
+                                        <i class="fa fa-rss"></i> 
                                     </a>
                                 </li>
                             </ul>
@@ -261,22 +261,22 @@
                             {% if messages %}
                                 {% for category, message in messages %}
                                     {% if category == 'error' %}
-                                        <div class="alert alert-danger" role="alert">
+                                        <div class="alert alert-danger text-center" role="alert">
                                             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                                             <strong>Oooppss!</strong> {{ message }}
                                         </div>
                                     {% elif category == 'success' %}
-                                        <div class="alert alert-success" role="alert">
+                                        <div class="alert alert-success text-center" role="alert">
                                             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                                             {{ message }}
                                         </div>
                                     {% elif category == 'info' %}
-                                        <div class="alert alert-info" role="alert">
+                                        <div class="alert alert-info text-center" role="alert">
                                             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                                             {{ message }}
                                         </div>
                                     {% elif category == 'block' %}
-                                        <div class="alert alert-warning" role="alert">
+                                        <div class="alert alert-warning text-center" role="alert">
                                             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                                             {{ message }}
                                         </div>

@@ -559,22 +559,22 @@ pre.prettyprint {
     clear: both;
 }
 
-.module {
+/* .module {
     color: rgb(68, 68, 68);
     padding: 0px 8px 2px;
     margin-bottom: 10px;
-}
+} */
 
 .al {
     text-align: left;
 }
 
-.summarycount {
+/* .summarycount {
     color: rgb(128, 129, 133);
     font-size: 250%;
     font-weight: bold;
     padding-bottom: 5px;
-}
+} */
 
 .module p {
     font-size: 120%;
@@ -888,4 +888,40 @@ td.invite, td.create-group {
 }
 .control-group.has-error ul.errors li + .control-group.has-error ul.errors li {
   margin-bottom: 2px;
+}
+
+.nav-user {
+  padding: 5px ;
+  border-radius: 5px ;
+  background-color: #345578;
+  border: 1px solid #253c54;
+}
+
+.feed {
+    color: #FFBA10 ;
+}
+.site-stats {
+  margin-bottom: 20px;
+  margin-top: 20px;
+  border: 1px solid #253c54;
+  padding: 10px ;
+  border-radius: 5px ;
+  background-color: #eeeeee;
+}
+.site-stats .module {
+  margin-bottom: 20px ;
+}
+.site-stats .module .fa:before {
+  padding: 10px;
+  color: #ffffff;
+  min-width: 36px;
+  max-width: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  border-radius: 5px ;
+  background-color: #345578;
+  border: 1px solid #253c54;
+}
+.site-stats .module .fa-question:before {
+  padding: 10px 12px;
 }
