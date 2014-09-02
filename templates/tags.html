@@ -15,10 +15,13 @@
 
 {% endblock %}
 {% block container %}
-    <div class="row">
+<div class="row">
    <div class="col-md-9">
     {% if pagination is not defined %}
     {% else %}
+        <div class="page-header">
+            <h3>Tags</h3>
+        </div>
         <div id="tags">
             <table>
                 {% set i = 0 %}

@@ -26,8 +26,10 @@
 {% endblock %}
 {% block container %}
     <div class="row">
-      <div class="mainbar" id="mainbar">
-        <h3>Please edit your article.</h3>
+      <div class="col-md-9">
+        <div class="page-header">
+            <h3>Please edit your article.</h3>
+        </div>
         <form class="ask-form" method="post" aciton="/publish/{{ aid }}">
           {% from "macros.html" import render_field %}
           {{ form.csrf_token }}

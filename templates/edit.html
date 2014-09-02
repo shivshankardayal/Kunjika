@@ -25,7 +25,7 @@
 {% endblock %}
 {% block container %}
     <div class="row">
-        <div class="mainbar" id="mainbar">
+        <div class="col-md-9">
             {% if type == 'ce' %}
                 <h3>Please edit your comment.</h3>
                 {% if aid != 0 %}
@@ -166,6 +166,7 @@
             </div>
         </div>
         </form>
+    </div>
         <div class="col-md-3">
             <div class="site-stats">
                 <div class="module">

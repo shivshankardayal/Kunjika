@@ -26,7 +26,7 @@
 {% endblock %}
 {% block container %}
     <div class="row">
-        <div class="mainbar" id="mainbar">
+        <div class="col-md-9">
             {% if type == 'ce' %}
                 <h3>Please edit your comment.</h3>
                 <form class="edit-form" method="post" aciton="/edit_article/ce-{{ aid }}_{{ cid }}">

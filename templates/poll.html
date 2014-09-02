@@ -14,8 +14,10 @@
 {% endblock %}
 {% block container %}
     <div class="row">
-    <h3>Please set your options</h3>
      <div class="col-md-9">
+        <div class="page-header">
+            <h3>Please set your options</h3>
+        </div>
         <form class="ask-form" method="post" aciton="/poll">
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
