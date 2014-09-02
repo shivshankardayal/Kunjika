@@ -261,7 +261,7 @@
                                     {% if category == 'error' %}
                                         <div class="alert alert-danger text-center" role="alert">
                                             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                                            <strong>Oooppss!</strong> {{ message }}
+                                            {{ message }}
                                         </div>
                                     {% elif category == 'success' %}
                                         <div class="alert alert-success text-center" role="alert">
