@@ -119,12 +119,17 @@
             <div id="popular-tags" class="module">
                 <h3><a href="/tests">Tests</a></h3>
             </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular Tags</h4>
+            <div class="popular-tags" class="module">
+                <div class="page-header">
+                    <h4>Popular Tags</h4>
+                </div>
+                
                 {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
+                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag" >
+                        {{ tag['tag'] }} 
+                        <span class="tag-count">{{ tag['count'] }}</span> 
+                    </a>
+                    
                 {% endfor %}
             </div>
         </div>
