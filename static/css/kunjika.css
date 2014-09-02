@@ -903,25 +903,34 @@ td.invite, td.create-group {
 .site-stats {
   margin-bottom: 20px;
   margin-top: 20px;
-  border: 1px solid #253c54;
   padding: 10px ;
-  border-radius: 5px ;
-  background-color: #eeeeee;
 }
 .site-stats .module {
   margin-bottom: 20px ;
 }
+.site-stats .module:first-child {
+  margin-top: 10px;
+}
 .site-stats .module .fa:before {
   padding: 10px;
   color: #ffffff;
-  min-width: 36px;
-  max-width: 36px;
-  min-height: 36px;
-  max-height: 36px;
   border-radius: 5px ;
   background-color: #345578;
   border: 1px solid #253c54;
 }
 .site-stats .module .fa-question:before {
-  padding: 10px 12px;
+  padding: 10px 13px;
+}
+.site-stats .module:last-child {
+  margin-bottom: 10px;
+}
+.site-stats .module .summary-count {
+  font-size: 20px;
+  font-weight: bolder;
+  color: #345578;
+}
+.site-stats .module .summary-text {
+  font-size: 20px;
+  font-weight: bolder;
+  color: #8c8c8c;
 }

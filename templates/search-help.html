@@ -31,23 +31,27 @@
             </p>
         </div>
         <div id="sidebar">
-            <div class="count">
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ qcount }}</div>
-                <p>questions</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ acount }}</div>
-                <p>answers</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ ucount }}</div>
-                <p>users</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ tcount }}</div>
-                <p>tags</p>
-            </div>
+             <div class="site-stats">
+                <div class="module">
+                    <span class="fa fa-question"></span>
+                    <span class="summary-count">{{ qcount }}</span>
+                    <span class="summary-text">questions</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-comment"></span>
+                    <span class="summary-count">{{ acount }}</span>
+                    <span class="summary-text">answers</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-users"></span>
+                    <span class="summary-count">{{ ucount }}</span>
+                    <span class="summary-text">users</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-tags"></span>
+                    <span class="summary-count">{{ tcount }}</span>
+                    <span class="summary-text">tags</span>
+                </div>
             </div>
             <div id="popular-tags" class="module">
                 <h3><a href="/tests">Tests</a></h3>
