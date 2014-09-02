@@ -324,10 +324,10 @@ def index():
                     ).read()
     art_count = json.loads(art_count)
     r = random.randint(0, 0xff)
-    g = random.randint(0, 0xff)
+    green = random.randint(0, 0xff)
     b = random.randint(0, 0xff)
     return render_template('index.html', qcount=qcount, acount=acount, art_count = art_count['rows'][0]['value'],
-                           form=contactForm, r=r, g=g, b=b)
+                           form=contactForm, r=r, green=green, b=b)
 
 
 @kunjika.route('/query', methods=['POST'])
@@ -1206,7 +1206,7 @@ def check_email():
 @kunjika.route('/logout')
 def logout():
     logout_user()
-    resp = make_response(redirect(url_for('questions')))
+    resp = make_response(redirect(request.referrer))
     resp.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
     return resp
 

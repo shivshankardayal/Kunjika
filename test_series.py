@@ -196,7 +196,7 @@ def add_objective_question():
             question['content']['ip'] = request.remote_addr
             question['qid'] = 'tq-' + str(uuid1())  # tq stands for test question. prefix is used for increasing period
                                                    # before uuid will repeat
-            question['_type'] = 'test_questions'
+            question['_type'] = 'tq'
 
             #print str(question['qid'])
             kunjika.kb.add(question['qid'], question)
@@ -233,8 +233,8 @@ def browse_objective_questions(page=None):
             if len(questions) > 0:
                 for row in questions['rows']:
                     qids.append(str(row['id']))
-
-            val_res = kunjika.kb.get_multi(qids)
+            if len(qids) > 0:
+                val_res = kunjika.kb.get_multi(qids)
             questions_list = []
             for qid in qids:
                 questions_list.append(val_res[str(qid)].value)
