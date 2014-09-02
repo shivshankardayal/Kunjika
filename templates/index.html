@@ -75,10 +75,10 @@
                     <li><a href="/poll"><i class="fa fa-users"></i> Polls</a></li>
                     <li><a href="#contact-section"><i class="fa fa-envelope-o"></i> Contact</a></li>
                     {% if g.user.id == -1 %}
-                        `<li><a href="/login"><i class="fa fa-sign-in"></i> Sign-In</a></li>
+                        <li><a href="/login"><i class="fa fa-sign-in"></i> Sign-In</a></li>
                     {% else %}
                         <li><a href="/users/{{ g.user.id }}/{{ g.user.user_doc['name'] }}"><i class="fa fa-user"></i> {{ g.user.user_doc['name'] }}</a></li>
-                        `<li><a href="/logout"><i class="fa fa-sign-out"></i> Log Out</a></li>
+                        <li><a href="/logout"><i class="fa fa-sign-out"></i> Log Out</a></li>
                     {% endif %}
                 </ul>
             </div>
