@@ -804,3 +804,9 @@ body {
 .facebook, .facebook:hover{color: #3b5999;width:100%;text-align: left;padding:7px;margin: 5px;}
 .linkedin, .linkedin:hover{color: #007bb6;width:100%;text-align: left;padding:5px;margin: 5px;}
 .social-login{width: 180px; float:right;margin-top: 55px;margin-right: 300px;}
+
+button {
+    height: 30px;
+    padding: 0px 10px 0px 10px;
+    margin-left: 10px;
+}

@@ -585,7 +585,6 @@
     var self = this;
     text = text.replace(/(?:^|\n)```[ \t]*(\S*)[ \t]*\n([\s\S]*?)\n```[ \t]*(?=\n)/g, function(match, m1, m2) {
       var language = m1, codeblock = m2;
-
       // adhere to specified options
       var preclass = self.googleCodePrettify ? ' class="prettyprint"' : '';
       var codeclass = '';

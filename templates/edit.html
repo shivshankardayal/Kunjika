@@ -313,5 +313,12 @@
                 });
             });
         });
+    </script>    
+    <script>
+      $('#wmd-input').keyup(function(){
+       $('pre code').each(function(i, block) {
+         hljs.highlightBlock(block);
+       });
+     });
     </script>
 {% endblock %}

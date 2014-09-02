@@ -185,7 +185,7 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                //editor.hooks.chain("onPreviewRefresh", hljs.initHighlighting); // google code prettify
                 hljs.initHighlightingOnLoad();
                 editor.run();
             }
@@ -201,6 +201,13 @@
         });
     </script>
     <script>
+      $('#wmd-input').keyup(function(){
+       $('pre code').each(function(i, block) {
+         hljs.highlightBlock(block);
+       });
+     });
+    </script>
+    <script>
         $(".ui-autocomplete").addClass("dropdown-menu");
         $( ".selector" ).autocomplete({
             _resizeMenu: function() {
@@ -208,6 +215,7 @@
             }
         });
     </script>
+
     <script>
         $(function () {
             $("#question").keyup(function () {
