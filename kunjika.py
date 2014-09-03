@@ -1928,12 +1928,35 @@ def close():
     else:
         return jsonify({"success": False})
 
-
-@kunjika.route('/poll', methods=['GET', 'POST'])
-def poll():
+@kunjika.route('/poll', methods=['GET', 'POST'], defaults={'page': 1})
+def poll(page=1):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
 
     pollForm = PollForm(request.form)
+
+
+    poll_count = urllib2.urlopen(DB_URL + "questions/_design/dev_qa/_view/get_polls").read()
+    poll_count = json.loads(poll_count)
+    # print poll_count
+    poll_count = poll_count['rows'][0]['value']
+    skip = (page - 1) * QUESTIONS_PER_PAGE
+
+    pid_list = []
+    if poll_count > 0:
+        polls = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_polls?reduce=False&skip=' + str(skip) + '&limit=' +
+        str(QUESTIONS_PER_PAGE)).read()
+        polls = json.loads(polls)
+        # print polls
+        pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, int(poll_count))
+        for row in polls['rows']:
+            pid_list.append(row['id'])
+    # print pid_list
+    poll_list = []
+    polls = qb.get_multi(pid_list)
+    for pid in pid_list:
+        poll_list.append(polls[str(pid)].value)
+
+    print poll_list
 
     class ChoiceForm(Form):
         tags = StringField('Tags', [validators.Length(min=1, max=100), validators.DataRequired()])
@@ -2028,7 +2051,8 @@ def poll():
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
 
         return render_template('poll.html', title='Poll', form=pollForm, ppage=True, name=g.user.name, role=g.user.role,
-                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                               user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
+                               poll_list=poll_list, pagination=pagination)
     return redirect(url_for('login'))
 
 
