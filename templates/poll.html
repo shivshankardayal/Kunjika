@@ -14,24 +14,22 @@
 {% endblock %}
 {% block container %}
     <div class="row-fluid">
-        <h3>Please set your options for new poll</h3>
-        <div class="mainbar" id="mainbar">
-            <form class="ask-form" method="post" aciton="/poll">
-                {% from "macros.html" import render_field %}
-                {{ form.csrf_token }}
-
-                {{ render_field(form.poll_answers) }}
-                <div class="controls">
-                    <button class="btn btn-primary">
-                        Next
-                    </button>
-                </div>
-            </form>
-            <hr>
-        </div>
-        <div id="qsummary">
-        <h3>Current Polls</h3>
+    <h3>Please set your options for new poll</h3>
+    <div class="mainbar" id="mainbar">
+        <form class="ask-form" method="post" aciton="/poll">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            {{ render_field(form.poll_answers) }}
+            <div class="controls">
+                <button class="btn btn-primary">
+                    Next
+                </button>
+            </div>
+        </form>
         <hr>
+        <div id="qsummary">
+            <h3>Current Polls</h3>
+            <hr>
             {% for question in poll_list %}
                 <div id="qsummary-{{ question['qid'] }}" class="qsummary narrow">
                     <div class="cp">
@@ -86,38 +84,38 @@
         {{ render_pagination(pagination) }}
     </div>
     <div id="sidebar">
-    <div class="count">
-        <div class="module" id="questions-count">
-            <div class="summarycount al">{{ qcount }}</div>
-            <p>questions</p>
-        </div>
-        <div class="module" id="questions-count">
-            <div class="summarycount al">{{ acount }}</div>
-            <p>answers</p>
-        </div>
-        <div class="module" id="questions-count">
-            <div class="summarycount al">{{ ucount }}</div>
-            <p>users</p>
-        </div>
-        <div class="module" id="questions-count">
-            <div class="summarycount al">{{ tcount }}</div>
-            <p>tags</p>
-        </div>
-    </div>
-            <div id="popular-tags" class="module">
-                <h3><a href="/tests">Tests</a></h3>
+        <div class="count">
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ qcount }}</div>
+                <p>questions</p>
             </div>
-        <div id="popular-tags" class="module">
-            <h4 id="h-popular-tags">Popular Tags</h4>
-            {% for tag in tag_list %}
-                <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
-                   title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
-                        class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                <br/>
-            {% endfor %}
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ acount }}</div>
+                <p>answers</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ ucount }}</div>
+                <p>users</p>
+            </div>
+            <div class="module" id="questions-count">
+                <div class="summarycount al">{{ tcount }}</div>
+                <p>tags</p>
+            </div>
         </div>
-    </div>
+                <div id="popular-tags" class="module">
+                    <h3><a href="/tests">Tests</a></h3>
+                </div>
+            <div id="popular-tags" class="module">
+                <h4 id="h-popular-tags">Popular Tags</h4>
+                {% for tag in tag_list %}
+                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
+                       title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
+                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
+                            class="item-multiplier-count">{{ tag['count'] }}</span></span>
+                    <br/>
+                {% endfor %}
+            </div>
+        </div>
 {% endblock %}
 
 {% block page_footer %}
