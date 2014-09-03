@@ -854,7 +854,7 @@ td.invite, td.create-group {
 }
 .login-form .hr-or {
   background-color: #cdcdcd;
-  height: 1px;
+  height: 5px;
   margin-top: 0px !important;
   margin-bottom: 0px !important;
 }
@@ -952,7 +952,7 @@ td.invite, td.create-group {
   padding: 0px 5px;
   color: #fff ;
   margin-left: 8px;
-  margin-right: -3px;
+  margin-right: 0px;
   border-radius: 2px;
 }
 .wmd-input {
