@@ -1,5 +1,0 @@
-function (doc, meta) {
-  if(doc._type=='ac') {
-    emit(doc.aid, null);
-  }
-}

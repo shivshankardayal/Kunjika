@@ -1,0 +1,1 @@
+{"views":{"get_by_count":{"map":"function (doc, meta) {\n  if(doc.tag) {\n    emit(doc.count, null);\n  }\n}"},"get_doc_from_tag":{"map":"function (doc, meta) {\n  if(doc.tag) {\n    emit(doc.tag, null);\n  }\n}"},"get_tag_by_id":{"map":"function (doc, meta) {\n  if(doc.tid) {\n    emit(doc.tid, null);\n  }\n}"}}}

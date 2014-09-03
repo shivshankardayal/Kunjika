@@ -1,5 +1,0 @@
-function (doc, meta) {
-      if(doc.count) {
-              emit(doc.count, null);
-                }
-}

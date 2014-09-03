@@ -1,0 +1,1 @@
+{"views":{"get_id_from_email":{"map":"function (doc, meta) {\n    if(doc.email) {\n        emit(doc.email, null);\n    }\n}"},"get_by_reputation":{"map":"function (doc, meta) {\n  if(doc.email) {\n    emit(doc.rep, null);\n  }\n}"},"get_role":{"map":"function (doc, meta) {\n  if(doc.role == \"admin\") {\n    emit(doc.role, null);\n  }\n}\n"}}}

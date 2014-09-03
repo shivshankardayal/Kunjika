@@ -1,5 +1,0 @@
-function (doc, meta) {
-if(doc.role == "admin") {
-emit(doc.role, null);
-}
-}

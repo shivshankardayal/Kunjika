@@ -1,7 +1,0 @@
-function (doc, meta) {
-    if(doc.option10) {
-        emit(doc.qid, null);
-    }
-}
-
-reduce function is _count

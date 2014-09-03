@@ -1,6 +1,0 @@
-function (doc, meta) {
-  if(doc.acount==0) {
-    emit(doc.updated, null);
-  }
-}
-reduce function is _count

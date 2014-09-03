@@ -1,7 +1,0 @@
-function (doc, meta) {
-  if(doc.answers) {
-    for(i=0;i<doc.answers.length;i++) {
-      emit(doc.answers[i].poster, [doc.qid, doc.votes, doc.acount, doc.answers[i].aid, doc.title, doc.content.url, doc.views], null);
-    }
-  }
-}

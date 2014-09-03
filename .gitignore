@@ -12,4 +12,3 @@ docs/build/
 config.py*
 questions/
 .ropeproject/
-create_bucket.py

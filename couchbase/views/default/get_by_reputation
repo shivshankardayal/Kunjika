@@ -1,5 +1,0 @@
-function (doc, meta) {
-  if(doc.email) {
-    emit(doc.rep, null);
-  }
-}
