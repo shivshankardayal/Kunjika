@@ -2049,7 +2049,27 @@ def poll(page=1):
             add_tags(question['content']['tags'], question['qid'])
 
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
-
+        if not questionForm.validate_on_submit() and request.method == 'POST':
+            choices.append(str(1))
+            choices.append(str(2))
+            if questionForm.option_3.data != "":
+                choices.append(str(3))
+                if questionForm.option_4.data != "":
+                    choices.append(str(4))
+                    if questionForm.option_5.data != "":
+                        choices.append(str(5))
+                        if questionForm.option_6.data != "":
+                            choices.append(str(6))
+                            if questionForm.option_7.data != "":
+                                choices.append(str(7))
+                                if questionForm.option_8.data != "":
+                                    choices.append(str(8))
+                                    if questionForm.option_9.data != "":
+                                        choices.append(str(9))
+                                        if questionForm.option_10.data != "":
+                                            choices.append(str(10))
+            return render_template('create_poll.html', title='Create Poll', form=questionForm, options=choices, ppage=True, name=g.user.name, role=g.user.role,
+                                   user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
         return render_template('poll.html', title='Poll', form=pollForm, ppage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
                                poll_list=poll_list, pagination=pagination)
