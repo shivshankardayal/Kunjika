@@ -746,7 +746,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                         cb.replace(str(g.user.id), user)
                         qb.replace(str(questions_dict['qid']), questions_dict)
                     except:
-                        flash('You have already voted on this question', 'error')
+                        flash('You have already voted on this poll!', 'error')
 
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url'], ccount=ccount))
                 qb.replace(str(questions_dict['qid']), questions_dict)
@@ -1984,7 +1984,7 @@ def poll(page=1):
         if pollForm.validate_on_submit() and request.method == 'POST':
             for i in range(0, int(pollForm.poll_answers.data)):
                 choices.append(str(i+1))
-
+                data.append("")
             cd_list = zip(choices, data)
             return render_template('create_poll.html', title='Create Poll', form=questionForm, ppage=True, name=g.user.name, role=g.user.role,
                                    user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, cd_list=cd_list)
