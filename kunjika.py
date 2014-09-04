@@ -1977,6 +1977,7 @@ def poll(page=1):
     questionForm = ChoiceForm(request.form)
 
     choices = []
+    data = []
 
     if g.user is not None and g.user.is_authenticated():
         user = g.user.user_doc
@@ -1984,8 +1985,9 @@ def poll(page=1):
             for i in range(0, int(pollForm.poll_answers.data)):
                 choices.append(str(i+1))
 
-            return render_template('create_poll.html', title='Create Poll', form=questionForm, options=choices, ppage=True, name=g.user.name, role=g.user.role,
-                                   user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+            cd_list = zip(choices, data)
+            return render_template('create_poll.html', title='Create Poll', form=questionForm, ppage=True, name=g.user.name, role=g.user.role,
+                                   user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, cd_list=cd_list)
 
         if questionForm.validate_on_submit() and request.method == 'POST':
 
@@ -2052,24 +2054,35 @@ def poll(page=1):
         if not questionForm.validate_on_submit() and request.method == 'POST':
             choices.append(str(1))
             choices.append(str(2))
+            data.append(questionForm.option_1.data)
+            data.append(questionForm.option_2.data)
             if questionForm.option_3.data != "":
                 choices.append(str(3))
+                data.append(questionForm.option_3.data)
                 if questionForm.option_4.data != "":
                     choices.append(str(4))
+                    data.append(questionForm.option_4.data)
                     if questionForm.option_5.data != "":
                         choices.append(str(5))
+                        data.append(questionForm.option_5.data)
                         if questionForm.option_6.data != "":
                             choices.append(str(6))
+                            data.append(questionForm.option_6.data)
                             if questionForm.option_7.data != "":
                                 choices.append(str(7))
+                                data.append(questionForm.option_7.data)
                                 if questionForm.option_8.data != "":
                                     choices.append(str(8))
+                                    data.append(questionForm.option_8.data)
                                     if questionForm.option_9.data != "":
                                         choices.append(str(9))
+                                        data.append(questionForm.option_9.data)
                                         if questionForm.option_10.data != "":
                                             choices.append(str(10))
-            return render_template('create_poll.html', title='Create Poll', form=questionForm, options=choices, ppage=True, name=g.user.name, role=g.user.role,
-                                   user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
+                                            data.append(questionForm.option_10.data)
+            cd_list = zip(choices, data)
+            return render_template('create_poll.html', title='Create Poll', form=questionForm, ppage=True, name=g.user.name, role=g.user.role,
+                                   user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, cd_list=cd_list)
         return render_template('poll.html', title='Poll', form=pollForm, ppage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
                                poll_list=poll_list, pagination=pagination)
