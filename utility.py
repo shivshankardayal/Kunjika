@@ -90,8 +90,8 @@ def common_rendering(results, query, page):
 
 
 def search(query, page):
-    title_q = pyes.MatchQuery('title', query)
-    question_q = pyes.MatchQuery('question', query)
+    title_q = pyes.PrefixQuery('title', query)
+    question_q = pyes.PrefixQuery('description', query)
     title_results = kunjika.es_conn.search(query=title_q)
     question_results = kunjika.es_conn.search(query=question_q)
 
@@ -109,7 +109,7 @@ def search(query, page):
 
 def search_title(query, page):
     title = query[6:]
-    q = pyes.MatchQuery('title', title)
+    q = pyes.PrefixQuery('title', title)
     title_results = kunjika.es_conn.search(query=q)
     results = []
 
@@ -122,7 +122,7 @@ def search_title(query, page):
 
 def search_description(query, page):
     description=query[12:]
-    q=pyes.MatchQuery('description', description)
+    q=pyes.PrefixQuery('description', description)
     question_results=kunjika.es_conn.search(query=q)
 
     results=[]
@@ -136,7 +136,7 @@ def search_description(query, page):
 def search_user(query, page):
     (qcount, acount, tcount, ucount, tag_list) = common_data()
     user=query[5:]
-    q=pyes.MatchQuery('name', user)
+    q=pyes.PrefixQuery('name', user)
     question_results=kunjika.es_conn.search(query=q)
 
     results=[]
