@@ -1424,6 +1424,7 @@ def edits(element):
             question['version'] = 1
             question['type'] = 'qb'  # question backup
             question['editor'] = g.user.id
+            question['edited'] = True
         else:
             question['version'] += 1
 
@@ -1434,11 +1435,13 @@ def edits(element):
                         flash('You are not author of this comment!', 'error')
                         return redirect(request.referrer)
                     question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['comment'] = form.comment.data
+                    question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['edited'] = True
                 else:
                     if question['comments'][int(cid) - 1] != g.user.id and g.user.id != 1:
                         flash('You are not author of this comment!', 'error')
                         return redirect(request.referrer)
                     question['comments'][int(cid) - 1]['comment'] = form.comment.data
+                    question['comments'][int(cid) - 1]['edited'] = True
 
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1
@@ -1454,6 +1457,7 @@ def edits(element):
                     flash('You are not author of this answer!', 'error')
                     return redirect(request.referrer)
                 question['answers'][int(aid) - 1]['answer'] = form.answer.data
+                question['answers'][int(aid) - 1]['edited'] = True
 
                 editor = cb.get(str(g.user.id)).value
                 editor['rep'] += 1

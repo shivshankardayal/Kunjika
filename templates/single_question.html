@@ -253,6 +253,9 @@
                     {% for tag in questions['content']['tags'] %}
                         <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
                     {% endfor %}
+                    {% if 'edited' in questions %}
+                        <p class="edited">Edited</p>
+                    {% endif %}
                 </div>
                 <table class="poster">
                     <tbody>
@@ -345,6 +348,9 @@
             {% endif %}
             {% if g.user.id == comment['poster'] or g.user.id == 1 %}
                 <a class="tohide" href="/hide/ch-{{ questions['qid'] }}-{{ comment['cid'] }}" id="ch-{{ questions['qid'] }}-{{ comment['cid'] }}"> Hide/Unhide</a>
+            {% endif %}
+            {% if 'edited' in comment %}
+                <p class="edited">Edited</p>
             {% endif %}
         </div>
     {% endfor %}
@@ -500,8 +506,13 @@
                                     <td class="vt">
                                     {% if g.user.id == answer['poster'] or g.user.id == 1 %}
                                         <a class="tohide" href="/hide/ah-{{ questions['qid'] }}-{{ answer['aid'] }}" id="ah-{{ questions['qid'] }}-{{ answer['aid'] }}">Hide/Unhide</a>
-                                    </td>
                                     {% endif %}
+                                    </td>
+                                    <td class="vt">
+                                    {% if 'edited' in answer %}
+                                        <p class="edited">Edited</p>
+                                    {% endif %}
+                                    </td>
                                 {% else %}
                                     <td class="vt">
                                     </td>
@@ -552,6 +563,9 @@
                             class="icon-flag"></i></a>
                     {% if g.user.id == comment['poster'] or g.user.id == 1 %}
                         <a class="tohide" href="/hide/ach-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}" id="ach-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}">Hide/Unhide</a>
+                    {% endif %}
+                    {% if 'edited' in answer %}
+                        <p class="edited">Edited</p>
                     {% endif %}
                     {% endif %}
                 </div>
