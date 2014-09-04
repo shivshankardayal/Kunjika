@@ -141,7 +141,7 @@ def search_user(query, page):
 
     results=[]
     for r in question_results:
-        #print r
+        print r
         results.append(r['uid'])
 
     questions_list=[]
@@ -160,26 +160,12 @@ def search_user(query, page):
             val_res = kunjika.qb.get_multi(qids_list)
 
         for id in qids_list:
-            questions.append(val_res[str(id)].value)
-        #print questions
-        for q in questions:
-            #print q
-            question = {}
-            question['qid'] = q['qid']
-            question['votes'] = q['votes']
-            question['acount'] = q['acount']
-            question['title'] = q['title']
-            question['url'] = q['content']['url']
-            question['views'] = q['views']
-            question['ts'] = q['updated']
-            question['op'] = q['content']['op']
-            question['tags'] = q['content']['tags']
-            questions_list.append(question)
+            questions_list.append(val_res[str(id)].value)
 
     for i in questions_list:
-        i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['ts']))
+        i['ts'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
 
-        user = kunjika.cb.get(i['op']).value
+        user = kunjika.cb.get(i['content']['op']).value
         i['opname'] = user['name']
 
     pagination = Pagination(page, kunjika.QUESTIONS_PER_PAGE, len(questions_list))
