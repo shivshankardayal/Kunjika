@@ -1044,3 +1044,37 @@ ul.token-input-list-kunjika{
     -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
     transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
+.post .post-tags {
+  display: inline-block;
+}
+.post .post-tags ul.post-tags-list {
+  list-style: none outside none;
+  margin: 0;
+  padding: 5px;
+}
+.post .post-tags ul.post-tags-list > li {
+  display: inline-block;
+  margin: 0;
+}
+.post .post-tags .fa:before {
+  font-size: 18px;
+  padding: 2px 4px;
+}
+.post .post-tags .fa-tags:before {
+  color: #a4c639;
+}
+.post .post-tags a.post-tag {
+  background: #345578;
+  border-radius: 2px;
+  color: #FFFFFF;
+  display: block;
+  margin-right: 5px;
+  margin-top: 3px;
+  padding: 4px 12px;
+}
+.post .post-tags a.post-tag:hover {
+  text-decoration: none ;
+  cursor: pointer ;
+  background-color: #446e9b;
+  transition: all 0.6s ease;
+}
