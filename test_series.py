@@ -40,7 +40,8 @@ def getcat():
                 'memalloc': 'Memory Allocation',
                 'vararg': 'Variable Arguments',
                 'lib': 'Library Functions',
-                'threading': 'Multithreading'
+                'threading': 'Multithreading',
+                'macros': 'Macros'
             })
         elif tech == 'C++':
             return jsonify({
@@ -133,9 +134,10 @@ def add_objective_question():
         ('python', 'Python')])
         cat = SelectField('Category', choices=[('arrays', 'Arrays'), ('basics', 'Basics'), ('bitop', 'Bitwise Operators'),
             ('cli', 'Command Line Arguments'), ('const', 'Const'), ('control_flow', 'Control Flow'),
-            ('funcs', 'Functions'), ('io', 'IO'), ('lib', 'Library Functions'), ('memalloc', 'Memory Allocation'),
+            ('funcs', 'Functions'), ('io', 'IO'), ('lib', 'Library Functions'), ('macros', 'Macros'), ('memalloc', 'Memory Allocation'),
             ('oae', 'Operators and Expressions'), ('pointers', 'Pointers'), ('strings', 'Strings'),
-            ('sue', 'Structures, Unions and Eums'), ('threading', 'Multithreading'), ('typedef', 'Typedef'), ('vararg', 'Variable Arguments')])
+            ('sue', 'Structures, Unions and Eums'), ('threading', 'Multithreading'), ('typedef', 'Typedef'),
+            ('vararg', 'Variable Arguments')])
         option = RadioField('What type of question do you want?', choices=[('Single choice', 'Single Choice'),
                                                                            ('Multiple choice', 'Multiple choice')])
         description = TextAreaField('', [validators.Length(min=20, max=5000), validators.DataRequired()])

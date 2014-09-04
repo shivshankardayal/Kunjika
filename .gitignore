@@ -12,3 +12,4 @@ docs/build/
 config.py*
 questions/
 .ropeproject/
+test_questions/
