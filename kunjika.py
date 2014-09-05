@@ -339,7 +339,7 @@ def query():
         message = contactForm.message.data
 
         msg = Message("A new query from" + name)
-        msg.recipients = [admin]
+        msg.recipients = [shivshankar.dayal@gmail.com]
         msg.sender = admin
         msg.html = "A new query from " + email + "is below</br>" + message
         mail.send(msg)

@@ -9,6 +9,7 @@ import utility
 
 test_series = Blueprint('test_series', __name__, template_folder='templates')
 
+
 @test_series.route('/tests')
 def tests():
     try:
@@ -18,10 +19,11 @@ def tests():
         return redirect(url_for('questions'))
     return render_template('tests.html', title='Tests', user=user, name=g.user.name, role=g.user.role, user_id=g.user.id)
 
+
 @test_series.route('/getcat')
 def getcat():
     if g.user.id == 1:
-        tech=request.args.get('lang')
+        tech = request.args.get('lang')
         if tech == 'C':
             return jsonify({
                 'basics': 'Basics',
@@ -122,18 +124,19 @@ def getcat():
                 'lib': 'Perl Library',
                 'regex': 'Regular Expressions'
             })
-    else:
-        return jsonify({"success": False})
+        else:
+            return jsonify({"success": False})
+
 
 @test_series.route('/add_objective_question', methods=['GET', 'POST'])
 def add_objective_question():
     oqForm = OQForm(request.form)
 
     class ChoiceForm(Form):
-        tech = SelectField('Technology', choices=[('c', 'C'), ('cpp', 'C++'), ('java', 'Java'), ('perl', 'Perl'), \
-        ('python', 'Python')])
+        tech = SelectField('Technology', choices=[('c', 'C'), ('cpp', 'C++'), ('java', 'Java'), ('perl', 'Perl'),
+                           ('python', 'Python')])
         cat = SelectField('Category', choices=[('arrays', 'Arrays'), ('basics', 'Basics'), ('bitop', 'Bitwise Operators'),
-            ('cli', 'Command Line Arguments'), ('const', 'Const'), ('control_flow', 'Control Flow'),
+                          ('cli', 'Command Line Arguments'), ('const', 'Const'), ('control_flow', 'Control Flow'),
             ('funcs', 'Functions'), ('io', 'IO'), ('lib', 'Library Functions'), ('macros', 'Macros'), ('memalloc', 'Memory Allocation'),
             ('oae', 'Operators and Expressions'), ('pointers', 'Pointers'), ('strings', 'Strings'),
             ('sue', 'Structures, Unions and Eums'), ('threading', 'Multithreading'), ('typedef', 'Typedef'),
@@ -158,15 +161,15 @@ def add_objective_question():
             for i in range(0, int(oqForm.oq_answers.data)):
                 choices.append(str(i+1))
 
-            return render_template('create_oq.html', title='Create Objective Question', form=questionForm, options=choices, ppage=True, name=g.user.name, role=g.user.role,
-                       user_id=g.user.id)
+            return render_template('create_oq.html', title='Create Objective Question', form=questionForm, options=choices,
+                                   ppage=True, name=g.user.name, role=g.user.role,  user_id=g.user.id)
 
         if questionForm.validate_on_submit() and request.method == 'POST':
             tech = questionForm.tech.data
             cat = questionForm.cat.data
-            option =  questionForm.option.data
-            option_1 =  questionForm.option_1.data
-            option_2 =  questionForm.option_2.data
+            option = questionForm.option.data
+            option_1 = questionForm.option_1.data
+            option_2 = questionForm.option_2.data
 
             question = {}
             question['tech'] = tech
@@ -197,10 +200,10 @@ def add_objective_question():
             question['updated'] = question['content']['ts']
             question['content']['ip'] = request.remote_addr
             question['qid'] = 'tq-' + str(uuid1())  # tq stands for test question. prefix is used for increasing period
-                                                   # before uuid will repeat
+            # before uuid will repeat
             question['_type'] = 'tq'
 
-            #print str(question['qid'])
+            # print str(question['qid'])
             kunjika.kb.add(question['qid'], question)
 
             return redirect(url_for('administration'))
@@ -209,6 +212,7 @@ def add_objective_question():
                                user_id=g.user.id)
     else:
         return redirect(url_for('login'))
+
 
 @test_series.route('/browse_objective_questions', defaults={'page': 1}, methods=['GET', 'POST'])
 @test_series.route('/browse_objective_questions/page/<int:page>')
@@ -243,7 +247,7 @@ def browse_objective_questions(page=None):
 
             questions_list = [question for question in questions_list if question['cat'] == cat]
 
-            #count = len(questions_list)
+            # count = len(questions_list)
             if not questions_list and page != 1:
                 abort(404)
             pagination = utility.Pagination(page, kunjika.QUESTIONS_PER_PAGE, int(count))
@@ -253,13 +257,15 @@ def browse_objective_questions(page=None):
                                    user_id=g.user.id, tech=tech, cat=cat)
 
         return render_template('browse_form.html', title='Browse Question Form', form=boqForm, ppage=True, name=g.user.name, role=g.user.role,
-                       user_id=g.user.id)
+                               user_id=g.user.id)
     return redirect(url_for('login'))
+
 
 @test_series.route('/edit_test/<element>', methods=['GET', 'POST'])
 def edit_test(element):
     question = kunjika.kb.get(element).value
     options = len(question['content']['options'])
+
     class ChoiceForm(Form):
         option = RadioField('What type of question do you want?', choices=[('Single choice', 'Single Choice'),
                                                                            ('Multiple choice', 'Multiple choice')])
@@ -279,10 +285,10 @@ def edit_test(element):
 
     if g.user.id == 1:
         if form.validate_on_submit() and request.method == 'POST':
-            #print "editing test question"
-            option =  form.option.data
-            option_1 =  form.option_1.data
-            option_2 =  form.option_2.data
+            # print "editing test question"
+            option = form.option.data
+            option_1 = form.option_1.data
+            option_2 = form.option_2.data
 
             question['content'] = {}
             question['content']['description'] = form.description.data
@@ -312,8 +318,8 @@ def edit_test(element):
             question['updated'] = question['content']['ts']
             question['content']['ip'] = request.remote_addr
 
-            kunjika.kb.replace(question['qid'], question) # tq stands for test question. prefix is used for increasing period
-                                                  # before uuid will repeat
+            kunjika.kb.replace(question['qid'], question)  # tq stands for test question. prefix is used for increasing period
+            # before uuid will repeat
 
             return redirect(url_for('test_series.browse_objective_questions'))
 
