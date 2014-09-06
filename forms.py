@@ -127,7 +127,7 @@ class BOQForm(Form):
 
 class ArticleForm(Form):
     title = StringField('Title', [validators.Length(min=4, max=200), validators.DataRequired()])
-    content = TextAreaField('', [validators.Length(min=20, max=4000000), validators.DataRequired()])
+    content = TextAreaField('', [validators.Length(min=500, max=4000000), validators.DataRequired()])
     tags = StringField('Tags', [validators.Length(min=1, max=100), validators.DataRequired()])
 
 
