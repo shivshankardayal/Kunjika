@@ -791,6 +791,9 @@ def write_article():
             article['aid'] = 'a-' + str(uuid1())
             article['opname'] = g.user.name
             article['cids'] = []
+            user = kunjika.cb.get(str(g.user.id)).value
+            user['rep'] += 25
+            kunjika.cb.replace(str(g.user.id), user)
 
             kunjika.es_conn.index({'title':title, 'content':article['content'], 'aid':article['aid'],
                            'position':article['content']}, 'articles', 'articles-type', article['aid'])
@@ -1280,6 +1283,9 @@ def publish(element):
             article['aid'] = 'a-' + str(uuid1())
             article['opname'] = g.user.name
             article['cids'] = []
+            user = kunjika.cb.get(str(g.user.id)).value
+            user['rep'] += 25
+            kunjika.cb.replace(str(g.user.id), user)
 
             kunjika.es_conn.index({'title': title, 'content': article['content'], 'aid': article['aid'],
                                    'position': article['content']}, 'articles', 'articles-type', article['aid'])
