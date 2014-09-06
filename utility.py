@@ -974,7 +974,7 @@ def article_comment():
         msg.recipients = email_list
         msg.sender = kunjika.admin
         msg.html = "<p>Hi,<br/><br/> A new comment has been posted which you can read at " +\
-        kunjika.HOST_URL + "browse_articles/" + str(article['aid']) + '/' + article['url'] + \
+        kunjika.HOST_URL + "articles/" + str(article['aid']) + '/' + article['url'] + \
         " <br/><br/>Best regards,<br/>Kunjika Team<p>"
         kunjika.mail.send(msg)
 
