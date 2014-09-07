@@ -15,7 +15,7 @@
         <script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}
 {% block container %}
-    <div class="row">
+<div class="row">
     <div class="col-md-9">
         <div class="page-header">
             <h3>Add a Question</h3>
@@ -66,18 +66,11 @@
             </div>
         </form>
     </div>
+</div>
 {% endblock %}
 
 {% block page_footer %}
-    <div class="row">
-        <div class="container">
-            <hr/>
-            <p>&copy; 2013-14 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
-                Shashikant &amp; Shiv Shankar Dayal.<br/>
-                Licensed under GNU GPL. Contents are under GNU GPL.</p>
-        </div>
-    </div>
-    </div>
+    {{ super() }}
     <script type="text/javascript">
         (function () {
             if ($('#wmd-input').length > 0) {

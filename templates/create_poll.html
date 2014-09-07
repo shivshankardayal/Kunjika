@@ -70,54 +70,47 @@
         </form>
     </div>
     <div class="col-md-3">
-    <div class="site-stats">
-        <div class="module">
-            <span class="fa fa-question"></span>
-            <span class="summary-count">{{ qcount }}</span>
-            <span class="summary-text">questions</span>
-        </div>
-        <div class="module">
-            <span class="fa fa-comment"></span>
-            <span class="summary-count">{{ acount }}</span>
-            <span class="summary-text">answers</span>
-        </div>
-        <div class="module">
-            <span class="fa fa-users"></span>
-            <span class="summary-count">{{ ucount }}</span>
-            <span class="summary-text">users</span>
-        </div>
-        <div class="module">
-            <span class="fa fa-tags"></span>
-            <span class="summary-count">{{ tcount }}</span>
-            <span class="summary-text">tags</span>
-        </div>
-        <div class="popular-tags" class="module">
-            <div class="page-header">
-                <h4>Popular Tags</h4>
+        <div class="site-stats">
+            <div class="module">
+                <span class="fa fa-question"></span>
+                <span class="summary-count">{{ qcount }}</span>
+                <span class="summary-text">questions</span>
             </div>
-            
-            {% for tag in tag_list %}
-                <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">
-                    {{ tag['tag'] }} 
-                    <span class="tag-count">{{ tag['count'] }}</span> 
-                </a>
+            <div class="module">
+                <span class="fa fa-comment"></span>
+                <span class="summary-count">{{ acount }}</span>
+                <span class="summary-text">answers</span>
+            </div>
+            <div class="module">
+                <span class="fa fa-users"></span>
+                <span class="summary-count">{{ ucount }}</span>
+                <span class="summary-text">users</span>
+            </div>
+            <div class="module">
+                <span class="fa fa-tags"></span>
+                <span class="summary-count">{{ tcount }}</span>
+                <span class="summary-text">tags</span>
+            </div>
+            <div class="popular-tags" class="module">
+                <div class="page-header">
+                    <h4>Popular Tags</h4>
+                </div>
                 
-            {% endfor %}
+                {% for tag in tag_list %}
+                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">
+                        {{ tag['tag'] }} 
+                        <span class="tag-count">{{ tag['count'] }}</span> 
+                    </a>
+                    
+                {% endfor %}
+            </div>
         </div>
     </div>
-    </div>
+</div>
 {% endblock %}
 
 {% block page_footer %}
-    <div class="row">
-        <div class="container">
-            <hr/>
-            <p>&copy; 2013 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
-                Shashikant &amp; Shiv Shankar Dayal.<br/>
-                Licensed under GNU GPL. Contents are under GNU GPL.</p>
-        </div>
-    </div>
-    </div>
+    {{ super() }}
     <!--    <script type="text/javascript">
             $("document").ready(function () {
                 //hljs.selected_languages = hljs.LANGUAGES;

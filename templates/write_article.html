@@ -55,18 +55,11 @@
             </div>
         </form>
     </div>
+</div>
 {% endblock %}
 
 {% block page_footer %}
-    <div class="row">
-        <div class="container">
-            <hr/>
-            <p>&copy; 2013 <a href="http://libreprogramming.org">libreprogramming.org</a>. Developed by Binita Ruby,
-                Shashikant &amp; Shiv Shankar Dayal.<br/>
-                Licensed under GNU GPL. Contents are under GNU GPL.</p>
-        </div>
-    </div>
-    </div>
+   {{ super() }}
     <script type="text/javascript">
         (function () {
             if ($('#wmd-input').length > 0) {

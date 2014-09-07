@@ -16,7 +16,7 @@
 
 {% endblock %}
 {% block container %}
-    <div class="row">
+<div class="row">
     <div class="col-md-9" >
     {% if pagination is not defined %}
         <div class="userheader">
@@ -147,7 +147,7 @@
                 <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/skills"><i class="fa fa-thumbs-up"></i> Skills</a></li>
             </ul>
         </div>
-        <div style="clear:both"></div>
+        <div class="clearfix"></div>
         {% if g.user.id != user_id %}
             <br/>
             <div style="margin-top: 40px">
@@ -289,6 +289,7 @@
         </div>
     {% endif %}
     </div>
+</div>
     <script>
         $('body').on("click", ".btn-success", function () {
             id = $(this).attr('id');
