@@ -1,17 +1,6 @@
 {% extends "base.html" %}
 {% block title %}401 - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
-{% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
-{% endblock %}
+
 {% block container %}
 <h3 class="error">Status code 401</h3>
     <p>Your request cannot be fulfilled because you are unauthorized to do so.</p>

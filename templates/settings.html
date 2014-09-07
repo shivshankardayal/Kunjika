@@ -1,17 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Edit your settings {{ user['name'] }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
 {% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
+    {{ super() }}
     <script src="/static/js/jquery.cookie.js"></script>
     <script src="https://malsup.github.com/jquery.form.js"></script>
     <script>

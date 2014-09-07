@@ -1,23 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    <link type="text/css" rel="stylesheet" href="/static/css/openid.css" />
-    <style type="text/css">
-        body {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        }
-    </style>
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
-{% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
-{% endblock %}
+
 {% block container %}
     <div class="container">
     <div class="" id="loginModal">
