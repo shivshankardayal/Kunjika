@@ -48,8 +48,16 @@
 
         ga('create', 'UA-17487464-6', '10hash.com');
         ga('send', 'pageview');
-
     </script>
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) return;
+       js = d.createElement(s); js.id = id;
+       js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=361052544049458&version=v2.0";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));</script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 
 <body>
@@ -240,6 +248,8 @@
                         Bangalore, India<br />
                         Email: info@10hash.com<br />
                         <h3><i class="fa fa-plus-square small-icons bk-color-blue" target="_blank"></i>Social Connect</h3>
+                        <div class="g-plusone" data-annotation="inline" data-width="300" style="margin-bottom:20px" data-href="https://10hash.com"></div>
+                        <div class="fb-like" data-href="https://www.facebook.com/10hash" data-layout="standard" data-action="like" data-show-faces="true" data-share="true" style="margin-bottom:20px"></div>
                         <a href="https://www.facebook.com/10hash" target="_blank" style="margin-right: 20px"><i class="fa fa-facebook fa-3x color-facebook"></i></a>
                         <a href="https://www.twitter.com/tenhash" target="_blank" style="margin-right: 20px"><i class="fa fa-twitter fa-3x color-twitter"></i></a>
                         <a href="https://www.google.com/+10hash" target="_blank" style="margin-right: 20px"><i class="fa fa-google-plus fa-3x color-google-plus"></i></a>
@@ -316,6 +326,13 @@
      var interval = 1000 * 5;
      setInterval(colorChanger, interval);
 
+    </script>
+    <script type="text/javascript">
+     (function() {
+       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+       po.src = 'https://apis.google.com/js/plusone.js?onload=onLoadCallback';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+     })();
     </script>
 </body>
 </html>
