@@ -9,41 +9,26 @@
         <div class="page-header">
             <h3>Tags</h3>
         </div>
-        <div id="tags">
-            <table>
-                {% set i = 0 %}
-                {% for tag in tags %}
-                    {% if i < no_of_tags %}
-                        {% if (no_of_tags - i) > 4 %}
-                            {% set k = 4 %}
-                        {% else %}
-                            {% set k = no_of_tags - i %}
+        <div class="row tags">
+            {% set i = 0 %}
+            {% for tag in tags %}
+                    
+                    <div class="col-sm-4 col-xs-6">
+                        <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="" rel="tag">{{ tag['tag'] }}</a>
+                            <span class="item-multiplier-x">×</span>&nbsp;
+                            <span class="item-multiplier-count">{{ tag['count'] }}</span>
+                        <a href="/info/{{ tag['tag'] }}">info</a>
+                        {% if 'excerpt' in tag %}
+                            <div class="excerpt">{{ tag['excerpt'] }}
+                            {{ tag['info'][:108] }}
+                            </div>
                         {% endif %}
-                        <tr>
-                            {% for j in range(0, k) %}
-                                <td class="tag-cell">
-                                    <a href="/questions/tagged/{{ tags[i+j]['tag'] }}" class="post-tag" title="" rel="tag">{{ tags[i+j]['tag'] }}</a><span class="item-multiplier-x">×</span>&nbsp;<span
-                                        class="item-multiplier-count">{{ tags[i+j]['count'] }}</span>
-
-                                    <a href="/info/{{ tags[i+j]['tag'] }}">info</a>
-                                    {% if 'excerpt' in tags[i+j] %}
-                                    <div class="excerpt">{{ tags[i+j]['excerpt'] }}
-                                    {{ tags[i+j]['info'][:108] }}
-                                    </div>
-                                    {% endif %}
-                                    <div>
-                                        <div class="cbt"></div>
-                                    </div>
-                                </td>
-                            {% endfor %}
-                            {% set i = i + 4 %}
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            </table>
+                    </div>
+                        
+            {% endfor %}
             {{ render_pagination(pagination) }}
         </div>
-        </div>
+    </div>
     {% endif %}
     <div class="col-md-3">
          <div class="site-stats">
