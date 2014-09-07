@@ -551,14 +551,6 @@ pre.prettyprint {
     color: rgb(153, 153, 153);
 }
 
-.excerpt {
-    font-size: 12px;
-    height: 45px;
-    line-height: 14px;
-    overflow: hidden;
-    margin-bottom: 4px;
-}
-
 .cbt {
     clear: both;
 }
@@ -1076,4 +1068,50 @@ ul.token-input-list-kunjika{
 .radio > label > label {
     padding-left: 0px;
     font-weight: bolder;
+}
+.tags .tag {
+  background: #446e9b;
+  border: 1px solid #446e9b;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  color: #fff;
+  display: inline-block;
+  font-size: 12px;
+  margin-right: 15px;
+  padding: 4px 10px;
+  position: relative;
+  z-index: 1;
+}
+.tags .tag:before {
+  background: #446e9b;
+  border: 10px solid #446e9b;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  content: "";
+  position: absolute;
+  right: -10px;
+  top: 3px;
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  z-index: -1;
+}
+.tags .tag:hover {
+  text-decoration: none ;
+  cursor: pointer;
+}
+.tags .tag-more-info > span.fa {
+  color: #5b87b7;
+}
+.tags .excerpt {
+  font-size: 12px;
+  height: 50px;
+  line-height: 16px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  padding: 5px ;
 }
