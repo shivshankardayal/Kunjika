@@ -3,7 +3,7 @@
 from BeautifulSoup import BeautifulSoup
 import urllib2
 
-page = urllib2.urlopen("https://kunjika.libreprogramming.org").read()
+page = urllib2.urlopen("https://10hash.com").read()
 
 soup = BeautifulSoup(page)
 urls = []
@@ -15,7 +15,7 @@ for a in soup.findAll('a', href=True):
 for i in urls:
     print i
     try:
-        page = urllib2.urlopen("https://kunjika.libreprogramming.org" + i).read()
+        page = urllib2.urlopen("https://10hash.com" + i).read()
         soup = BeautifulSoup(page)
     except:
         pass
@@ -35,7 +35,7 @@ file.write('<?xml version="1.0" encoding="UTF-8"?>\n \
 
 for i in urls:
     file.write('<url>\n')
-    file.write('\t<loc>' + 'https://kunjika.libreprogramming.org' + i  + '</loc>\n')
+    file.write('\t<loc>' + 'https://10hash.com' + i  + '</loc>\n')
     file.write('</url>\n')
 
 file.write('</urlset>')
