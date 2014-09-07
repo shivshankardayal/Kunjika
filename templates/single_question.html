@@ -1,15 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ questions['title'] }} - Kunjika{% endblock %}
 {% block meta_keywords %}{% for tag in questions['content']['tags'] %}{{ tag }},{% endfor %}{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
 {% block css_site %}
     <link href="/static/css/wmd.css" rel="stylesheet">

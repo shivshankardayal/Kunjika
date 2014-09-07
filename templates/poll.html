@@ -5,19 +5,24 @@
     <div class="row">
      <div class="col-md-9">
         <div class="page-header">
-            <h3>Please set your options</h3>
+            <h3>Please choose your options for poll question</h3>
         </div>
-        <form class="ask-form" method="post" aciton="/poll">
-            {% from "macros.html" import render_field %}
-            {{ form.csrf_token }}
-
-            {{ render_field(form.poll_answers) }}
-            <div class="controls">
-                <button class="btn btn-primary">
-                    Next
-                </button>
+        <div class="row">
+            <div class="col-sm-4">
+                <form class="ask-form" method="post" aciton="/poll" role="form">
+                    {% from "macros.html" import render_field %}
+                    {{ form.csrf_token }}
+                    <div class="form-group">
+                        {{ render_field(form.poll_answers , class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary">
+                            Next <span class="fa fa-angle-double-right"></span>
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
     <div class="col-md-3">
          <div class="site-stats">

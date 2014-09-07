@@ -679,15 +679,6 @@ td, th {
     color: #700;
 }
 
-#poll_answers {
-    margin-left: 10px;
-    width: 60px;
-}
-
-input[type="radio"], input[type="checkbox"] {
-    margin: 0px;
-}
-
 .mc1, .mc2 {
     display: inline;
 }
@@ -1081,4 +1072,8 @@ ul.token-input-list-kunjika{
   cursor: pointer ;
   background-color: #446e9b;
   transition: all 0.6s ease;
+}
+.radio > label > label {
+    padding-left: 0px;
+    font-weight: bolder;
 }

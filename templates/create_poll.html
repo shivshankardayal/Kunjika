@@ -3,36 +3,38 @@
 
 {% block css_site %}
     <link href="/static/css/wmd.css" rel="stylesheet">
-    <link href="/static/css/prettify.css" rel="stylesheet">
+    <!-- <link href="/static/css/prettify.css" rel="stylesheet"> -->
+    <link href="/static/css/solarized_light.css" rel="stylesheet">
     <link href="/static/css/token-input.css" rel="stylesheet">
     {{ super() }}
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
-    <script type="text/javascript" src="/static/js/prettify.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
-
+    <script type="text/javascript" src="/static/js/highlight.js"></script>
 {% endblock %}
 {% block container %}
     <div class="row">
     <div class="col-md-9">
         <div class="page-header">
-            <h3>Please ask you question</h3>
+            <h3>Poll is almost ready <small>just provide the following info</small> </h3>
         </div>
         <form class="ask-form" method="post" aciton="/poll">
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
-            <p>What type of poll or multiple choice question do you want?</p>
-            <table class="poll">
+            <h4>Choose weather it is a multiple choice or Single choice question ?</h4>
             {% for subfield in form.option %}
-                <tr>
-                    <td>{{ subfield }}</td>
-                    <td>{{ subfield.label }}</td>
-                </tr>
+                    <div class="radio">
+                        <label>
+                            {{ subfield }}
+                            {{ subfield.label }}
+                        </label>
+                    </div>
             {% endfor %}
-            </table>
-            {{ render_field(form.question, class="question input-x-large span8", style="margin-left:25px;", placeholder="Please ask your question here?") }}
+            <div class="form-group">
+                {{ render_field(form.question, class="form-control" , placeholder="Please put your question here?") }}
+            </div>
             <div class="wmd-panel">
                 <div id="wmd-button-bar"></div>
                 {{ render_field(form.description, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please describe your question here.") }}
@@ -49,17 +51,19 @@
                 <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
                 <div style="clear:both;"></div>
             {% for i in options %}
-                <div class="control-group">
-                    <label class="control-label" for="Option {{ i }}">Option {{ i }}</label>
+                <div class="form-group">
+                    <label for="Option {{ i }}">Option {{ i }}</label>
                     <div class="controls">
-                        <input class="question input-x-large span8" id="option_{{ i }}" name="option_{{ i }}" placeholder="Please put your choice here?" style="margin-left:25px;" value="" type="text">
+                        <input class="form-control" id="option_{{ i }}" name="option_{{ i }}" placeholder="Please put your choice here " value="" type="text">
                     </div>
                 </div>
             {% endfor %}
-            {{ render_field(form.tags, class="input-xlarge span10", id="kunjika-tags", style="margin-left:45px; margin-top=30px;", placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
-            <div class="controls">
+            <div class="form-group">
+                {{ render_field(form.tags, class="form-control", id="kunjika-tags", placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
+            </div>
+            <div class="form-group">
                 <button class="btn btn-primary">
-                    Ask your question.
+                    Create the poll
                 </button>
             </div>
             </div>
@@ -142,7 +146,7 @@
                 }
                 Markdown.Extra.init(converter, {
                     extensions: "all",
-                    highlighter: "prettify",
+                    highlighter: "highlight",
                     table_class: "table-bordered table"
                 });
                 /*converter.hooks.chain("preBlockGamut", function (text, rbg) {
@@ -222,7 +226,8 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                hljs.initHighlightingOnLoad();
                 editor.run();
             }
         })();
