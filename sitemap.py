@@ -9,7 +9,8 @@ soup = BeautifulSoup(page)
 urls = []
 for a in soup.findAll('a', href=True):
     print a['href']
-    if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://libreprogramming.org' and a['href'][0:8] != 'http://':
+    if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://libreprogramming.org'\
+       and a['href'][0:8] != 'http://' and a['href'][0:9] != 'https://':
         urls.append(a['href'])
 
 for i in urls:
@@ -21,7 +22,8 @@ for i in urls:
         pass
 
     for a in soup.findAll('a', href=True):
-        if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://libreprogramming.org' and a['href'][0:8] != 'http://':
+        if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://libreprogramming.org' \
+           and a['href'][0:8] != 'http://' and a['href'][0:9] != 'https://':
             urls.append(a['href'])
 
 print len(urls)
@@ -35,7 +37,7 @@ file.write('<?xml version="1.0" encoding="UTF-8"?>\n \
 
 for i in urls:
     file.write('<url>\n')
-    file.write('\t<loc>' + 'https://10hash.com' + i  + '</loc>\n')
+    file.write('\t<loc>' + 'https://10hash.com' + i + '</loc>\n')
     file.write('</url>\n')
 
 file.write('</urlset>')
