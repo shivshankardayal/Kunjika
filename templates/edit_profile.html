@@ -254,7 +254,7 @@
                 }
                 Markdown.Extra.init(converter, {
                     extensions: "all",
-                    highlighter: "prettify",
+                    highlighter: "highlight",
                     table_class: "table-bordered table"
                 });
 
@@ -325,7 +325,8 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                hljs.initHighlightingOnLoad();
                 editor.run();
             }
         })();
