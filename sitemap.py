@@ -9,7 +9,7 @@ soup = BeautifulSoup(page)
 urls = []
 for a in soup.findAll('a', href=True):
     print a['href']
-    if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://libreprogramming.org':
+    if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://libreprogramming.org' and a['href'][0:8] != 'http://':
         urls.append(a['href'])
 
 for i in urls:
@@ -21,7 +21,7 @@ for i in urls:
         pass
 
     for a in soup.findAll('a', href=True):
-        if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://libreprogramming.org':
+        if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://libreprogramming.org' and a['href'][0:8] != 'http://':
             urls.append(a['href'])
 
 print len(urls)
