@@ -1115,3 +1115,70 @@ ul.token-input-list-kunjika{
   margin-bottom: 15px;
   padding: 5px ;
 }
+.users {
+  margin-bottom: 100px;
+}
+.users .user-wrapper {
+  margin-bottom: 150px ;
+}
+.user-details {
+  position: relative;
+}
+.user-details .user-image {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+  backgound: #e9eff5;
+}
+.user-details .user-image img {
+  clear: both;
+  margin: auto;
+  position: relative;
+}
+.user-details .user-info-block {
+  width: 100% ;
+  position: absolute;
+  top: 55px;
+  background: #ffffff;
+  z-index: 0;
+  padding-top: 55px;
+  min-height: 165px;
+  max-height: 165px;
+  border-radius: 5px;
+  border: 1px solid #5b87b7;
+}
+.user-details .user-info-block .user-heading {
+  width: 100%;
+  text-align: center;
+  margin: 10px 0 0;
+}
+.user-details .user-info-block .user-heading .user-name {
+  font-size: 22px;
+  line-height: 24px;
+  padding: 5px;
+}
+.user-details .user-info-block .user-heading .user-name:hover {
+  text-decoration: none ;
+  cursor: pointer;
+}
+.user-details .user-info-block .user-heading .reputation-score {
+  color: #ff711d;
+}
+.user-details .user-info-block .user-heading .location {
+  font-style: italic;
+}
+.user-details .user-info-block .navigation {
+  float: left;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid #428BCA;
+  border-top: 1px solid #428BCA;
+}
+.user-details .user-info-block .user-body {
+  float: left;
+  padding: 5%;
+  width: 90%;
+}

@@ -250,41 +250,26 @@
         <div class="page-header">
             <h3>Users</h3>
         </div>
-        <div id="users">
-            <table>
+        <div class="users row">
                 {% set i = 0 %}
                 {% for user in users %}
-                    {% if i < no_of_users %}
-                        {% if (no_of_users - i) > 4 %}
-                            {% set k = 4 %}
-                        {% else %}
-                            {% set k = no_of_users - i %}
-                        {% endif %}
-                        <tr>
-                            {% for j in range(0, k) %}
-                                <td>
-                                    <div class="user-info user-hover">
-                                        <div class="user-gravatar32">
-                                            <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name']|urlencode }}">
-                                                <img src="{{ users[j + i]['email'] | gravatar(size=48) }}"/>
-                                            </a>
-                                        </div>
-                                        <div class="user-details">
-                                            <a href="/users/{{ users[j + i]['id'] }}/{{ users[j + i]['name']|urlencode }}">{{ users[j + i]['name'] }}</a><br>
-                                            <span class="user-location">{{ users[j + i]['location'] }}</span><br>
-                                                    <span class="reputation-score"
-                                                          dir="ltr">{{ users[j + i]['rep'] }}</span>
-                                        </div>
-                                        <div class="user-tags">
-                                        </div>
-                                    </div>
-                                </td>
-                            {% endfor %}
-                            {% set i = i + 4 %}
-                        </tr>
-                    {% endif %}
+                <div class="col-md-3 col-sm-4 col-xs-6 user-wrapper">
+                    <div class="user-details">
+                        <div class="user-image">
+                            <a href="/users/{{ user['id'] }}/{{ user['name']|urlencode }}">
+                                <img src="{{ user['email'] | gravatar(size=100) }}"  class="img-circle"/>
+                            </a>
+                        </div>
+                        <div class="user-info-block">
+                            <div class="user-heading">
+                              <a href="/users/{{ user['id'] }}/{{ user['name']|urlencode }}" class="user-name">{{ user['name'] }}</a><br>
+                               <span class="help-block location">{{ user['location'] }}</span>
+                               <span class="reputation-score" dir="ltr"><span class="fa fa-graduation-cap"></span> {{ user['rep'] }} points </span>
+                           </div>
+                        </div>              
+                    </div>
+                </div>
                 {% endfor %}
-            </table>
             {{ render_pagination(pagination) }}
         </div>
     {% endif %}
