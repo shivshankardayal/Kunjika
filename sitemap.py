@@ -8,13 +8,12 @@ page = urllib2.urlopen("https://10hash.com").read()
 soup = BeautifulSoup(page)
 urls = []
 for a in soup.findAll('a', href=True):
-    print a['href']
-    if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://libreprogramming.org'\
-       and a['href'][0:8] != 'http://' and a['href'][0:9] != 'https://':
+    if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://10hash.com'\
+       and a['href'][0:7] != 'http://' and a['href'][0:8] != 'https://':
         urls.append(a['href'])
+        print a['href']
 
 for i in urls:
-    print i
     try:
         page = urllib2.urlopen("https://10hash.com" + i).read()
         soup = BeautifulSoup(page)
@@ -22,9 +21,10 @@ for i in urls:
         pass
 
     for a in soup.findAll('a', href=True):
-        if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://libreprogramming.org' \
-           and a['href'][0:8] != 'http://' and a['href'][0:9] != 'https://':
+        if a['href'] != '#' and a['href'] not in urls and a['href'] != 'http://10hash.com' \
+           and a['href'][0:7] != 'http://' and a['href'][0:8] != 'https://':
             urls.append(a['href'])
+            print a['href']
 
 print len(urls)
 
