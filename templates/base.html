@@ -97,6 +97,9 @@
             <script type="text/javascript" src="/static/js/bootstrap-flash.js">
             </script>
             <script type="text/javascript">if ( $.attrFn ) { $.attrFn.text = true; }</script>
+            <script type="text/javascript">var switchTo5x=true;</script>
+            <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+            <script type="text/javascript" src="http://s.sharethis.com/loader.js"></script>
         {% endblock %}
         {% block css_site %}
         {% endblock %}
@@ -302,8 +305,11 @@
                 as applicable on code and documentation portions.</p>
         </div>
     </div>
-
 {% endblock %}
-
+<script type="text/javascript">stLight.options({publisher: "1d36ed06-99ee-4bfb-8238-67ec3c7487f0", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+<script>
+var options={ "publisher": "1d36ed06-99ee-4bfb-8238-67ec3c7487f0", "position": "left", "ad": { "visible": false, "openDelay": 5, "closeDelay": 0}, "chicklets": { "items": ["googleplus", "facebook", "twitter", "linkedin", "email", "sharethis"]}};
+var st_hover_widget = new sharethis.widgets.hoverbuttons(options);
+</script>
 </body>
 </html>
