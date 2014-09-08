@@ -320,13 +320,13 @@ def index():
     contactForm = ContactForm(request.form)
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     art_count = urllib2.urlopen(
-                        DB_URL + 'kunjika/_design/dev_qa/_view/get_articles'
-                    ).read()
+        DB_URL + 'kunjika/_design/dev_qa/_view/get_articles'
+    ).read()
     art_count = json.loads(art_count)
     r = random.randint(0, 0xff)
     green = random.randint(0, 0xff)
     b = random.randint(0, 0xff)
-    return render_template('index.html', qcount=qcount, acount=acount, art_count = art_count['rows'][0]['value'],
+    return render_template('index.html', qcount=qcount, acount=acount, art_count=art_count['rows'][0]['value'],
                            form=contactForm, r=r, green=green, b=b)
 
 

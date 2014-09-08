@@ -821,3 +821,10 @@ button {
     padding: 0.2em .2em;
     text-decoration: none;
 }
+
+.share-buttons {
+    float:left;
+    width: 50px;
+    position: fixed;
+    top: 43%;
+}

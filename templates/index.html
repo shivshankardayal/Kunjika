@@ -33,6 +33,7 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
@@ -61,7 +62,14 @@
 </head>
 
 <body>
-
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=361052544049458&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
     <!--NAV SECTION -->
     <header id="header-nav" role="banner">
         <div id="navbar" class="navbar navbar-default">
@@ -249,7 +257,9 @@
                         Email: info@10hash.com<br />
                         <h3><i class="fa fa-plus-square small-icons bk-color-blue" target="_blank"></i>Social Connect</h3>
                         <div class="g-plusone" data-annotation="inline" data-width="300" style="margin-bottom:20px" data-href="https://10hash.com"></div>
+                        <div class="g-follow" data-href="https://plus.google.com/+10hash" data-rel="author"></div>
                         <div class="fb-like" data-href="https://www.facebook.com/10hash" data-layout="standard" data-action="like" data-show-faces="true" data-share="true" style="margin-bottom:20px"></div>
+                        <div class="fb-follow" data-href="https://www.facebook.com/10hash" data-colorscheme="light" data-layout="standard" data-show-faces="true"></div>
                         <a href="https://www.facebook.com/10hash" target="_blank" style="margin-right: 20px"><i class="fa fa-facebook fa-3x color-facebook"></i></a>
                         <a href="https://www.twitter.com/tenhash" target="_blank" style="margin-right: 20px"><i class="fa fa-twitter fa-3x color-twitter"></i></a>
                         <a href="https://www.google.com/+10hash" target="_blank" style="margin-right: 20px"><i class="fa fa-google-plus fa-3x color-google-plus"></i></a>
