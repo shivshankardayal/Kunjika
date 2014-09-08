@@ -13,16 +13,16 @@
 {% block css_site %}
     <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
-    <link href="/static/css/prettify.css" rel="stylesheet">
+    <link href="/static/css/solarized_light.css" rel="stylesheet">
     <link href="/static/css/token-input.css" rel="stylesheet">
     <script src="/static/js/jquery.cookie.js"></script>
     <script src="https://malsup.github.com/jquery.form.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
-    <script type="text/javascript" src="/static/js/prettify.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
+    <script type="text/javascript" src="/static/js/highlight.js"></script>
 
 {% endblock %}
 {% block container %}
@@ -327,7 +327,8 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                hljs.initHighlightingOnLoad();
                 editor.run();
             }
         })();
