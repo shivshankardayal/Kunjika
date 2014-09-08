@@ -2169,6 +2169,7 @@ def edit_profile(uid=None):
         if request.method == 'POST' and form.validate_on_submit():
             user['fname'] = form.fname.data
             user['lname'] = form.lname.data
+            user['name'] = user['fname'] + ' ' + user['lname']
             user['website'] = form.website.data
             user['location'] = form.location.data
             user['about-me'] = form.about_me.data
