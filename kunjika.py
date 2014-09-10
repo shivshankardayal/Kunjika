@@ -1240,7 +1240,12 @@ def image_upload():
 def get_uploads(filename):
     content = kb.get(filename).value['content']
     content = base64.b64decode(content)
-    return content
+    response = make_response(content)
+    extension = filename.split('.')[:-1]
+    extension = str(extension[1:])
+    response.headers['Content-Type'] = 'image/' + extension
+    response.headers['Content-Disposition'] = 'attachment; filename=' + filename
+    return response
 
 '''
 def image_upload():
