@@ -16,7 +16,8 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 from flask import (Flask, session, render_template, abort, redirect, url_for, flash,
-                   make_response, request, g, jsonify)
+                   make_response, request, g, jsonify, send_file)
+import io
 import json
 from forms import *
 from flask.ext.bcrypt import Bcrypt
@@ -1240,12 +1241,8 @@ def image_upload():
 def get_uploads(filename):
     content = kb.get(filename).value['content']
     content = base64.b64decode(content)
-    response = make_response(content)
-    extension = filename.split('.')[:-1]
-    extension = str(extension[1:])
-    response.headers['Content-Type'] = 'image/' + extension
-    response.headers['Content-Disposition'] = 'attachment; filename=' + filename
-    return response
+
+    return send_file(io.BytesIO(content))
 
 '''
 def image_upload():
