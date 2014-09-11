@@ -2,7 +2,7 @@
 {% block title %}{{ questions['title'] }} - Kunjika{% endblock %}
 {% block meta_keywords %}{% for tag in questions['content']['tags'] %}{{ tag }},{% endfor %}{% endblock %}
 {% block meta_author %}{{ questions['opname'] }}{% endblock %}
-{% block meta_description %}{{ questions['title'] }}{% endblock %}
+{% block meta_description %}{{ questions['content']['html']|safe }}{% endblock %}
 {% block css_bootstrap %}    <link href="/static/css/kunjika.css" rel="stylesheet">
 
 {{ super() }}
