@@ -214,7 +214,7 @@
               <a class="voteup-on"
                  title="This question shows research effort. It is useful and clear (click again to take back your vote)"
                  href="#" id="v-{{ questions['qid'] }}">
-                <i class="icon-thumbs-up icon-large"></i>
+                <i class="fa fa-thumbs-up fa-lg"></i>
               </a>
             </span>
 
@@ -224,21 +224,21 @@
               <a class="votedown-on"
                  title="This question shows no research effort. It is not useful and unclear (click again to take back your vote)"
                  href="#" id="v-{{ questions['qid'] }}">
-                <i class="icon-thumbs-down icon-large"></i>
+                <i class="fa fa-thumbs-down fa-lg"></i>
               </a>
             </span>
-            <span class="icon-stack">
+            <span class="icon-stack" style="margin-top: 30px; margin-left: -18px;">
               {% if g.user.id in questions['users_fav'] %}
               <a class="starred"
                  title="This question is of particular interest to you. Click to favorite it."
                  href="#" id="p-{{ questions['qid'] }}">
-                <i class="icon-star icon-large"></i>
+                <i class="fa fa-star fa-lg"></i>
               </a>
               {% else %}
               <a class="unstarred"
                  title="This question is of particular interest to you. Click to favorite it."
                  href="#" id="p-{{ questions['qid'] }}">
-                <i class="icon-star icon-large"></i>
+                <i class="fa fa-star fa-lg"></i>
               </a>
               {% endif %}
             </span>
@@ -252,7 +252,7 @@
           {% else %}
           <div class="q-desc" id="q-desc" style="color:#c00">This question has been hidden either by admin or by OP.</div>
           {% endif %}
-          <div class="post-tags"><i class="icon-tags" style="color:#a4c639;"></i>
+          <div class="post-tags"><i class="fa fa-tags" style="color:#a4c639;"></i>
             {% for tag in questions['content']['tags'] %}
             <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
             {% endfor %}
@@ -270,18 +270,18 @@
                 </td>
                 <td class="vt">
                   <a href="/flag/{{ questions['qid'] }}" title="Flag for inappropriate comment"
-                     id="qqf-{{ questions['qid'] }}" class="flag" title=""><i class="icon-flag"
+                     id="qqf-{{ questions['qid'] }}" class="flag" title=""><i class="fa fa-flag"
                                                                               style="color:#d00"></i> Flag</a>
                 </td>
                 <td class="vt">
                   <a href="/bookmark/{{ questions['qid'] }}" title="Bookmark this question"
-                     id="b-{{ questions['qid'] }}" class="bookmark" title=""><i class="icon-bookmark"
+                     id="b-{{ questions['qid'] }}" class="bookmark" title=""><i class="fa fa-bookmark"
                                                                                 style="color:#d00"></i> Bookmark</a>
                 </td>
                 {% if g.user.id == 1 %}
                 <td class="vt">
                   <a href="/sticky/{{ questions['qid'] }}" id="s-{{ questions['qid'] }}"
-                     class="sticky suggest-edit-post"><i class="icon-pushpin"
+                     class="sticky suggest-edit-post"><i class="fa fa-pushpin"
                                                          ></i> Sticky/Unsticky</a>
                 </td>
 				<td class="vt">
@@ -291,7 +291,7 @@
                 {% endif %}
                 <td class="vt">
                   <a href="#a-{{ questions['qid'] }}" id="a-{{ questions['qid'] }}"
-                     onclick="toggleDiv('{{ questions['qid'] }}');"><i class="icon-comment"
+                     onclick="toggleDiv('{{ questions['qid'] }}');"><i class="fa fa-comment"
                                                                        style="color:#a4c639"></i> Comment</a>
                 </td>
                 {% if g.user.id == questions['content']['op']|int or g.user.id == 1 %}
@@ -347,7 +347,7 @@
       <a title="edit" href="/edit/ce-{{ questions['qid'] }}-{{ comment['cid'] }}"><i
         class="icon-edit"></i></a>
       <a title="Flag for inappropriate comment" id="qcf-{{ questions['qid'] }}-{{ comment['cid'] }}" class="flag"
-         style="color:#d00" href="/flag/{{ questions['qid'] }}-{{ comment['cid'] }}"><i class="icon-flag"></i></a>
+         style="color:#d00" href="/flag/{{ questions['qid'] }}-{{ comment['cid'] }}"><i class="fa fa-flag"></i></a>
       {% endif %}
       {% if g.user.id == comment['poster'] or g.user.id == 1 %}
       <a class="tohide" href="/hide/ch-{{ questions['qid'] }}-{{ comment['cid'] }}" id="ch-{{ questions['qid'] }}-{{ comment['cid'] }}"> Hide/Unhide</a>
@@ -436,7 +436,7 @@
                 <a class="voteup-on"
                    title="This answer shows research effort. It is useful and clear (click again to take back your vote)"
                    href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
-                  <i class="icon-thumbs-up icon-large"></i>
+                  <i class="fa fa-thumbs-up fa-lg"></i>
                 </a>
               </span>
 
@@ -446,14 +446,14 @@
                 <a class="votedown-on"
                    title="This answer shows no research effort. It is not useful and unclear (click again to take back your vote)"
                    href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
-                  <i class="icon-thumbs-down icon-large"></i>
+                  <i class="fa fa-thumbs-down fa-lg"></i>
                 </a>
               </span>
               <br/>
               {% if questions['content']['op'] != user_id %}
               {% if answer['best'] == True %}
               <span class="icon-stack">
-                <i class="icon-ok icon-large accepted-answer"></i>
+                <i class="fa fa-check fa-lg accepted-answer"></i>
               </span>
               {% endif %}
               {% else %}
@@ -462,7 +462,7 @@
                 <a class="accept-answer ok" title="This is the best answer so OP selects this."
                    href="#"
                    id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
-                  <i class="icon-ok icon-large"></i>
+                  <i class="fa fa-check fa-lg"></i>
                 </a>
               </span>
               {% else %}
@@ -470,7 +470,7 @@
                 <a class="accepted-answer ok"
                    title="This is the best answer so OP selects this." href="#"
                    id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
-                  <i class="icon-ok icon-large"></i>
+                  <i class="fa fa-check fa-lg"></i>
                 </a>
               </span>
               {% endif %}
@@ -492,13 +492,13 @@
                   <td class="vt">
                     <a href="/edit/ae-{{ questions['qid'] }}-{{ answer['aid'] }}"
                        class="suggest-edit-post"
-                       title=""><i class="icon-edit"></i> Edit</a>
+                       title=""><i class="fa fa-edit"></i> Edit</a>
                   </td>
                   <td class="vt">
                     <a title="Flag for inappropriate comment"
                        id="qaf-{{ questions['qid'] }}-{{ answer['aid'] }}"
                        href="/flag/{{ questions['qid'] }}-{{ answer['aid'] }}" class="flag"
-                       ><i class="icon-flag" style="color:#d00"></i> Flag</a>
+                       ><i class="fa fa-flag" style="color:#d00"></i> Flag</a>
                   </td>
                   <td class="vt">
                     <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"

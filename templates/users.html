@@ -54,7 +54,7 @@
         </div>
         <div class="edit-button">
             {% if g.user.id == user_id %}
-                <a href="/users/{{ user_id }}/edit_profile" class="btn"><i class="icon-edit"></i>Edit</a>
+                <a href="/users/{{ user_id }}/edit_profile" class="btn"><i class="fa fa-edit"></i>Edit</a>
             {% endif %}
         </div>
         <div class="data">
@@ -113,11 +113,11 @@
                 {% if g.user.id == user_id %}
                     <tr>
                         <th></th>
-                        <td class="invite"><p id="invite" class="btn btn-small btn-info"><i class="icon-envelope"></i> Invite
+                        <td class="invite"><p id="invite" class="btn btn-small btn-info"><i class="fa fa-envelope"></i> Invite
                             Friends</p>
                         </td>
                         <td></td>
-                        <!--td class="create-group"><p id="group" class="btn btn-small btn-info"><i class="icon-group"></i> Create
+                        <!--td class="create-group"><p id="group" class="btn btn-small btn-info"><i class="fa fa-group"></i> Create
                             Group</p>
                         </td-->
                     </tr>
@@ -151,9 +151,9 @@
         </div>
         <div class="user-nav">
             <ul class="nav nav-pills nav-stacked">
-                <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/bookmarks"><i class="icon-bookmark"></i> Bookmarks</a></li>
-                <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/messages"><i class="icon-envelope"></i> Messages</a></li>
-                <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/skills"><i class="icon-thumbs-up"></i> Skills</a></li>
+                <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/bookmarks"><i class="fa fa-bookmark"></i> Bookmarks</a></li>
+                <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/messages"><i class="fa fa-envelope"></i> Messages</a></li>
+                <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/skills"><i class="fa fa-thumbs-up"></i> Skills</a></li>
             </ul>
         </div>
         <div style="clear:both"></div>

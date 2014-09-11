@@ -169,7 +169,7 @@
                 str = '<div class="comment acomment" id="c-' + responseJSON.id + '">';
                 str += responseJSON.comment;
                 str += " - <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
-                str += " " + responseJSON.ts + ' <a title="edit" href="/edit_article/ce-' + responseJSON.aid + '_' + responseJSON.cid + '"> <i class="icon-edit"></i></a></div>'
+                str += " " + responseJSON.ts + ' <a title="edit" href="/edit_article/ce-' + responseJSON.aid + '_' + responseJSON.cid + '"> <i class="fa fa-edit"></i></a></div>'
                 $(str).insertAfter('#h3-comment');
                 flash('Your comment has been successfully posted.', 'info')
             }
@@ -185,7 +185,7 @@
     <table>
         <tr>
             <td class="post">
-                <div class="post-tags"><i class="icon-tags" title="Tags" style="color:#a4c639;"></i>
+                <div class="post-tags"><i class="fa fa-tags" title="Tags" style="color:#a4c639;"></i>
                     {% for tag in article['tags'] %}
                         <a class="post-tag" href="/articles/tagged/{{ tag }}">{{ tag }}</a>
                     {% endfor %}
@@ -201,13 +201,13 @@
                             </td>
                             <td class="vt">
                                 <a href="#a-{{ article['aid'] }}" id="a-{{ article['aid'] }}"
-                                   onclick="toggleDiv('{{ article['aid'] }}');"><i class="icon-comment"
+                                   onclick="toggleDiv('{{ article['aid'] }}');"><i class="fa fa-comment"
                                                                                      style="color:#a4c639"></i> Comment</a>
                             </td>
                         {% elif user_id is defined %}
                             <td class="vt">
                                 <a href="#a-{{ article['aid'] }}" id="a-{{ article['aid'] }}"
-                                   onclick="toggleDiv('{{ article['aid'] }}');"><i class="icon-comment"
+                                   onclick="toggleDiv('{{ article['aid'] }}');"><i class="fa fa-comment"
                                                                                      style="color:#a4c639"></i> Comment</a>
                             </td>
                         {% else %}
@@ -289,7 +289,7 @@
                 class="icon-edit"></i></a>
             {% else %}
             <a title="Flag for inappropriate comment" id="qcf-{{ comment['cid'] }}" class="flag"
-               style="color:#d00" href="/flag/-{{ comment['cid'] }}"><i class="icon-flag"></i></a>
+               style="color:#d00" href="/flag/-{{ comment['cid'] }}"><i class="fa fa-flag"></i></a>
             {% endif %}
         </div>
     {% endfor %}
