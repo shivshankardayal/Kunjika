@@ -19,4 +19,4 @@
 virtualenv venv
 source venv/bin/activate
 pip install --upgrade Flask Flask-WTF Flask-Bcrypt Flask-Gravatar Flask-Login couchbase itsdangerous Flask-mail \
-Flask-Classy pyes wtforms flask-oauthlib
+Flask-Classy pyes wtforms flask-oauthlib markdown bleach python-markdown-oembed

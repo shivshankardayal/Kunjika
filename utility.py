@@ -29,6 +29,8 @@ from couchbase.views.params import Query
 from uuid import uuid1
 from forms import *
 import urllib
+import markdown
+import bleach
 
 
 def common_data():
@@ -121,11 +123,11 @@ def search_title(query, page):
 
 
 def search_description(query, page):
-    description=query[12:]
-    q=pyes.PrefixQuery('description', description)
-    question_results=kunjika.es_conn.search(query=q)
+    description = query[12:]
+    q = pyes.PrefixQuery('description', description)
+    question_results = kunjika.es_conn.search(query=q)
 
-    results=[]
+    results = []
 
     for r in question_results:
         if 'qid' in r:
@@ -133,28 +135,26 @@ def search_description(query, page):
 
     return common_rendering(results, query, page)
 
+
 def search_user(query, page):
     (qcount, acount, tcount, ucount, tag_list) = common_data()
-    user=query[5:]
-    q=pyes.PrefixQuery('name', user)
-    question_results=kunjika.es_conn.search(query=q)
+    user = query[5:]
+    q = pyes.PrefixQuery('name', user)
+    question_results = kunjika.es_conn.search(query=q)
 
-    results=[]
+    results = []
     for r in question_results:
         print r
         results.append(r['uid'])
 
-    questions_list=[]
+    questions_list = []
 
     for uid in results:
         question_view = urllib2.urlopen(
-            kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_userid?key=' + '"' +str(uid) + '"').read()
+            kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_userid?key=' + '"' + str(uid) + '"').read()
         rows = json.loads(question_view)['rows']
-        #print rows
         qids_list = []
-        questions = []
         for row in rows:
-            ##print row['id']
             qids_list.append(str(row['id']))
         if len(qids_list) != 0:
             val_res = kunjika.qb.get_multi(qids_list)
@@ -182,31 +182,24 @@ def search_user(query, page):
                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query, name=g.user.name, role=g.user.role,
                                user_id=g.user.id)
 
+
 def search_tag(query, page):
     (qcount, acount, tcount, ucount, tag_list) = common_data()
-    tag=query[4:]
-    q=pyes.MatchQuery('tag', tag)
-    question_results=kunjika.es_conn.search(query=q)
+    tag = query[4:]
+    q = pyes.MatchQuery('tag', tag)
+    question_results = kunjika.es_conn.search(query=q)
 
-    results=[]
+    results = []
 
     for r in question_results:
         results.append(r['tag'])
-        #print r['tag']
 
-    questions_list=[]
+    questions_list = []
     for tag in results:
-        #question_view = urllib2.urlopen(
         #    kunjika.DB_URL + 'questions/_design/dev_qa/_view/get_questions_by_tag?key=' + '"' + tag + '"').read()
-        #question_view = json.loads(question_view)['rows']
-        ##print question_view
         q = Query(key=tag)
         for result in View(kunjika.qb, "dev_qa", "get_questions_by_tag", include_docs=True, query=q):
-            ##print result
             questions_list.append(result.doc.value)
-
-        #for element in question_view['rows']:
-        #    questions_list.append(element['value'])
 
     for i in questions_list:
         i['tstamp'] = strftime("%a, %d %b %Y %H:%M", localtime(i['content']['ts']))
@@ -225,6 +218,7 @@ def search_tag(query, page):
     else:
         return render_template('search.html', title='Search results for ' + query, qpage=True, questions=questions_list[(page-1)*kunjika.QUESTIONS_PER_PAGE:],
                                pagination=pagination, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list, query=query)
+
 
 def generate_url(title):
     length = len(title)
@@ -721,20 +715,18 @@ def create_group(request):
     except:
         return False
 
+
 def endorse():
     tuid = request.referrer.split('/')[4]
     to_user = kunjika.cb.get(str(tuid)).value
-    from_user = g.user.user_doc
     skill = request.args['id'][1:]
 
     sid_doc = urllib2.urlopen(kunjika.DB_URL + 'kunjika/_design/dev_qa/_view/get_end_by_uid?key=[' + str(to_user['id']) +
-                                   ',"' + urllib.quote(skill) + '"]&stale=false&reduce=false').read()
+                              ',"' + urllib.quote(skill) + '"]&stale=false&reduce=false').read()
 
     sid_doc = json.loads(sid_doc)
-    #print sid_doc
 
     endorsed = False
-    docid = None
     if len(sid_doc['rows']) != 0:
         for row in sid_doc['rows']:
             endorsement = kunjika.kb.get(row['id']).value
@@ -742,7 +734,7 @@ def endorse():
                 endorsed = True
                 kunjika.kb.delete(row['id'])
                 break
-    if endorsed == False:
+    if endorsed is False:
         doc = {}
         doc['id'] = 'e' + str(uuid1())
         doc['fuid'] = g.user.id
@@ -754,6 +746,7 @@ def endorse():
 
     return jsonify({'success': True})
 
+
 def write_article():
     articleForm = ArticleForm(request.form)
     if g.user is not None and g.user.is_authenticated():
@@ -762,6 +755,8 @@ def write_article():
             article['content'] = {}
             title = articleForm.title.data
             article['content'] = articleForm.content.data
+            article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
+                                                             output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
             article['tags'] = []
             article['tags'] = articleForm.tags.data.split(',')
             article['tags'] = [tag.strip(' \t').lower() for tag in article['tags']]
@@ -795,8 +790,8 @@ def write_article():
             user['rep'] += 25
             kunjika.cb.replace(str(g.user.id), user)
 
-            kunjika.es_conn.index({'title':title, 'content':article['content'], 'aid':article['aid'],
-                           'position':article['content']}, 'articles', 'articles-type', article['aid'])
+            kunjika.es_conn.index({'title': title, 'content': article['content'], 'aid': article['aid'],
+                                   'position': article['content']}, 'articles', 'articles-type', article['aid'])
             kunjika.es_conn.indices.refresh('articles')
             kunjika.kb.add(str(article['aid']), article)
 
@@ -936,6 +931,8 @@ def article_comment():
         aid = elements
     comment = {}
     comment['comment'] = request.form['comment']
+    comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite', 'oembed'],
+                                   output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
     comment['poster'] = g.user.id
     comment['opname'] = g.user.name
     comment['ts'] = int(time())
@@ -979,7 +976,7 @@ def article_comment():
         kunjika.mail.send(msg)
 
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
-    return json.dumps({"id": cid, "comment": request.form['comment'], "user_id": g.user.id,
+    return json.dumps({"id": cid, "comment": comment['html'], "user_id": g.user.id,
                        "uname": g.user.name, "ts": ts, "aid": aid})
 
 
@@ -1013,7 +1010,8 @@ def edit_article(element):
                     flash("Comment must be between 10 and 5000 characters.", 'error')
                     return redirect(request.referrer)
                 comment['comment'] = form.comment.data
-
+                comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite', 'oembed'],
+                                                                 output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
                 comment['ts'] = int(time())
                 kunjika.kb.replace(comment['cid'], comment)
 
@@ -1023,6 +1021,8 @@ def edit_article(element):
                 #print form.content.data
                 #print form.tags.data
                 article['content'] = form.content.data
+                article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
+                                                                 output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
                 tags = form.tags.data.split(',')
                 article['tags'] = [tag.strip(' \t').lower() for tag in tags]
                 new_tag_list = []
@@ -1100,6 +1100,8 @@ def save_draft(element):
             article['content'] = {}
             title = articleForm.title.data
             article['content'] = articleForm.content.data
+            article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
+                                                             output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
             article['tags'] = []
             article['tags'] = articleForm.tags.data.split(',')
             article['tags'] = [tag.strip(' \t').lower() for tag in article['tags']]
@@ -1214,6 +1216,8 @@ def edit_draft(element):
 
     if request.method == 'POST' and form.validate_on_submit():
         article['content'] = form.content.data
+        article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
+                                                         output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
         tags = form.tags.data.split(',')
         article['tags'] = [tag.strip(' \t').lower() for tag in tags]
         new_tag_list = []
@@ -1254,6 +1258,8 @@ def publish(element):
             article['content'] = {}
             title = articleForm.title.data
             article['content'] = articleForm.content.data
+            article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
+                                                             output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
             article['tags'] = []
             article['tags'] = articleForm.tags.data.split(',')
             article['tags'] = [tag.strip(' \t').lower() for tag in article['tags']]
@@ -1263,7 +1269,7 @@ def publish(element):
                 for i in range(0, len(tag)):
                     if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
                         or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                        or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
+                        or tag[i] == '+' or tag[i] == '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
                         or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
                         or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
                         or tag[i] == ' ':

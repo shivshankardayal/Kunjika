@@ -48,6 +48,8 @@ from uuid import uuid1
 import base64
 from test_series import test_series
 import random
+import markdown
+import bleach
 
 kunjika = Flask(__name__)
 kunjika.config.from_object('config')
@@ -237,6 +239,19 @@ articles_mapping = {
         'type': 'string',
         "term_vector": "with_positions_offsets"
     }
+}
+
+tags_wl = [
+    'b', 'blockquote', 'code', 'del', 'dd', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4',
+    'h5', 'h6', 'i', 'kbd', 'li', 'ol', 'p', 'pre', 's', 'sup', 'sub', 'strong', 'strike', 'iframe', 'ul',
+    'div', 'span', 'ol', 'a', 'img', 'hr', 'table', 'thead', 'tr', 'th', 'tbody', 'td', 'i'
+]
+
+attrs_wl = {
+    '*': ['class'],
+    'a': ['href', 'rel'],
+    'img': ['src', 'alt'],
+    'iframe': ['width', 'height', 'src', 'feature', 'frameborder']
 }
 
 es_conn.indices.put_mapping("questions-type", {'properties': questions_mapping}, ["questions"])
@@ -585,6 +600,8 @@ def questions(tag=None, page=None, qid=None, url=None):
                         # user['answers'].append(str(qid) + '-' + str(answer['aid']))
                         user['acount'] += 1
 
+                    answer['html'] = bleach.clean(markdown.markdown(answer['answer'], extensions=['extra', 'codehilite', 'oembed'],
+                                                                    output_format='html5'), tags_wl, attrs_wl)
                     questions_dict['updated'] = int(time())
                     user['rep'] += 4
                     cb.replace(str(g.user.id), user)
@@ -840,6 +857,9 @@ def ask():
             question['content'] = {}
             title = questionForm.question.data
             question['content']['description'] = questionForm.description.data
+
+            question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite', 'oembed'],
+                                                                         output_format='html5'), tags_wl, attrs_wl)
             question['content']['tags'] = []
             question['content']['tags'] = questionForm.tags.data.split(',')
             question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
@@ -1432,17 +1452,23 @@ def edits(element):
 
         if type == 'ce':
             if form.validate_on_submit():
-                if  aid != 0:
+                if aid != 0:
                     if question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['poster'] != g.user.id and g.user.id != 1:
                         flash('You are not author of this comment!', 'error')
                         return redirect(request.referrer)
                     question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['comment'] = form.comment.data
+                    question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['html'] = bleach.clean(markdown.markdown(question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['comment'],
+                                                                                                                         extensions=['extra', 'codehilite', 'oembed'],
+                                                                                                                         output_format='html5'), tags_wl, attrs_wl)
                     question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['edited'] = True
                 else:
                     if question['comments'][int(cid) - 1] != g.user.id and g.user.id != 1:
                         flash('You are not author of this comment!', 'error')
                         return redirect(request.referrer)
                     question['comments'][int(cid) - 1]['comment'] = form.comment.data
+                    question['comments'][int(cid) - 1]['html'] = bleach.clean(markdown.markdown(question['comments'][int(cid) - 1]['comment'],
+                                                                                                extensions=['extra', 'codehilite', 'oembed'],
+                                                                                                output_format='html5'), tags_wl, attrs_wl)
                     question['comments'][int(cid) - 1]['edited'] = True
 
                 editor = cb.get(str(g.user.id)).value
@@ -1459,6 +1485,9 @@ def edits(element):
                     flash('You are not author of this answer!', 'error')
                     return redirect(request.referrer)
                 question['answers'][int(aid) - 1]['answer'] = form.answer.data
+                question['answers'][int(aid) - 1]['html'] = bleach.clean(markdown.markdown(question['answers'][int(aid) - 1]['answer'],
+                                                                                           extensions=['extra', 'codehilite', 'oembed'],
+                                                                                           output_format='html5'), tags_wl, attrs_wl)
                 question['answers'][int(aid) - 1]['edited'] = True
 
                 editor = cb.get(str(g.user.id)).value
@@ -1475,6 +1504,8 @@ def edits(element):
                     flash('You are not author of this question!', 'error')
                     return redirect(request.referrer)
                 question['content']['description'] = form.description.data
+                question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite', 'oembed'],
+                                                           output_format='html5'), tags_wl, attrs_wl)
                 # title editing disabled so that existing links do not break
                 # title = form.question.data
                 # url = utility.generate_url(title)
@@ -1584,8 +1615,6 @@ def flag():
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():
-    user = g.user.user_doc
-
     if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
         return "Comment must be between 10 and 5000 characters."
     else:
@@ -1599,6 +1628,8 @@ def postcomment():
     aid = int(aid)
     comment = {}
     comment['comment'] = request.form['comment']
+    comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite', 'oembed'],
+                                                     output_format='html5'), tags_wl, attrs_wl)
     comment['poster'] = g.user.id
     comment['opname'] = g.user.name
     comment['ts'] = int(time())
@@ -1660,7 +1691,7 @@ def postcomment():
         mail.send(msg)
 
     ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
-    return json.dumps({"id": comment['cid'], "comment": request.form['comment'], "user_id": g.user.id,
+    return json.dumps({"id": comment['cid'], "comment": comment['html'], "user_id": g.user.id,
                        "uname": g.user.name, "ts": ts})
 
 
@@ -1817,6 +1848,8 @@ def edit_tag(tag):
     if g.user is not None and g.user.is_authenticated():
         if tagForm.validate_on_submit() and request.method == 'POST':
             tag['info'] = tagForm.info.data
+            tag['info-html'] = bleach.clean(markdown.markdown(tag['info'], extensions=['extra', 'codehilite', 'oembed'],
+                                                              output_format='html5'), tags_wl, attrs_wl)
             tb.replace(tag['tag'], tag)
             return redirect(url_for('tag_info', tag=str(tag['tag'])))
 
@@ -1934,12 +1967,12 @@ def close():
     else:
         return jsonify({"success": False})
 
+
 @kunjika.route('/poll', methods=['GET', 'POST'], defaults={'page': 1})
 def poll(page=1):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
 
     pollForm = PollForm(request.form)
-
 
     poll_count = urllib2.urlopen(DB_URL + "questions/_design/dev_qa/_view/get_polls").read()
     poll_count = json.loads(poll_count)
@@ -1950,7 +1983,7 @@ def poll(page=1):
     pid_list = []
     if poll_count > 0:
         polls = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_polls?reduce=False&skip=' + str(skip) + '&limit=' +
-        str(QUESTIONS_PER_PAGE)).read()
+                                str(QUESTIONS_PER_PAGE)).read()
         polls = json.loads(polls)
         # print polls
         pagination = utility.Pagination(page, QUESTIONS_PER_PAGE, int(poll_count))
@@ -2005,6 +2038,8 @@ def poll(page=1):
             question = {}
             question['content'] = {}
             question['content']['description'] = questionForm.description.data
+            question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite', 'oembed'],
+                                                                         output_format='html5'), tags_wl, attrs_wl)
             question['content']['tags'] = []
             question['content']['tags'] = questionForm.tags.data.split(',')
             question['title'] = title
@@ -2175,6 +2210,8 @@ def edit_profile(uid=None):
             user['website'] = form.website.data
             user['location'] = form.location.data
             user['about-me'] = form.about_me.data
+            user['about-me-html'] = bleach.clean(markdown.markdown(user['about-me'], extensions=['extra', 'codehilite', 'oembed'],
+                                                                   output_format='html5'), tags_wl, attrs_wl)
             skills = form.skills.data.split(',')
             current_skills = []
             if 'skills' in user:
@@ -2588,7 +2625,7 @@ def hide(id):
             else:
                 question['hidden'] = True
         else:
-            flash ('Either admin or OP is allowed to hide!', 'error')
+            flash('Either admin or OP is allowed to hide!', 'error')
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
     elif id_list[0] == 'ch':
         if g.user.id == 1 or g.user.id == ['comments'][int(id_list[2]) - 1]['op']:
@@ -2599,7 +2636,7 @@ def hide(id):
             else:
                 question['comments'][int(id_list[2]) - 1]['hidden'] = True
         else:
-            flash ('Either admin or OP is allowed to hide!', 'error')
+            flash('Either admin or OP is allowed to hide!', 'error')
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
     elif id_list[0] == 'ah':
         if g.user.id == 1 or g.user.id == question['answers'][int(id_list[2]) - 1]['poster']:
@@ -2610,7 +2647,7 @@ def hide(id):
             else:
                 question['answers'][int(id_list[2]) - 1]['hidden'] = True
         else:
-            flash ('Either admin or OP is allowed to hide!', 'error')
+            flash('Either admin or OP is allowed to hide!', 'error')
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
     elif id_list[0] == 'ach':
         if g.user.id == 1 or g.user.id == question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['poster']:
@@ -2621,7 +2658,7 @@ def hide(id):
             else:
                 question['answers'][int(id_list[2]) - 1]['comments'][int(id_list[3]) - 1]['hidden'] = True
         else:
-            flash ('Either admin or OP is allowed to hide!', 'error')
+            flash('Either admin or OP is allowed to hide!', 'error')
             return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
     qb.replace(id_list[1], question)
     return redirect(url_for('questions', qid=id_list[1], url=question['content']['url']))

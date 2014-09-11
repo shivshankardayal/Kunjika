@@ -15,8 +15,8 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 
 from flask_wtf import Form, RecaptchaField
-from wtforms import (BooleanField, StringField, PasswordField, validators, TextAreaField,
-                        RadioField, SelectField)
+from wtforms import (StringField, PasswordField, validators, TextAreaField,
+                     SelectField)
 
 
 class RegistrationForm(Form):
@@ -29,13 +29,13 @@ class RegistrationForm(Form):
     fname = StringField('First Name', [validators.Length(min=2, max=32), validators.DataRequired()])
     lname = StringField('Last Name', [validators.Length(min=2, max=32), validators.DataRequired()])
     email1 = StringField('Email', [validators.Length(min=5, max=48), validators.DataRequired(),
-                                 validators.Email(message='Either email is invalid or already registered.')])
+                                   validators.Email(message='Either email is invalid or already registered.')])
     recaptcha = RecaptchaField(validators.DataRequired())
 
 
 class LoginForm(Form):
     email = StringField('Email', [validators.Length(min=4, max=64), validators.DataRequired(),
-                                validators.Email()])
+                                  validators.Email()])
     password = PasswordField('Password', [
         validators.DataRequired(),
         validators.Length(min=8, max=32)
@@ -65,7 +65,7 @@ class ProfileForm(Form):
     fname = StringField('First Name', [validators.Length(min=2, max=32), validators.DataRequired()])
     lname = StringField('Last Name', [validators.Length(min=2, max=32), validators.DataRequired()])
     email1 = StringField('Email', [validators.Length(min=5, max=48), validators.DataRequired(),
-                                 validators.Email(message='Either email is invalid or already registered.')])
+                                   validators.Email(message='Either email is invalid or already registered.')])
     recaptcha = RecaptchaField(validators.DataRequired())
 
 
@@ -83,18 +83,20 @@ class PasswordResetForm(Form):
 
 
 class EmailForm(Form):
-    email = StringField('Email', [validators.Length(min=5, max=48),validators.DataRequired(),
-                                 validators.Email(message='Email is invalid')])
+    email = StringField('Email', [validators.Length(min=5, max=48), validators.DataRequired(),
+                                  validators.Email(message='Email is invalid')])
 
 
 class PollForm(Form):
-    poll_answers = SelectField('How many choices do you want?' , choices=[('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'), \
-                                                                    ('6', '6'), ('7', '7'),  ('8', '8'), ('9', '9'), \
-                                                                    ('10', '10')])
+    poll_answers = SelectField('How many choices do you want?', choices=[('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'),
+                                                                         ('6', '6'), ('7', '7'),  ('8', '8'), ('9', '9'),
+                                                                         ('10', '10')])
+
 
 class OQForm(Form):
-    oq_answers = SelectField('How many choices do you want?' , choices=[('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'), \
-                                                                    ('6', '6')])
+    oq_answers = SelectField('How many choices do you want?', choices=[('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'),
+                                                                       ('6', '6')])
+
 
 class SearchForm(Form):
     query = TextAreaField('', [validators.Length(min=20, max=1000), validators.DataRequired()])
@@ -115,14 +117,14 @@ class BulkEmailForm(Form):
 
 
 class BOQForm(Form):
-    tech = SelectField('Technology:', choices=[('c', 'C'), ('cpp', 'C++'), ('java', 'Java'), ('perl', 'Perl'), \
-        ('python', 'Python')])
+    tech = SelectField('Technology:', choices=[('c', 'C'), ('cpp', 'C++'), ('java', 'Java'), ('perl', 'Perl'),
+                                               ('python', 'Python')])
     cat = SelectField('Category:', choices=[('arrays', 'Arrays'), ('basics', 'Basics'), ('bitop', 'Bitwise Operators'),
-            ('cli', 'Command Line Arguments'), ('const', 'Const'), ('control_flow', 'Control Flow'),
-            ('funcs', 'Functions'), ('io', 'IO'), ('lib', 'Library Functions'), ('memalloc', 'Memory Allocation'),
-            ('oae', 'Operators and Expressions'), ('pointers', 'Pointers'), ('strings', 'Strings'),
-            ('sue', 'Structures, Unions and Eums'), ('threading', 'Multithreading'), ('typedef', 'Typedef'),
-            ('vararg', 'Variable Arguments')])
+                                            ('cli', 'Command Line Arguments'), ('const', 'Const'), ('control_flow', 'Control Flow'),
+                                            ('funcs', 'Functions'), ('io', 'IO'), ('lib', 'Library Functions'), ('memalloc', 'Memory Allocation'),
+                                            ('oae', 'Operators and Expressions'), ('pointers', 'Pointers'), ('strings', 'Strings'),
+                                            ('sue', 'Structures, Unions and Eums'), ('threading', 'Multithreading'), ('typedef', 'Typedef'),
+                                            ('vararg', 'Variable Arguments')])
 
 
 class ArticleForm(Form):
@@ -134,6 +136,6 @@ class ArticleForm(Form):
 class ContactForm(Form):
     name = StringField('', [validators.Length(min=2, max=32), validators.DataRequired()])
     email = StringField('', [validators.Length(min=5, max=48), validators.DataRequired(),
-                                 validators.Email(message='Either email is invalid or already registered.')])
+                             validators.Email(message='Either email is invalid or already registered.')])
     recaptcha = RecaptchaField(validators.DataRequired())
     message = TextAreaField('', [validators.Length(min=20, max=5000), validators.DataRequired()])

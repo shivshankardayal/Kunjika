@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="/static/css/solarized_light.css">
     <link href="/static/css/token-input.css" rel="stylesheet">
     <link href="/static/css/kunjika.css" rel="stylesheet">
+    <link href="/static/css/solarized_light.css" rel="stylesheet">
+    <link href="/static/css/pygments.css" rel="stylesheet">
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
@@ -165,8 +167,7 @@
 
                 responseJSON = jQuery.parseJSON(responseText);
                 str = '<div class="comment acomment" id="c-' + responseJSON.id + '">';
-                comment = converter.makeHtml(responseJSON.comment);
-                str += comment;
+                str += responseJSON.comment;
                 str += " - <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
                 str += " " + responseJSON.ts + ' <a title="edit" href="/edit_article/ce-' + responseJSON.aid + '_' + responseJSON.cid + '"> <i class="icon-edit"></i></a></div>'
                 $(str).insertAfter('#h3-comment');
@@ -189,7 +190,7 @@
                         <a class="post-tag" href="/articles/tagged/{{ tag }}">{{ tag }}</a>
                     {% endfor %}
                 </div>
-                <div class="q-desc" id="q-desc">{{ article['content'] }}</div>
+                <div class="q-desc" id="q-desc">{{ article['html']|safe }}</div>
                 <table class="poster">
                     <tbody>
                     <tr>
@@ -279,7 +280,7 @@
     <h3 id="h3-comment">User Comments</h3>
     {% for comment in article['comments'] %}
         <div class="comment acomment" id="c-{{ comment['cid'] }}">
-            <div class="content"> {{ comment['comment'] }}</div>
+            <div class="content"> {{ comment['html']|safe }}</div>
             -
             <a href="/users/{{ comment['poster'] }}/{{ comment['opname'] }}">{{ comment['opname'] }}</a>
             {{ comment['tstamp'] }}&nbsp;
@@ -294,24 +295,6 @@
     {% endfor %}
     </div>
     </div>
-    <script type="text/javascript">
-            var converter = new Markdown.Converter();
-            Markdown.Extra.init(converter, {
-                extensions: "all",
-                highlighter: "highlight",
-                table_class: "table-bordered table"
-            });
-
-            var originalHTML = $("#q-desc").text();
-            var convertedHTML = converter.makeHtml(originalHTML);
-            $("#q-desc").html(convertedHTML);
-            $(".content").each(function () {
-                var originalHTML = $(this).text();
-                var convertedHTML = converter.makeHtml(originalHTML);
-                $(this).html(convertedHTML);
-            });
-            hljs.initHighlightingOnLoad();
-    </script>
     <script type="text/javascript">
         (function () {
             if ($('#wmd-input').length > 0) {
