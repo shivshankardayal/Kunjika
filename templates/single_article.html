@@ -2,7 +2,8 @@
 {% block title %}{{ article['title'] }} - Kunjika{% endblock %}
 {% block meta_keywords %}{% for tag in article['tags'] %}{{ tag }},{% endfor %}{% endblock %}
 {% block meta_author %}{{ article['opname'] }}{% endblock %}
-{% block meta_description %}{{ article['html'][:300]|safe }}{% endblock %}
+{% block meta_title %}{{ article['title'] }}{% endblock %}
+{% block meta_description %}{{ article['html'][:300]|striptags }}{% endblock %}
 {% block css_bootstrap %}
     {{ super() }}
     {# TODO: probably remove this and let the user set it manually? #}
