@@ -16,7 +16,7 @@ cyan      #2aa198  strings, numbers
 green     #859900  operators, other keywords
 */
 
-.codehilite {width: 830px;}
+.codehilite {width: 728px;}
 pre { background-color: #fdf6e3; color: #586e75 }
 .codehilite { background-color: #fdf6e3; color: #586e75 }
 .codehilite .lineno { color: #93a1a1 } /* Line Numbers */
