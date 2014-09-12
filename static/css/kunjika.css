@@ -828,3 +828,7 @@ button {
     position: fixed;
     top: 43%;
 }
+
+.art-arrow {
+    margin-left: 540px;
+}
