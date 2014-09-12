@@ -3,7 +3,7 @@
 {% block meta_keywords %}{% for tag in questions['content']['tags'] %}{{ tag }},{% endfor %}{% endblock %}
 {% block meta_title %}{{ questions['title'] }}{% endblock %}
 {% block meta_author %}{{ questions['opname'] }}{% endblock %}
-{% block meta_description %}{{ questions['content']['html'][:300]|striptags }}{% endblock %}
+{% block meta_description %}{{ questions['content']['html'][:400]|striptags }}{% endblock %}
 {% block css_bootstrap %}    <link href="/static/css/kunjika.css" rel="stylesheet">
 
 {{ super() }}
