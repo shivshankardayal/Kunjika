@@ -69,7 +69,7 @@
                                 {% if 'sticky' in question and question['sticky'] == True %}
                                 <a class="question-hyperlink"
                                    href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}"
-                                   title="{{ question['content']['description'][:200] }}" ><i class="fa fa-pushpin"></i> {{ question['title'] }}</a>
+                                   title="{{ question['content']['description'][:200] }}" ><i class="fa fa-thumb-tack"></i> {{ question['title'] }}</a>
                                 {% else %}
                                     <a class="question-hyperlink"
                                    href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}"

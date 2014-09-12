@@ -56,7 +56,7 @@
                                    href="/questions/{{ question['qid'] }}/{{ question['content']['url'] }}"
                                    title="{{ question['content']['description'][:200] }}" >
                                 {% if 'sticky' in question and question['sticky'] == True %}
-                                <i class="fa fa-pushpin"></i> {{ question['title'] }}</a>
+                                <i class="fa fa-thumb-tack"></i> {{ question['title'] }}</a>
                                 {% else %}
                                     {{ question['title'] }}
                                 {% endif %}
