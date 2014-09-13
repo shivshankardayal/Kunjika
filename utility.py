@@ -1258,6 +1258,7 @@ def publish(element):
             article['content'] = {}
             title = articleForm.title.data
             article['content'] = articleForm.content.data
+            tags = form.tags.data.split(',')
             article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
                                                              output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
             article['tags'] = []
@@ -1304,7 +1305,7 @@ def publish(element):
             return redirect(url_for('browse_articles', aid=article['aid'], url=article['url']))
 
         return render_template('edit_draft.html', title='Edit', form=articleForm, article=article, type=type, aid=element,
-                               name=g.user.name, role=g.user.role, user_id=g.user.id, tags=article['tags'])
+                               name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
     return redirect(url_for('login'))
 
 
