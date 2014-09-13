@@ -1304,7 +1304,7 @@ def publish(element):
             return redirect(url_for('browse_articles', aid=article['aid'], url=article['url']))
 
         return render_template('edit_draft.html', title='Edit', form=articleForm, article=article, type=type, aid=element,
-                               name=g.user.name, role=g.user.role, user_id=g.user.id, tags=tags)
+                               name=g.user.name, role=g.user.role, user_id=g.user.id, tags=article['tags'])
     return redirect(url_for('login'))
 
 
