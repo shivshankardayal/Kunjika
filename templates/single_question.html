@@ -211,23 +211,40 @@
         <td class="votes">
           <div class="vote">
             <span class="icon-stack">
+              {% if g.user.id != -1%}
               <a class="voteup-on"
                  title="This question shows research effort. It is useful and clear (click again to take back your vote)"
                  href="#" id="v-{{ questions['qid'] }}">
                 <i class="fa fa-thumbs-up fa-lg"></i>
               </a>
+              {% else %}
+              <a class="voteup-on"
+                 title="You need to be logged in to vote." style="pointer-events: none;"
+                 href="#" id="v-{{ questions['qid'] }}">
+                <i class="fa fa-thumbs-up fa-lg"></i>
+              </a>
+              {% endif %}
             </span>
 
             <div class="mini-counts">{{ questions['votes'] }}</div>
             <div>votes</div>
             <span class="icon-stack">
+              {% if g.user.id != -1%}
               <a class="votedown-on"
                  title="This question shows no research effort. It is not useful and unclear (click again to take back your vote)"
                  href="#" id="v-{{ questions['qid'] }}">
                 <i class="fa fa-thumbs-down fa-lg"></i>
               </a>
+              {% else %}
+              <a class="votedown-on"
+                 title="You need to be logged in to vote." style="pointer-events: none;"
+                 href="#" id="v-{{ questions['qid'] }}">
+                <i class="fa fa-thumbs-down fa-lg"></i>
+              </a>
+              {% endif %}
             </span>
             <span class="icon-stack" style="margin-top: 30px; margin-left: -18px;">
+              {% if g.user.id != -1 %}
               {% if g.user.id in questions['users_fav'] %}
               <a class="starred"
                  title="This question is of particular interest to you. Click to favorite it."
@@ -240,6 +257,21 @@
                  href="#" id="p-{{ questions['qid'] }}">
                 <i class="fa fa-star fa-lg"></i>
               </a>
+              {% endif %}
+              {% else %}
+              {% if g.user.id in questions['users_fav'] %}
+              <a class="starred"
+                 title="This question is of particular interest to you. Click to favorite it."
+                 href="#" id="p-{{ questions['qid'] }}" style="pointer-events: none">
+                <i class="fa fa-star fa-lg"></i>
+              </a>
+              {% else %}
+              <a class="unstarred"
+                 title="This question is of particular interest to you. Click to favorite it."
+                 href="#" id="p-{{ questions['qid'] }}" style="pointer-events: none">
+                <i class="fa fa-star fa-lg"></i>
+              </a>
+              {% endif %}
               {% endif %}
             </span>
           </div>

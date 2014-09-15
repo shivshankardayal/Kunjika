@@ -295,6 +295,8 @@ def accept_answer(idntfr):
     return jsonify({"success": True})
 
 def handle_favorite(idntfr):
+    if g.user.id == -1:
+        return jsonify({"success": False})
 
     qid = idntfr[3:]
 
