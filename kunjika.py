@@ -1411,6 +1411,9 @@ def replace_tags(tags_passed, qid, current_tags):
 
 @kunjika.route('/vote_clicked', methods=['GET', 'POST'])
 def vote_clicked():
+    if g.user.id == -1:
+        flash('You need to be logged in for voting!', 'error')
+        return redirect(request.referrer)
     return votes.handle_vote(request)
 
 
