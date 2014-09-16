@@ -1404,9 +1404,11 @@ def replace_tags(tags_passed, qid, current_tags):
             tag['count'] -= 1
 
             tb.replace(tag['tag'], tag)
-            if tag['count'] == 0:
-                tb.delete(tag['tag'])
-                tb.decr('tcount')
+            # deletion of tag decreases counter which produces duplicate ids
+            # this causes bad tagging while asking question. Disabling
+            # if tag['count'] == 0:
+            #    tb.delete(tag['tag'])
+            #    tb.decr('tcount')
 
 
 @kunjika.route('/vote_clicked', methods=['GET', 'POST'])
