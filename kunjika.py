@@ -1619,6 +1619,8 @@ def flag():
 def postcomment():
     if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
         return "Comment must be between 10 and 5000 characters."
+    elif g.user.id == -1:
+        return "You must be logged in to comment"
     else:
         elements = request.form['element'].split('-')
         qid = elements[0]
