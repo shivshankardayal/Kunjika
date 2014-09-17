@@ -336,7 +336,7 @@ def index():
     contactForm = ContactForm(request.form)
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
     art_count = urllib2.urlopen(
-        DB_URL + 'kunjika/_design/dev_qa/_view/get_articles'
+        DB_URL + 'kunjika/_design/dev_qa/_view/get_articles?stale=false'
     ).read()
     art_count = json.loads(art_count)
     r = random.randint(0, 0xff)
@@ -434,7 +434,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                 j += 1
                 if j == 1:
                     option1_votes = urllib2.urlopen(
-                        DB_URL + 'polls/_design/dev_qa/_view/get_option1_votes?key=' + '"' + qid + '"' + '&reduce=true'
+                        DB_URL + 'polls/_design/dev_qa/_view/get_option1_votes?key=' + '"' + qid + '"' + '&reduce=true&stale=false'
                     ).read()
                     option1_votes = json.loads(option1_votes)
                     if len(option1_votes['rows']) != 0:
@@ -444,7 +444,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     votes.append((option1_votes, option))
                 elif j == 2:
                     option2_votes = urllib2.urlopen(
-                        DB_URL + 'polls/_design/dev_qa/_view/get_option2_votes?key=' + '"' + qid + '"' + '&reduce=true'
+                        DB_URL + 'polls/_design/dev_qa/_view/get_option2_votes?key=' + '"' + qid + '"' + '&reduce=true&stale=false'
                     ).read()
                     option2_votes = json.loads(option2_votes)
                     if len(option2_votes['rows']) != 0:
@@ -456,7 +456,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     # print option
                 elif j == 3:
                     option3_votes = urllib2.urlopen(
-                        DB_URL + 'polls/_design/dev_qa/_view/get_option3_votes?key=' + '"' + qid + '"' + '&reduce=true'
+                        DB_URL + 'polls/_design/dev_qa/_view/get_option3_votes?key=' + '"' + qid + '"' + '&reduce=true&stale=false'
                     ).read()
                     option3_votes = json.loads(option3_votes)
                     if len(option3_votes['rows']) != 0:
@@ -466,7 +466,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     votes.append((option3_votes, option))
                 elif j == 4:
                     option4_votes = urllib2.urlopen(
-                        DB_URL + 'polls/_design/dev_qa/_view/get_option4_votes?key=' + '"' + qid + '"' + '&reduce=true'
+                        DB_URL + 'polls/_design/dev_qa/_view/get_option4_votes?key=' + '"' + qid + '"' + '&reduce=true&stale=false'
                     ).read()
                     option4_votes = json.loads(option4_votes)
                     if len(option4_votes['rows']) != 0:
@@ -476,7 +476,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     votes.append((option4_votes, option))
                 elif j == 5:
                     option5_votes = urllib2.urlopen(
-                        DB_URL + 'polls/_design/dev_qa/_view/get_option5_votes?key=' + '"' + qid + '"' + '&reduce=true'
+                        DB_URL + 'polls/_design/dev_qa/_view/get_option5_votes?key=' + '"' + qid + '"' + '&reduce=true&stale=false'
                     ).read()
                     option5_votes = json.loads(option5_votes)
                     if len(option5_votes['rows']) != 0:
@@ -486,7 +486,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     votes.append((option5_votes, option))
                 elif j == 6:
                     option6_votes = urllib2.urlopen(
-                        DB_URL + 'polls/_design/dev_qa/_view/get_option6_votes?key=' + '"' + qid + '"' + '&reduce=true'
+                        DB_URL + 'polls/_design/dev_qa/_view/get_option6_votes?key=' + '"' + qid + '"' + '&reduce=true&stale=false'
                     ).read()
                     option6_votes = json.loads(option6_votes)
                     if len(option6_votes['rows']) != 0:
@@ -496,7 +496,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     votes.append((option6_votes, option))
                 elif j == 7:
                     option7_votes = urllib2.urlopen(
-                        DB_URL + 'polls/_design/dev_qa/_view/get_option7_votes?key=' + '"' + qid + '"' + '&reduce=true'
+                        DB_URL + 'polls/_design/dev_qa/_view/get_option7_votes?key=' + '"' + qid + '"' + '&reduce=true&stale=false'
                     ).read()
                     option7_votes = json.loads(option7_votes)
                     if len(option7_votes['rows']) != 0:
@@ -506,7 +506,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     votes.append((option7_votes, option))
                 elif j == 8:
                     option8_votes = urllib2.urlopen(
-                        DB_URL + 'polls/_design/dev_qa/_view/get_option8_votes?key=' + '"' + qid + '"' + '&reduce=true'
+                        DB_URL + 'polls/_design/dev_qa/_view/get_option8_votes?key=' + '"' + qid + '"' + '&reduce=true&stale=false'
                     ).read()
                     option8_votes = json.loads(option8_votes)
                     if len(option8_votes['rows']) != 0:
@@ -516,7 +516,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     votes.append((option8_votes, option))
                 elif j == 9:
                     option9_votes = urllib2.urlopen(
-                        DB_URL + 'polls/_design/dev_qa/_view/get_option9_votes?key=' + '"' + qid + '"' + '&reduce=true'
+                        DB_URL + 'polls/_design/dev_qa/_view/get_option9_votes?key=' + '"' + qid + '"' + '&reduce=true&stale=false'
                     ).read()
                     option9_votes = json.loads(option9_votes)
                     if len(option9_votes['rows']) != 0:
@@ -526,7 +526,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                     votes.append((option9_votes, option))
                 elif j == 10:
                     option10_votes = urllib2.urlopen(
-                        DB_URL + 'polls/_design/dev_qa/_view/get_option10_votes?key=' + '"' + qid + '"' + '&reduce=true'
+                        DB_URL + 'polls/_design/dev_qa/_view/get_option10_votes?key=' + '"' + qid + '"' + '&reduce=true&stale=false'
                     ).read()
                     option10_votes = json.loads(option10_votes)
                     if len(option10_votes['rows']) != 0:
@@ -1073,7 +1073,7 @@ def login():
     if loginForm.validate_on_submit() and request.method == 'POST':
         try:
             document = urllib2.urlopen(
-                DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + urllib2.quote(loginForm.email.data) + '"').read()
+                DB_URL + 'default/_design/dev_qa/_view/get_id_from_email?stale=false&key=' + '"' + urllib2.quote(loginForm.email.data) + '"&stale=false').read()
             document = json.loads(document)['rows']
             if len(document) != 0:
                 document = cb.get(document[0]['id']).value
@@ -1325,7 +1325,7 @@ def get_tags(qid=None):
         tags_list = []
         tids_list = []
         for i in tags:
-            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(i) + '"').read()
+            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(i) + '"&stale=false').read()
             tag = json.loads(tag)['rows'][0]['id']
             tids_list.append(tag)
 
@@ -1398,7 +1398,7 @@ def replace_tags(tags_passed, qid, current_tags):
     for tag in current_tags:
         if tag not in tags_passed:
             print tag
-            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
+            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"&stale=false').read()
             tid = json.loads(tag)['rows'][0]['id']
             tag = tb.get(tid).value
             tag['count'] -= 1
@@ -1760,7 +1760,7 @@ def show_tags(page):
     qcount = qb.get('qcount').value
     ucount = cb.get('count').value
     tcount = tb.get('tcount').value
-    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true').read()
+    acount = urllib2.urlopen(DB_URL + 'questions/_design/dev_qa/_view/get_acount?reduce=true&stale=false').read()
     acount = json.loads(acount)
     if len(acount['rows']) is not 0:
         acount = acount['rows'][0]['value']
@@ -1830,7 +1830,7 @@ def tag_info(tag=None):
         tag = request.args.get('tag')
     tag_list = []
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
-    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"').read()
+    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(tag)) + '"&stale=false').read()
     tid = json.loads(tag)['rows'][0]['id']
     tag = tb.get(tid).value
     if g.user is AnonymousUserMixin:
@@ -1845,7 +1845,7 @@ def tag_info(tag=None):
 def edit_tag(tag):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
 
-    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(tag) + '"').read()
+    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(tag) + '"&stale=false').read()
     tid = json.loads(tag)['rows'][0]['id']
     tag = tb.get(tid).value
     tagForm = TagForm(request.form)
@@ -1978,7 +1978,7 @@ def poll(page=1):
 
     pollForm = PollForm(request.form)
 
-    poll_count = urllib2.urlopen(DB_URL + "questions/_design/dev_qa/_view/get_polls").read()
+    poll_count = urllib2.urlopen(DB_URL + "questions/_design/dev_qa/_view/get_polls?stale=false").read()
     poll_count = json.loads(poll_count)
     # print poll_count
     poll_count = poll_count['rows'][0]['value']
