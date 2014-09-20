@@ -785,8 +785,10 @@ def questions(tag=None, page=None, qid=None, url=None):
 @kunjika.route('/users/<uid>/<path:uname>/<int:qpage>/<int:apage>')
 def users(qpage=None, apage=None, uid=None, uname=None):
     (qcount, acount, tcount, ucount, tag_list) = utility.common_data()
-    print uname
-    user = cb.get(str(uid)).value
+    try:
+        user = cb.get(str(uid)).value
+    except:
+        return render_template('502.html') 
     questions = utility.get_user_questions_per_page(user, qpage, USER_QUESTIONS_PER_PAGE, user['qcount'])
     if not questions and qpage != 1:
         abort(404)
