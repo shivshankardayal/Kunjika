@@ -27,7 +27,7 @@
                 {% endif %}
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
-            <div class="wmd-panel">
+            <div class="wmd-panel clearfix">
                 <div id="wmd-button-bar"></div>
                 <div class="control-group">
                     <label class="control-label" for="description"></label>
@@ -56,7 +56,7 @@
                 </div>
                 <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
             </div>
-            <div class="controls">
+            <div class="form-group">
                 <button class="btn btn-primary">
                     Edit Comment
                 </button>
