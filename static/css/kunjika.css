@@ -1182,3 +1182,28 @@ ul.token-input-list-kunjika{
   padding: 5%;
   width: 90%;
 }
+
+
+.text-sm {
+  font-size: 7px;
+}
+.user-stats > div {
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  border-color: #dddddd;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-right: 0px;
+  cursor: pointer;
+}
+
+.user-stats > div:last-child {
+    border-right: 1px solid transparent;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    border-color: #dddddd;
+}
