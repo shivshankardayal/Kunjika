@@ -19,11 +19,11 @@
 <div class="row">
     <div class="col-md-9" >
     {% if pagination is not defined %}
-        <div class="userheader">
+        <div class="page-header">
             <h3>{{ name }}</h3>
             <!-- div class="fr"-->
             <div class="gravatar">
-                <img src="{{ email | gravatar(size=100) }}"/>
+                <img src="{{ email | gravatar(size=128) }}" class="img-thumbnail" />
                 {% if g.user.id == 1 and user['role'] != 'admin' and user['banned'] == False %}
                     <div id="ban">
                         <button class="btn btn-danger" id={{ user_id }}>
@@ -142,7 +142,9 @@
         </div>
         <div class="user-nav">
             <ul class="nav nav-pills nav-stacked">
-                <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/bookmarks"><i class="fa fa-bookmark"></i> Bookmarks</a></li>
+                {% if g.user.id == user_id %}
+                    <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/bookmarks"><i class="fa fa-bookmark"></i> Bookmarks</a></li>
+                 {% endif %}
                 <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/messages"><i class="fa fa-envelope"></i> Messages</a></li>
                 <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/skills"><i class="fa fa-thumbs-up"></i> Skills</a></li>
             </ul>
