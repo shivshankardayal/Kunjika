@@ -578,30 +578,23 @@ pre.prettyprint {
     margin-bottom: 0.2em;
 }
 
-#ban {
-    margin-top: 20px;
-    margin-left: 8px;
-}
-#unban {
-    margin-top: 20px;
-}
-
 .user-rep {
-text-align: center;
+    text-align: center;
 }
 
 .user-about-me {
     height: 225px;
-    display:block;
-    width:850px;
     overflow-y: auto;
     padding: 10px;
-    font-size: 12px;
-    background-color: #ffc;
-    border-top: 1px solid rgb(224, 224, 224);
-    border-bottom: 1px solid rgb(238, 238, 238);
+    font-size: 22px;
     line-height: 1.3;
-    margin-left: 15px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    border-color: #dddddd;
 }
 
 .narrow .summary-user {
@@ -720,10 +713,6 @@ td.invite, td.create-group {
 
 #invite-form, #group-form {
     display: None;
-}
-
-#email_list, #group-name {
-    width: 187px;
 }
 
 .table {
@@ -1183,6 +1172,9 @@ ul.token-input-list-kunjika{
   width: 90%;
 }
 
+.fa-ul > li {
+    margin-bottom: 5px;
+}
 
 .text-sm {
   font-size: 7px;

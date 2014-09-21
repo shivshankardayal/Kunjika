@@ -17,10 +17,27 @@
 {% endblock %}
 {% block container %}
 <div class="row">
-    <div class="col-md-9" >
+    <div class="col-md-12" >
     {% if pagination is not defined %}
         <div class="row">
-            <div class="col-md-5">
+            {% if g.user.id == 1 and user['role'] != 'admin' %}
+            <div class="col-xs-12">
+                <div class="alert alert-warning alert-dismissible">
+                    <strong>Admin Options </strong>
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    {% if user['banned'] == False %}
+                            <button class="btn btn-sm btn-danger" id={{ user_id }}>
+                                Ban User
+                            </button>
+                    {% elif g.user.id == 1 and user['role'] != 'admin' and user['banned'] == True %}
+                            <button class="btn btn-sm btn-success" id="{{ user_id }}">
+                                Unban User
+                            </button>
+                    {% endif %}
+                </div>
+            </div>
+           {% endif %}
+            <div class="col-md-4">
                 <div class="col-xs-12">
                     <img src="{{ email | gravatar(size=230) }}" class="img-thumbnail" />
                 </div>
@@ -51,7 +68,7 @@
                     {% if user['location'] or g.user.id == user_id or g.user.id == 1 or user['website'] %}
                         <hr>
                    {% endif %}
-                    <div class="row user-stats">
+                   <div class="row user-stats">
                         <div class="col-xs-3 text-center text-primary lead">
                             <div>
                                 {{user['votes_count']['question']}}
@@ -89,160 +106,75 @@
                 </div>
             </div>
             <div class="col-md-7">
-                
-            </div>
-        </div>
-        <div class="page-header">
-            <h3>{{ name }}</h3>
-            <div class="gravatar">
-                <img src="{{ email | gravatar(size=128) }}" class="img-thumbnail" />
-                {% if g.user.id == 1 and user['role'] != 'admin' and user['banned'] == False %}
-                    <div id="ban">
-                        <button class="btn btn-danger" id={{ user_id }}>
-                            Ban User
-                        </button>
-                    </div>
-                {% elif g.user.id == 1 and user['role'] != 'admin' and user['banned'] == True %}
-                    <div id="unban">
-                        <button class="btn btn-success" id="{{ user_id }}">
-                            Unban User
-                        </button>
-                    </div>
-                {% endif %}
-                <div class="user-rep">
-                    <h4 style="text-align: center;padding-top: 5px">{{ user['rep'] }}</h4>
-                    <span>reputation</span>
-                </div>
-            </div>
-        </div>
-        <div class="edit-button">
-            {% if g.user.id == user_id %}
-                <a href="/users/{{ user_id }}/edit_profile" class="btn"><i class="fa fa-edit"></i>Edit</a>
-            {% endif %}
-        </div>
-        <div class="data">
-            <table class="table-user">
-                <tbody>
-                <tr>
-                    <th>Personal Details</th>
-                    <td>First Name:</td>
-                    <td>{{ fname }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td>Last Name:</td>
-                    <td>{{ lname }}</td>
-                </tr>
-                {% if g.user.id == user_id or g.user.id == 1 %}
-                    <tr>
-                        <th></th>
-                        <td>Email:</td>
-                        <td>{{ email }}</td>
-                    </tr>
-                {% endif %}
-                <tr>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>Biography:</th>
-                    <td>website:</td>
-                    <td>{{ user['website']|urlize }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td>location:</td>
-                    <td>{{ user['location'] }}</td>
-                </tr>
-                <tr>
-                    <th>Votes:</th>
-                    <td>Up:</td>
-                    <td>{{ user['votes_count']['up'] }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td>Down:</td>
-                    <td>{{ user['votes_count']['down'] }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td>Questions:</td>
-                    <td>{{ user['votes_count']['question'] }}</td>
-                </tr>
-                <tr>
-                    <th></th>
-                    <td>Answers:</td>
-                    <td>{{ user['votes_count']['answers'] }}</td>
-                </tr>
-                {% if g.user.id == user_id %}
-                    <tr>
-                        <th></th>
-                        <td class="invite"><p id="invite" class="btn btn-small btn-info"><i class="fa fa-envelope"></i> Invite
-                            Friends</p>
-                        </td>
-                        <td></td>
-                        <!--td class="create-group"><p id="group" class="btn btn-small btn-info"><i class="fa fa-group"></i> Create
-                            Group</p>
-                        </td-->
-                    </tr>
-                    <tr>
-                        <th></th>
-                        <td class="invite">
-                            <form id="invite-form" class="invite" method="post"
-                                  action="/send_invites">
-                                <input id="email_list"
-                                       name="email_list"
-                                       placeholder="Semicolon separated emails." type="text" value="">
-                                <br/>
-                                <button class="btn btn-small btn-primary" type="submit">Send Invites</button>
-                            </form>
-                        </td>
-                        <td></td>
-                        <!--td class="create-group">
-                            <form id="group-form" class="create-group" method="post"
-                                  action="/create_group">
-                                <input id="group-name"
-                                       name="group-name" placeholder="Put in group name."
-                                       type="text" value="">
-                                <br/>
-                                <button class="btn btn-small btn-primary" type="submit">Create Group</button>
-                            </form>
-                        </td-->
-                    </tr>
-                {% endif %}
-                </tbody>
-            </table>
-        </div>
-        <div class="user-nav">
-            <ul class="nav nav-pills nav-stacked">
-                {% if g.user.id == user_id %}
-                    <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/bookmarks"><i class="fa fa-bookmark"></i> Bookmarks</a></li>
-                 {% endif %}
-                <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/messages"><i class="fa fa-envelope"></i> Messages</a></li>
-                <li><a class="btn btn-default" href="/users/{{ user_id }}/{{ name|urlencode }}/skills"><i class="fa fa-thumbs-up"></i> Skills</a></li>
-            </ul>
-        </div>
-        <div class="clearfix"></div>
-        {% if g.user.id != user_id %}
-            <br/>
-            <div style="margin-top: 40px">
-            </div>
-        {% endif %}
-
-        <div class="user-about-me note" id="about-me">{{ user['about-me'] }}</div>
-        <div style="clear:both">
-        </div>
-        <div class="modal-body">
-            <div class="well">
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs nav-justified" role="tablist">
                     <li class="active">
-                        <a href="#questions" data-toggle="tab">Questions</a>
+                        <a href="#about-user" data-toggle="tab">
+                            <i class="fa fa-user"></i> About
+                        </a>
+                    </li>
+                    {% if g.user.id == user_id %}
+                    <li>
+                        <a href="/users/{{ user_id }}/{{ name|urlencode }}/bookmarks"><i class="fa fa-bookmark"></i> Bookmarks</a>
+                    </li>
+                     {% endif %}
+                    <li>
+                        <a href="/users/{{ user_id }}/{{ name|urlencode }}/messages"><i class="fa fa-envelope"></i> Messages</a>
                     </li>
                     <li>
-                        <a href="#answers" data-toggle="tab">Answers</a>
+                        <a href="/users/{{ user_id }}/{{ name|urlencode }}/skills"><i class="fa fa-thumbs-up"></i> Skills</a>
                     </li>
+                    <li>
+                        <a href="#questions" data-toggle="tab"><i class="fa fa-question"></i> Questions</a>
+                    </li>
+                    <li>
+                        <a href="#answers" data-toggle="tab"><i class="fa fa-comments"></i> Answers</a>
+                    </li>
+                    
                 </ul>
-                <div id="myTabContent" class="tab-content">
-                    <div class="tab-pane active in" id="questions">
+                <div id="myTabContent" class="tab-content row">
+                    <div class="tab-pane active in" id="about-user">
+                        {% if g.user.id == user_id %}
+                        <br>
+                        <div class="col-xs-12">
+                                <a href="/users/{{ user_id }}/edit_profile" class="pull-right btn btn-primary"><i class="fa fa-cog"></i> Edit Profile</a>
+                        </div>
+                        {% endif %}
+                        <div class="col-xs-12">
+                            <br>
+                            <div class="user-about-me note" id="about-me">{{ user['about-me'] }}</div>
+                        </div>
+                        <div class="col-xs-12">
+                            <table class="table-user">
+                                <tbody>
+                                {% if g.user.id == user_id %}
+                                    <tr>
+                                        <th></th>
+                                        <td class="invite"><p id="invite" class="btn btn-small btn-info"><i class="fa fa-envelope"></i> Invite
+                                            Friends</p>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <th></th>
+                                        <td class="invite">
+                                            <form id="invite-form" class="invite" method="post"
+                                                  action="/send_invites" role="form">
+                                                <div class="form-group">
+                                                    <textarea id="email_list" name="email_list" placeholder="Semicolon separated emails." type="text" class="form-control" cols="50" rows="5"></textarea>  
+                                                </div>
+                                                <div class="form-group">
+                                                    <button class="btn btn-small btn-primary" type="submit">Send Invites</button>
+                                                </div>
+                                            </form>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="questions">
                         <div id="qsummary">
                             {% if questions != None %}
                                 {% for question in questions %}
@@ -276,7 +208,7 @@
                                     </div>
                                 {% endfor %}
                             {% endif %}
-                            <div style="clear:both"></div>
+                            <div class="clearfix"></div>
                             {{ render_user_question_pagination(question_pagination) }}
                         </div>
                     </div>
@@ -314,11 +246,22 @@
                                 </div>
                             {% endfor %}
                         {% endif %}
-                        <div style="clear:both"></div>
+                        <div class="clearfix"></div>
                         {{ render_user_answer_pagination(answer_pagination) }}
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <div class="clearfix"></div>
+        {% if g.user.id != user_id %}
+            <br/>
+            <div style="margin-top: 40px">
+            </div>
+        {% endif %}
+
+        
+        <div class="clearfix">
         </div>
     {% else %}
         <div class="page-header">
