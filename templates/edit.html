@@ -5,7 +5,6 @@
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link href="/static/css/solarized_light.css" rel="stylesheet">
     <link href="/static/css/token-input.css" rel="stylesheet">
-    <link href="/static/css/token-input.css" rel="stylesheet">
     {{ super() }}
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
@@ -18,7 +17,9 @@
     <div class="row">
         <div class="col-md-9">
             {% if type == 'ce' %}
-                <h3>Please edit your comment.</h3>
+                <div class="page-header">
+                    <h3>Please edit your comment.</h3>
+                </div>
                 {% if aid != 0 %}
                     <form class="edit-form" method="post" aciton="/edit/ce-{{ qid }}-{{ aid }}-{{ cid }}">
                 {% else %}
@@ -61,7 +62,9 @@
                 </button>
             </form>
             {% elif type == 'ae' %}
-                <h3>Please edit your answer.</h3>
+                <div class="page-header">
+                    <h3>Please edit your answer.</h3>
+                </div>
                 <form class="edit-form" method="post" aciton="/edit/ae-{{ qid }}-{{ aid }}">
                     {% from "macros.html" import render_field %}
                     {{ form.csrf_token }}
@@ -93,16 +96,18 @@
                             Edit Answer
                 </form>
             {% else %}
-                <h3>Please edit your question.</h3>
+                <div class="page-header">
+                    <h3>Please edit your question.</h3>
+                </div>
                 <form class="ask-form" method="post" aciton="/edit/qe-{{ qid }}">
                 {% from "macros.html" import render_field %}
                 {{ form.csrf_token }}
                 <div class="control-group">
                     <label class="control-label" for="question">Question</label>
 
-                    <div class="controls">
-                        <input class="question input-x-large span10" id="question" name="question"
-                               style="margin-left:25px;" value="{{ question['title'] }}" type="text">
+                    <div class="form-group">
+                        <input class="form-control" id="question" name="question"
+                               value="{{ question['title'] }}" type="text">
                     </div>
                 </div>
                 <div class="wmd-panel">
@@ -155,7 +160,6 @@
             {% endif %}
             </button>
             </div>
-        </div>
         </form>
     </div>
         <div class="col-md-3">
