@@ -80,97 +80,145 @@
 {% endmacro %}
 
 {% macro render_user_question_pagination(pagination) %}
-  <div class=pagination>
-  {%- for page in pagination.iter_pages() %}
-    {% if page %}
-      {% if page != pagination.page %}
-        <a href="{{ url_for_other_user_question_page(page) }}">{{ page }}</a>
-      {% else %}
-        <strong>{{ page }}</strong>
+  {% if pagination.pages > 1  %}
+    <div>
+      <ul class="pagination">
+      {%- for page in pagination.iter_pages() %}
+        {% if page %}
+          {% if page != pagination.page %}
+            <li>
+                <a href="{{ url_for_other_user_question_page(page) }}">{{ page }}</a>
+            </li>
+          {% else %}
+            <li>
+                <strong>{{ page }}</strong>
+            </li>
+          {% endif %}
+        {% else %}
+            <li>
+              <span class=ellipsis>…</span>
+            </li>
+        {% endif %}
+      {%- endfor %}
+      {% if pagination.has_next %}
+          <li>
+              <a href="{{ url_for_other_user_question_page(pagination.page + 1) }}">Next &raquo;</a>
+          </li>
       {% endif %}
-    {% else %}
-      <span class=ellipsis>…</span>
-    {% endif %}
-  {%- endfor %}
-  {% if pagination.has_next %}
-    <a href="{{ url_for_other_user_question_page(pagination.page + 1)
-      }}">Next &raquo;</a>
-  {% endif %}
-  {% if pagination.has_prev %}
-      <a href="{{ url_for_other_user_question_page(pagination.page - 1)
-              }}">&laquo; Previous</a>
-  {% endif %}
-  </div>
+      {% if pagination.has_prev %}
+          <li>
+              <a href="{{ url_for_other_user_question_page(pagination.page - 1)
+                  }}">&laquo; Previous</a>
+          </li>
+      {% endif %}
+      </ul>
+    </div>
+   {% endif %}
 {% endmacro %}
 
 {% macro render_user_answer_pagination(pagination) %}
-  <div class=pagination>
-  {%- for page in pagination.iter_pages() %}
-    {% if page %}
-      {% if page != pagination.page %}
-        <a href="{{ url_for_other_user_answer_page(page) }}">{{ page }}</a>
-      {% else %}
-        <strong>{{ page }}</strong>
-      {% endif %}
-    {% else %}
-      <span class=ellipsis>…</span>
-    {% endif %}
-  {%- endfor %}
-  {% if pagination.has_next %}
-    <a href="{{ url_for_other_user_answer_page(pagination.page + 1)
-      }}">Next &raquo;</a>
-  {% endif %}
-  {% if pagination.has_prev %}
-      <a href="{{ url_for_other_user_answer_page(pagination.page - 1)
-              }}">&laquo; Previous</a>
-  {% endif %}
+  {% if pagination.pages > 1  %}
+    <div>
+      <ul class="pagination">
+          {%- for page in pagination.iter_pages() %}
+            {% if page %}
+              {% if page != pagination.page %}
+                <li>
+                  <a href="{{ url_for_other_user_answer_page(page) }}">{{ page }}</a>
+                </li>
+              {% else %}
+                <li>
+                    <strong>{{ page }}</strong>
+                </li>
+              {% endif %}
+            {% else %}
+                <li>
+                    <span class=ellipsis>…</span>
+                </li>
+            {% endif %}
+          {%- endfor %}
+          {% if pagination.has_next %}
+                <li>
+                  <a href="{{ url_for_other_user_answer_page(pagination.page + 1)
+                  }}">Next &raquo;</a>
+                </li>
+          {% endif %}
+          {% if pagination.has_prev %}
+              <li>
+                <a href="{{ url_for_other_user_answer_page(pagination.page - 1)
+                        }}">&laquo; Previous</a>  
+              </li>
+          {% endif %}
   </div>
+  {% endif %}
 {% endmacro %}
 
 {% macro render_search_pagination(pagination, query) %}
-  <div class=pagination>
-  {%- for page in pagination.iter_pages() %}
-    {% if page %}
-      {% if page != pagination.page %}
-        <a href="{{ url_for_search_page(page, query) }}">{{ page }}</a>
-      {% else %}
-        <strong>{{ page }}</strong>
-      {% endif %}
-    {% else %}
-      <span class=ellipsis>…</span>
-    {% endif %}
-  {%- endfor %}
-  {% if pagination.has_next %}
-    <a href="{{ url_for_search_page(pagination.page + 1, query)
-      }}">Next &raquo;</a>
-  {% endif %}
-  {% if pagination.has_prev %}
-      <a href="{{ url_for_search_page(pagination.page - 1, query)
-              }}">&laquo; Previous</a>
-  {% endif %}
+  {% if pagination.pages > 1  %}
+    <div>
+      <ul class="pagination">
+          {%- for page in pagination.iter_pages() %}
+            {% if page %}
+              {% if page != pagination.page %}
+                <li>
+                  <a href="{{ url_for_search_page(page, query) }}">{{ page }}</a>
+                </li>
+              {% else %}
+                <li><strong>{{ page }}</strong>
+              {% endif %}
+            {% else %}
+            <li>
+              <span class=ellipsis>…</span>
+            </li>
+            {% endif %}
+          {%- endfor %}
+          {% if pagination.has_next %}
+            <li>
+                <a href="{{ url_for_search_page(pagination.page + 1, query) }}">Next &raquo;</a>
+            </li>
+          {% endif %}
+          {% if pagination.has_prev %}
+              <li>
+                  <a href="{{ url_for_search_page(pagination.page - 1, query) }}">&laquo; Previous</a>
+              </li>
+          {% endif %}
+        </ul>
   </div>
+  {% endif %}
 {% endmacro %}
 
 {% macro render_browse_pagination(pagination) %}
-  <div class=pagination>
-  {%- for page in pagination.iter_pages() %}
-    {% if page %}
-      {% if page != pagination.page %}
-        <a href="{{ url_for_browse_page(page) }}">{{ page }}</a>
-      {% else %}
-        <strong>{{ page }}</strong>
-      {% endif %}
-    {% else %}
-      <span class=ellipsis>…</span>
-    {% endif %}
-  {%- endfor %}
-  {% if pagination.has_next %}
-    <a href="{{ url_for_browse_page(pagination.page + 1)
-      }}">Next &raquo;</a>
-  {% endif %}
-  {% if pagination.has_prev %}
-      <a href="{{ url_for_browse_page(pagination.page - 1)
-              }}">&laquo; Previous</a>
-  {% endif %}
+  {% if pagination.pages > 1  %}
+    <div>
+      <ul class="pagination">
+          {%- for page in pagination.iter_pages() %}
+            {% if page %}
+              {% if page != pagination.page %}
+              <li>
+                  <a href="{{ url_for_browse_page(page) }}">{{ page }}</a>
+                  </li>
+              {% else %}
+              <li>
+                  <strong>{{ page }}</strong>
+                  </li>
+              {% endif %}
+            {% else %}
+            <li>
+                <span class=ellipsis>…</span>
+                </li>
+            {% endif %}
+          {%- endfor %}
+          {% if pagination.has_next %}
+            <li>
+                <a href="{{ url_for_browse_page(pagination.page + 1) }}">Next &raquo;</a>
+            </li>
+          {% endif %}
+          {% if pagination.has_prev %}
+              <li>
+                  <a href="{{ url_for_browse_page(pagination.page - 1) }}">&laquo; Previous</a>
+              </li>
+          {% endif %}
+      </ul>
   </div>
+  {% endif %}
 {% endmacro %}
