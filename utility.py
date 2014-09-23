@@ -757,7 +757,7 @@ def write_article():
             article['content'] = {}
             title = articleForm.title.data
             article['content'] = articleForm.content.data
-            article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
+            article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite'],
                                                              output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
             article['tags'] = []
             article['tags'] = articleForm.tags.data.split(',')
@@ -933,7 +933,7 @@ def article_comment():
         aid = elements
     comment = {}
     comment['comment'] = request.form['comment']
-    comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite', 'oembed'],
+    comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite'],
                                    output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
     comment['poster'] = g.user.id
     comment['opname'] = g.user.name
@@ -1012,7 +1012,7 @@ def edit_article(element):
                     flash("Comment must be between 10 and 5000 characters.", 'error')
                     return redirect(request.referrer)
                 comment['comment'] = form.comment.data
-                comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite', 'oembed'],
+                comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite'],
                                                                  output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
                 comment['ts'] = int(time())
                 kunjika.kb.replace(comment['cid'], comment)
@@ -1023,7 +1023,7 @@ def edit_article(element):
                 #print form.content.data
                 #print form.tags.data
                 article['content'] = form.content.data
-                article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
+                article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite'],
                                                                  output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
                 tags = form.tags.data.split(',')
                 article['tags'] = [tag.strip(' \t').lower() for tag in tags]
@@ -1102,7 +1102,7 @@ def save_draft(element):
             article['content'] = {}
             title = articleForm.title.data
             article['content'] = articleForm.content.data
-            article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
+            article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite'],
                                                              output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
             article['tags'] = []
             article['tags'] = articleForm.tags.data.split(',')
@@ -1218,7 +1218,7 @@ def edit_draft(element):
 
     if request.method == 'POST' and form.validate_on_submit():
         article['content'] = form.content.data
-        article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
+        article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite'],
                                                          output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
         tags = form.tags.data.split(',')
         article['tags'] = [tag.strip(' \t').lower() for tag in tags]
@@ -1261,7 +1261,7 @@ def publish(element):
             title = articleForm.title.data
             article['content'] = articleForm.content.data
             tags = articleForm.tags.data.split(',')
-            article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite', 'oembed'],
+            article['html'] = bleach.clean(markdown.markdown(article['content'], extensions=['extra', 'codehilite'],
                                                              output_format='html5'), kunjika.tags_wl, kunjika.attrs_wl)
             article['tags'] = []
             article['tags'] = articleForm.tags.data.split(',')

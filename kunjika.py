@@ -600,7 +600,7 @@ def questions(tag=None, page=None, qid=None, url=None):
                         # user['answers'].append(str(qid) + '-' + str(answer['aid']))
                         user['acount'] += 1
 
-                    answer['html'] = bleach.clean(markdown.markdown(answer['answer'], extensions=['extra', 'codehilite', 'oembed'],
+                    answer['html'] = bleach.clean(markdown.markdown(answer['answer'], extensions=['extra', 'codehilite'],
                                                                     output_format='html5'), tags_wl, attrs_wl)
                     questions_dict['updated'] = int(time())
                     user['rep'] += 4
@@ -860,7 +860,7 @@ def ask():
             title = questionForm.question.data
             question['content']['description'] = questionForm.description.data
 
-            question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite', 'oembed'],
+            question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite'],
                                                                          output_format='html5'), tags_wl, attrs_wl)
             question['content']['tags'] = []
             question['content']['tags'] = questionForm.tags.data.split(',')
@@ -1462,7 +1462,7 @@ def edits(element):
                         return redirect(request.referrer)
                     question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['comment'] = form.comment.data
                     question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['html'] = bleach.clean(markdown.markdown(question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['comment'],
-                                                                                                                         extensions=['extra', 'codehilite', 'oembed'],
+                                                                                                                         extensions=['extra', 'codehilite'],
                                                                                                                          output_format='html5'), tags_wl, attrs_wl)
                     question['answers'][int(aid) - 1]['comments'][int(cid) - 1]['edited'] = True
                 else:
@@ -1471,7 +1471,7 @@ def edits(element):
                         return redirect(request.referrer)
                     question['comments'][int(cid) - 1]['comment'] = form.comment.data
                     question['comments'][int(cid) - 1]['html'] = bleach.clean(markdown.markdown(question['comments'][int(cid) - 1]['comment'],
-                                                                                                extensions=['extra', 'codehilite', 'oembed'],
+                                                                                                extensions=['extra', 'codehilite'],
                                                                                                 output_format='html5'), tags_wl, attrs_wl)
                     question['comments'][int(cid) - 1]['edited'] = True
 
@@ -1490,7 +1490,7 @@ def edits(element):
                     return redirect(request.referrer)
                 question['answers'][int(aid) - 1]['answer'] = form.answer.data
                 question['answers'][int(aid) - 1]['html'] = bleach.clean(markdown.markdown(question['answers'][int(aid) - 1]['answer'],
-                                                                                           extensions=['extra', 'codehilite', 'oembed'],
+                                                                                           extensions=['extra', 'codehilite'],
                                                                                            output_format='html5'), tags_wl, attrs_wl)
                 question['answers'][int(aid) - 1]['edited'] = True
 
@@ -1508,7 +1508,7 @@ def edits(element):
                     flash('You are not author of this question!', 'error')
                     return redirect(request.referrer)
                 question['content']['description'] = form.description.data
-                question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite', 'oembed'],
+                question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite'],
                                                            output_format='html5'), tags_wl, attrs_wl)
                 # title editing disabled so that existing links do not break
                 # title = form.question.data
@@ -1634,7 +1634,7 @@ def postcomment():
     aid = int(aid)
     comment = {}
     comment['comment'] = request.form['comment']
-    comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite', 'oembed'],
+    comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite'],
                                                      output_format='html5'), tags_wl, attrs_wl)
     comment['poster'] = g.user.id
     comment['opname'] = g.user.name
@@ -1854,7 +1854,7 @@ def edit_tag(tag):
     if g.user is not None and g.user.is_authenticated():
         if tagForm.validate_on_submit() and request.method == 'POST':
             tag['info'] = tagForm.info.data
-            tag['info-html'] = bleach.clean(markdown.markdown(tag['info'], extensions=['extra', 'codehilite', 'oembed'],
+            tag['info-html'] = bleach.clean(markdown.markdown(tag['info'], extensions=['extra', 'codehilite'],
                                                               output_format='html5'), tags_wl, attrs_wl)
             tb.replace(tag['tag'], tag)
             return redirect(url_for('tag_info', tag=str(tag['tag'])))
@@ -2044,7 +2044,7 @@ def poll(page=1):
             question = {}
             question['content'] = {}
             question['content']['description'] = questionForm.description.data
-            question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite', 'oembed'],
+            question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite'],
                                                                          output_format='html5'), tags_wl, attrs_wl)
             question['content']['tags'] = []
             question['content']['tags'] = questionForm.tags.data.split(',')
@@ -2216,7 +2216,7 @@ def edit_profile(uid=None):
             user['website'] = form.website.data
             user['location'] = form.location.data
             user['about-me'] = form.about_me.data
-            user['about-me-html'] = bleach.clean(markdown.markdown(user['about-me'], extensions=['extra', 'codehilite', 'oembed'],
+            user['about-me-html'] = bleach.clean(markdown.markdown(user['about-me'], extensions=['extra', 'codehilite'],
                                                                    output_format='html5'), tags_wl, attrs_wl)
             skills = form.skills.data.split(',')
             current_skills = []
