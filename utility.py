@@ -1041,6 +1041,7 @@ def edit_article(element):
                     new_tag_list.append(''.join(tag))
                 article['tags'] = new_tag_list
                 article['ts'] = int(time())
+                title = form.title.data
                 article['title'] = title
 
                 url = generate_url(title)
