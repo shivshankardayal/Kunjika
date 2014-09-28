@@ -1041,6 +1041,11 @@ def edit_article(element):
                     new_tag_list.append(''.join(tag))
                 article['tags'] = new_tag_list
                 article['ts'] = int(time())
+                article['title'] = title
+
+                url = generate_url(title)
+
+                article['url'] = url
                 kunjika.kb.replace(str(article['aid']), article)
                 kunjika.es_conn.index({'title':article['title'], 'content':article['content'], 'aid':article['aid'],
                                      'position':article['content']}, 'articles', 'articles-type', article['aid'])
