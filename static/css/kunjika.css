@@ -823,10 +823,11 @@ button {
 }
 
 .share-buttons {
-    float:left;
-    width: 50px;
-    position: fixed;
-    top: 43%;
+float: right;
+width: 60px;
+right: 0;
+top: 45%;
+position: sticky;
 }
 
 .art-arrow {
