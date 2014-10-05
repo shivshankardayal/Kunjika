@@ -22,7 +22,7 @@
             <div class="userheader">
                 <h3>Edit your profile {{ name }}</h3>
             </div>
-            <form class="form-horizontal span10" id="tab" method="post" action="/users/{{ user['id'] }}/edit_profile">
+            <form class="form-horizontal col-md-12" id="tab" method="post" action="/users/{{ user['id'] }}/edit_profile">
                 <fieldset>
                     <div id="legend">
                         <legend class="">
@@ -34,43 +34,43 @@
                         <label class="control-label" for="fname">First Name:</label>
 
                         <div class="controls">
-                            <input class="fname input-x-large span8" id="fname" name="fname"
-                                   style="margin-left:25px;" value="{{ user['fname'] }}" type="text">
+                            <input class="fname form-control" id="fname" name="fname"
+                                   style="margin-top:-29px;margin-left:80px;width:80%" value="{{ user['fname'] }}" type="text">
                         </div>
                     </div>
-                    <div class="control-group">
+                    <div class="control-group" style="margin-top:15px">
                         <label class="control-label" for="lname">Last Name:</label>
 
                         <div class="controls">
-                            <input class="lname input-x-large span8" id="lname" name="lname"
-                                   style="margin-left:25px;" value="{{ user['lname'] }}" type="text">
+                            <input class="lname form-control" id="lname" name="lname"
+                                   style="margin-top:-29px;margin-left:80px;width:80%" value="{{ user['lname'] }}" type="text">
                         </div>
                     </div>
-                    <div class="control-group">
+                    <div class="control-group" style="margin-top:15px">
                         <label class="control-label" for="website">Website:</label>
 
                         <div class="controls">
-                            <input class="website input-x-large span8" id="website" name="website"
-                                   style="margin-left:25px;" value="{{ user['website'] }}" type="text">
+                            <input class="website form-control" id="website" name="website"
+                                   style="margin-top:-29px;margin-left:80px;width:80%" value="{{ user['website'] }}" type="text">
                         </div>
                     </div>
-                    <div class="control-group">
+                    <div class="control-group" style="margin-top:15px">
                         <label class="control-label" for="location">Location:</label>
 
                         <div class="controls">
-                            <input class="location input-x-large span8" id="location" name="location"
-                                   style="margin-left:25px;" value="{{ user['location'] }}" type="text">
+                            <input class="location form-control" id="location" name="location"
+                                   style="margin-top:-29px;margin-left:80px;width:80%;" value="{{ user['location'] }}" type="text">
                         </div>
                     </div>
-                    <div class="wmd-panel">
+                    <div class="wmd-panel" style="width:80%">
                         <div class="control-group">
                             <label class="control-label" for="about-me">About me:</label>
 
-                            <div class="controls">
-                                <div id="wmd-button-bar" style="margin-left: 25px"></div>
+                            <div class="controls" style="margin-top:15px">
+                                <div id="wmd-button-bar" style="margin-top:-29px;margin-left:80px;width:100%;width:100%"></div>
                                 <textarea class="wmd-input" id="wmd-input" name="about_me"
                                           placeholder="Please write about yourself here."
-                                          style="margin-left:25px;">{{ user['about-me'] }}</textarea>
+                                          style="margin-top:0px;margin-left:80px;width:100%">{{ user['about-me'] }}</textarea>
                             </div>
                         </div>
                         <div id="insertImageDialog" title="&nbsp;Insert Image or File">
@@ -83,11 +83,11 @@
                             <span class="loading-small"></span>
                             <input type="file" name="file" id="file" data-action="/image_upload"/>
                         </div>
-                        <div class="control-group">
+                        <div class="control-group" style="margin-top:15px">
                             <label class="control-label" for="about-me-preview"></label>
 
                             <div class="controls">
-                                <div id="wmd-preview" class="wmd-panel wmd-preview" style="margin-left:25px"></div>
+                                <div id="wmd-preview" class="wmd-panel wmd-preview" style="margin-top:10px;margin-left:80px;width:60%"></div>
                             </div>
                         </div>
                         <div class="control-group">
