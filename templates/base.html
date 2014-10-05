@@ -199,7 +199,6 @@
                                             </li>
                                             <li><a href="/logout" class="login"><i class="fa fa-sign-out"></i> Logout</a>
                                         </ul>
-                                    </li>
                                     {% if role == "admin" and adpage == True %}
                                         <li  class="active">
                                         <a href="/administration" class="administration" title="Administration"> 
@@ -214,7 +213,6 @@
                                         </li>
                                     {% endif %}
                                     
-                                    </li>
                                 {% else %}
                                     <li><a href="/login" class="login"><i class="fa fa-sign-in"></i> Login</a></li>
                                 {% endif %}
@@ -243,7 +241,7 @@
                                         <div class="col-md-6">
                                             <form class="form-search" action="/search" method="get">
                                                 <div style="margin-left: 20px; margin-top: -10px" class="input-append">
-                                                    <input type="text" class="form-control form-inline" id="query"name="query">
+                                                    <input type="text" class="form-control form-inline" id="query" name="query">
                                                     <button type="submit" class="btn">Kunjika Search</button>
                                                 </div>
                                             </form>
