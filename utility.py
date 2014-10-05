@@ -1289,7 +1289,7 @@ def publish(element):
             article['_type'] = 'a'
 
             url = generate_url(title)
-
+            article['tags'] = [i in article['tags'] if i != "" ]
             article['url'] = url
             article['op'] = str(g.user.id)
             article['ts'] = int(time())
