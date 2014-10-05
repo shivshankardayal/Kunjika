@@ -26,7 +26,6 @@
                 <div id="wmd-button-bar"></div>
                 <div class="control-group">
                     <label class="control-label" for="description"></label>
-
                     <div class="controls">
                             <textarea class="wmd-input" id="wmd-input" name="comment"
                                       placeholder="Please describe your question here."
@@ -57,11 +56,11 @@
                 {% from "macros.html" import render_field %}
                 {{ form.csrf_token }}
                 <div class="control-group">
-                    <label class="control-label" for="question">Question</label>
+                    <label class="control-label" for="question">Title</label>
 
                     <div class="controls">
-                        <input class="question input-x-large span10" id="article" name="title"
-                               style="margin-left:25px;" value="{{ article['title'] }}" type="text">
+                        <input class="form-control" id="article" name="title"
+                               style="margin-left:55px;margin-bottom:10px;width:80%" value="{{ article['title'] }}" type="text">
                     </div>
                 </div>
                 <div class="wmd-panel">
@@ -91,8 +90,8 @@
                         <label class="control-label" for="tags" style="margin-right: 25px">Tags</label>
 
                         <div class="controls">
-                            <input class="question input-x-large span10" id="question" name="tags"
-                                   style="margin-left:25px;" value="{{ tags }}" type="text">
+                            <input class="form-control" id="question" name="tags"
+                                   style="margin-left:25px;margin-bottom:20px; width:60%" value="{{ tags }}" type="text">
                         </div>
                     </div>
                 </div>
