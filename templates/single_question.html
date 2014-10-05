@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block title %}{{ questions['title'] }} - Kunjika{% endblock %}
 {% block meta_keywords %}{% for tag in questions['content']['tags'] %}{{ tag }},{% endfor %}{% endblock %}
-
+{% block meta_title %}{{ questions['title'] }}{% endblock %}
+{% block meta_author %}{{ questions['opname'] }}{% endblock %}
+{% block meta_description %}{{ questions['content']['html'][:400]|striptags }}{% endblock %}
 {% block css_site %}
 <link href="/static/css/wmd.css" rel="stylesheet">
 <link href="/static/css/solarized_light.css" rel="stylesheet">

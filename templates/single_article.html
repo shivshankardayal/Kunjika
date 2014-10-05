@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block title %}{{ article['title'] }} - Kunjika{% endblock %}
 {% block meta_keywords %}{% for tag in article['tags'] %}{{ tag }},{% endfor %}{% endblock %}
-
+{% block meta_author %}{{ article['opname'] }}{% endblock %}
+{% block meta_title %}{{ article['title'] }}{% endblock %}
+{% block meta_description %}{{ article['html'][:600]|striptags }}{% endblock %}
 {% block css_site %}
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/solarized_light.css">
@@ -38,7 +40,7 @@
 
                 var str = '#insertImageDialog' + '-' + divid;
                 //alert(str);
-                var $dialog = $(str).dialog({
+                var `$dialog = $(str).dialog({
                     autoOpen: false,
                     closeOnEscape: false,
                     open: function (event, ui) {
