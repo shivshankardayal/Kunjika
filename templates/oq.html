@@ -1,22 +1,16 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
+
 {% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
+    {{ super() }}    
 {% endblock %}
 {% block container %}
-    <div class="row-fluid">
-    <h3>Please Set Your Options</h3>
-    <div class="mainbar" id="mainbar">
+    <div class="row">
+    <div class="col-md-9">
+        <div class="page-header">
+            <h3>Please Set Your Options</h3>
+        </div>
         <form class="ask-form" method="post" aciton="/add_objective_question">
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}

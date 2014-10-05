@@ -1,17 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Edit your settings {{ user['name'] }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
 {% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
+    {{ super() }}
     <script src="/static/js/jquery.cookie.js"></script>
     <script src="/static/js/jquery.form.js"></script>
     <script>
@@ -43,8 +34,8 @@
     </script>
 {% endblock %}
 {% block container %}
-    <div class="row-fluid">
-        <div id="mainbar" class="mainbar">
+    <div class="row">
+       <div class="col-md-9">
             <div class="userheader">
                 <h3>Edit your settings {{ name }}</h3>
             </div>
@@ -91,33 +82,40 @@
                 </label-->
             </div>
         </div>
-        <div id="sidebar">
-            <div class="count">
-                <div class="module" id="questions-count">
-                    <div class="summarycount al">{{ qcount }}</div>
-                    <p>questions</p>
+        <div class="col-md-3">
+             <div class="site-stats">
+                <div class="module">
+                    <span class="fa fa-question"></span>
+                    <span class="summary-count">{{ qcount }}</span>
+                    <span class="summary-text">questions</span>
                 </div>
-                <div class="module" id="questions-count">
-                    <div class="summarycount al">{{ acount }}</div>
-                    <p>answers</p>
+                <div class="module">
+                    <span class="fa fa-comment"></span>
+                    <span class="summary-count">{{ acount }}</span>
+                    <span class="summary-text">answers</span>
                 </div>
-                <div class="module" id="questions-count">
-                    <div class="summarycount al">{{ ucount }}</div>
-                    <p>users</p>
+                <div class="module">
+                    <span class="fa fa-users"></span>
+                    <span class="summary-count">{{ ucount }}</span>
+                    <span class="summary-text">users</span>
                 </div>
-                <div class="module" id="questions-count">
-                    <div class="summarycount al">{{ tcount }}</div>
-                    <p>tags</p>
+                <div class="module">
+                    <span class="fa fa-tags"></span>
+                    <span class="summary-count">{{ tcount }}</span>
+                    <span class="summary-text">tags</span>
                 </div>
             </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular Tags</h4>
+            <div class="popular-tags" class="module">
+                <div class="page-header">
+                    <h4>Popular Tags</h4>
+                </div>
+                
                 {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
-                       title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
-                            class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
+                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">
+                        {{ tag['tag'] }} 
+                        <span class="tag-count">{{ tag['count'] }}</span> 
+                    </a>
+                    
                 {% endfor %}
             </div>
             <div id="popular-tags" class="module">

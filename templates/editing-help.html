@@ -1,14 +1,5 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
 {% block css_site %}
     <link href="/static/css/wmd.css" rel="stylesheet">
@@ -16,6 +7,7 @@
     <link href="/static/css/token-input.css" rel="stylesheet">
     <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/solarized_light.css" rel="stylesheet">
+    {{ super() }}
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
@@ -27,8 +19,8 @@
 
 {% endblock %}
 {% block container %}
-    <div class="row-fluid">
-        <div id="mainbar" class="mainbar">
+    <div class="row">
+       <div class="col-md-9">
             <div class="subheader">
                 <h3>Markdown help</h3>
             </div>
@@ -96,48 +88,48 @@ Combining both, `***This is italics and bold***` and so is `___this___`. As rend
 
 Following are three ways to write links:
 
-    This is an inline link to [10hash](https://10hash.com/).
-    This is  a reference-style link to [10hash][1].
-    This is a very readable link to [10hash.com][10hash].
+    This is an inline link to [libreprogramming](http://libreprogramming.org/).
+    This is  a reference-style link to [libreprogramming][1].
+    This is a very readable link to [libreprogramming.org][libreprogramming].
 
-    [1]: https://10hash.com/
-    [10hash]: https://10hash.com/
+    [1]: http://libreprogramming.org/
+    [libreprogramming]: http://libreprogramming.org/
 
 The above will render as:
 
-This is an inline link to [10hash](https://10hash.com/).
-This is a reference-style link to [10hash][1].
-This is a very readable link to [10hash.com][10hash].
+This is an inline link to [libreprogramming](http://libreprogramming.org/).
+This is a reference-style link to [libreprogramming][1].
+This is a very readable link to [libreprogramming.org][libreprogramming].
 
-[1]: https://10hash.com/
-[10hash]: https://10hash.com/
+[1]: http://libreprogramming.org/
+[libreprogramming]: http://libreprogramming.org/
 
-The definitions at bottom like `1` and `10hash` can be any unique string and are
+The definitions at bottom like `1` and `libreprogramming` can be any unique string and are
 case-insensitive.
 
-You can also have simple links like `https://10hash.com/` which will appear as
-https://10hash.com/. You can also force URLs with angular brackets like
+You can also have simple links like `http://libreprogramming.org/` which will appear as
+http://libreprogramming.org/. You can also force URLs with angular brackets like
 `&lt;http://some_url&gt;` will render like http://some_url.
 
 You can also have title for links for describing them. Make these strings as descriptive as
 possible for others to understand about it. For example,
 
 
-    This is an inline link to [10hash](https://10hash.com/ "First title").
-    This is  a reference-style link to [10hash][1].
-    This is a very readable link to [10hash.com][10hash].
+    This is an inline link to [libreprogramming](http://libreprogramming.org/ "First title").
+    This is  a reference-style link to [libreprogramming][1].
+    This is a very readable link to [libreprogramming.org][libreprogramming].
 
-    [1]: https://10hash.com/ (Second title)
-    [10hash]: https://10hash.com/ "Third title"
+    [1]: http://libreprogramming.org/ (Second title)
+    [libreprogramming]: http://libreprogramming.org/ "Third title"
 
 The above will render as:
 
-This is an inline link to [10hash](https://10hash.com/ "First title").
-This is a reference-style link to [10hash][1].
-This is a very readable link to [10hash.com][10hash].
+This is an inline link to [libreprogramming](http://libreprogramming.org/ "First title").
+This is a reference-style link to [libreprogramming][1].
+This is a very readable link to [libreprogramming.org][libreprogramming].
 
-[1]: https://10hash.com/ (Second title)
-[10hash]: https://10hash.com/ "Third title"
+[1]: http://libreprogramming.org/ (Second title)
+[libreprogramming]: http://libreprogramming.org/ "Third title"
 
 &lt;a href="#headers" id="headers" class="markdown-help"&gt;Headers&lt;/a&gt;
 
@@ -801,7 +793,7 @@ will render as
 
             </div>
         </div>
-        <div id="sidebar">
+        <div class="col-md-3">
             <div id="scroller-anchor"></div>
             <div style="position: relative; width: 220px;" id="scroller">
                 <div class="module newuser" id="toc">
@@ -857,7 +849,7 @@ will render as
         var converter = new Markdown.Converter();
         Markdown.Extra.init(converter, {
             extensions: "all",
-            highlighter: "highlight",
+            highlighter: "prettify",
             table_class: "table-bordered table"
         });
 

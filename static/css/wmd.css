@@ -36,13 +36,8 @@
 
 .wmd-button-row {
     position: relative;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    padding: 0px;
     height: 20px;
-    width: 90%;
+    width: 100%;
 }
 
 .wmd-spacer {

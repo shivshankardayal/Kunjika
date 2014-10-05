@@ -1,24 +1,12 @@
 {% extends "base.html" %}
 {% block title %}{{ questions['title'] }} - Kunjika{% endblock %}
 {% block meta_keywords %}{% for tag in questions['content']['tags'] %}{{ tag }},{% endfor %}{% endblock %}
-{% block meta_title %}{{ questions['title'] }}{% endblock %}
-{% block meta_author %}{{ questions['opname'] }}{% endblock %}
-{% block meta_description %}{{ questions['content']['html'][:400]|striptags }}{% endblock %}
-{% block css_bootstrap %}    <link href="/static/css/kunjika.css" rel="stylesheet">
-
-{{ super() }}
-{# TODO: probably remove this and let the user set it manually? #}
-<style>
- body {
-   padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
- }
-</style>
-{% endblock %}
 
 {% block css_site %}
 <link href="/static/css/wmd.css" rel="stylesheet">
 <link href="/static/css/solarized_light.css" rel="stylesheet">
 <link href="/static/css/token-input.css" rel="stylesheet">
+    {{ super() }}
 <link href="/static/css/kunjika.css" rel="stylesheet">
 <link href="/static/css/kunjika.css" rel="stylesheet">
 <link href="/static/css/pygments.css" rel="stylesheet">
@@ -55,162 +43,163 @@
    console.log('#' + divid);
    $(id).toggle("slow");
 
-   if ($(id).hasClass('ran')) {
+            if ($(id).hasClass('ran')) {
 
-   } else {
-     $(id).addClass('ran');
+            } else {
+                $(id).addClass('ran');
 
-     var converter = new Markdown.Converter();
-     var help = function () {
-       window.open('{{ config['HOST_URL'] }}editing-help');
-     }
-     Markdown.Extra.init(converter, {
-       extensions: "all",
-       highlighter: "highlight"
-     });
-     var editor = new Markdown.Editor(converter, '-' + divid, { handler: help });
+                var converter = new Markdown.Converter();
+                var help = function () {
+                    window.open('{{ config['HOST_URL'] }}editing-help');
+                }
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                    highlighter: "highlight"
+                });
+                var editor = new Markdown.Editor(converter, '-' + divid, { handler: help });
 
-     var str = '#insertImageDialog' + '-' + divid;
-     //alert(str);
-     var $dialog = $(str).dialog({
-       autoOpen: false,
-       closeOnEscape: false,
-       open: function (event, ui) {
-         $(".ui-dialog-titlebar-close").hide();
-       }
-     });
-     var $loader = $('span.loading-small', $dialog);
-     var $url = $('input[type=text]', $dialog);
-     var $file = $('input[type=file]', $dialog);
+                var str = '#insertImageDialog' + '-' + divid;
+                //alert(str);
+                var $dialog = $(str).dialog({
+                    autoOpen: false,
+                    closeOnEscape: false,
+                    open: function (event, ui) {
+                        $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+                var $loader = $('span.loading-small', $dialog);
+                var $url = $('input[type=text]', $dialog);
+                var $file = $('input[type=file]', $dialog);
 
-     editor.hooks.set('insertImageDialog', function (callback) {
+                editor.hooks.set('insertImageDialog', function (callback) {
 
-       // dialog functions
-       var dialogInsertClick = function () {
-         callback($url.val().length > 0 ? $url.val() : null);
-         dialogClose();
-       };
+                    // dialog functions
+                    var dialogInsertClick = function () {
+                        callback($url.val().length > 0 ? $url.val() : null);
+                        dialogClose();
+                    };
 
-       var dialogCancelClick = function () {
-         dialogClose();
-         callback(null);
-       };
+                    var dialogCancelClick = function () {
+                        dialogClose();
+                        callback(null);
+                    };
 
-       var dialogClose = function () {
-         // clean up inputs
-         $url.val('');
-         $file.val('');
-         $dialog.dialog('close');
-       };
+                    var dialogClose = function () {
+                        // clean up inputs
+                        $url.val('');
+                        $file.val('');
+                        $dialog.dialog('close');
+                    };
 
-       // set up dialog button handlers
-       $dialog.dialog('option', 'buttons', {
-         'Insert': dialogInsertClick,
-         'Cancel': dialogCancelClick
-       });
+                    // set up dialog button handlers
+                    $dialog.dialog('option', 'buttons', {
+                        'Insert': dialogInsertClick,
+                        'Cancel': dialogCancelClick
+                    });
 
-       var uploadStart = function () {
-         $loader.show();
-       };
+                    var uploadStart = function () {
+                        $loader.show();
+                    };
 
-       var uploadComplete = function (response) {
-         $loader.hide();
-         if (response.success) {
-           callback(response.imagePath);
-           dialogClose();
-         } else {
-           alert(response.message);
-           $file.val('');
-         }
-         editor.refreshPreview();
-       };
+                    var uploadComplete = function (response) {
+                        $loader.hide();
+                        if (response.success) {
+                            callback(response.imagePath);
+                            dialogClose();
+                        } else {
+                            alert(response.message);
+                            $file.val('');
+                        }
+                        editor.refreshPreview();
+                    };
 
-       // upload
-       $file.unbind('change').ajaxfileupload({
-         action: $file.attr('data-action'),
-         onStart: uploadStart,
-         onComplete: uploadComplete
-       });
+                    // upload
+                    $file.unbind('change').ajaxfileupload({
+                        action: $file.attr('data-action'),
+                        onStart: uploadStart,
+                        onComplete: uploadComplete
+                    });
 
-       // open the dialog
-       $dialog.dialog('open');
+                    // open the dialog
+                    $dialog.dialog('open');
 
-       return true; // tell the editor that we'll take care of getting the image url
-     });
-     //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
-     hljs.initHighlightingOnLoad();
-     editor.run();
-   }
- }
-</script>
-<script>
- $(document).ready(function () {
-   var id = '';
-   var options = {
-     //target:        '#output1',   // target element(s) to be updated with server response
-     beforeSubmit:  showRequest,  // pre-submit callback
-     success: showResponse,  // post-submit callback
+                    return true; // tell the editor that we'll take care of getting the image url
+                });
+                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                hljs.initHighlightingOnLoad();
+                editor.run();
+            }
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            var id = '';
+            var options = {
+                //target:        '#output1',   // target element(s) to be updated with server response
+                beforeSubmit:  showRequest,  // pre-submit callback
+                success: showResponse,  // post-submit callback
 
-     // other available options:
-     url: '/postcomment',         // override for form's 'action' attribute
-     //type:      'post',        // 'get' or 'post', override for form's 'method' attribute
-     //dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
-     clearForm: true,        // clear all form fields after successful submit
-     resetForm: true        // reset the form after successful submit
+                // other available options:
+                url: '/postcomment',         // override for form's 'action' attribute
+                //type:      'post',        // 'get' or 'post', override for form's 'method' attribute
+                //dataType:  'json',        // 'xml', 'script', or 'json' (expected server response type)
+                clearForm: true,        // clear all form fields after successful submit
+                resetForm: true        // reset the form after successful submit
 
-     // $.ajax options can be used here too, for example:
-     //timeout:   3000
-   };
+                // $.ajax options can be used here too, for example:
+                //timeout:   3000
+            };
 
-   // bind form using 'ajaxForm'
-   $('form.comment-form').ajaxForm(options);
-   function showRequest(formData, jqForm, options) {
-     // formData is an array; here we use $.param to convert it to a string to display it
-     // but the form plugin does this for you automatically when it submits the data
-     var queryString = $.param(formData);
+            // bind form using 'ajaxForm'
+            $('form.comment-form').ajaxForm(options);
+            function showRequest(formData, jqForm, options) {
+            // formData is an array; here we use $.param to convert it to a string to display it
+            // but the form plugin does this for you automatically when it submits the data
+            var queryString = $.param(formData);
 
-     // jqForm is a jQuery object encapsulating the form element.  To access the
-     // DOM element for the form do this:
-     // var formElement = jqForm[0];
+            // jqForm is a jQuery object encapsulating the form element.  To access the
+            // DOM element for the form do this:
+            // var formElement = jqForm[0];
 
-     id = formData[formData.length - 1].value;
+            id = formData[formData.length - 1].value;
 
-     // here we could return false to prevent the form from being submitted;
-     // returning anything other than false will allow the form submit to continue
-     //return true;
-   }
-   function showResponse(responseText, statusText, xhr, $form) {
-     var converter = new Markdown.Converter();
-     Markdown.Extra.init(converter, {
-       extensions: "all",
-     });
+            // here we could return false to prevent the form from being submitted;
+            // returning anything other than false will allow the form submit to continue
+            //return true;
+            }
+            function showResponse(responseText, statusText, xhr, $form) {
+                var converter = new Markdown.Converter();
+                Markdown.Extra.init(converter, {
+                    extensions: "all",
+                });
 
-     responseJSON = jQuery.parseJSON(responseText);
-     str = '<div class="comment" id="c-' + responseJSON.id + '"><div class="content">';
-     str += responseJSON.comment;
-     str += "</div> &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
-     str += " " + responseJSON.ts + "</div>"
-     $(str).insertBefore('#f-' + id);
-     flash('Your comment has been successfully posted.', 'info')
-   }
- });
-</script>
+                responseJSON = jQuery.parseJSON(responseText);
+                str = '<div class="comment" id="c-' + responseJSON.id + '"><div class="content">';
+                comment = converter.makeHtml(responseJSON.comment);
+                str += comment;
+                str += "</div> &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
+                str += " " + responseJSON.ts + "</div>"
+                $(str).insertBefore('#f-' + id);
+                flash('Your comment has been successfully posted.', 'info')
+            }
+        });
+    </script>
 {% endblock %}
 {% block container %}
-<div class="row-fluid">
-  <div id="mainbar" class="mainbar">
+    <div class="row">
+   <div class="col-md-9">
     <div class="q-header">
-      {% if questions['close'] == True %}
-      <h3>{{ questions['title'] }} [Closed]</h3>
-      {% else %}
-      <h3>{{ questions['title'] }}</h3>
-      {% endif %}
+        {% if questions['close'] == True %}
+            <h3>{{ questions['title'] }} [Closed]</h3>
+        {% else %}
+            <h3>{{ questions['title'] }}</h3>
+        {% endif %}
     </div>
     <table>
       <tr>
         <td class="votes">
           <div class="vote">
-            <span class="icon-stack">
+            <span class="fa fa-stack">
               {% if g.user.id != -1%}
               <a class="voteup-on"
                  title="This question shows research effort. It is useful and clear (click again to take back your vote)"
@@ -228,7 +217,7 @@
 
             <div class="mini-counts">{{ questions['votes'] }}</div>
             <div>votes</div>
-            <span class="icon-stack">
+            <span class="fa fa-stack">
               {% if g.user.id != -1%}
               <a class="votedown-on"
                  title="This question shows no research effort. It is not useful and unclear (click again to take back your vote)"
@@ -243,7 +232,7 @@
               </a>
               {% endif %}
             </span>
-            <span class="icon-stack" style="margin-top: 30px; margin-left: -18px;">
+            <span class="fa fa-stack">
               {% if g.user.id != -1 %}
               {% if g.user.id in questions['users_fav'] %}
               <a class="starred"
@@ -375,13 +364,13 @@
       -
       <a href="/users/{{ comment['poster'] }}/{{ comment['opname']|urlencode }}">{{ comment['opname'] }}</a>
       {{ comment['tstamp'] }}&nbsp;
-      {% if user_id is defined %}
-      <a title="edit" href="/edit/ce-{{ questions['qid'] }}-{{ comment['cid'] }}"><i
-        class="icon-edit"></i></a>
+      {% if user_id != -1 %}
       <a title="Flag for inappropriate comment" id="qcf-{{ questions['qid'] }}-{{ comment['cid'] }}" class="flag"
          style="color:#d00" href="/flag/{{ questions['qid'] }}-{{ comment['cid'] }}"><i class="fa fa-flag"></i></a>
       {% endif %}
       {% if g.user.id == comment['poster'] or g.user.id == 1 %}
+      <a title="edit" href="/edit/ce-{{ questions['qid'] }}-{{ comment['cid'] }}"><i
+        class="fa fa-edit"></i></a>
       <a class="tohide" href="/hide/ch-{{ questions['qid'] }}-{{ comment['cid'] }}" id="ch-{{ questions['qid'] }}-{{ comment['cid'] }}"> Hide/Unhide</a>
       {% endif %}
       {% if 'edited' in comment %}
@@ -390,188 +379,171 @@
     </div>
     {% endfor %}
     {% if user_id is defined and questions['close'] != True %}
-    <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
-          aciton="/postcomment">
-      {% from "macros.html" import render_field %}
-      {{ form.csrf_token }}
-      <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}">
-        <div id="wmd-button-bar-{{ questions['qid'] }}" class="wmd-bar"></div>
-        <div class="control-group">
-          <label for="answer" class="control-label"></label>
+        <form class="comment-form" id="f-{{ questions['qid'] }}" method="post"
+              aciton="/postcomment">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}">
+                <div id="wmd-button-bar-{{ questions['qid'] }}" class="wmd-bar"></div>
+                    <div class="controls">
 
-          <div class="controls">
+                        <textarea stlyle="margin-left:5px;" placeholder="Please post your comment here."
+                                  name="comment" id="wmd-input-{{ questions['qid'] }}" class="wmd-input"></textarea>
+                    </div>
+                <div id="insertImageDialog-{{ questions['qid'] }}" title="&nbsp;Insert Image or File">
+                    <h6>From the web</h6>
 
-            <textarea stlyle="margin-left:5px;" placeholder="Please post your comment here."
-                      name="comment" id="wmd-input-{{ questions['qid'] }}" class="wmd-input"></textarea>
-          </div>
-        </div>
-        <div id="insertImageDialog-{{ questions['qid'] }}" title="&nbsp;Insert Image or File">
-          <h6>From the web</h6>
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
+                </div>
+                <div id="wmd-preview-{{ questions['qid'] }}" class="wmd-panel wmd-preview"></div>
+                <input type="hidden" name="element" value="{{ questions['qid'] }}">
 
-          <p>
-            <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-          </p>
-          <h6>From your computer (Max. 2MB)</h6>
-          <span class="loading-small"></span>
-          <input type="file" name="file" id="file" data-action="/image_upload"/>
-        </div>
-        <div id="wmd-preview-{{ questions['qid'] }}" class="wmd-panel wmd-preview"></div>
-        <input type="hidden" name="element" value="{{ questions['qid'] }}">
-
-        <div style="clear:both;"></div>
-        <div class="controls">
-          <input type="submit" value="Post comment" class="btn btn-primary">
-        </div>
-      </div>
-    </form>
+                <div style="clear:both;"></div>
+                <div class="controls">
+                    <input type="submit" value="Post comment" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
     {% endif %}
     <div class="answers">
-      <div class="answer-header"></div>
-      <div class="subheader answer-subheader">
-        <h4>Know someone who can share his knowledge or you want to share it with others?</h4>
-      </div>
+        <div class="answer-header"></div>
+        <div class="subheader answer-subheader">
+            <h4>Know someone who can share his knowledge or you want to share it with others?</h4>
+        </div>
 
-      {% if 'sc' in questions['content'] %}
-      <h3>Current Votes</h3>
-      <table class="poll">
-        <tbody>
-          {% for vote in votes %}
-          <tr>
-            <td>Option {{ loop.index }}.</td>
-            <td><label for="option">{{ vote[1] }}</label></td>
-            <td>{{ vote[0] }} votes</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% elif 'mc' in questions['content'] %}
-      <h3>Current Votes</h3>
-      <table class="poll">
-        <tbody>
-          {% for vote in votes %}
-          <tr>
-            <td>Option {{ loop.index }}.</td>
-            <td><label for="option">{{ vote[1] }}</label></td>
-            <td>{{ vote[0] }} votes</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-      <h6>{{ questions['acount'] }} answers</h6>
-      {% for answer in questions['answers'] %}
-      <table>
-        <tr class="hr">
-          <td class="votes">
-            <div class="vote">
-              <span class="icon-stack">
-                <a class="voteup-on"
-                   title="This answer shows research effort. It is useful and clear (click again to take back your vote)"
-                   href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
-                  <i class="fa fa-thumbs-up fa-lg"></i>
-                </a>
-              </span>
+        {% if 'sc' in questions['content'] %}
+            <h3>Current Votes</h3>
+            <table class="poll">
+                <tbody>
+                {% for vote in votes %}
+                    <tr>
+                        <td>Option {{ loop.index }}.</td>
+                        <td><label for="option">{{ vote[1] }}</label></td>
+                        <td>{{ vote[0] }} votes</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% elif 'mc' in questions['content'] %}
+            <h3>Current Votes</h3>
+            <table class="poll">
+                <tbody>
+                {% for vote in votes %}
+                    <tr>
+                        <td>Option {{ loop.index }}.</td>
+                        <td><label for="option">{{ vote[1] }}</label></td>
+                        <td>{{ vote[0] }} votes</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+        <h6>{{ questions['acount'] }} answers</h6>
+        {% for answer in questions['answers'] %}
+            <table>
+                <tr class="hr">
+                    <td class="votes">
+                        <div class="vote">
+                            <span class="fa fa-stack">
+                                <a class="voteup-on"
+                                   title="This answer shows research effort. It is useful and clear (click again to take back your vote)"
+                                   href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                    <i class="fa fa-thumbs-up icon-large"></i>
+                                </a>
+                            </span>
 
-              <div class="mini-counts">{{ answer['votes'] }}</div>
-              <div>votes</div>
-              <span class="icon-stack">
-                <a class="votedown-on"
-                   title="This answer shows no research effort. It is not useful and unclear (click again to take back your vote)"
-                   href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
-                  <i class="fa fa-thumbs-down fa-lg"></i>
-                </a>
-              </span>
-              <br/>
-              {% if questions['content']['op'] != user_id %}
-              {% if answer['best'] == True %}
-              <span class="icon-stack">
-                <i class="fa fa-check fa-lg accepted-answer"></i>
-              </span>
-              {% endif %}
-              {% else %}
-              {% if answer['best'] == False %}
-              <span class="icon-stack">
-                <a class="accept-answer ok" title="This is the best answer so you(original poster) can select this."
-                   href="#"
-                   id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
-                  <i class="fa fa-check fa-lg"></i>
-                </a>
-              </span>
-              {% else %}
-              <span class="icon-stack">
-                <a class="accepted-answer ok"
-                   title="This is the best answer so OP selects this." href="#"
-                   id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
-                  <i class="fa fa-check fa-lg"></i>
-                </a>
-              </span>
-              {% endif %}
-              {% endif %}
-            </div>
-          </td>
-          <td class="vt">
-            {% if 'hidden' not in answer %}
-            <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['html']|safe }}</div>
-            {% elif answer['hidden'] == False %}
-            <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['html']|safe }}</div>
-            {% else %}
-            <div id="answer-{{ answer['aid'] }}" class="answer" style="color:#c00">This answer has been hidden by admin or poster.</div>
-            {% endif %}
-            <table class="poster">
-              <tbody>
-                <tr>
-                  {% if user_id is defined %}
-                  <td class="vt">
-                    <a href="/edit/ae-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                       class="suggest-edit-post"
-                       title=""><i class="fa fa-edit"></i> Edit</a>
-                  </td>
-                  <td class="vt">
-                    <a title="Flag for inappropriate comment"
-                       id="qaf-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                       href="/flag/{{ questions['qid'] }}-{{ answer['aid'] }}" class="flag"
-                       ><i class="fa fa-flag" style="color:#d00"></i> Flag</a>
-                  </td>
-                  <td class="vt">
-                    <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                       id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                       onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');"><i
-                      class="icon-comment" style="color:#a4c639"></i> Comment</a>
-                  </td>
-                  <td class="vt">
-                    {% if g.user.id == answer['poster'] or g.user.id == 1 %}
-                    <a class="tohide" href="/hide/ah-{{ questions['qid'] }}-{{ answer['aid'] }}" id="ah-{{ questions['qid'] }}-{{ answer['aid'] }}">Hide/Unhide</a>
-                    {% endif %}
-                  </td>
-                  <td class="vt">
-                    {% if 'edited' in answer %}
-                    <p class="edited">Edited</p>
-                    {% endif %}
-                  </td>
-                  {% else %}
-                  <td class="vt">
-                  </td>
-                  {% endif %}
-                  <td class="post-signature owner" align="right">
-                    <div class="user-info ">
-                      <div class="user-action-time">
-                        Answered on <span title="2013-05-28 01:32:12Z"
-                                          class="relativetime">{{ answer['tstamp'] }} </span>
-                      </div>
-                      <div class="user-gravatar32">
-                        <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">
-                          <div class=""><img
-                            src="{{ answer['email']|gravatar }}"
-                            alt="" height="32" width="32"></div>
-                        </a>
-                      </div>
-                      <div class="user-details">
-                        <a href="/users/{{ answer['poster'] }}/{{ answer['opname']|urlencode }}">{{ answer['opname'] }}</a><br>
-                      </div>
-                    </div>
-                  </td>
+                            <div class="mini-counts">{{ answer['votes'] }}</div>
+                            <div>votes</div>
+                            <span class="fa fa-stack">
+                                <a class="votedown-on"
+                                   title="This answer shows no research effort. It is not useful and unclear (click again to take back your vote)"
+                                   href="#" id="v-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                    <i class="fa fa-thumbs-down icon-large"></i>
+                                </a>
+                            </span>
+                            <br/>
+                            {% if questions['content']['op'] != user_id %}
+                                {% if answer['best'] == True %}
+                                    <span class="fa fa-stack">
+                                        <i class="fa fa-ok icon-large accepted-answer"></i>
+                                    </span>
+                                {% endif %}
+                            {% else %}
+                                {% if answer['best'] == False %}
+                                    <span class="fa fa-stack">
+                                        <a class="accept-answer ok" title="This is the best answer so OP selects this."
+                                           href="#"
+                                           id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                            <i class="fa fa-ok icon-large"></i>
+                                        </a>
+                                    </span>
+                                {% else %}
+                                    <span class="fa fa-stack">
+                                        <a class="accepted-answer ok"
+                                           title="This is the best answer so OP selects this." href="#"
+                                           id="ok-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                            <i class="fa fa-ok icon-large"></i>
+                                        </a>
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['html']|safe }}</div>
+                        <table class="poster">
+                            <tbody>
+                            <tr>
+                                {% if user_id is defined %}
+                                    <td class="vt">
+                                        <a href="/edit/ae-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           class="suggest-edit-post"
+                                           title=""><i class="fa fa-edit"></i> Edit</a>
+                                    </td>
+                                    <td class="vt">
+                                        <a title="Flag for inappropriate comment"
+                                           id="qaf-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           href="/flag/{{ questions['qid'] }}-{{ answer['aid'] }}" class="flag"
+                                                ><i class="fa fa-flag" style="color:#d00"></i> Flag</a>
+                                    </td>
+                                    <td class="vt">
+                                        <a href="#a-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           id="a-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                           onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');"><i
+                                                class="fa fa-comment" style="color:#a4c639"></i> Comment</a>
+                                    </td>
+                                {% else %}
+                                    <td class="vt">
+                                    </td>
+                                {% endif %}
+                                <td class="post-signature owner" align="right">
+                                    <div class="user-info ">
+                                        <div class="user-action-time">
+                                            Answered on <span title="2013-05-28 01:32:12Z"
+                                                              class="relativetime">{{ answer['tstamp'] }} </span>
+                                        </div>
+                                        <div class="user-gravatar32">
+                                            <a href="/users/{{ answer['poster'] }}/{{ answer['opname'] }}">
+                                                <div class=""><img
+                                                        src="{{ answer['email']|gravatar }}"
+                                                        alt="" height="32" width="32"></div>
+                                            </a>
+                                        </div>
+                                        <div class="user-details">
+                                            <a href="/users/{{ answer['poster'] }}/{{ answer['opname']|urlencode }}">{{ answer['opname'] }}</a><br>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
                 </tr>
-              </tbody>
             </table>
           </td>
         </tr>
@@ -588,15 +560,15 @@
         -
         <a href="/users/{{ comment['poster'] }}/{{ comment['opname']|urlencode }}">{{ comment['opname'] }} </a>
         {{ comment['tstamp'] }}&nbsp;
-        {% if user_id is defined %}
-        <a title="Edit"
-           href="/edit/ce-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i
-          class="icon-edit"></i></a>
+        {% if user_id != -1 %}
         <a title="Flag for inappropriate comment" class="flag" style="color:#d00"
            id="qac-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"
            href="/flag/{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i
-          class="icon-flag"></i></a>
+          class="fa fa-flag"></i></a>
         {% if g.user.id == comment['poster'] or g.user.id == 1 %}
+        <a title="Edit"
+           href="/edit/ce-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}"><i
+          class="fa fa-edit"></i></a>
         <a class="tohide" href="/hide/ach-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}" id="ach-{{ questions['qid'] }}-{{ answer['aid'] }}-{{ comment['cid'] }}">Hide/Unhide</a>
         {% endif %}
         {% if 'edited' in answer %}
@@ -612,165 +584,170 @@
         {{ form.csrf_token }}
         <div class="wmd-panel hidden-comment-form" id="{{ questions['qid'] }}-{{ answer['aid'] }}">
           <div id="wmd-button-bar-{{ questions['qid'] }}-{{ answer['aid'] }}" class="wmd-bar"></div>
-          <div class="control-group">
-            <label for="answer" class="control-label"></label>
+                            <div class="controls">
 
-            <div class="controls">
+                                <textarea stlyle="margin-left:5px;" placeholder="Please post your comment here."
+                                          name="comment" id="wmd-input-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                                          class="wmd-input"></textarea>
+                            </div>
+                        <div id="insertImageDialog"
+                             title="&nbsp;Insert Image or File">
+                            <h6>From the web</h6>
 
-              <textarea stlyle="margin-left:5px;" placeholder="Please post your comment here."
-                        name="comment" id="wmd-input-{{ questions['qid'] }}-{{ answer['aid'] }}"
-                        class="wmd-input"></textarea>
-            </div>
-          </div>
-          <div id="insertImageDialog"
-               title="&nbsp;Insert Image or File">
-            <h6>From the web</h6>
+                            <p>
+                                <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                            </p>
+                            <h6>From your computer (Max. 2MB)</h6>
+                            <span class="loading-small"></span>
+                            <input type="file" name="file" id="file" data-action="/image_upload"/>
+                        </div>
+                        <div id="wmd-preview-{{ questions['qid'] }}-{{ answer['aid'] }}"
+                             class="wmd-panel wmd-preview"></div>
+                        <input type="hidden" name="element" value="{{ questions['qid'] }}-{{ answer['aid'] }}">
 
-            <p>
-              <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-            </p>
-            <h6>From your computer (Max. 2MB)</h6>
-            <span class="loading-small"></span>
-            <input type="file" name="file" id="file" data-action="/image_upload"/>
-          </div>
-          <div id="wmd-preview-{{ questions['qid'] }}-{{ answer['aid'] }}"
-               class="wmd-panel wmd-preview"></div>
-          <input type="hidden" name="element" value="{{ questions['qid'] }}-{{ answer['aid'] }}">
-
-          <div style="clear:both;"></div>
-          <div class="controls">
-            <input type="submit" value="Post comment" class="btn btn-primary">
-          </div>
-        </div>
-      </form>
-      {% endif %}
-      {% endfor %}
-      {% endif %}
+                        <div style="clear:both;"></div>
+                        <div class="controls">
+                            <input type="submit" value="Post comment" class="btn btn-primary">
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
     </div>
     {% if user_id is defined and 'sc' not in questions['content'] and 'mc' not in questions['content'] and questions['close'] != True %}
-    <h3>Your answer</h3>
-    <form class="answer-form" method="post"
-          aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
-      {% from "macros.html" import render_field %}
-      {{ form.csrf_token }}
-      <div class="wmd-panel">
-        <div id="wmd-button-bar" class="wmb-bar"></div>
+        <h3>Your answer</h3>
+        <form class="answer-form" method="post"
+              aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <div class="wmd-panel">
+                <div id="wmd-button-bar" class="wmb-bar" style="margin-bottom:-20px"></div>
 
-        {{ render_field(form.answer, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please post your answer here..") }}
-        <div id="insertImageDialog" title="&nbsp;Insert Image or File">
-          <h6>From the web</h6>
+                {{ render_field(form.answer, class="wmd-input", id="wmd-input", stlyle="margin-left:5px;", placeholder="Please post your answer here..") }}
+                <div id="insertImageDialog" title="&nbsp;Insert Image or File">
+                    <h6>From the web</h6>
 
-          <p>
-            <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
-          </p>
-          <h6>From your computer (Max. 2MB)</h6>
-          <span class="loading-small"></span>
-          <input type="file" name="file" id="file" data-action="/image_upload"/>
-        </div>
-        <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
-        <div style="clear:both;"></div>
-        <div class="controls">
-          <button class="btn btn-primary">
-            Post answer
-          </button>
-        </div>
-      </div>
-    </form>
-    {% elif user_id is defined and 'sc' in questions['content'] %}
-    <h3>Your vote</h3>
-    <form class="answer-form" method="post"
-          aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
-      {% from "macros.html" import render_field %}
-      {{ form.csrf_token }}
-      <table class="poll">
-        <tbody>
-          {% for subfield in form.radio %}
-          <tr>
-            <td>{{ subfield }}</td>
-            <td>{{ subfield.label }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <br/>
-      <div class="controls">
-        <button class="btn btn-primary">
-          Post vote
-        </button>
-      </div>
-    </form>
-    {% elif user_id is defined and 'mc' in questions['content'] %}
-    <h3>Your vote</h3>
-    <form class="answer-form" method="post"
-          aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
-      {% from "macros.html" import render_field %}
-      {{ form.csrf_token }}
-      <table class="poll">
-        <tbody>
-          {% for i in range(1, options) %}
-          <div class="control-group">
-            <label class="control-label mc1" for="Option {{ i }}">Option {{ i }}</label>
-            <div class="controls mc2">
-              <input class="question" id="option{{ i }}" name="option{{ i }}" type="checkbox" style="margin-left:10px;margin-top:-3px" value="{{ field_names[i-1] }}" type="text"> {{ field_names[i-1] }}
+                    <p>
+                        <input type="text" placeholder="Enter url e.g. http://yoursite.com/image.jpg"/>
+                    </p>
+                    <h6>From your computer (Max. 2MB)</h6>
+                    <span class="loading-small"></span>
+                    <input type="file" name="file" id="file" data-action="/image_upload"/>
+                </div>
+                <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+                <div style="clear:both;"></div>
+                <div class="controls">
+                    <button class="btn btn-primary">
+                        Post answer
+                    </button>
+                </div>
             </div>
-          </div>
-          {% endfor %}
-        </tbody>
-      </table>
-      <br/>
-      <div class="controls">
-        <button class="btn btn-primary">
-          Post vote
-        </button>
-      </div>
-    </form>
+        </form>
+    {% elif user_id is defined and 'sc' in questions['content'] %}
+        <h3>Your vote</h3>
+        <form class="answer-form" method="post"
+              aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <table class="poll">
+            <tbody>
+            {% for subfield in form.radio %}
+                <tr>
+                    <td>{{ subfield }}</td>
+                    <td>{{ subfield.label }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+        <br/>
+        <div class="controls">
+            <button class="btn btn-primary">
+                Post vote
+            </button>
+        </div>
+        </form>
+    {% elif user_id is defined and 'mc' in questions['content'] %}
+        <h3>Your vote</h3>
+        <form class="answer-form" method="post"
+              aciton="/questions/{{ questions['qid'] }}/{{ questions['content']['url'] }}">
+            {% from "macros.html" import render_field %}
+            {{ form.csrf_token }}
+            <table class="poll">
+            <tbody>
+            {% for i in range(1, options) %}
+                <div class="control-group">
+                    <label class="control-label mc1" for="Option {{ i }}">Option {{ i }}</label>
+                    <div class="controls mc2">
+                        <input class="question" id="option{{ i }}" name="option{{ i }}" type="checkbox" style="margin-left:10px;margin-top:-3px" value="{{ field_names[i-1] }}" type="text"> {{ field_names[i-1] }}
+                    </div>
+                </div>
+            {% endfor %}
+            </tbody>
+            </table>
+        <br/>
+        <div class="controls">
+            <button class="btn btn-primary">
+                Post vote
+            </button>
+        </div>
+        </form>
     {% endif %}
     {% if user_id is undefined %}
     <h5>You need to be logged in to answer or comment.</h5>
     {% endif %}
-  </div>
-  <div id="sidebar">
-    <div class="count">
-      <div class="module" id="questions-count">
-        <div class="summarycount al">{{ qcount }}</div>
-        <p>questions</p>
-      </div>
-      <div class="module" id="questions-count">
-        <div class="summarycount al">{{ acount }}</div>
-        <p>answers</p>
-      </div>
-      <div class="module" id="questions-count">
-        <div class="summarycount al">{{ ucount }}</div>
-        <p>users</p>
-      </div>
-      <div class="module" id="questions-count">
-        <div class="summarycount al">{{ tcount }}</div>
-        <p>tags</p>
-      </div>
     </div>
-    <div id="popular-tags" class="module">
-      <h4 id="h-popular-tags">Popular Tags</h4>
-      {% for tag in tag_list %}
-      <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
-         title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-      <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
-        class="item-multiplier-count">{{ tag['count'] }}</span></span>
-      <br/>
-      {% endfor %}
+    <div class="col-md-3">
+         <div class="site-stats">
+                <div class="module">
+                    <span class="fa fa-question"></span>
+                    <span class="summary-count">{{ qcount }}</span>
+                    <span class="summary-text">questions</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-comment"></span>
+                    <span class="summary-count">{{ acount }}</span>
+                    <span class="summary-text">answers</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-users"></span>
+                    <span class="summary-count">{{ ucount }}</span>
+                    <span class="summary-text">users</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-tags"></span>
+                    <span class="summary-count">{{ tcount }}</span>
+                    <span class="summary-text">tags</span>
+                </div>
+            </div>
+            <div id="popular-tags" class="module">
+                <h3><a href="/tests">Tests</a></h3>
+            </div>
+        <div style="clear:both"></div>
+        <div class="popular-tags" class="module">
+            <div class="page-header">
+                <h4>Popular Tags</h4>
+            </div>
+            
+            {% for tag in tag_list %}
+                <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">
+                    {{ tag['tag'] }} 
+                    <span class="tag-count">{{ tag['count'] }}</span> 
+                </a>
+                
+            {% endfor %}
+        </div>
+        <div style="clear:both"></div>
+        <div id="popular-tags" class="module">
+            <h4 id="h-popular-tags">Similar questions</h4>
+            {% for question in similar_questions %}
+                <a href="/questions/{{ question[0] }}/{{ question[2] }}" class="post-tag"
+                    rel="tag">{{ question[1] }}</a>
+                <br/ >
+            {% endfor %}
+        </div>
     </div>
-    <div id="popular-tags" class="module">
-      <h3><a href="/tests">Tests</a></h3>
     </div>
-    <div id="popular-tags" class="module">
-      <h4 id="h-popular-tags">Similar questions</h4>
-      {% for question in similar_questions %}
-      <a href="/questions/{{ question[0] }}/{{ question[2] }}" class="post-tag"
-         rel="tag">{{ question[1] }}</a>
-      <!-- br/ -->
-      {% endfor %}
-    </div>
-  </div>
-</div>
 <script type="text/javascript">
  (function () {
    if ($('#wmd-input').length > 0) {

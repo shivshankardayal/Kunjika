@@ -1,20 +1,11 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
 {% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link href="/static/css/token-input.css" rel="stylesheet">
     <link href="/static/css/solarized_light.css" rel="stylesheet">
+    {{ super() }}
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
@@ -24,9 +15,11 @@
         <script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}
 {% block container %}
-    <div class="row-fluid">
-    <h3>Add a Question</h3>
-    <div class="mainbar" id="mainbar">
+<div class="row">
+    <div class="col-md-9">
+        <div class="page-header">
+            <h3>Add a Question</h3>
+        </div>
         <form class="ask-form" method="post" aciton="/add_objective_question">
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
@@ -73,18 +66,11 @@
             </div>
         </form>
     </div>
+</div>
 {% endblock %}
 
 {% block page_footer %}
-    <div class="row-fluid">
-        <div class="container">
-            <hr/>
-            <p>&copy; 2013-14 <a href="https://10hash.com">10hash.com</a>. Developed by Binita Ruby,
-                Shashikant &amp; Shiv Shankar Dayal.<br/>
-                Licensed under GNU GPL. Contents are under GNU GPL.</p>
-        </div>
-    </div>
-    </div>
+    {{ super() }}
     <script type="text/javascript">
         (function () {
             if ($('#wmd-input').length > 0) {

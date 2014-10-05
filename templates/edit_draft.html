@@ -1,22 +1,11 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
 {% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/solarized_light.css">
     <link href="/static/css/token-input.css" rel="stylesheet">
-    <!--<link href="/static/css/googlecode.css" rel="stylesheet">-->
-    <link href="/static/css/token-input.css" rel="stylesheet">
+    {{ super() }}    
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
@@ -25,17 +14,19 @@
     <script src="/static/js/highlight.js"></script>
 {% endblock %}
 {% block container %}
-    <div class="row-fluid">
-      <div class="mainbar" id="mainbar">
-        <h3>Please edit your article.</h3>
+    <div class="row">
+      <div class="col-md-9">
+        <div class="page-header">
+            <h3>Please edit your article.</h3>
+        </div>
         <form class="ask-form" method="post" aciton="/publish/{{ aid }}">
           {% from "macros.html" import render_field %}
           {{ form.csrf_token }}
           <div class="control-group">
-            <label class="control-label" for="question">Question</label>
+            <label class="control-label" for="question">Title</label>
             <div class="controls">
-              <input class="question input-x-large span10" id="article" name="title"
-                     style="margin-left:25px;" value="{{ article['title'] }}" type="text">
+              <input class="form-control" id="article" name="title"
+                     style="margin-left:55px;margin-bottom:10px;width:80%" value="{{ article['title'] }}" type="text">
             </div>
           </div>
           <div class="wmd-panel">
@@ -64,8 +55,8 @@
               <label class="control-label" for="tags" style="margin-right: 25px">Tags</label>
               
               <div class="controls">
-                <input class="question input-x-large span10" id="question" name="tags"
-                       style="margin-left:25px;" value="{{ tags }}" type="text">
+                <input class="form-control" id="question" name="tags"
+                       style="margin-left:25px;margin-bottom:20px;width:60%" value="{{ tags }}" type="text">
               </div>
             </div>
           </div>

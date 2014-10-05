@@ -1,26 +1,12 @@
 {% extends "base.html" %}
 {% block title %}{{ article['title'] }} - Kunjika{% endblock %}
 {% block meta_keywords %}{% for tag in article['tags'] %}{{ tag }},{% endfor %}{% endblock %}
-{% block meta_author %}{{ article['opname'] }}{% endblock %}
-{% block meta_title %}{{ article['title'] }}{% endblock %}
-{% block meta_description %}{{ article['html'][:600]|striptags }}{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
 {% block css_site %}
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/solarized_light.css">
     <link href="/static/css/token-input.css" rel="stylesheet">
-    <link href="/static/css/kunjika.css" rel="stylesheet">
-    <link href="/static/css/solarized_light.css" rel="stylesheet">
-    <link href="/static/css/pygments.css" rel="stylesheet">
+    {{ super() }}
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
@@ -177,8 +163,8 @@
     </script>
 {% endblock %}
 {% block container %}
-    <div class="row-fluid">
-    <div id="mainbar" class="mainbar">
+    <div class="row">
+   <div class="col-md-9">
     <div class="q-header">
             <h1>{{ article['title'] }}</h1>
     </div>
@@ -197,7 +183,7 @@
                         {% if user_id is defined and user_id|string == article['op'] or user_id == 1%}
                             <td class="vt">
                                 <a href="/edit_article/ae-{{ article['aid'] }}" class="suggest-edit-post" title=""><i
-                                        class="icon-edit"></i> Edit</a>
+                                        class="fa fa-edit"></i> Edit</a>
                             </td>
                             <td class="vt">
                                 <a href="#a-{{ article['aid'] }}" id="a-{{ article['aid'] }}"
@@ -286,7 +272,7 @@
             {{ comment['tstamp'] }}&nbsp;
             {% if user_id is defined and user_id == comment['poster'] %}
             <a title="edit" href="/edit_article/ce-{{ article['aid'] }}_{{ comment['cid'] }}"><i
-                class="icon-edit"></i></a>
+                class="fa fa-edit"></i></a>
             {% else %}
             <a title="Flag for inappropriate comment" id="qcf-{{ comment['cid'] }}" class="flag"
                style="color:#d00" href="/flag/-{{ comment['cid'] }}"><i class="fa fa-flag"></i></a>
@@ -376,7 +362,7 @@
                     return true; // tell the editor that we'll take care of getting the image url
                 });
                 //editor.hooks.chain("onPreviewRefresh", highlight); // google code prettify
-                //hljs.initHighlightingOnLoad();
+                hljs.initHighlightingOnLoad();
                 editor.run();
             }
         })();

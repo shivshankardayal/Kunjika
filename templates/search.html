@@ -2,31 +2,23 @@
 {% block title %}{{ title }} - Kunjika{% endblock %}
 {% block css_bootstrap %}
     {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
     <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
     <META HTTP-EQUIV="Expires" CONTENT="-1">
 {% endblock %}
 
 {% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link href="/static/css/token-input.css" rel="stylesheet">
+    {{ super() }}
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
-    <script type="text/javascript"
-            src="/static/js/run_prettify.js?lang=clj&amp;lbg=erlang&amp;lang=matlab&amp;lang=sql&amp;lang=vb&amp;lang=css&amp;lang=go&amp;lang=pascal&amp;lan=tcl&amp;lang=yaml&amp;lan=basic&amp;lang=dart&amp;lan=lua&amp;lang=scala&amp;lang=wiki&amp;lang=tex"></script>
     <script type="text/javascript" src="/static/js/Markdown.Extra.js"></script>
     <script type="text/javascript" src="/static/js/jquery.tokeninput.js"></script>
 {% endblock %}
 {% block container %}
-    <div class="row-fluid">
-        <div id="mainbar" class="mainbar">
+    <div class="row">
+       <div class="col-md-9">
             <div id="qsummary">
                 {% for question in questions %}
                     <div id="qsummary-{{ question['qid'] }}" class="qsummary narrow">
@@ -77,31 +69,40 @@
             </div>
             {{ render_search_pagination(pagination, query) }}
         </div>
-        <div id="sidebar">
-            <div class="count">
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ qcount }}</div>
-                <p>questions</p>
+        <div class="col-md-3">
+             <div class="site-stats">
+                <div class="module">
+                    <span class="fa fa-question"></span>
+                    <span class="summary-count">{{ qcount }}</span>
+                    <span class="summary-text">questions</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-comment"></span>
+                    <span class="summary-count">{{ acount }}</span>
+                    <span class="summary-text">answers</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-users"></span>
+                    <span class="summary-count">{{ ucount }}</span>
+                    <span class="summary-text">users</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-tags"></span>
+                    <span class="summary-count">{{ tcount }}</span>
+                    <span class="summary-text">tags</span>
+                </div>
             </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ acount }}</div>
-                <p>answers</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ ucount }}</div>
-                <p>users</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ tcount }}</div>
-                <p>tags</p>
-            </div>
-            </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular Tags</h4>
+            <div class="popular-tags" class="module">
+                <div class="page-header">
+                    <h4>Popular Tags</h4>
+                </div>
+                
                 {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
+                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">
+                        {{ tag['tag'] }} 
+                        <span class="tag-count">{{ tag['count'] }}</span> 
+                    </a>
+                    
                 {% endfor %}
             </div>
         </div>

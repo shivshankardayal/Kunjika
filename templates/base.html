@@ -1,123 +1,97 @@
 <!DOCTYPE html>
 <html lang="{% block html_lang %}en{% endblock %}">
-  <head>
+<head>
     {% from "macros.html" import debugmin %}
     {% from "macros.html" import render_pagination %}
     {% from "macros.html" import render_user_question_pagination %}
     {% from "macros.html" import render_user_answer_pagination %}
     {% from "macros.html" import render_search_pagination %}
     {% block head %}
-    {% block google_analytics %}
-    {% if not DEBUG %}
-    <script>
-     (function (i, s, o, g, r, a, m) {
-       i['GoogleAnalyticsObject'] = r;
-       i[r] = i[r] || function () {
-         (i[r].q = i[r].q || []).push(arguments)
-       }, i[r].l = 1 * new Date();
-       a = s.createElement(o),
-       m = s.getElementsByTagName(o)[0];
-       a.async = 1;
-       a.src = g;
-       m.parentNode.insertBefore(a, m)
-     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+            {% block google_analytics %}
+                {% if not DEBUG %}
+                    <script>
+                        (function (i, s, o, g, r, a, m) {
+                            i['GoogleAnalyticsObject'] = r;
+                            i[r] = i[r] || function () {
+                                (i[r].q = i[r].q || []).push(arguments)
+                            }, i[r].l = 1 * new Date();
+                            a = s.createElement(o),
+                                    m = s.getElementsByTagName(o)[0];
+                            a.async = 1;
+                            a.src = g;
+                            m.parentNode.insertBefore(a, m)
+                        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-     ga('create', 'UA-17487464-6', '10hash.com');
-     ga('send', 'pageview');
+                        ga('create', 'UA-17487464-6', 'libreprogramming.org');
+                        ga('send', 'pageview');
 
-    </script>
-    {% endif %}
-    {% endblock %}
+                    </script>
+                {% endif %}
+            {% endblock %}
 
-    <title>{% block title %}{{ title }}{% endblock %}</title>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    {% if category == 'error' %}
-    <div class="alert alert-error centered-seven-fifty-px">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      {{ message }}
-    </div>
-    {% elif category == 'success' %}
-    <div class="alert alert-success centered-seven-fifty-px">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      {{ message }}
-    </div>
-    {% elif category == 'info' %}
-    <div class="alert alert-info centered-seven-fifty-px">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      {{ message }}
-    </div>
-    {% elif category == 'block' %}
-    <div class="alert alert-block centered-seven-fifty-px">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      {{ message }}
-    </div>
-    {% endif %}
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-    {% block meta %}
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:type" content="article">
-    <meta itemprop="title" property="og:title" content='{% block meta_title %}{% endblock %}'>
-    <meta property="og:description" content='{% block meta_description %}{% endblock %}'>
-    <meta name="author" content="{% block meta_author %}{% endblock %}">
-    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
-    {% endblock %}
+        <title>{% block title %}{{ title }}{% endblock %}</title>
+        {% block meta %}
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta property="og:type" content="article">
+            <meta itemprop="title" property="og:title" content='{% block meta_title %}{% endblock %}'>
+            <meta property="og:description" content='{% block meta_description %}{% endblock %}'>
+            <meta name="author" content="{% block meta_author %}{% endblock %}">
+            <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+        {% endblock %}
 
-    {% block css_bootstrap %}
-    <link href="/static/css/bootstrap{{ debugmin() }}.css" rel="stylesheet">
-    {% endblock %}
-    {% block css_bootstrap_responsive %}
-    <link href="/static/css/bootstrap-responsive{{ debugmin() }}.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <!--link rel="stylesheet" href="/static/css/font-awesome.css"-->
-    <!--[if IE 7]>
-	<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome-ie7.css">
-	<![endif]-->
-    {% endblock %}
-    {% block js_jquery %}
-    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
-    <script>window.jQuery || document.write('<script src="/static/js/jquery-ui.min.js"><\/script>')</script>
-    <script type="text/javascript" src="/static/js/jquery.ajaxfileupload.js"></script>
-    <script>window.jQuery || document.write('<script src="/static/js/jquery-migrate-1.2.1.js"><\/script>')</script>
+        {% block css_bootstrap %}
+            <link href="/static/css/bootstrap{{ debugmin() }}.css" rel="stylesheet">
+        {% endblock %}
+        {% block css_bootstrap_responsive %}
+            <link href="/static/css/bootstrap-responsive{{ debugmin() }}.css" rel="stylesheet">
+			<!--link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"-->
+            <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+            <!--[if IE 7]>
+	            <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome-ie7.css">
+	        <![endif]-->
+        {% endblock %}
+        {% block js_jquery %}
+            <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+            <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+            <script>window.jQuery || document.write('<script src="/static/js/jquery-ui.min.js"><\/script>')</script>
+            <script type="text/javascript" src="/static/js/jquery.ajaxfileupload.js"></script>
+            <script>window.jQuery || document.write('<script src="/static/js/jquery-migrate-1.2.1.js"><\/script>')</script>
 
-    <script type="text/javascript"
-            src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script>window.jQuery || document.write('<script src="/static/js/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')</script>
-    <script type="text/x-mathjax-config">
-     MathJax.Hub.Config({
-       tex2jax: {inlineMath: [['\\(','\\)'], ['\\[','\\]']]},
-       processEscapes: true
-     });
+            <script type="text/javascript"
+                    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+            <script>window.jQuery || document.write('<script src="/static/js/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')</script>
+            <script type="text/x-mathjax-config">
+                MathJax.Hub.Config({
+                tex2jax: {inlineMath: [['\\(','\\)'], ['\\[','\\]']]},
+                processEscapes: true
+                });
 
-    </script>
-    <script type="text/javascript" src="/static/js/bootstrap-flash.js">
-    </script>
-    <script type="text/javascript">if ( $.attrFn ) { $.attrFn.text = true; }</script>
-    <script src="https://apis.google.com/js/plusone.js"></script>
-    {% endblock %}
-    {% block css_site %}
-    {% endblock %}
-    {% block css_extra %}
-    {% endblock %}
+            </script>
+            <script type="text/javascript" src="/static/js/bootstrap-flash.js">
+            </script>
+            <script type="text/javascript">if ( $.attrFn ) { $.attrFn.text = true; }</script>
+            <script src="https://apis.google.com/js/plusone.js"></script>
+        {% endblock %}
+        {% block css_site %}
+            <link href="/static/css/kunjika.css" rel="stylesheet">
+        {% endblock %}
+        {% block css_extra %}
+        {% endblock %}
 
-    {% block js_html5_shim %}
-    <!--[if lt IE 9]>
-    <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+        {% block js_html5_shim %}
+            <!--[if lt IE 9]>
+          <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+          <![endif]-->
+        {% endblock %}
+        {% block js_head %}
+        {% endblock %}
     {% endblock %}
-    {% block js_head %}
-    {% endblock %}
-    {% endblock %}
-  </head>
+</head>
 
-  {# TODO: write a class builder macro #}
-  <body class="{% block body_classes %}{% endblock %}" id="{% block body_id %}{% endblock %}"
+{# TODO: write a class builder macro #}
+<body class="{% block body_classes %}{% endblock %}" id="{% block body_id %}{% endblock %}"
         {% block bodytag_extra %}{% endblock %}>
     <div id="fb-root"></div>
     <script>(function(d, s, id) {
@@ -127,182 +101,241 @@
        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=361052544049458&version=v2.0";
        fjs.parentNode.insertBefore(js, fjs);
      }(document, 'script', 'facebook-jssdk'));</script>
-    <div id="row-fluid">
-      {% block body %}
-      {% block navbar_wrapper %}
-      <div class="share-buttons">
-        <div class="g-plus" data-action="share" data-annotation="vertical-bubble" action="share"></div>
-        <div class="fb-share-button" data-layout="box_count" data-width="40px"></div>
-      </div>
-      <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
-          <div class="container-fluid">
-            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="brand" style="padding:8px 8px" href="/"><b>10hash</b> </a>
-            <div class="nav-collapse collapse">
-              <ul class="nav">
-                <li class="dropdown">
-                  <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                    <i class="fa fa-question"></i>
-                    {% if qpage is defined or apage is defined or unpage is defined %}
-                    <b>Questions</b>
-                    {% else %}
-                    Questions
-                    {% endif %}
-                    <b class="caret"></b>
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li><a href="/questions">Browse</a></li>
-                    <li><a href="/ask">Ask</a></li>
-                    <li><a href="/unanswered">Unanswered</a></li>
-                  </ul>
-                </li>
-                <li class="dropdown">
-                  <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                    <i class="fa fa-book"></i>
-                    {% if artpage is defined %}
-                    <b>Articles</b>
-                    {% else %}
-                    Articles
-                    {% endif %}
-                    <b class="caret"></b>
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li><a href="/articles">Browse</a></li>
-                    <li><a href="/write">Write</a></li>
-                    <li><a href="/article_tags">Article Tags</a></li>
-                    <li><a href="/drafts">My Drafts</a></li>
-                  </ul>
-                </li>
-                {% if tpage is defined %}
-                <li><a href="/tags"><i class="fa fa-tags"></i> <b>Tags</b></a></li>
-                {% else %}
-                <li><a href="/tags"><i class="fa fa-tags"></i> Tags</a></li>
-                {% endif %}
-                {% if upage is defined %}
-                <li><a href="/users"><i class="fa fa-user"></i> <b>Users</b></a></li>
-                {% else %}
-                <li><a href="/users"><i class="fa fa-user"></i> Users</a></li>
-                {% endif %}
-                {% if ppage is defined %}
-                <li><a href="/poll" class="poll"><i class="fa fa-group"></i>
-                  <b>Poll</b></a>
-                </li>
-                {% else %}
-                <li><a href="/poll" class="poll"><i class="fa fa-group"></i> Poll</a></li>
-                {% endif %}
-                {% if user_id is defined and g.user.is_authenticated() %}
-                <!-- li class="active"><a href="/users/{{ g.user.id }}/{{ g.user.fname }}%20{{ g.user.lname }}" class="login"><i
-                class="icon-sigin"></i> <b>{{ g.user.name }}</b></a></li-->
-                <li class="dropdown">
-                  <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                    <b>{{ g.user.name }}</b>
-                    <b class="caret"></b>
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li><a href='/users/{{ g.user.id }}/{{g.user.name|urlencode}}'>Profile</a></li>
-                    <li><a href="/users/{{ g.user.id }}/{{ g.user.name|urlencode }}/settings">Settings</a></li>
-                    <!--li><a href="/users/{{ user_id }}/{{ name|urlencode }}/groups">My Groups</a></li>
-                    <li><a href="/users/{{ user_id }}/{{ name|urlencode }}/group_messages">Group Messages</a></li-->
-                  </ul>
-                </li>
-                {% if role == "admin" and adpage == True %}
-                <li><a href="/administration" class="administration"> <b>Administration</b></a>
-                </li>
-                {% elif role == "admin" and adpage != True %}
-                <li><a href="/administration" class="administration"> Administration</a>
-                </li>
-                {% endif %}
-                <li><a href="/logout" class="login"><i class="fa fa-sign-out"></i> Logout</a>
-                </li>
-                {% else %}
-                <li><a href="/login" class="login"><i class="fa fa-sign-in"></i> Login</a></li>
-                {% endif %}
-                <li><a href="/recent-questions.atom" class="ask"><i class="fa fa-rss-square"></i>
-                  Feed</a></li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
-                    class="icon-search"></i>
-                    Search
-                    <b class="caret"></b>
-                  </a>
-                  <ul class="dropdown-menu">
-                    <div class="span6">
-                      <script>
-                       (function() {
-                         var cx = '000002629091691089689:clsskp1pmkm';
-                         var gcse = document.createElement('script');
-                         gcse.type = 'text/javascript';
-                         gcse.async = true;
-                         gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-                                                                   '//www.google.com/cse/cse.js?cx=' + cx;
-                         var s = document.getElementsByTagName('script')[0];
-                         s.parentNode.insertBefore(gcse, s);
-                       })();
-                      </script>
-                      <gcse:searchbox-only></gcse:searchbox-only>
-                    </div>
-                    <div class="span6" style="margin-top: 40px">
-                      <form class="form-search" action="/search" method="get">
-                        <div style="margin-left: 20px; margin-top: -10px" class="input-append">
-                          <input type="text" class="span2 search-query" id="query"
-                                 name="query">
-                          <button type="submit" class="btn">Kunjika Search</button>
+<div id="row-fluid">
+    {% block body %}
+        {% block navbar_wrapper %}
+            <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                    <span class="sr-only">Toggle navigation</span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                  </button>
+                                  <a class="navbar-brand" href="/">10hash</a>
                         </div>
-                      </form>
-                      <a href="/search-help" style="margin-top: -92px; margin-left: 340px"
-                         class="btn btn-success">Search Help</a>
+                        
+                        <div class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav">
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                                        {% if qpage is defined or apage is defined or unpage is defined %}
+                                        Questions
+                                        {% else %}
+                                        Questions
+                                        {% endif %}
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="/questions">Browse</a></li>
+                                        <li><a href="/ask">Ask</a></li>
+                                        <li><a href="/unanswered">Unanswered</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                                        {% if artpage is defined %}
+                                        Articles
+                                        {% else %}
+                                        Articles
+                                        {% endif %}
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="/articles">Browse</a></li>
+                                        <li><a href="/write">Write</a></li>
+                                        <li><a href="/article_tags">Article Tags</a></li>
+                                        <li><a href="/drafts">My Drafts</a></li>
+                                    </ul>
+                                </li>
+                                {% if tpage is defined %}
+                                    <li class="active">
+                                        <a href="/tags"> Tags</a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a href="/tags">Tags</a>
+                                    </li>
+                                {% endif %}
+                                {% if upage is defined %}
+                                    <li class="active">
+                                        <a href="/users">Users</a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a href="/users">Users</a>
+                                    </li>
+                                {% endif %}
+                                {% if ppage is defined %}
+                                    <li class="active">
+                                         <a href="/poll" class="poll"> Poll</a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a href="/poll" class="poll">Poll</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                {% if user_id is defined and g.user.is_authenticated() %}
+                                    <!-- li class="active"><a href="/users/{{ g.user.id }}/{{ g.user.fname }}%20{{ g.user.lname }}" class="login"><i
+                                            class="fa fa-sigin"></i> <b>{{ g.user.name }}</b></a></li-->
+                                    <li class="dropdown">
+                                        <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                                        <span class="nav-user">
+                                            <img src="{{ g.user.user_doc['email'] | gravatar(size=18) }}"/ class="nav-user-avatar img-rounded">
+                                            <span class="nav-user-name" >{{ g.user.name }}</span>
+                                            <span class="caret"></span>
+                                        </span>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href='/users/{{ g.user.id }}/{{g.user.name|urlencode}}'> <i class="fa fa-user"></i> Profile</a>
+                                            </li>
+                                            <li>
+                                                <a href="/users/{{ g.user.id }}/{{ g.user.name|urlencode }}/settings"><i class="fa fa-cog"></i> Settings</a>
+                                            </li>
+                                            <li><a href="/logout" class="login"><i class="fa fa-sign-out"></i> Logout</a>
+                                        </ul>
+                                    </li>
+                                    {% if role == "admin" and adpage == True %}
+                                        <li  class="active">
+                                        <a href="/administration" class="administration" title="Administration"> 
+                                            <span class="fa fa-cog"></span>    
+                                        </a>
+                                        </li>
+                                    {% elif role == "admin" and adpage != True %}
+                                        <li>
+                                        <a href="/administration" class="administration" title="Administration"> 
+                                            <span class="fa fa-cog"></span> 
+                                        </a>
+                                        </li>
+                                    {% endif %}
+                                    
+                                    </li>
+                                {% else %}
+                                    <li><a href="/login" class="login"><i class="fa fa-sign-in"></i> Login</a></li>
+                                {% endif %}
+
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+                                            class="fa fa-search"></i>
+                                        Search
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <div class="span6col-md-6">
+                                            <script>
+                                              (function() {
+                                                var cx = '000002629091691089689:clsskp1pmkm';
+                                                var gcse = document.createElement('script');
+                                                gcse.type = 'text/javascript';
+                                                gcse.async = true;
+                                                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                                                    '//www.google.com/cse/cse.js?cx=' + cx;
+                                                var s = document.getElementsByTagName('script')[0];
+                                                s.parentNode.insertBefore(gcse, s);
+                                              })();
+                                            </script>
+                                            <gcse:search></gcse:search>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <form class="form-search" action="/search" method="get">
+                                                <div style="margin-left: 20px; margin-top: -10px" class="input-append">
+                                                    <input type="text" class="form-control form-inline" id="query"name="query">
+                                                    <button type="submit" class="btn">Kunjika Search</button>
+                                                </div>
+                                            </form>
+                                            <a href="/search-help" style="margin-top: -10px; margin-left: 340px"
+                                               class="btn btn-link">Search Help</a>
+                                        </div>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="/recent-questions.atom" class="feed" title="Feed">
+                                        <i class="fa fa-rss"></i> 
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!--/.nav-collapse -->
                     </div>
-                  </ul>
-                </li>
-
-              </ul>
+                </div>
             </div>
-            <!--/.nav-collapse -->
-          </div>
+            <div class="container">
+                    <div class="row">
+                        <div class="col-md-8 col-md-push-2">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    {% if category == 'error' %}
+                                        <div class="alert alert-danger text-center" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            {{ message }}
+                                        </div>
+                                    {% elif category == 'success' %}
+                                        <div class="alert alert-success text-center" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            {{ message }}
+                                        </div>
+                                    {% elif category == 'info' %}
+                                        <div class="alert alert-info text-center" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            {{ message }}
+                                        </div>
+                                    {% elif category == 'block' %}
+                                        <div class="alert alert-warning text-center" role="alert">
+                                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                            {{ message }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div><!-- containor for flash messages -->
+	<div class="share-buttons">
+          <div class="g-plus" data-action="share" data-annotation="vertical-bubble" action="share"></div>
+          <div class="fb-share-button" data-layout="box_count" data-width="40px"></div>
         </div>
-      </div>
-      {% endblock %}
-
-      {% block pre_container %}
-      {% endblock %}
-
-      {% block container_wrapper %}
-      <div class="container container-primary">
-        {% block container %}
-
-        {% block pre_content %}
         {% endblock %}
 
-        {% block content %}
+        {% block pre_container %}
+        {% endblock %}
+
+        {% block container_wrapper %}
+            <div class="container">
+                {% block container %}
+
+                    {% block pre_content %}
+                    {% endblock %}
+
+                    {% block content %}
+                    {% endblock %}
+
+
+                    {% block post_content %}
+                    {% endblock %}
+
+                {% endblock %}
+
+            </div>
         {% endblock %}
 
 
-        {% block post_content %}
+        {% block post_container %}
         {% endblock %}
 
+
+        {% block js_bootstrap %}
+            <script src="/static/js/bootstrap{{ debugmin() }}.js"></script>
         {% endblock %}
+        {% block js_analytics %}
+            {# Via HTML5BP. Asynchronous Google Analytics snippet. mathiasbynens.be/notes/async-analytics-snippet #}
 
-      </div>
-      {% endblock %}
-
-
-      {% block post_container %}
-      {% endblock %}
-
-
-      {% block js_bootstrap %}
-      <script src="/static/js/bootstrap{{ debugmin() }}.js"></script>
-      {% endblock %}
-      {% block js_analytics %}
-      {# Via HTML5BP. Asynchronous Google Analytics snippet. mathiasbynens.be/notes/async-analytics-snippet #}
-
-      {% endblock %}
-
+        {% endblock %}
 
       {% endblock %}
     </div>

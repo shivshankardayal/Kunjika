@@ -1,20 +1,13 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
 {% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link href="/static/css/solarized_light.css" rel="stylesheet">
     <link href="/static/css/token-input.css" rel="stylesheet">
+    <link href="/static/css/solarized_light.css" rel="stylesheet">
+    {{ super() }}
+    <!-- adding necessary js files -->
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
@@ -28,13 +21,17 @@
     </script>
 {% endblock %}
 {% block container %}
-    <div class="row-fluid">
-    <h3>Please ask your question</h3>
-    <div class="mainbar" id="mainbar">
-        <form class="ask-form" method="post" aciton="/ask">
+<div class="row">
+    <div class="col-md-9">
+        <div class="page-header">
+            <h3>Please ask your question</h3>
+        </div>
+        <form class="ask-form" method="post" aciton="/ask" role="form">
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
-            {{ render_field(form.question, class="question input-x-large span10", style="margin-left:25px;", placeholder="Please ask your question here?") }}
+            <div class="form-group">
+            	{{ render_field(form.question, class="form-control", style="margin-left:70px; width:80%", placeholder="Please ask your question here?") }}
+        	</div>
             <div id="similar_questions" style="display:none"><p style="font-weight:bold; margin-left: 80px">Similar Questions<br/></p></div>
             <div class="wmd-panel">
                 <div id="wmd-button-bar"></div>
@@ -51,60 +48,61 @@
                 </div>
                 <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
                 <div style="clear:both;"></div>
-                {{ render_field(form.tags, class="input-xlarge span10", id="kunjika-tags", style="margin-left:45px; margin-top=30px;", placeholder="comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
-                <div class="controls">
-                    <button class="btn btn-primary">
-                        Ask Question?
-                    </button>
+                <div class="form-group">
+                	{{ render_field(form.tags, class="form-control", id="kunjika-tags", style="margin-left:70px", placeholder= "comma(,) to separate tags, hyphenation to join words, max 5 tags") }}
+            	</div>
+                <div class="form-group">
+	                <div class="controls">
+	                    <button class="btn btn-primary">
+	                        Ask Question
+	                    </button>
+	                </div>
                 </div>
             </div>
         </form>
     </div>
-    <div id="sidebar">
-        <div class="count">
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ qcount }}</div>
-                <p>questions</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ acount }}</div>
-                <p>answers</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ ucount }}</div>
-                <p>users</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ tcount }}</div>
-                <p>tags</p>
-            </div>
-            <div id="popular-tags" class="module">
-                <h3><a href="/tests">Tests</a></h3>
-            </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular Tags</h4>
+    <div class="col-md-3">
+        <div class="site-stats">
+            <div class="module">
+            <span class="fa fa-question"></span>
+            <span class="summary-count">{{ qcount }}</span>
+            <span class="summary-text">questions</span>
+        </div>
+        <div class="module">
+            <span class="fa fa-comment"></span>
+            <span class="summary-count">{{ acount }}</span>
+            <span class="summary-text">answers</span>
+        </div>
+        <div class="module">
+            <span class="fa fa-users"></span>
+            <span class="summary-count">{{ ucount }}</span>
+            <span class="summary-text">users</span>
+        </div>
+        <div class="module">
+            <span class="fa fa-tags"></span>
+            <span class="summary-count">{{ tcount }}</span>
+            <span class="summary-text">tags</span>
+        </div>
+            <div class="popular-tags" class="module">
+                <div class="page-header">
+                    <h4>Popular Tags</h4>
+                </div>
+                
                 {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
-                       title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
-                            class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
+                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">
+                        {{ tag['tag'] }} 
+                        <span class="tag-count">{{ tag['count'] }}</span> 
+                    </a>
+                    
                 {% endfor %}
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block page_footer %}
-    <div class="row-fluid">
-        <div class="container">
-            <hr/>
-            <p>&copy; 2013 <a href="https://10hash.com">10hash.com</a>. Developed by Binita Ruby,
-                Shashikant &amp; Shiv Shankar Dayal.<br/>
-                Licensed under GNU GPL. Contents are under GNU GPL.</p>
-        </div>
-    </div>
-    </div>
+    {{ super() }}
     <script type="text/javascript">
         (function () {
             if ($('#wmd-input').length > 0) {
@@ -185,7 +183,7 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                //editor.hooks.chain("onPreviewRefresh", hljs.initHighlighting); // google code prettify
+                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
                 hljs.initHighlightingOnLoad();
                 editor.run();
             }
@@ -215,7 +213,6 @@
             }
         });
     </script>
-
     <script>
         $(function () {
             $("#question").keyup(function () {

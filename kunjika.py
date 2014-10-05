@@ -1140,7 +1140,7 @@ def login():
                            lpage=True)
 
 
-@kunjika.route('/register', methods=['POST'])
+@kunjika.route('/register', methods=['GET', 'POST'])
 def register():
     loginForm = LoginForm(request.form)
     registrationForm = RegistrationForm(request.form)
@@ -2719,4 +2719,4 @@ kunjika.register_blueprint(OA)
 
 
 if __name__ == '__main__':
-    kunjika.run()
+    kunjika.run(host='0.0.0.0')

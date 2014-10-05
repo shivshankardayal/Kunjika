@@ -1,88 +1,72 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
-{% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
-
-{% endblock %}
 {% block container %}
-    <div class="row-fluid">
-    <div id="mainbar" class="mainbar">
+<div class="row">
+   <div class="col-md-9">
     {% if pagination is not defined %}
     {% else %}
-        <div id="tags">
-            <table>
-                {% set i = 0 %}
-                {% for tag in tags %}
-                    {% if i < no_of_tags %}
-                        {% if (no_of_tags - i) > 4 %}
-                            {% set k = 4 %}
-                        {% else %}
-                            {% set k = no_of_tags - i %}
-                        {% endif %}
-                        <tr>
-                            {% for j in range(0, k) %}
-                                <td class="tag-cell">
-                                    <a href="/questions/tagged/{{ tags[i+j]['tag'] }}" class="post-tag" title="" rel="tag">{{ tags[i+j]['tag'] }}</a><span class="item-multiplier-x">×</span>&nbsp;<span
-                                        class="item-multiplier-count">{{ tags[i+j]['count'] }}</span>
+        <div class="page-header">
+            <h3>Tags</h3>
+        </div>
+        <div class="row tags">
+            {% set i = 0 %}
+            {% for tag in tags %}
+                    <div class="col-sm-4 col-xs-6">
+                        <a href="/questions/tagged/{{ tag['tag'] }}" class="tag" title="" rel="tag">{{ tag['tag'] }}</a>
+                        <span class="tag-multiplier-x">×</span>&nbsp;
+                        <span class="tag-multiplier-count">{{ tag['count'] }}</span>
+                        <a href="/info/{{ tag['tag'] }}" title="more information about '{{ tag['tag'] }}'" class="tag-more-info"><span class="fa fa-info-circle"></span></a>
 
-                                    <a href="/info/{{ tags[i+j]['tag'] }}">info</a>
-                                    {% if 'excerpt' in tags[i+j] %}
-                                    <div class="excerpt">{{ tags[i+j]['excerpt'] }}
-                                    {{ tags[i+j]['info'][:108] }}
-                                    </div>
-                                    {% endif %}
-                                    <div>
-                                        <div class="cbt"></div>
-                                    </div>
-                                </td>
-                            {% endfor %}
-                            {% set i = i + 4 %}
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            </table>
+                        {% if 'excerpt' in tag %}
+                            <div class="excerpt">{{ tag['excerpt'] }}
+                            {{ tag['info'][:108] }}
+                            </div>
+                        {% endif %}
+                    </div>
+                        
+            {% endfor %}
             {{ render_pagination(pagination) }}
         </div>
-        </div>
+    </div>
     {% endif %}
-    <div id="sidebar">
-        <div class="count">
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ qcount }}</div>
-                <p>questions</p>
+    <div class="col-md-3">
+         <div class="site-stats">
+                <div class="module">
+                    <span class="fa fa-question"></span>
+                    <span class="summary-count">{{ qcount }}</span>
+                    <span class="summary-text">questions</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-comment"></span>
+                    <span class="summary-count">{{ acount }}</span>
+                    <span class="summary-text">answers</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-users"></span>
+                    <span class="summary-count">{{ ucount }}</span>
+                    <span class="summary-text">users</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-tags"></span>
+                    <span class="summary-count">{{ tcount }}</span>
+                    <span class="summary-text">tags</span>
+                </div>
             </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ acount }}</div>
-                <p>answers</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ ucount }}</div>
-                <p>users</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ tcount }}</div>
-                <p>tags</p>
-            </div>
-        </div>
             <div id="popular-tags" class="module">
                 <h3><a href="/tests">Tests</a></h3>
             </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular Tags</h4>
+            <div class="popular-tags" class="module">
+                <div class="page-header">
+                    <h4>Popular Tags</h4>
+                </div>
+                
                 {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
+                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">
+                        {{ tag['tag'] }} 
+                        <span class="tag-count">{{ tag['count'] }}</span> 
+                    </a>
+                    
                 {% endfor %}
             </div>
     </div>

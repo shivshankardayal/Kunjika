@@ -1,25 +1,12 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
-{% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
-
-{% endblock %}
 {% block container %}
-    <div class="row-fluid">
-    <div id="mainbar" class="mainbar">
+    <div class="row">
+   <div class="col-md-9">
     {% if pagination is not defined %}
     {% else %}
-        <div id="tags">
+        <div id="tags" style="width:100%">
             <table>
                 {% set i = 0 %}
                 {% for tag in tags %}
@@ -31,7 +18,7 @@
                         {% endif %}
                         <tr>
                             {% for j in range(0, k) %}
-                                <td class="tag-cell">
+                                <td class="tag-cell col-sm-3 col-xs-6">
                                     <a href="/articles/tagged/{{ tags[i+j]['key'] }}" class="post-tag" title="" rel="tag">{{ tags[i+j]['key'] }}</a><span class="item-multiplier-x">×</span>&nbsp;<span
                                         class="item-multiplier-count">{{ tags[i+j]['value'] }}</span>
 

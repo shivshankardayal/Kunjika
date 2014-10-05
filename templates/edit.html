@@ -1,21 +1,11 @@
 {% extends "base.html" %}
 {% block title %}{{ title }} - Kunjika{% endblock %}
-{% block css_bootstrap %}
-    {{ super() }}
-    {# TODO: probably remove this and let the user set it manually? #}
-    <style>
-        body {
-            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        }
-    </style>
-{% endblock %}
 
 {% block css_site %}
-    <link href="/static/css/kunjika.css" rel="stylesheet">
     <link href="/static/css/wmd.css" rel="stylesheet">
     <link href="/static/css/solarized_light.css" rel="stylesheet">
     <link href="/static/css/token-input.css" rel="stylesheet">
-    <link href="/static/css/token-input.css" rel="stylesheet">
+    {{ super() }}
     <script type="text/javascript" src="/static/js/Markdown.Converter.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Sanitizer.js"></script>
     <script type="text/javascript" src="/static/js/Markdown.Editor.js"></script>
@@ -24,10 +14,12 @@
     <script type="text/javascript" src="/static/js/highlight.js"></script>
 {% endblock %}
 {% block container %}
-    <div class="row-fluid">
-        <div class="mainbar" id="mainbar">
+    <div class="row">
+        <div class="col-md-9">
             {% if type == 'ce' %}
-                <h3>Please edit your comment.</h3>
+                <div class="page-header">
+                    <h3>Please edit your comment.</h3>
+                </div>
                 {% if aid != 0 %}
                     <form class="edit-form" method="post" aciton="/edit/ce-{{ qid }}-{{ aid }}-{{ cid }}">
                 {% else %}
@@ -35,7 +27,7 @@
                 {% endif %}
             {% from "macros.html" import render_field %}
             {{ form.csrf_token }}
-            <div class="wmd-panel">
+            <div class="wmd-panel clearfix">
                 <div id="wmd-button-bar"></div>
                 <div class="control-group">
                     <label class="control-label" for="description"></label>
@@ -64,17 +56,19 @@
                 </div>
                 <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
             </div>
-            <div class="controls">
+            <div class="form-group">
                 <button class="btn btn-primary">
                     Edit Comment
                 </button>
             </form>
             {% elif type == 'ae' %}
-                <h3>Please edit your answer.</h3>
+                <div class="page-header">
+                    <h3>Please edit your answer.</h3>
+                </div>
                 <form class="edit-form" method="post" aciton="/edit/ae-{{ qid }}-{{ aid }}">
                     {% from "macros.html" import render_field %}
                     {{ form.csrf_token }}
-                    <div class="wmd-panel">
+                    <div class="wmd-panel clearfix">
                         <div id="wmd-button-bar"></div>
                         <div class="control-group">
                             <label class="control-label" for="description"></label>
@@ -97,24 +91,26 @@
                         </div>
                         <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
                     </div>
-                    <div class="controls">
+                    <div class="form-group">
                         <button class="btn btn-primary">
                             Edit Answer
                 </form>
             {% else %}
-                <h3>Please edit your question.</h3>
+                <div class="page-header">
+                    <h3>Please edit your question.</h3>
+                </div>
                 <form class="ask-form" method="post" aciton="/edit/qe-{{ qid }}">
                 {% from "macros.html" import render_field %}
                 {{ form.csrf_token }}
                 <div class="control-group">
-                    <label class="control-label" for="question">Question</label>
+                    <label class="control-label" for="question" style="margin-right:20px">Question</label>
 
-                    <div class="controls">
-                        <input class="question input-x-large span10" id="question" name="question"
-                               style="margin-left:25px;" value="{{ question['title'] }}" type="text">
+                    <div class="form-group" style="width:80%">
+                        <input class="form-control" id="question" name="question"
+                               value="{{ question['title'] }}" type="text">
                     </div>
                 </div>
-                <div class="wmd-panel">
+                <div class="wmd-panel clearfix">
                     <div id="wmd-button-bar"></div>
                     <div class="control-group">
                         <label class="control-label" for="description"></label>
@@ -137,7 +133,7 @@
                     </div>
                     <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
                     <div style="clear:both;"></div>
-                    <div class="control-group">
+                    <div class="control-group form-group" style="wdith:90%">
                         <label class="control-label" for="tags" style="margin-right: 25px">Tags</label>
 
                         <div class="controls">
@@ -158,45 +154,49 @@
                         </div>
                     </div>
                 </div>
-                <div class="controls">
-                <button class="btn btn-primary">
-                Edit Question
+                <div class="form-group">
+                    <button class="btn btn-primary">
+                    Edit Question
             {% endif %}
             </button>
             </div>
-        </div>
         </form>
-        <div id="sidebar">
-            <div class="count">
-                <div class="module" id="questions-count">
-                <div class="summarycount al">{{ qcount }}</div>
-                <p>questions</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ acount }}</div>
-                <p>answers</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ ucount }}</div>
-                <p>users</p>
-            </div>
-            <div class="module" id="questions-count">
-                <div class="summarycount al">{{ tcount }}</div>
-                <p>tags</p>
-            </div>
-            </div>
-            <div id="popular-tags" class="module">
-                    <h3><a href="/tests">Tests</a></h3>
-            </div>
-            <div id="popular-tags" class="module">
-                <h4 id="h-popular-tags">Popular Tags</h4>
-                {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag"
-                       title="show questions tagged '{{ tag['tag'] }}'" rel="tag">{{ tag['tag'] }}</a>
-                    <span class="item-multiplier"><span class="item-multiplier-x">×</span>&nbsp;<span
-                            class="item-multiplier-count">{{ tag['count'] }}</span></span>
-                    <br/>
-                {% endfor %}
+    </div>
+        <div class="col-md-3">
+            <div class="site-stats">
+                <div class="module">
+                    <span class="fa fa-question"></span>
+                    <span class="summary-count">{{ qcount }}</span>
+                    <span class="summary-text">questions</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-comment"></span>
+                    <span class="summary-count">{{ acount }}</span>
+                    <span class="summary-text">answers</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-users"></span>
+                    <span class="summary-count">{{ ucount }}</span>
+                    <span class="summary-text">users</span>
+                </div>
+                <div class="module">
+                    <span class="fa fa-tags"></span>
+                    <span class="summary-count">{{ tcount }}</span>
+                    <span class="summary-text">tags</span>
+                </div>
+                <div class="popular-tags" class="module">
+                    <div class="page-header">
+                        <h4>Popular Tags</h4>
+                    </div>
+                    
+                    {% for tag in tag_list %}
+                        <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag">
+                            {{ tag['tag'] }} 
+                            <span class="tag-count">{{ tag['count'] }}</span> 
+                        </a>
+                        
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
