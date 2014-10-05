@@ -1240,3 +1240,7 @@ position: fixed;
 .wmd-bar {
   margin-top: 10px;
 }
+
+.art-arrow {
+  float: right;
+}
