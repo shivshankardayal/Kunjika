@@ -1245,3 +1245,8 @@ position: fixed;
 .art-arrow {
   float: right;
 }
+
+.navbar-nav > li {
+    margin-right: -15px;
+    font-size: 13px;
+}
