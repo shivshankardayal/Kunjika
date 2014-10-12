@@ -160,7 +160,7 @@
     </script>    
     <script>
       $('.wmd-input').keyup(function(){
-       $('pre code').each(function(i, block) {
+       $('.wmd-preview pre code').each(function(i, block) {
          hljs.highlightBlock(block);
        });
      });
