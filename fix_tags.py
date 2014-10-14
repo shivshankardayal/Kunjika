@@ -8,8 +8,7 @@ doc = urllib2.urlopen('http://localhost:8092/tags/_design/dev_qa/_view/get_tag_b
 
 doc = json.loads(doc)
 
-print len(doc['rows'])
-tb.set('tcount', len(doc['rows']))
+count = len(doc['rows'])
 
 i = 0
 for row in doc['rows']:
@@ -18,6 +17,12 @@ for row in doc['rows']:
     tag['tid'] = i
     print tag
     tb.set(row['id'], tag)
+    if tag['count'] == 0:
+        tb.delete(row['id'])
+        count = count -1
+
+print len(doc['rows'])
+tb.set('tcount', len(doc['rows']))
 
 es_conn = pyes.ES('http://localhost:9200/')
 
