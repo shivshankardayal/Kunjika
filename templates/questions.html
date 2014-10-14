@@ -73,7 +73,7 @@
                         <div class="tags">
                             <i class="fa fa-tags" style="color:#a4c639;"></i>
                             {% for tag in question['content']['tags'] %}
-                                <a class="post-tag" href="/questions/tagged/{{ tag }}">{{ tag }}</a>
+                                <a class="post-tag" href="/questions/tagged/{{ tag|urlencode }}">{{ tag }}</a>
                             {% endfor %}
                         </div>
                         <div class="started">
@@ -121,7 +121,7 @@
                 </div>
                 
                 {% for tag in tag_list %}
-                    <a href="/questions/tagged/{{ tag['tag'] }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag" >
+                    <a href="/questions/tagged/{{ tag['tag']|urlencode }}" class="post-tag" title="show questions tagged '{{ tag['tag'] }}'" rel="tag" >
                         {{ tag['tag'] }} 
                         <span class="tag-count">{{ tag['count'] }}</span> 
                     </a>

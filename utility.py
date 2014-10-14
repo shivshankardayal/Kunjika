@@ -766,12 +766,7 @@ def write_article():
             for tag in article['tags']:
                 tag = list(tag)
                 for i in range(0, len(tag)):
-                    if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
-                         or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                         or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
-                         or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
-                         or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
-                         or tag[i] == ' ':
+                    if tag[i] == ' ':
                         tag[i] = '-'
                 new_tag_list.append(''.join(tag))
             article['tags'] = new_tag_list
@@ -1031,12 +1026,7 @@ def edit_article(element):
                 for tag in article['tags']:
                     tag = list(tag)
                     for i in range(0, len(tag)):
-                        if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
-                             or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                             or tag[i] == '+'  or tag[i] ==  '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
-                             or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
-                             or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
-                             or tag[i] == ' ':
+                        if tag[i] == ' ':
                             tag[i] = '-'
                     new_tag_list.append(''.join(tag))
                 article['tags'] = new_tag_list
@@ -1117,12 +1107,7 @@ def save_draft(element):
             for tag in article['tags']:
                 tag = list(tag)
                 for i in range(0, len(tag)):
-                    if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
-                       or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                       or tag[i] == '+' or tag[i] == '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
-                       or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
-                       or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
-                       or tag[i] == ' ':
+                    if tag[i] == ' ':
                         tag[i] = '-'
                 new_tag_list.append(''.join(tag))
             article['tags'] = new_tag_list
@@ -1232,12 +1217,7 @@ def edit_draft(element):
         for tag in article['tags']:
             tag = list(tag)
             for i in range(0, len(tag)):
-                if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
-                    or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                    or tag[i] == '+' or tag[i] == '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
-                    or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
-                    or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
-                    or tag[i] == ' ':
+                if tag[i] == ' ':
                         tag[i] = '-'
             new_tag_list.append(''.join(tag))
         article['tags'] = new_tag_list
@@ -1276,12 +1256,7 @@ def publish(element):
             for tag in article['tags']:
                 tag = list(tag)
                 for i in range(0, len(tag)):
-                    if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
-                        or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                        or tag[i] == '+' or tag[i] == '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
-                        or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
-                        or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
-                        or tag[i] == ' ':
+                    if tag[i] == ' ':
                             tag[i] = '-'
                 new_tag_list.append(''.join(tag))
             article['tags'] = new_tag_list

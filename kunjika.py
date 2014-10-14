@@ -870,12 +870,7 @@ def ask():
             for tag in question['content']['tags']:
                 tag = list(tag)
                 for i in range(0, len(tag)):
-                    if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
-                       or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                       or tag[i] == '+' or tag[i] == '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
-                       or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
-                       or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
-                       or tag[i] == ' ':
+                    if tag[i] == ' ':
                             tag[i] = '-'
                 tag_list.append(''.join(tag))
 
@@ -1327,7 +1322,7 @@ def get_tags(qid=None):
         tags_list = []
         tids_list = []
         for i in tags:
-            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + str(i) + '"&stale=false').read()
+            tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_doc_from_tag?key=' + '"' + urllib2.quote(str(i)) + '"&stale=false').read()
             tag = json.loads(tag)['rows'][0]['id']
             tids_list.append(tag)
 
@@ -1524,12 +1519,7 @@ def edits(element):
                 for tag in tags:
                     tag = list(tag)
                     for i in range(0, len(tag)):
-                        if tag[i] == '`' or tag[i] == '~' or tag[i] == '!' or tag[i] == '@' or tag[i] == '#' \
-                           or tag[i] == '$' or tag[i] == '%' or tag[i] == '^' or tag[i] == '&' or tag[i] == '+' \
-                           or tag[i] == '+' or tag[i] == '{' or tag[i] == '[' or tag[i] == ']' or tag[i] == '}' \
-                           or tag[i] == '\\' or tag[i] == '|' or tag[i] == ':' or tag[i] == ';' or tag[i] == '\''\
-                           or tag[i] == '<' or tag[i] == '>' or tag[i] == ',' or tag[i] == '?' or tag[i] == '/'\
-                           or tag[i] == ' ':
+                        if tag[i] == ' ':
                             tag[i] = '-'
                     tag_list.append(''.join(tag))
 

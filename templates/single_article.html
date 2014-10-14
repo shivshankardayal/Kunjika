@@ -175,7 +175,7 @@
             <td class="post">
                 <div class="post-tags"><i class="fa fa-tags" title="Tags" style="color:#a4c639;"></i>
                     {% for tag in article['tags'] %}
-                        <a class="post-tag" href="/articles/tagged/{{ tag }}">{{ tag }}</a>
+                        <a class="post-tag" href="/articles/tagged/{{ tag|urlencode }}">{{ tag }}</a>
                     {% endfor %}
                 </div>
                 <div class="q-desc" id="q-desc">{{ article['html']|safe }}</div>
