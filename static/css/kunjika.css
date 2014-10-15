@@ -140,7 +140,6 @@ body {
 
 .cpx {
     background-position: 0 0;
-    cursor: pointer;
     float: left;
     height: 50px;
     margin-right: 10px;
@@ -495,13 +494,11 @@ pre.prettyprint {
 
 .voteup-on, .voteup-on:hover{
     text-decoration:none;
-    pointer: hand;
     color: #070;
 }
 
 .votedown-on, .votedown-on:hover{
     text-decoration:none;
-    pointer: hand;
     color: #700;
 }
 

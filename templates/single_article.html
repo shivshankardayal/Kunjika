@@ -152,14 +152,18 @@
                     extensions: "all",
                     highlighter: "prettify"
                 });
-
-                responseJSON = jQuery.parseJSON(responseText);
-                str = '<div class="comment acomment" id="c-' + responseJSON.id + '">';
-                str += responseJSON.comment;
-                str += " - <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
-                str += " " + responseJSON.ts + ' <a title="edit" href="/edit_article/ce-' + responseJSON.aid + '_' + responseJSON.cid + '"> <i class="fa fa-edit"></i></a></div>'
-                $(str).insertAfter('#h3-comment');
-                flash('Your comment has been successfully posted.', 'info')
+                if (responseJSON.result == "false") {
+                    alert('You are allowed only one post per 30 seconds.');
+                    flash('You are allowed only one post per 30 seconds.', 'error');
+                } else {
+                    responseJSON = jQuery.parseJSON(responseText);
+                    str = '<div class="comment acomment" id="c-' + responseJSON.id + '">';
+                    str += responseJSON.comment;
+                    str += " - <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
+                    str += " " + responseJSON.ts + ' <a title="edit" href="/edit_article/ce-' + responseJSON.aid + '_' + responseJSON.cid + '"> <i class="fa fa-edit"></i></a></div>'
+                    $(str).insertAfter('#h3-comment');
+                    flash('Your comment has been successfully posted.', 'info')
+                }
             }
         });
     </script>

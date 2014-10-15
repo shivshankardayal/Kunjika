@@ -73,6 +73,7 @@ DB_URL = kunjika.config['DB_URL']
 HOST_URL = kunjika.config['HOST_URL']
 ES_URL = kunjika.config['ES_URL']
 MAIL_SERVER_IP = kunjika.config['MAIL_SERVER_IP']
+POST_INTERVAL = kunjika.config['POST_INTERVAL']
 kunjika.debug = kunjika.config['DEBUG_MODE']
 kunjika.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
@@ -419,10 +420,14 @@ def questions(tag=None, page=None, qid=None, url=None):
             for answer in questions_dict['answers']:
                 if 'comments' in answer:
                     ccount += len(answer['comments'])
-        if request.referrer == HOST_URL + "questions":
+
+        try:
+            kb.get(str(g.user.id) + '_' + str(qid) + '_' + str(request.remote_addr))
+        except:
+            kb.set(str(g.user.id) + '_' + str(qid) + '_' + str(request.remote_addr), {"viewed": "true"}, ttl=900)
             questions_dict['views'] += 1
-        elif request.host_url != HOST_URL + "":
-            questions_dict['views'] += 1
+            qb.replace(str(questions_dict['qid']), questions_dict)
+
         choices = []
         votes = []
         j = 0
@@ -541,106 +546,87 @@ def questions(tag=None, page=None, qid=None, url=None):
             if 'mc' not in questions_dict['content'] and 'sc' not in questions_dict['content']:
                 answerForm = AnswerForm(request.form)
                 if answerForm.validate_on_submit() and request.method == 'POST':
-                    '''
                     try:
-                        data = sb.get(user['email'])
-                        data['answers/min'] += 1
-                        data['answers/hr'] += 1
-                        data['answers/day'] += 1
-                        sb.replace(user['email'] + 'answers/min', data, ttl=60)
-                        sb.replace(user['email'] + 'answers/hr', data, ttl=3600)
-                        sb.replace(user['email'] + 'answers/day', data, ttl=86400)
-                        if data['answers/min'] >= kunjika.config['ANSWERS_PER_MIN'] or \
-                            data['answers/hr'] >= kunjika.config['ANSWERS_PER_HR'] or \
-                            data['answers/day'] >= kunjika.config['ANSWERS_PER_DAY']:
-
-                            return redirect(url_for('questions'))
-
+                        kb.get(str(g.user.id) + '_' + str(request.remote_addr))
+                        flash('You are allowed only one post per 30 seconds.', 'error')
+                        return redirect(request.referrer)
                     except:
-                        data1 = {}
-                        data1['email'] = user['email']
-                        data1['answers/min'] = 1
-                        data1['answers/hr'] = 1
-                        data1['answers/day'] = 1
-                        sb.add(user['email'] + 'answers/min', data1, ttl=60)
-                        sb.add(user['email'] + 'answers/hr', data1, ttl=3600)
-                        sb.add(user['email'] + 'answers/day', data1, ttl=86400)
-                    '''
-                    answer = {}
-                    if 'answers' in questions_dict:
-                        answer['aid'] = questions_dict['acount'] + 1
-                        answer['answer'] = answerForm.answer.data
-                        answer['poster'] = g.user.id
-                        answer['ts'] = int(time())
-                        answer['votes'] = 0
-                        answer['ip'] = request.remote_addr
-                        answer['best'] = False
-                        answer['votes_list'] = []
-                        questions_dict['acount'] += 1
+                        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+                        answer = {}
+                        if 'answers' in questions_dict:
+                            answer['aid'] = questions_dict['acount'] + 1
+                            answer['answer'] = answerForm.answer.data
+                            answer['poster'] = g.user.id
+                            answer['ts'] = int(time())
+                            answer['votes'] = 0
+                            answer['ip'] = request.remote_addr
+                            answer['best'] = False
+                            answer['votes_list'] = []
+                            questions_dict['acount'] += 1
 
-                        questions_dict['answers'].append(answer)
-                        # Isuue 9
-                        # user['answers'].append(str(qid) + '-' + str(answer['aid']))
-                        user['acount'] += 1
+                            questions_dict['answers'].append(answer)
+                            # Isuue 9
+                            # user['answers'].append(str(qid) + '-' + str(answer['aid']))
+                            user['acount'] += 1
 
-                    else:
-                        answer['aid'] = 1
-                        answer['answer'] = answerForm.answer.data
-                        answer['poster'] = g.user.id
-                        answer['ts'] = int(time())
-                        answer['votes'] = 0
-                        answer['ip'] = request.remote_addr
-                        answer['best'] = False
-                        answer['votes_list'] = []
-                        questions_dict['acount'] = 1
+                        else:
+                            answer['aid'] = 1
+                            answer['answer'] = answerForm.answer.data
+                            answer['poster'] = g.user.id
+                            answer['ts'] = int(time())
+                            answer['votes'] = 0
+                            answer['ip'] = request.remote_addr
+                            answer['best'] = False
+                            answer['votes_list'] = []
+                            questions_dict['acount'] = 1
 
-                        questions_dict['answers'] = []
-                        questions_dict['answers'].append(answer)
-                        # Issue 9
-                        # user['answers'].append(str(qid) + '-' + str(answer['aid']))
-                        user['acount'] += 1
+                            questions_dict['answers'] = []
+                            questions_dict['answers'].append(answer)
+                            # Issue 9
+                            # user['answers'].append(str(qid) + '-' + str(answer['aid']))
+                            user['acount'] += 1
 
-                    answer['html'] = bleach.clean(markdown.markdown(answer['answer'], extensions=['extra', 'codehilite'],
-                                                                    output_format='html5'), tags_wl, attrs_wl)
-                    questions_dict['updated'] = int(time())
-                    user['rep'] += 4
-                    cb.replace(str(g.user.id), user)
-                    qb.replace(str(questions_dict['qid']), questions_dict)
+                        answer['html'] = bleach.clean(markdown.markdown(answer['answer'], extensions=['extra', 'codehilite'],
+                                                                        output_format='html5'), tags_wl, attrs_wl)
+                        questions_dict['updated'] = int(time())
+                        user['rep'] += 4
+                        cb.replace(str(g.user.id), user)
+                        qb.replace(str(questions_dict['qid']), questions_dict)
 
-                    email_list = []
-                    email_list.append(str(questions_dict['content']['op']))
-                    if 'comments' in questions_dict:
-                        for comment in questions_dict['comments']:
-                            email_list.append(str(comment['poster']))
-                    if 'answers' in questions_dict:
-                        for answer in questions_dict['answers']:
-                            email_list.append(str(answer['poster']))
-                            if 'comments' in answer:
-                                for comment in answer['comments']:
-                                    email_list.append(str(comment['poster']))
+                        email_list = []
+                        email_list.append(str(questions_dict['content']['op']))
+                        if 'comments' in questions_dict:
+                            for comment in questions_dict['comments']:
+                                email_list.append(str(comment['poster']))
+                        if 'answers' in questions_dict:
+                            for answer in questions_dict['answers']:
+                                email_list.append(str(answer['poster']))
+                                if 'comments' in answer:
+                                    for comment in answer['comments']:
+                                        email_list.append(str(comment['poster']))
 
-                    email_list = set(email_list)
-                    current_user_list = [str(g.user.id)]
-                    email_list = email_list - set(current_user_list)
-                    email_list = list(email_list)
-                    email_users = None
-                    if email_list:
-                        email_users = cb.get_multi(email_list)
-                    email_list = []
-                    if email_users is not None:
-                        for id in email_users:
-                            email_list.append(email_users[str(id)].value['email'])
+                        email_list = set(email_list)
+                        current_user_list = [str(g.user.id)]
+                        email_list = email_list - set(current_user_list)
+                        email_list = list(email_list)
+                        email_users = None
+                        if email_list:
+                            email_users = cb.get_multi(email_list)
+                        email_list = []
+                        if email_users is not None:
+                            for id in email_users:
+                                email_list.append(email_users[str(id)].value['email'])
 
-                        msg = Message("A new answer has been posted to a question where you have answered or commented")
-                        msg.recipients = email_list
-                        msg.sender = admin
-                        msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
-                                   HOST_URL + "questions/" + str(questions_dict['qid']) + '/' + questions_dict['content']['url'] + \
-                                   " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-                        mail.send(msg)
+                            msg = Message("A new answer has been posted to a question where you have answered or commented")
+                            msg.recipients = email_list
+                            msg.sender = admin
+                            msg.html = "<p>Hi,<br/><br/> A new answer has been posted which you can read at " +\
+                                       HOST_URL + "questions/" + str(questions_dict['qid']) + '/' + questions_dict['content']['url'] + \
+                                       " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+                            mail.send(msg)
 
-                    return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url'], ccount=ccount))
-                qb.replace(str(questions_dict['qid']), questions_dict)
+                        return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url'], ccount=ccount))
+                #qb.replace(str(questions_dict['qid']), questions_dict)
 
                 return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
@@ -767,8 +753,8 @@ def questions(tag=None, page=None, qid=None, url=None):
                         flash('You have already voted on this poll!', 'error')
 
                     return redirect(url_for('questions', qid=questions_dict['qid'], url=questions_dict['content']['url'], ccount=ccount))
-                qb.replace(str(questions_dict['qid']), questions_dict)
-                return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
+            qb.replace(str(questions_dict['qid']), questions_dict)
+            return render_template('single_question.html', title='Questions', qpage=True, questions=questions_dict,
                                        form=answerForm, name=g.user.name, role=g.user.role, user_id=unicode(g.user.id), gravatar=gravatar32,
                                        qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list,
                                        options=i, field_names=options, votes=votes, similar_questions=similar_questions, ccount=ccount)
@@ -829,96 +815,76 @@ def ask():
     if g.user is not None and g.user.is_authenticated():
         user = cb.get(str(g.user.id)).value
         if questionForm.validate_on_submit() and request.method == 'POST':
-            '''
             try:
-
-                data = sb.get(user['email'])
-                data['questions/min'] += 1
-                data['questions/hr'] += 1
-                data['questions/day'] += 1
-                sb.replace(user['email'] + 'questions/min', data, ttl=60)
-                sb.replace(user['email'] + 'questions/hr', data, ttl=3600)
-                sb.replace(user['email'] + 'questions/day', data, ttl=86400)
-                if data['questions/min'] >= kunjika.config['QUESTIONS_PER_MIN'] or \
-                    data['questions/hr'] >= kunjika.config['QUESTIONS_PER_HR'] or \
-                    data['questions/day'] >= kunjika.config['QUESTIONS_PER_DAY']:
-
-                    return redirect(url_for('questions'))
-
+                kb.get(str(g.user.id) + '_' + str(request.remote_addr))
+                flash('You are allowed only one post per 30 seconds.', 'error')
+                return redirect(request.referrer)
             except:
-                data1['email'] = user['email']
-                data1['questions/min'] = 1
-                data1['questions/hr'] = 1
-                data1['questions/day'] = 1
-                sb.add(user['email'] + 'questions/min', data1, ttl=60)
-                sb.add(user['email'] + 'questions/hr', data1, ttl=3600)
-                sb.add(user['email'] + 'questions/day', data1, ttl=86400)
-	    '''
+                kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+                question = {}
+                question['content'] = {}
+                title = questionForm.question.data
+                question['content']['description'] = questionForm.description.data
 
-            question = {}
-            question['content'] = {}
-            title = questionForm.question.data
-            question['content']['description'] = questionForm.description.data
+                question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite'],
+                                                                             output_format='html5'), tags_wl, attrs_wl)
+                question['content']['tags'] = []
+                question['content']['tags'] = questionForm.tags.data.split(',')
+                question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
+                tag_list = []
+                new_tag_list = []
+                for tag in question['content']['tags']:
+                    tag = list(tag)
+                    for i in range(0, len(tag)):
+                        if tag[i] == ' ':
+                                tag[i] = '-'
+                    tag_list.append(''.join(tag))
 
-            question['content']['html'] = bleach.clean(markdown.markdown(question['content']['description'], extensions=['extra', 'codehilite'],
-                                                                         output_format='html5'), tags_wl, attrs_wl)
-            question['content']['tags'] = []
-            question['content']['tags'] = questionForm.tags.data.split(',')
-            question['content']['tags'] = [tag.strip(' \t').lower() for tag in question['content']['tags']]
-            tag_list = []
-            new_tag_list = []
-            for tag in question['content']['tags']:
-                tag = list(tag)
-                for i in range(0, len(tag)):
-                    if tag[i] == ' ':
-                            tag[i] = '-'
-                tag_list.append(''.join(tag))
+                for tag in tag_list:
+                    try:
+                        tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + urllib2.quote(str(tag))).read()
+                        tid = json.loads(tag)['rows'][0]['id']
+                        tag = tb.get(str(tid)).value
+                        new_tag_list.append(tag['tag'])
 
-            for tag in tag_list:
-                try:
-                    tag = urllib2.urlopen(DB_URL + 'tags/_design/dev_qa/_view/get_tag_by_id?stale=false&key=' + urllib2.quote(str(tag))).read()
-                    tid = json.loads(tag)['rows'][0]['id']
-                    tag = tb.get(str(tid)).value
-                    new_tag_list.append(tag['tag'])
+                    except:
+                        new_tag_list.append(tag)
 
-                except:
-                    new_tag_list.append(tag)
+                question['content']['tags'] = new_tag_list
 
-            question['content']['tags'] = new_tag_list
+                question['title'] = title
 
-            question['title'] = title
+                url = utility.generate_url(title)
 
-            url = utility.generate_url(title)
+                question['content']['url'] = url
+                question['content']['op'] = str(g.user.id)
+                question['content']['ts'] = int(time())
+                question['updated'] = question['content']['ts']
+                question['content']['ip'] = request.remote_addr
+                question['qid'] = qb.incr('qcount', 1).value
+                question['votes'] = 0
+                question['acount'] = 0
+                question['views'] = 0
+                question['votes_list'] = []
+                question['opname'] = g.user.name
+                question['close'] = False
 
-            question['content']['url'] = url
-            question['content']['op'] = str(g.user.id)
-            question['content']['ts'] = int(time())
-            question['updated'] = question['content']['ts']
-            question['content']['ip'] = request.remote_addr
-            question['qid'] = qb.incr('qcount', 1).value
-            question['votes'] = 0
-            question['acount'] = 0
-            question['views'] = 0
-            question['votes_list'] = []
-            question['opname'] = g.user.name
-            question['close'] = False
+                user = cb.get(str(g.user.id)).value
 
-            user = cb.get(str(g.user.id)).value
+                user['rep'] += 1
+                # Isuue 9
+                # user['questions'].append(question['qid'])
+                user['qcount'] += 1
+                print question['qid']
+                es_conn.index({'title': title, 'description': question['content']['description'], 'qid': question['qid'],
+                               'position': question['qid']}, 'questions', 'questions-type', question['qid'])
+                es_conn.indices.refresh('questions')
+                qb.add(str(question['qid']), question)
 
-            user['rep'] += 1
-            # Isuue 9
-            # user['questions'].append(question['qid'])
-            user['qcount'] += 1
-            print question['qid']
-            es_conn.index({'title': title, 'description': question['content']['description'], 'qid': question['qid'],
-                           'position': question['qid']}, 'questions', 'questions-type', question['qid'])
-            es_conn.indices.refresh('questions')
-            qb.add(str(question['qid']), question)
+                cb.replace(str(g.user.id), user)
+                add_tags(question['content']['tags'], question['qid'])
 
-            cb.replace(str(g.user.id), user)
-            add_tags(question['content']['tags'], question['qid'])
-
-            return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
+                return redirect(url_for('questions', qid=question['qid'], url=question['content']['url']))
 
         return render_template('ask.html', title='Ask', form=questionForm, apage=True, name=g.user.name, role=g.user.role,
                                user_id=g.user.id, qcount=qcount, ucount=ucount, tcount=tcount, acount=acount, tag_list=tag_list)
@@ -1609,86 +1575,91 @@ def flag():
 
 @kunjika.route('/postcomment', methods=['GET', 'POST'])
 def postcomment():
-    if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
-        return "Comment must be between 10 and 5000 characters."
-    elif g.user.id == -1:
-        return "You must be logged in to comment"
-    else:
-        elements = request.form['element'].split('-')
-        qid = elements[0]
-        aid = 0
-        if len(elements) == 2:  # check if comment has been made on answers
-            aid = elements[1]
-
-    question = qb.get(qid).value
-    aid = int(aid)
-    comment = {}
-    comment['comment'] = request.form['comment']
-    comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite'],
-                                                     output_format='html5'), tags_wl, attrs_wl)
-    comment['poster'] = g.user.id
-    comment['opname'] = g.user.name
-    comment['ts'] = int(time())
-    comment['ip'] = request.remote_addr
-    if aid != 0:
-        aid -= 1
-        if 'comments' in question['answers'][aid]:
-            question['answers'][aid]['ccount'] += 1
-            comment['cid'] = question['answers'][aid]['ccount']
-            question['answers'][aid]['comments'].append(comment)
+    try:
+        kb.get(str(g.user.id) + '_' + str(request.remote_addr))
+        return json.dumps({"result": "false"})
+    except:
+        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        if len(request.form['comment']) < 10 or len(request.form['comment']) > 5000:
+            return "Comment must be between 10 and 5000 characters."
+        elif g.user.id == -1:
+            return "You must be logged in to comment"
         else:
-            question['answers'][aid]['ccount'] = 1
-            question['answers'][aid]['comments'] = []
-            comment['cid'] = 1
-            question['answers'][aid]['comments'].append(comment)
-    else:
-        if 'comments' in question:
-            question['ccount'] += 1
-            comment['cid'] = question['ccount']
-            question['comments'].append(comment)
+            elements = request.form['element'].split('-')
+            qid = elements[0]
+            aid = 0
+            if len(elements) == 2:  # check if comment has been made on answers
+                aid = elements[1]
+
+        question = qb.get(qid).value
+        aid = int(aid)
+        comment = {}
+        comment['comment'] = request.form['comment']
+        comment['html'] = bleach.clean(markdown.markdown(comment['comment'], extensions=['extra', 'codehilite'],
+                                                         output_format='html5'), tags_wl, attrs_wl)
+        comment['poster'] = g.user.id
+        comment['opname'] = g.user.name
+        comment['ts'] = int(time())
+        comment['ip'] = request.remote_addr
+        if aid != 0:
+            aid -= 1
+            if 'comments' in question['answers'][aid]:
+                question['answers'][aid]['ccount'] += 1
+                comment['cid'] = question['answers'][aid]['ccount']
+                question['answers'][aid]['comments'].append(comment)
+            else:
+                question['answers'][aid]['ccount'] = 1
+                question['answers'][aid]['comments'] = []
+                comment['cid'] = 1
+                question['answers'][aid]['comments'].append(comment)
         else:
-            question['ccount'] = 1
-            question['comments'] = []
-            comment['cid'] = 1
-            question['comments'].append(comment)
+            if 'comments' in question:
+                question['ccount'] += 1
+                comment['cid'] = question['ccount']
+                question['comments'].append(comment)
+            else:
+                question['ccount'] = 1
+                question['comments'] = []
+                comment['cid'] = 1
+                question['comments'].append(comment)
 
-    question['updated'] = int(time())
-    qb.replace(str(qid), question)
-    email_list = []
-    email_list.append(str(question['content']['op']))
-    if 'comments' in question:
-        for comment in question['comments']:
-            email_list.append(str(comment['poster']))
-    if 'answers' in question:
-        for answer in question['answers']:
-            email_list.append(str(answer['poster']))
-            if 'comments' in answer:
-                for comment in answer['comments']:
-                    email_list.append(str(comment['poster']))
-
-    email_list = set(email_list)
-    current_user_list = [str(g.user.id)]
-    email_list = email_list - set(current_user_list)
-    email_list = list(email_list)
-
-    if len(email_list) != 0:
-        email_users = cb.get_multi(email_list)
+        question['updated'] = int(time())
+        qb.replace(str(qid), question)
         email_list = []
+        email_list.append(str(question['content']['op']))
+        if 'comments' in question:
+            for comment in question['comments']:
+                email_list.append(str(comment['poster']))
+        if 'answers' in question:
+            for answer in question['answers']:
+                email_list.append(str(answer['poster']))
+                if 'comments' in answer:
+                    for comment in answer['comments']:
+                        email_list.append(str(comment['poster']))
 
-        for id in email_users:
-            email_list.append(email_users[str(id)].value['email'])
+        email_list = set(email_list)
+        current_user_list = [str(g.user.id)]
+        email_list = email_list - set(current_user_list)
+        email_list = list(email_list)
 
-        msg = Message("A new answer has been posted to a question where you have answered or commented")
-        msg.recipients = email_list
-        msg.sender = admin
-        msg.html = "<p>Hi,<br/><br/> A new comment has been posted which you can read at " +\
-                   HOST_URL + "questions/" + str(question['qid']) + '/' + question['content']['url'] + \
-                   " <br/><br/>Best regards,<br/>Kunjika Team<p>"
-        mail.send(msg)
+        if len(email_list) != 0:
+            email_users = cb.get_multi(email_list)
+            email_list = []
 
-    ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
-    return json.dumps({"id": comment['cid'], "comment": comment['html'], "user_id": g.user.id,
-                       "uname": g.user.name, "ts": ts})
+            for id in email_users:
+                email_list.append(email_users[str(id)].value['email'])
+
+            msg = Message("A new answer has been posted to a question where you have answered or commented")
+            msg.recipients = email_list
+            msg.sender = admin
+            msg.html = "<p>Hi,<br/><br/> A new comment has been posted which you can read at " +\
+                       HOST_URL + "questions/" + str(question['qid']) + '/' + question['content']['url'] + \
+                       " <br/><br/>Best regards,<br/>Kunjika Team<p>"
+            mail.send(msg)
+
+        ts = strftime("%a, %d %b %Y %H:%M", localtime(comment['ts']))
+        return json.dumps({"id": comment['cid'], "comment": comment['html'], "user_id": g.user.id,
+                           "uname": g.user.name, "ts": ts})
 
 
 @kunjika.route('/unanswered', defaults={'page': 1})
@@ -2457,7 +2428,13 @@ def endorse():
 
 @kunjika.route('/write', methods=['GET', 'POST'])
 def write_article():
-    return utility.write_article()
+    try:
+        kb.get(str(g.user.id) + '_' + str(request.remote_addr))
+        flash('You are allowed only one post per 30 seconds.', 'error')
+        return redirect(request.referrer)
+    except:
+        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        return utility.write_article()
 
 
 @kunjika.route('/articles', defaults={'page': 1}, methods=['GET', 'POST'])
@@ -2472,12 +2449,23 @@ def browse_articles(page=None, aid=None, tag=None, url=None):
 
 @kunjika.route('/article_comment', methods=['GET', 'POST'])
 def article_comment():
-    return utility.article_comment()
+    try:
+        kb.get(str(g.user.id) + '_' + str(request.remote_addr))
+        return json.dumps({"result":"false"})
+    except:
+        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        return utility.article_comment()
 
 
 @kunjika.route('/edit_article/<element>', methods=['GET', 'POST'])
 def edit_article(element):
-    return utility.edit_article(element)
+    try:
+        kb.get(str(g.user.id) + '_' + str(request.remote_addr))
+        flash('You are allowed only one post per 30 seconds.', 'error')
+        return redirect(request.referrer)
+    except:
+        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        return utility.edit_article(element)
 
 
 @kunjika.route('/article_tags', defaults={'page': 1})
@@ -2489,12 +2477,24 @@ def article_tags(page=1):
 @kunjika.route('/save_draft/<element>', methods=['POST'])
 @kunjika.route('/save_draft', methods=['POST'])
 def save_draft(element=None):
-    return utility.save_draft(element)
+    try:
+        kb.get(str(g.user.id) + '_' + str(request.remote_addr))
+        flash('You are allowed only one post per 30 seconds.', 'error')
+        return redirect(request.referrer)
+    except:
+        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        return utility.save_draft(element)
 
 
 @kunjika.route('/edit_draft/<element>', methods=['GET', 'POST'])
 def edit_draft(element):
-    return utility.edit_draft(element)
+    try:
+        kb.get(str(g.user.id) + '_' + str(request.remote_addr))
+        flash('You are allowed only one post per 30 seconds.', 'error')
+        return redirect(request.referrer)
+    except:
+        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        return utility.edit_draft(element)
 
 
 @kunjika.route('/drafts', defaults={'page': 1}, methods=['GET', 'POST'])
@@ -2507,7 +2507,13 @@ def drafts(page=None, did=None, url=None):
 
 @kunjika.route('/publish/<string:element>', methods=['GET', 'POST'])
 def publish(element):
-    return utility.publish(element)
+    try:
+        kb.get(str(g.user.id) + '_' + str(request.remote_addr))
+        flash('You are allowed only one post per 30 seconds.', 'error')
+        return redirect(request.referrer)
+    except:
+        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        return utility.publish(element)
 
 
 @kunjika.route('/sitemap.xml')

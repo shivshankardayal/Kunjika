@@ -172,17 +172,22 @@
             function showResponse(responseText, statusText, xhr, $form) {
                 var converter = new Markdown.Converter();
                 Markdown.Extra.init(converter, {
-                    extensions: "all",
+                    extensions: "all"
                 });
 
                 responseJSON = jQuery.parseJSON(responseText);
-                str = '<div class="comment" id="c-' + responseJSON.id + '"><div class="content">';
-                comment = converter.makeHtml(responseJSON.comment);
-                str += comment;
-                str += "</div> &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
-                str += " " + responseJSON.ts + "</div>"
-                $(str).insertBefore('#f-' + id);
-                flash('Your comment has been successfully posted.', 'info')
+                if (responseJSON.result == "false") {
+                    alert('You are allowed only one post per 30 seconds.');
+                    flash('You are allowed only one post per 30 seconds.', 'error');
+                } else {
+                    str = '<div class="comment" id="c-' + responseJSON.id + '"><div class="content">';
+                    comment = converter.makeHtml(responseJSON.comment);
+                    str += comment;
+                    str += "</div> &mdash; <a href='/users/" + responseJSON.user_id + "/" + responseJSON.uname + "'>" + responseJSON.uname + "</a>"
+                    str += " " + responseJSON.ts + "</div>"
+                    $(str).insertBefore('#f-' + id);
+                    flash('Your comment has been successfully posted.', 'info')
+                }
             }
         });
     </script>
@@ -750,7 +755,7 @@
             {% for question in similar_questions %}
                 <a href="/questions/{{ question[0] }}/{{ question[2] }}" class="post-tag"
                     rel="tag">{{ question[1] }}</a>
-                <br/ >
+                <br />
             {% endfor %}
         </div>
     </div>
