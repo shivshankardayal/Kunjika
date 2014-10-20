@@ -1187,7 +1187,7 @@ def check_email():
         return '1'
 
 
-@kunjika.route('/logout')
+@kunjika.route('/logout', methods=['POST'])
 def logout():
     logout_user()
     resp = make_response(redirect(request.referrer))
@@ -2590,7 +2590,6 @@ def show_groups(page, uid, uname):
                                name=g.user.name, role=g.user.role, user_id=g.user.id, acount=acount, tag_list=tag_list)
     return redirect(url_for('users', uid=g.user.id))
 '''
-
 
 @kunjika.route('/get_qcount')
 def get_qcount():

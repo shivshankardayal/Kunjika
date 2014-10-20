@@ -502,7 +502,13 @@
                         </div>
                     </td>
                     <td>
-                        <div id="answer-{{ answer['aid'] }}" class="answer">{{ answer['html']|safe }}</div>
+                       {% if 'hidden' not in answer %}
+                       <div id="answer-{{ answer['aid'] }}" class="answer"> {{ answer['html']|safe }}</div>
+                       {% elif answer['hidden'] == False %}
+                       <div id="answer-{{ answer['aid'] }}" class="answer"> {{ answer['html']|safe }}</div>
+                       {% else %}
+                       <div id="answer-{{ answer['aid'] }}" class="answer" style="color:#c00"> This answre has been hidden by admin or poster.</div>
+                       {% endif %}
                         <table class="poster">
                             <tbody>
                             <tr>
@@ -524,6 +530,12 @@
                                            onclick="toggleDiv('{{ questions['qid'] }}-{{ answer['aid'] }}');"><i
                                                 class="fa fa-comment" style="color:#a4c639"></i> Comment</a>
                                     </td>
+                                    {% if g.user.id == questions['content']['op']|int or g.user.id == 1 %}
+                                      <td class="vt">
+                                      <a class="tohide" href="/hide/ah-{{ questions['qid'] }}-{{ answer['aid'] }}" id="ah-{{ questions['qid'] }}-{{ answer['aid'] }}">
+                                        Hide/Unhide</a>
+                                      </td>
+                                    {% endif %}
                                 {% else %}
                                     <td class="vt">
                                     </td>

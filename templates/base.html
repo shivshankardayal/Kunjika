@@ -196,7 +196,11 @@
                                             <li>
                                                 <a href="/users/{{ g.user.id }}/{{ g.user.name|urlencode }}/settings"><i class="fa fa-cog"></i> Settings</a>
                                             </li>
-                                            <li><a href="/logout" class="login"><i class="fa fa-sign-out"></i> Logout</a>
+                                            <li>
+                                              <form id="f" action="/logout" method="post">
+                                              <button class="btn btn-default" name="Log Me Out">Log Out</button>
+                                              </form>
+                                            </li>
                                         </ul>
                                     {% if role == "admin" and adpage == True %}
                                         <li  class="active">
