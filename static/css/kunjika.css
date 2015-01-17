@@ -1247,3 +1247,8 @@ position: fixed;
     margin-right: -15px;
     font-size: 13px;
 }
+
+pre {
+    padding: 0px;
+}
+

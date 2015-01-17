@@ -40,7 +40,7 @@
 
                 var str = '#insertImageDialog' + '-' + divid;
                 //alert(str);
-                var `$dialog = $(str).dialog({
+                var $dialog = $(str).dialog({
                     autoOpen: false,
                     closeOnEscape: false,
                     open: function (event, ui) {
@@ -375,9 +375,10 @@
     </script>
     <script>
       $(document).ready(function() {
-      $('pre code').each(function(i, block) {
-      hljs.highlightBlock(block);
-      });
+                hljs.initHighlighting();
+      //$('pre code').each(function(i, block) {
+      //hljs.highlightBlock(block);
+      //});
       });
     </script>
 {% endblock %}
