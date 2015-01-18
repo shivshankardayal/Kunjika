@@ -551,7 +551,8 @@ def questions(tag=None, page=None, qid=None, url=None):
                         flash('You are allowed only one post per 30 seconds.', 'error')
                         return redirect(request.referrer)
                     except:
-                        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+                        if g.user.id != '1':
+                            kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
                         answer = {}
                         if 'answers' in questions_dict:
                             answer['aid'] = questions_dict['acount'] + 1
@@ -820,7 +821,8 @@ def ask():
                 flash('You are allowed only one post per 30 seconds.', 'error')
                 return redirect(request.referrer)
             except:
-                kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+                if g.user.id != '1':
+                    kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
                 question = {}
                 question['content'] = {}
                 title = questionForm.question.data
@@ -2433,7 +2435,8 @@ def write_article():
         flash('You are allowed only one post per 30 seconds.', 'error')
         return redirect(request.referrer)
     except:
-        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        if g.user.id != '1':
+            kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
         return utility.write_article()
 
 
@@ -2464,7 +2467,8 @@ def edit_article(element):
         flash('You are allowed only one post per 30 seconds.', 'error')
         return redirect(request.referrer)
     except:
-        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        if g.user.id != '1':
+            kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
         return utility.edit_article(element)
 
 
@@ -2482,7 +2486,8 @@ def save_draft(element=None):
         flash('You are allowed only one post per 30 seconds.', 'error')
         return redirect(request.referrer)
     except:
-        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        if g.user.id != '1':
+            kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
         return utility.save_draft(element)
 
 
@@ -2493,7 +2498,8 @@ def edit_draft(element):
         flash('You are allowed only one post per 30 seconds.', 'error')
         return redirect(request.referrer)
     except:
-        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        if g.user.id != '1':
+            kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
         return utility.edit_draft(element)
 
 
@@ -2512,7 +2518,8 @@ def publish(element):
         flash('You are allowed only one post per 30 seconds.', 'error')
         return redirect(request.referrer)
     except:
-        kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
+        if g.user.id != '1':
+            kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
         return utility.publish(element)
 
 

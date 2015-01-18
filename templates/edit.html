@@ -287,11 +287,15 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.hooks.chain("onPreviewRefresh", f); // google code prettify
                 hljs.initHighlightingOnLoad();
                 editor.run();
             }
         })();
+    function f() {
+        hljs.initHighlighting.called = false;
+        hljs.initHighlighting();
+    }
     </script>
     <script type="text/javascript">
         $("#token-input-kunjika-tags").ready(function () {
@@ -313,12 +317,5 @@
                 });
             });
         });
-    </script>    
-    <script>
-      $('.wmd-input').keyup(function(){
-       $('.wmd-preview pre code').each(function(i, block) {
-         hljs.highlightBlock(block);
-       });
-     });
     </script>
 {% endblock %}

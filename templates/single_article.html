@@ -105,10 +105,14 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.hooks.chain("onPreviewRefresh", f); // google code prettify
                 hljs.initHighlightingOnLoad();
                 editor.run();
             }
+        }
+        function f() {
+            hljs.initHighlighting.called = false;
+            hljs.initHighlighting();
         }
     </script>
     <script>
@@ -367,11 +371,15 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                //editor.hooks.chain("onPreviewRefresh", highlight); // google code prettify
+                editor.hooks.chain("onPreviewRefresh", f); // google code prettify
                 hljs.initHighlightingOnLoad();
                 editor.run();
             }
         })();
+        function f() {
+            hljs.initHighlighting.called = false;
+            hljs.initHighlighting();
+        }
     </script>
     <script>
       $(document).ready(function() {

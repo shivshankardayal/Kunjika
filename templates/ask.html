@@ -183,11 +183,15 @@
 
                     return true; // tell the editor that we'll take care of getting the image url
                 });
-                //editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+                editor.hooks.chain("onPreviewRefresh", f); // google code prettify
                 hljs.initHighlightingOnLoad();
                 editor.run();
             }
         })();
+        function f() {
+           hljs.initHighlighting.called = false;
+            hljs.initHighlighting();
+        }
         $(document).ready(function () {
             $("#kunjika-tags").tokenInput("{{ config['HOST_URL'] }}get_tags", {
                 theme: "kunjika",
@@ -197,13 +201,6 @@
                 preventDuplicates: true
             });
         });
-    </script>
-    <script>
-      $('.wmd-input').keyup(function(){
-       $('.wmd-preview pre code').each(function(i, block) {
-         hljs.highlightBlock(block);
-       });
-     });
     </script>
     <script>
         $(".ui-autocomplete").addClass("dropdown-menu");
