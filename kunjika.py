@@ -767,6 +767,11 @@ def questions(tag=None, page=None, qid=None, url=None):
                                    votes=votes, similar_questions=similar_questions, ccount=ccount)
 
 
+@kunjika.route('/users/<uid>/<path:uname>/messages', defaults={'qpage': 1, 'apage': 1})
+@kunjika.route('/users/<uid>/<path:uname>/messsages/<int:qpage>/<int:apage>')
+def messages(qpage=None, apage=None, uid=None, uname=None):
+    return render_template('404.html')
+
 @kunjika.route('/users/<uid>', defaults={'qpage': 1, 'apage': 1})
 @kunjika.route('/users/<uid>/<path:uname>', defaults={'qpage': 1, 'apage': 1})
 @kunjika.route('/users/<uid>/<path:uname>/<int:qpage>/<int:apage>')
