@@ -2614,7 +2614,7 @@ def get_qcount():
 @kunjika.route('/get_account')
 def get_account():
     qid = request.args.get('qid')
-    questions_dict = qb.get(qid).value
+    questions_dict = qb.get(str(qid)).value
     ccount = 0
     acount = questions_dict['acount']
     if 'comments' in questions_dict:

@@ -91,7 +91,7 @@
             </li>
           {% else %}
             <li>
-                <strong>{{ page }}</strong>
+                <a style="color:#000">{{ page }}</a>
             </li>
           {% endif %}
         {% else %}
@@ -128,7 +128,7 @@
                 </li>
               {% else %}
                 <li>
-                    <strong>{{ page }}</strong>
+                    <a style="color:#000">{{ page }}</a>
                 </li>
               {% endif %}
             {% else %}
@@ -164,7 +164,7 @@
                   <a href="{{ url_for_search_page(page, query) }}">{{ page }}</a>
                 </li>
               {% else %}
-                <li><strong>{{ page }}</strong>
+                <li><a style="color: #0000">{{ page }}</a>
               {% endif %}
             {% else %}
             <li>
