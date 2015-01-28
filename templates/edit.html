@@ -319,10 +319,12 @@
         });
     </script>
     <script type="text/javascript">
-      window.onbeforeunload = popup;
+$(window).bind('beforeunload',function() {
+    return "'Are you sure you want to leave the page. All data will be lost!";
+});
 
-      function popup() {
-        return 'I see you are leaving the site';
-      }
+$('.btn').live('click',function() {
+    $(window).unbind('beforeunload');
+});
     </script>
 {% endblock %}
