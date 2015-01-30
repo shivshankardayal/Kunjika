@@ -1136,9 +1136,10 @@ def save_draft(element):
 def drafts(page, did, request):
     if g.user.id == -1:  # -1 is the user id of anonymous user
         return redirect(url_for('login'))
+
     if did is None:
         try:
-            count = g.user.user_doc['draft_count']
+            count = len(kunjika.kb.get('dl-' + str(g.user.id)).value)
         except:
             flash('You have no drafts!', 'error')
             return redirect(request.referrer)
