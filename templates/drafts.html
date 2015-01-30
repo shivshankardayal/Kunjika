@@ -34,6 +34,7 @@
                             <a class="question-hyperlink"
                            href="/drafts/{{ article['aid'] }}/{{ article['url'] }}"
                            title="{{ article['content'][:200] }}" > {{ article['title'] }}</a>
+                            <a style="color:#c00" onclick="return confirm('Are you sure you want to delete the draft?')" href="/discard_draft/{{ article['aid'] }}">Discard Draft</a>
                         </h4>
                         <div class="tags">
                             <i class="fa fa-tags" style="color:#a4c639;"></i>
@@ -53,4 +54,13 @@
         <div style="clear:both"></div>
             {{ render_pagination(pagination) }}
         </div>
+    <script type="text/javascript">
+    function discard_draft() {
+        if (confirm('Are you sure you want to delete the draft?')) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    </script>
 {% endblock %}

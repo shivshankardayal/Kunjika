@@ -2509,6 +2509,22 @@ def edit_draft(element):
             kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
         return utility.edit_draft(element)
 
+@kunjika.route('/discard_draft/<did>', methods=['GET'])
+def discard_draft(did):
+    op = did.split('-')[1]
+    draft_id = did.split('-')[2]
+    if(op == str(g.user.id)):
+        try:
+            kb.delete(did)
+        except:
+            pass
+        doc = kb.get('dl-' + op).value
+        doc['drafts_list'].remove(int(draft_id))
+        kb.set('dl-' + op, doc)
+        return redirect(url_for('drafts'))
+    else:
+        # This will never happen unless a modified url comes to app
+        flash("You are not author of this draft")
 
 @kunjika.route('/drafts', defaults={'page': 1}, methods=['GET', 'POST'])
 @kunjika.route('/drafts/<did>', methods=['GET', 'POST'])
