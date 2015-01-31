@@ -103,7 +103,7 @@
 <div id="row-fluid">
     {% block body %}
         {% block navbar_wrapper %}
-            <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="navbar navbar-fixed-top" role="navigation">
                 <div class="container">
                     <div class="container-fluid">
                         <div class="navbar-header">
@@ -179,8 +179,8 @@
                                         <a href="/poll" class="poll">Poll</a>
                                     </li>
                                 {% endif %}
-                            </ul>
-                            <ul class="nav navbar-nav navbar-right">
+                            <!--/ul>
+                            <ul class="nav navbar-nav navbar-right"-->
                                 {% if user_id is defined and g.user.is_authenticated() %}
                                     <!-- li class="active"><a href="/users/{{ g.user.id }}/{{ g.user.fname }}%20{{ g.user.lname }}" class="login"><i
                                             class="fa fa-sigin"></i> <b>{{ g.user.name }}</b></a></li-->
