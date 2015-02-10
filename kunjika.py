@@ -2500,14 +2500,7 @@ def save_draft(element=None):
 
 @kunjika.route('/edit_draft/<element>', methods=['GET', 'POST'])
 def edit_draft(element):
-    try:
-        kb.get(str(g.user.id) + '_' + str(request.remote_addr))
-        flash('You are allowed only one post per 30 seconds.', 'error')
-        return redirect(request.referrer)
-    except:
-        if g.user.id != 1:
-            kb.set(str(g.user.id) + '_' + str(request.remote_addr), {"posted": "true"}, ttl=POST_INTERVAL)
-        return utility.edit_draft(element)
+    return utility.edit_draft(element)
 
 @kunjika.route('/discard_draft/<did>', methods=['GET'])
 def discard_draft(did):
