@@ -322,15 +322,12 @@ body {
     width: 620px;
 }
 
-.summary .question-hyperlink {
-    color: #444;
-}
-
 .question-hyperlink {
     font-size: 17px;
     font-weight: normal;
     line-height: 1.1;
     margin-bottom: 1.2em;
+    color: #444;
 }
 
 .narrow .started {
@@ -1258,3 +1255,13 @@ pre {
 .navbar-toggle {
     background-color: #333;
 }
+
+.fa-stack { /* fix the star in question mini counts*/
+    display: block;
+}
+
+.narrow .asummary {
+    /*width: 680px;*/
+      width: 100%;
+}
+
