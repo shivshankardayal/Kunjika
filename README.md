@@ -3,6 +3,13 @@ Kunjika
 
 "It is software made up of bugs."
 
+**Update**
+I have stopped developing it temporarily. I will update documentation soon
+so that if people want to develop then they should be able to do it easily.
+I may migrate code to wheezy.web or Falcon Python frameworks as they are
+much faster than Flask but that is to be seen. New features are also to be
+implemented. I will resume work as time permits.
+
 It started as Stackoverflow clone but now I have implemented some features which
 are not there in Stackoverflow so calling Kunjika a clone is not appropriate.
 It has skills and endorsement features like linked in. I am also going to implement
@@ -23,12 +30,6 @@ which provided nice replication, auto-sharding and memcached functionality apart
 from document based database. So one query for question, one for user and one
 for tag and it is done.
 
-I am working on documentation which you can read at http://libreprogramming.org/docs/kunjika/
-The documentation covers installation and configuration as of now. Code
-documentation is yet to be put there.
 The documentation is out of date and I will update that soon.
-
-I am working on a series of tests for different topics related to programming language
-which should be accessible in near future.
 
 Kunjika is quite stable now and a beta release has been done.
