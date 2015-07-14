@@ -4,12 +4,9 @@ Kunjika
 "It is software made up of bugs."
 
 **Update**
-I have stopped developing it temporarily. I will update documentation soon
-so that if people want to develop then they should be able to do it easily.
-I may migrate code to wheezy.web or Falcon Python frameworks as they are
-much faster than Flask but that is to be seen. New features are also to be
-implemented. I will resume work as time permits.
-
+Look at (memoir)[https://github.com/shivshankardayal/memoir "memoir") for further
+development.
+  
 It started as Stackoverflow clone but now I have implemented some features which
 are not there in Stackoverflow so calling Kunjika a clone is not appropriate.
 It has skills and endorsement features like linked in. I am also going to implement
