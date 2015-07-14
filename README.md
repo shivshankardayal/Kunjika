@@ -4,7 +4,7 @@ Kunjika
 "It is software made up of bugs."
 
 **Update**
-Look at (memoir)[https://github.com/shivshankardayal/memoir "memoir") for further
+Look at <a href="https://github.com/shivshankardayal/memoir">memoir</a> for further
 development.
   
 It started as Stackoverflow clone but now I have implemented some features which
