@@ -4,7 +4,7 @@ Kunjika
 "It is software made up of bugs."
 
 **Update**
-Look at <a href="https://github.com/Nalanda-Labs/kunjika">memoir</a> for further
+Look at <a href="https://github.com/Nalanda-Labs/kunjika">Kunjika</a> for further
 development. This is a complete rewrite of original kunjika.
   
 It started as Stackoverflow clone but now I have implemented some features which
